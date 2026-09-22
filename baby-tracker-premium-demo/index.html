@@ -10,8 +10,6 @@
 <link rel="manifest" href="manifest.json"/>
 <link rel="apple-touch-icon" href="icons/icon-192.png"/>
 <link rel="icon" type="image/png" href="icons/icon-192.png"/>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Lato:wght@300;400;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Nunito:wght@400;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
 <title>Baby Tracker Premium</title>
@@ -303,8 +301,11 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;height:100
 <div id="bt-theme-swatches" class="bt-swatch-grid"></div>
 <div class="section-div"></div><button class="btn-full" onclick="saveProfile()">Save Profile</button>
 <div class="section-div"></div>
-<div class="sl" id="baby-share-label">Family Sharing</div>
-<div id="baby-share-section" style="margin-bottom:14px;"></div>
+<div class="sl">Family Sharing</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:14px">Family sharing lets your partner or caregiver see the same logs in real time, synced across devices. It's included in the full app — this free demo keeps data on this device only.</div>
+<a class="btn-full" style="display:block;text-align:center;text-decoration:none;line-height:22px;" href="https://www.etsy.com/listing/4528746036/baby-care-digital-tracker-englishspanish" target="_blank" rel="noopener">Get the Full App</a>
+</div>
 <div class="section-div"></div>
 <div class="sl">Local Backup (recommended)</div>
 <div id="baby-localbackup-section" style="margin-bottom:14px;"></div>
@@ -1385,106 +1386,10 @@ function renderGdriveSection(){
 
 
 
-// ── FIREBASE SHARING ──
-var FB_APP = null;
-var FB = null;
-var FB_LISTENER = null;
-
-function fbInit(){
-  if(FB_APP)return;
-  if(typeof firebase==='undefined')return;
-  FB_APP = firebase.initializeApp({
-    apiKey:"AIzaSyCS-6-cyja3CCNoBAv46nbPF3hGboan2ek",
-    authDomain:"baby-tracker-mfs.firebaseapp.com",
-    databaseURL:"https://baby-tracker-mfs-default-rtdb.firebaseio.com",
-    projectId:"baby-tracker-mfs",
-    storageBucket:"baby-tracker-mfs.firebasestorage.app",
-    messagingSenderId:"696663907388",
-    appId:"1:696663907388:web:31af5577461416e30bf739"
-  });
-  FB = firebase.database(FB_APP);
-}
-
-function fbSave(){
-  if(!DB.shareCode||!FB)return;
-  FB.ref('households/'+DB.shareCode).set(DB).catch(function(e){console.error('FB save:',e);});
-}
-
-function fbListen(code){
-  if(FB_LISTENER){FB_LISTENER.off();FB_LISTENER=null;}
-  if(!FB)return;
-  FB_LISTENER = FB.ref('households/'+code);
-  FB_LISTENER.on('value',function(snap){
-    var data=snap.val();
-    if(!data)return;
-    var code=DB.shareCode;var lang=DB.lang;
-    DB=data;
-    if(code)DB.shareCode=code;
-    if(lang)DB.lang=lang;
-    try{localStorage.setItem('bt_premium_demo_v1',JSON.stringify(DB));}catch(e){}
-    renderDash();
-  });
-}
-
-function genCode(){return Math.random().toString(36).substr(2,6).toUpperCase();}
-
-function joinHousehold(code){
-  if(!FB)return;
-  FB.ref('households/'+code).once('value',function(snap){
-    if(!snap.val()){showSaved('Household code not found.',true);return;}
-    var data=snap.val();
-    DB=data;DB.shareCode=code;
-    try{localStorage.setItem('bt_premium_demo_v1',JSON.stringify(DB));}catch(e){}
-    fbListen(code);
-    renderDash();renderSetup();
-    showToast('Connected to family!');
-  });
-}
-
-function startSharing(){
-  if(!FB)return;
-  var code=genCode();
-  DB.shareCode=code;
-  fbSave();
-  try{localStorage.setItem('bt_premium_demo_v1',JSON.stringify(DB));}catch(e){}
-  fbListen(code);
-  renderSetup();
-  showToast('Family code created: '+code);
-}
-
-function stopSharing(){
-  if(FB_LISTENER){FB_LISTENER.off();FB_LISTENER=null;}
-  delete DB.shareCode;
-  try{localStorage.setItem('bt_premium_demo_v1',JSON.stringify(DB));}catch(e){}
-  renderSetup();
-  showToast('Sharing stopped.');
-}
-
-function buildSharingSection(){
-  var h='';
-  if(DB.shareCode){
-    h+='<div style="background:var(--accent3,#eaf3de);border-radius:10px;padding:12px 16px;margin-bottom:12px;">'
-      +'<div style="font-size:11px;letter-spacing:.1em;color:var(--text2);text-transform:uppercase;margin-bottom:6px;">'+t('share_code_label')+'</div>'
-      +'<div style="font-size:28px;font-family:monospace;letter-spacing:.2em;color:var(--accent2,#3a6028);font-weight:700;">'+DB.shareCode+'</div>'
-      +'<div style="font-size:13px;color:var(--text2);margin-top:6px;">'+t('share_code_hint')+'</div>'
-      +'</div>'
-      +'<button class="btn-full" onclick="stopSharing()" style="background:var(--bg3,#f2ede6);color:var(--text);border:.5px solid var(--border);">'+t('share_stop')+'</button>';
-  } else {
-    h+='<div style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:14px;">'+t('share_desc')+'</div>'
-      +'<button class="btn-full" onclick="startSharing()">'+t('share_create')+'</button>'
-      +'<div style="font-size:13px;color:var(--text2);text-align:center;margin:10px 0;">'+t('share_or')+'</div>'
-      +'<div style="display:flex;gap:8px;">'
-      +'<input id="join-code-input" placeholder="'+t('share_enter')+'" style="flex:1;background:var(--bg3);border:.5px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:16px;font-family:monospace;letter-spacing:.1em;text-transform:uppercase;outline:none;"/>'
-      +'<button class="btn-save" style="flex:0 0 auto;padding:10px 16px;" onclick="joinHousehold(document.getElementById(&quot;join-code-input&quot;).value.trim().toUpperCase())">'+t('share_join')+'</button>'
-      +'</div>';
-  }
-  return h;
-}
-
+// ── FAMILY SHARING (disabled in free demo — full app only) ──
 var _gdriveBackupTimer=null;
 function sv(){
   try{localStorage.setItem('bt_premium_demo_v1',JSON.stringify(DB));}catch(e){}
-  if(DB.shareCode)fbSave();
 }
 function ld(){try{var d=localStorage.getItem('bt_premium_demo_v1');if(d)DB=JSON.parse(d);}catch(e){}}
 
@@ -1518,8 +1423,7 @@ function enforceDemoTrial(){
 }
 var demoLocked = enforceDemoTrial();
 ld();
-try{ fbInit(); }catch(e){}
-if(DB.shareCode){ try{ fbListen(DB.shareCode); }catch(e){} }
+delete DB.shareCode;
 
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(reg){reg.update();}).catch(function(){});});}
 
@@ -2089,9 +1993,6 @@ function renderSetup(){
   renderBTSwatches();
   renderGdriveSection();
   renderLocalBackupSection();
-  var shareEl=document.getElementById('baby-share-section');
-  if(shareEl)shareEl.innerHTML=buildSharingSection();
-  var sl=document.getElementById('baby-share-label');if(sl)sl.textContent=t('share_title');
   var gl=document.getElementById('baby-gdrive-label');if(gl)gl.textContent=t('gdrive_title');
   var sf=document.getElementById('s-font');if(sf&&DB.font)sf.value=DB.font;
   document.getElementById('s-parent').value=DB.profile.parent||'';
