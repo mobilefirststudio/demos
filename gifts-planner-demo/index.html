@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Gifts Planner Demo"/>
+<meta name="theme-color" content="#28402f"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<link rel="icon" type="image/png" href="icons/icon-192.png"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Gifts &amp; Savings Planner — Free 14-Day Trial — Mobile First Studio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#f7f3ea;--bg2:#fffdf9;--bg3:#f1e9d8;--bg4:#e8ddc4;
+  --text:#1c1a16;--text2:#6b6255;--text3:#a89d89;
+  --green:#28402f;--green2:#1e3125;--green3:#e7ede4;
+  --burg:#6d2a2a;--burg2:#faeeec;--burg3:#f2dfdc;
+  --gold:#a07f34;--gold2:#faf3e2;--gold-line:linear-gradient(90deg,transparent,rgba(160,127,52,.55) 25%,rgba(160,127,52,.55) 75%,transparent);
+  --blue:#2c4a6b;--blue2:#e9eff6;
+  --border:#dcd2ba;--border2:#eae2cd;
+  --shadow:0 2px 10px rgba(40,64,47,.07),0 1px 2px rgba(40,64,47,.05);
+  --shadow-lg:0 12px 32px rgba(28,26,22,.14),0 2px 8px rgba(28,26,22,.06);
+  --serif:'EB Garamond',serif;--sans:'Inter',sans-serif;
+  --fs-xl:23px;--fs-lg:18px;--fs-base:16px;--fs-sm:14px;--fs-xs:12px;
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:var(--serif);}
+body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;height:100dvh;-webkit-font-smoothing:antialiased;}
+.sbar{background:var(--green);padding:env(safe-area-inset-top,10px) 20px 8px;display:flex;justify-content:center;flex-shrink:0;}
+.sbar span{color:rgba(255,255,255,.82);font-size:11px;letter-spacing:.2em;font-weight:600;font-family:var(--sans);}
+.screen{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+.page{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0;}
+.page.active{display:flex;}
+.ph{background:linear-gradient(180deg,var(--green) 0%,var(--green2) 100%);padding:12px 20px 20px;flex-shrink:0;position:relative;}
+.ph::after{content:'';position:absolute;left:20px;right:20px;bottom:0;height:1px;background:var(--gold-line);opacity:.8;}
+.ph .ey{font-size:10px;letter-spacing:.22em;color:rgba(255,255,255,.55);text-transform:uppercase;margin-bottom:4px;font-family:var(--sans);font-weight:600;}
+.ph h1{font-size:var(--fs-xl);font-weight:400;color:white;font-style:italic;letter-spacing:.01em;}
+.ps{flex:1;overflow-y:auto;padding:16px 18px;min-height:0;-webkit-overflow-scrolling:touch;background:var(--bg);}
+.ps::-webkit-scrollbar{width:2px;}
+.ps::-webkit-scrollbar-thumb{background:var(--border);}
+.sl{font-size:10.5px;letter-spacing:.18em;color:var(--text2);text-transform:uppercase;margin-bottom:10px;margin-top:10px;font-weight:600;font-family:var(--sans);display:flex;align-items:center;gap:8px;}
+.sl::after{content:'';flex:1;height:1px;background:var(--border2);}
+.nav{background:var(--bg2);border-top:.5px solid var(--border);padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-around;flex-shrink:0;box-shadow:0 -4px 16px rgba(28,26,22,.05);}
+.ni{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:5px 8px;border-radius:10px;background:none;border:none;min-width:44px;min-height:44px;justify-content:center;transition:background .18s ease;}
+.ni i{font-size:18px;color:var(--text3);transition:color .18s ease;}
+.ni span{font-size:9.5px;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;font-family:var(--sans);font-weight:600;transition:color .18s ease;}
+.ni.active{background:var(--green3);}
+.ni.active i,.ni.active span{color:var(--green);}
+.card{background:var(--bg2);border-radius:12px;padding:14px 16px;margin-bottom:10px;border:.5px solid var(--border);box-shadow:var(--shadow);}
+.card-tinted{background:var(--green3);border-radius:12px;padding:14px 16px;margin-bottom:10px;border:.5px solid rgba(40,64,47,.18);}
+.card-burg{background:var(--burg3);border-radius:12px;padding:14px 16px;margin-bottom:10px;border:.5px solid rgba(109,42,42,.18);}
+.card-gold{background:var(--gold2);border-radius:12px;padding:14px 16px;margin-bottom:10px;border:.5px solid rgba(160,127,52,.25);position:relative;overflow:hidden;}
+.card-gold::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold-line);}
+.fab{width:50px;height:50px;border-radius:50%;background:linear-gradient(160deg,var(--green) 0%,var(--green2) 100%);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;position:fixed;bottom:calc(72px + env(safe-area-inset-bottom,0px));right:calc(50% - 220px + 16px);z-index:10;box-shadow:0 6px 18px rgba(30,49,37,.4),0 0 0 4px rgba(255,253,249,.9);transition:transform .15s ease;}
+.fab:active{transform:scale(.93);}
+@media(max-width:480px){.fab{right:16px;}}
+.fab i{font-size:22px;color:white;}
+.modal-bg{position:fixed;inset:0;background:rgba(20,18,14,.55);backdrop-filter:blur(2px);z-index:20;display:none;align-items:flex-end;max-width:480px;margin:0 auto;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg2);border-radius:22px 22px 0 0;padding:22px;width:100%;max-height:90vh;overflow-y:auto;border-top:.5px solid var(--border);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));box-shadow:var(--shadow-lg);position:relative;}
+.modal::before{content:'';position:absolute;top:9px;left:50%;transform:translateX(-50%);width:36px;height:4px;border-radius:4px;background:var(--border);}
+.modal h2{font-size:var(--fs-lg);font-weight:400;color:var(--text);font-style:italic;margin-bottom:16px;margin-top:6px;}
+.field{margin-bottom:12px;}
+.field label{font-size:10.5px;letter-spacing:.12em;color:var(--text2);text-transform:uppercase;display:block;margin-bottom:6px;font-family:var(--sans);font-weight:600;}
+.field input,.field select{width:100%;background:var(--bg3);border:.5px solid var(--border);border-radius:9px;padding:11px 13px;color:var(--text);font-family:var(--serif);font-size:var(--fs-base);outline:none;-webkit-appearance:none;transition:border-color .15s ease,background .15s ease;}
+.field input:focus,.field select:focus{border-color:var(--green);background:var(--bg2);}
+.field input::placeholder{color:var(--text3);font-style:italic;}
+.field select option{background:var(--bg2);color:var(--text);}
+.btn-row{display:flex;gap:10px;margin-top:12px;}
+.btn-save{flex:1;background:linear-gradient(160deg,var(--green) 0%,var(--green2) 100%);border:none;border-radius:10px;padding:13px;color:white;font-family:var(--sans);font-size:var(--fs-sm);letter-spacing:.05em;font-weight:600;cursor:pointer;min-height:48px;box-shadow:0 4px 12px rgba(30,49,37,.28);transition:transform .12s ease;}
+.btn-save:active{transform:scale(.98);}
+.btn-cancel{flex:1;background:transparent;border:.5px solid var(--border);border-radius:10px;padding:13px;color:var(--text2);font-family:var(--sans);font-size:var(--fs-sm);letter-spacing:.05em;font-weight:600;cursor:pointer;min-height:48px;}
+.btn-delete{width:100%;background:var(--burg2);border:.5px solid var(--burg);border-radius:10px;padding:13px;color:var(--burg);font-family:var(--sans);font-size:var(--fs-sm);letter-spacing:.05em;font-weight:600;cursor:pointer;margin-top:10px;min-height:48px;}
+.btn-ghost{width:100%;background:transparent;border:.5px solid var(--border);border-radius:10px;padding:11px;color:var(--text2);font-family:var(--sans);font-size:var(--fs-sm);letter-spacing:.04em;font-weight:600;cursor:pointer;margin-top:6px;min-height:44px;}
+.section-div{height:.5px;background:var(--border2);margin:14px 0;}
+.row-item{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:.5px solid var(--border2);cursor:pointer;}
+.row-item:active{opacity:.7;}
+.row-info{flex:1;}
+.row-title{font-size:var(--fs-base);color:var(--text);font-weight:500;}
+.row-sub{font-size:var(--fs-sm);color:var(--text2);margin-top:2px;font-style:italic;}
+.edit-hint{font-size:9.5px;color:var(--text3);font-family:var(--sans);letter-spacing:.03em;text-transform:uppercase;}
+.empty{text-align:center;padding:32px 0;color:var(--text2);font-size:var(--fs-base);line-height:1.8;font-style:italic;}
+/* DASHBOARD */
+.dash-banner{background:linear-gradient(160deg,var(--green) 0%,var(--green2) 100%);border-radius:16px;padding:20px 22px;margin-bottom:16px;box-shadow:0 10px 28px rgba(30,49,37,.32);position:relative;overflow:hidden;}
+.dash-banner::after{content:'';position:absolute;left:22px;right:22px;bottom:12px;height:1px;background:var(--gold-line);}
+.dash-greeting{font-size:24px;font-weight:400;color:white;font-style:italic;margin-bottom:3px;letter-spacing:.01em;}
+.dash-date{font-size:var(--fs-sm);color:rgba(255,255,255,.68);font-family:var(--sans);letter-spacing:.02em;}
+.xmas-dash{background:linear-gradient(160deg,var(--burg) 0%,#4c1d1d 100%);border-radius:16px;padding:18px 20px;margin-bottom:14px;box-shadow:0 10px 24px rgba(109,42,42,.3);display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;}
+.xmas-dash::after{content:'';position:absolute;left:20px;right:20px;bottom:0;height:1px;background:var(--gold-line);}
+.xmas-big{font-size:46px;font-weight:400;color:white;line-height:1;font-style:italic;}
+.xmas-info{flex:1;}
+.xmas-label{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.16em;text-transform:uppercase;font-family:var(--sans);font-weight:600;}
+.xmas-sub{font-size:var(--fs-sm);color:rgba(255,255,255,.88);margin-top:5px;}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.stat-card{background:var(--bg2);border-radius:13px;padding:15px 16px;border:.5px solid var(--border);box-shadow:var(--shadow);}
+.stat-label{font-size:10px;letter-spacing:.1em;color:var(--text2);text-transform:uppercase;margin-bottom:6px;font-family:var(--sans);font-weight:600;}
+.stat-value{font-size:21px;font-weight:700;color:var(--green);line-height:1;font-family:var(--sans);letter-spacing:-.01em;font-variant-numeric:tabular-nums;}
+.stat-sub{font-size:var(--fs-sm);color:var(--text2);margin-top:4px;font-style:italic;}
+.next-bday{background:var(--bg2);border-radius:13px;padding:15px 17px;margin-bottom:14px;border:.5px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;}
+.nb-days{font-size:38px;font-weight:400;color:var(--green);font-style:italic;line-height:1;}
+.nb-label{font-size:10px;color:var(--text2);letter-spacing:.12em;text-transform:uppercase;font-family:var(--sans);font-weight:600;}
+.nb-name{font-size:var(--fs-lg);color:var(--text);font-style:italic;margin-top:3px;}
+.gift-status-row{display:flex;gap:8px;margin-bottom:14px;}
+.gsr-card{flex:1;background:var(--bg2);border-radius:11px;padding:11px 12px;border:.5px solid var(--border);text-align:center;box-shadow:var(--shadow);}
+.gsr-num{font-size:22px;font-weight:700;line-height:1;font-family:var(--sans);font-variant-numeric:tabular-nums;}
+.gsr-label{font-size:9.5px;color:var(--text2);margin-top:4px;letter-spacing:.08em;font-family:var(--sans);font-weight:600;text-transform:uppercase;}
+/* GIFTS */
+.person-card{background:var(--bg2);border-radius:13px;padding:15px 17px;margin-bottom:12px;border:.5px solid var(--border);box-shadow:var(--shadow);}
+.person-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px;}
+.person-name{font-size:var(--fs-lg);color:var(--green);font-style:italic;cursor:pointer;}
+.person-meta{font-size:var(--fs-sm);color:var(--text2);margin-top:3px;font-variant-numeric:tabular-nums;}
+.gift-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:.5px solid var(--border2);cursor:pointer;}
+.gift-row:active{opacity:.7;}
+.gift-name{flex:1;font-size:var(--fs-sm);color:var(--text);}
+.gift-price{font-size:var(--fs-sm);color:var(--text2);width:52px;text-align:right;font-variant-numeric:tabular-nums;}
+.gift-status{font-size:10px;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap;font-family:var(--sans);letter-spacing:.03em;text-transform:uppercase;}
+.gs-Idea{background:var(--gold2);color:var(--gold);}
+.gs-Ordered{background:var(--blue2);color:var(--blue);}
+.gs-Bought{background:#e5f0e8;color:#1e5b3c;}
+.gs-Returned{background:var(--burg3);color:var(--burg);}
+/* SAVINGS PLAN TABLE */
+.savings-hdr{display:grid;grid-template-columns:2fr 28px 54px 46px 54px;gap:4px;padding:6px 0;border-bottom:.5px solid var(--border2);font-family:var(--sans);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);font-weight:600;}
+.savings-row{display:grid;grid-template-columns:2fr 28px 54px 46px 54px;gap:4px;padding:10px 0;border-bottom:.5px solid var(--border2);cursor:pointer;}
+.savings-row:active{opacity:.7;}
+/* CHRISTMAS */
+.xmas-banner-full{background:linear-gradient(160deg,var(--burg) 0%,#4c1d1d 100%);border-radius:16px;padding:18px 20px;margin-bottom:14px;box-shadow:0 10px 24px rgba(109,42,42,.3);position:relative;overflow:hidden;}
+.xmas-banner-full::after{content:'';position:absolute;left:20px;right:20px;bottom:0;height:1px;background:var(--gold-line);}
+.xmas-days-big{font-size:42px;font-weight:400;color:white;line-height:1;font-style:italic;}
+.xmas-banner-label{font-size:10px;color:rgba(255,255,255,.6);letter-spacing:.16em;text-transform:uppercase;margin-bottom:4px;font-family:var(--sans);font-weight:600;}
+.xmas-save-line{font-size:var(--fs-sm);color:rgba(255,255,255,.88);margin-top:7px;}
+.month-row{display:flex;align-items:center;padding:8px 0;border-bottom:.5px solid var(--border2);}
+.month-name{flex:1;font-size:var(--fs-sm);color:var(--text);}
+.month-amt{font-size:var(--fs-sm);color:var(--green2);width:60px;text-align:right;font-variant-numeric:tabular-nums;font-weight:500;}
+.month-running{font-size:var(--fs-xs);color:var(--text2);width:70px;text-align:right;font-variant-numeric:tabular-nums;}
+/* DATES */
+.dtr-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:.5px solid var(--border2);cursor:pointer;}
+.dtr-row:active{opacity:.7;}
+.dtr-name{flex:1;font-size:var(--fs-base);color:var(--text);font-weight:500;}
+.dtr-occ{font-size:var(--fs-xs);color:var(--text2);font-style:italic;}
+.dtr-days{font-size:var(--fs-sm);color:var(--green);font-weight:600;width:64px;text-align:right;font-family:var(--sans);}
+.dtr-days.passed{color:var(--text3);font-weight:500;}
+
+/* ── DEMO ONLY ── */
+.demo-banner{background:var(--green2);color:#fff;padding:9px 14px;text-align:center;font-family:var(--sans);font-size:12.5px;line-height:1.4;flex-shrink:0;}
+.demo-banner b{color:#f2d049;}
+.demo-banner a{color:#bcd8ff;font-weight:600;text-decoration:underline;white-space:nowrap;margin-left:4px;}
+.upsell-card{background:var(--gold2);border:1px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:10px;}
+.upsell-card .upsell-title{font-family:var(--serif);font-size:var(--fs-base);font-weight:600;color:var(--gold);margin-bottom:5px;}
+.upsell-card .upsell-text{font-size:var(--fs-sm);color:var(--text2);line-height:1.5;margin-bottom:12px;}
+.upsell-card .upsell-btn{display:block;text-align:center;background:var(--gold);color:#fff;font-family:var(--sans);font-size:var(--fs-sm);font-weight:700;padding:11px;border-radius:8px;text-decoration:none;}
+#trial-lock{display:none;position:fixed;inset:0;z-index:999;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;}
+#trial-lock .lock-icon{width:64px;height:64px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;margin-bottom:22px;font-size:28px;color:var(--gold);}
+#trial-lock .lock-title{font-family:var(--serif);font-style:italic;font-size:26px;color:var(--text);margin-bottom:10px;}
+#trial-lock .lock-body{font-size:var(--fs-sm);color:var(--text2);line-height:1.6;max-width:320px;margin-bottom:26px;}
+#trial-lock .lock-cta{display:block;width:100%;max-width:280px;background:var(--gold);color:#fff;text-decoration:none;padding:14px;border-radius:10px;font-family:var(--sans);font-size:15px;font-weight:700;margin-bottom:12px;}
+#trial-lock .lock-sub{font-size:11px;color:var(--text3);}
+</style>
+</head>
+<body>
+<div id="trial-lock">
+  <div class="lock-icon">&#128274;</div>
+  <div class="lock-title">Your free trial has ended</div>
+  <div class="lock-body">You've had full access to the Gifts &amp; Savings Planner for 14 days. Your data is still safe on this device — get the full app to keep using it and back it up to Google Drive so it's never at risk.</div>
+  <a class="lock-cta" href="ETSY_LISTING_URL_HERE" target="_blank" rel="noopener">Get the Full App</a>
+  <div class="lock-sub">Your trial started 14 days ago on this device.</div>
+</div>
+<div class="demo-banner" id="demo-banner"><b>Free demo</b> &middot; <a href="ETSY_LISTING_URL_HERE" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+<div class="sbar"><span>Mobile First Studio</span></div>
+<div class="screen">
+
+<!-- DASHBOARD -->
+<div class="page active" id="pg-dash">
+<div class="ps">
+<div class="dash-banner">
+<div class="dash-greeting" id="dash-greeting">Good morning</div>
+<div class="dash-date" id="dash-date"></div>
+</div>
+<div class="xmas-dash">
+<div><div class="xmas-label">Days till</div><div class="xmas-big" id="dash-xmas-days">—</div><div class="xmas-label">Christmas</div></div>
+<div class="xmas-info"><div id="dash-xmas-save" class="xmas-sub"></div><div style="margin-top:8px;font-size:var(--fs-xs);color:rgba(255,255,255,.7);">saved: <span id="dash-xmas-saved">$0</span> of <span id="dash-xmas-total">$0</span></div></div>
+</div>
+<div class="next-bday" id="dash-next-bday" style="display:none;">
+<div><div class="nb-label">Next Birthday</div><div class="nb-days" id="nb-days">—</div><div style="font-size:var(--fs-xs);color:var(--text2);" id="nb-days-label">days away</div></div>
+<div><div class="nb-name" id="nb-name">—</div><div style="font-size:var(--fs-sm);color:var(--text2);font-style:italic;margin-top:2px;" id="nb-meta"></div></div>
+</div>
+<div class="stat-grid">
+<div class="stat-card"><div class="stat-label">Birthday Budget</div><div class="stat-value" id="d-bday-budget">$0</div><div class="stat-sub" id="d-bday-spent">$0 spent</div></div>
+<div class="stat-card"><div class="stat-label">Christmas Budget</div><div class="stat-value" id="d-xmas-budget">$0</div><div class="stat-sub" id="d-xmas-spent">$0 spent</div></div>
+</div>
+<div class="sl">Gift Status — All People</div>
+<div class="gift-status-row">
+<div class="gsr-card"><div class="gsr-num" style="color:var(--gold);" id="gs-idea">0</div><div class="gsr-label">Ideas</div></div>
+<div class="gsr-card"><div class="gsr-num" style="color:var(--blue);" id="gs-ordered">0</div><div class="gsr-label">Ordered</div></div>
+<div class="gsr-card"><div class="gsr-num" style="color:var(--green2);" id="gs-bought">0</div><div class="gsr-label">Bought</div></div>
+<div class="gsr-card"><div class="gsr-num" style="color:var(--burg);" id="gs-returned">0</div><div class="gsr-label">Returned</div></div>
+</div>
+<div class="sl">Next Important Date</div>
+<div id="dash-next-date"></div>
+<div style="height:20px;"></div>
+</div>
+</div>
+
+<!-- BIRTHDAYS -->
+<div class="page" id="pg-bday">
+<div class="ph"><div class="ey">Birthdays</div><h1>Savings &amp; Gifts</h1></div>
+<div class="ps">
+<div id="bday-content"></div>
+<div style="height:70px;"></div>
+</div>
+<button class="fab" onclick="openPersonModal(null,'bday')"><i class="ti ti-plus"></i></button>
+</div>
+
+<!-- CHRISTMAS -->
+<div class="page" id="pg-xmas">
+<div class="ph"><div class="ey">Christmas</div><h1>Savings &amp; Gifts</h1></div>
+<div class="ps">
+<div id="xmas-content"></div>
+<div style="height:70px;"></div>
+</div>
+<button class="fab" onclick="openPersonModal(null,'xmas')"><i class="ti ti-plus"></i></button>
+</div>
+
+<!-- IMPORTANT DATES -->
+<div class="page" id="pg-dates">
+<div class="ph"><div class="ey">Important Dates</div><h1>To Remember</h1></div>
+<div class="ps">
+<div id="dates-content"></div>
+<div style="height:70px;"></div>
+</div>
+<button class="fab" onclick="openDTRModal(null)"><i class="ti ti-plus"></i></button>
+</div>
+
+<!-- WISHLIST -->
+<div class="page" id="pg-wish">
+<div class="ph"><div class="ey">My Wishlist</div><h1>When They Ask</h1></div>
+<div class="ps">
+<div id="wish-content"></div>
+<div style="height:70px;"></div>
+</div>
+<button class="fab" onclick="openWishModal(null)"><i class="ti ti-plus"></i></button>
+</div>
+
+<!-- SETUP -->
+<div class="page" id="pg-setup">
+<div class="ph"><div class="ey">Setup</div><h1>Backup &amp; Settings</h1></div>
+<div class="ps">
+<div class="sl">Your Profile</div>
+<div class="card" style="margin-bottom:10px">
+<div class="field"><label>Your Name</label><input id="s-name" placeholder="e.g. Jessica" oninput="saveProfile()"/></div>
+<div class="field"><label>Your Birthday (MM/DD)</label><input id="s-bday" placeholder="e.g. 03/15" oninput="saveProfile()"/></div>
+<div class="field"><label>Thanksgiving date</label><select id="s-thanksgiving" onchange="saveThanksgivingRegion()"><option value="us">United States — 4th Thursday of November</option><option value="ca">Canada — 2nd Monday of October</option></select></div>
+</div>
+<div class="section-div"></div>
+<div class="sl">Cloud Backup (Google Drive)</div>
+<div id="gdrive-section" style="margin-bottom:14px;"></div>
+<div class="section-div"></div>
+<div class="sl">Local Backup</div>
+<div class="card" style="margin-bottom:10px">
+<div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.6;margin-bottom:14px">Download a backup of all your data. Import it anytime to restore everything instantly.</div>
+<button class="btn-save" onclick="exportData()" style="margin-bottom:8px;width:100%">&#8595; Export Backup</button>
+<button class="btn-cancel" onclick="importData()" style="width:100%">&#8593; Import Backup</button>
+<div id="local-backup-undo-slot"></div>
+</div>
+<div style="height:70px;"></div>
+</div>
+</div>
+
+</div>
+
+<nav class="nav">
+<button class="ni active" onclick="go('dash',this)"><i class="ti ti-layout-dashboard"></i><span>Home</span></button>
+<button class="ni" onclick="go('bday',this)"><i class="ti ti-cake"></i><span>Birthdays</span></button>
+<button class="ni" onclick="go('xmas',this)"><i class="ti ti-gift"></i><span>Christmas</span></button>
+<button class="ni" onclick="go('dates',this)"><i class="ti ti-calendar-heart"></i><span>Dates</span></button>
+<button class="ni" onclick="go('wish',this)"><i class="ti ti-star"></i><span>Wishlist</span></button>
+<button class="ni" onclick="go('setup',this)"><i class="ti ti-settings"></i><span>Setup</span></button>
+</nav>
+
+<!-- PERSON MODAL -->
+<div class="modal-bg" id="person-modal">
+<div class="modal">
+<h2 id="person-modal-title">Add Person</h2>
+<div class="field"><label>Name</label><input id="p-name" placeholder="e.g. Laurie"/></div>
+<div class="field"><label>Date of Birth (MM/DD/YYYY)</label><input id="p-dob" placeholder="e.g. 06/03/2004"/></div>
+<div class="field" id="p-bday-budget-wrap"><label>Birthday Budget</label><input type="number" id="p-bday-budget" placeholder="e.g. 50.00" step="0.01"/></div>
+<div class="field" id="p-xmas-budget-wrap"><label>Christmas Budget</label><input type="number" id="p-xmas-budget" placeholder="e.g. 50.00" step="0.01"/></div>
+<div class="btn-row"><button class="btn-cancel" onclick="closeModal('person-modal')">Cancel</button><button class="btn-save" onclick="savePerson()">Save</button></div>
+<button class="btn-delete" id="person-del-btn" style="display:none;" onclick="deletePerson()">Delete Person</button>
+</div>
+</div>
+
+<!-- GIFT ITEM MODAL -->
+<div class="modal-bg" id="gift-modal">
+<div class="modal">
+<h2 id="gift-modal-title">Add Gift Idea</h2>
+<div class="field"><label>Gift Idea / Where to Buy</label><input id="g-name" placeholder="e.g. Candle @ Bath and Body"/></div>
+<div class="field"><label>Price</label><input type="number" id="g-price" placeholder="e.g. 25.00" step="0.01"/></div>
+<div class="field"><label>Status</label><select id="g-status"><option value="Idea">Idea</option><option value="Ordered">Ordered</option><option value="Bought">Bought</option><option value="Returned">Returned</option></select></div>
+<div class="btn-row"><button class="btn-cancel" onclick="closeModal('gift-modal')">Cancel</button><button class="btn-save" onclick="saveGift()">Save</button></div>
+<button class="btn-delete" id="gift-del-btn" style="display:none;" onclick="deleteGift()">Delete Gift</button>
+</div>
+</div>
+
+<!-- XMAS SAVINGS MODAL -->
+<div class="modal-bg" id="xmas-saved-modal">
+<div class="modal">
+<h2>Update Christmas Savings</h2>
+<div class="field"><label>Total Saved So Far</label><input type="number" id="xs-saved" placeholder="e.g. 100.00" step="0.01"/></div>
+<div class="btn-row"><button class="btn-cancel" onclick="closeModal('xmas-saved-modal')">Cancel</button><button class="btn-save" onclick="saveXmasSaved()">Save</button></div>
+</div>
+</div>
+
+<!-- DTR MODAL -->
+<div class="modal-bg" id="dtr-modal">
+<div class="modal">
+<h2 id="dtr-modal-title">Add Date to Remember</h2>
+<div class="field"><label>Person / Event</label><input id="dtr-name" placeholder="e.g. Logan's Birthday"/></div>
+<div class="field"><label>Date (MM/DD)</label><input id="dtr-date" placeholder="e.g. 09/06"/></div>
+<div class="field"><label>Occasion</label><select id="dtr-occ"><option value="Birthday">Birthday</option><option value="Anniversary">Anniversary</option><option value="Holiday">Holiday</option><option value="Special">Special</option></select></div>
+<div class="btn-row"><button class="btn-cancel" onclick="closeModal('dtr-modal')">Cancel</button><button class="btn-save" onclick="saveDTR()">Save</button></div>
+<button class="btn-delete" id="dtr-del-btn" style="display:none;" onclick="deleteDTR()">Delete</button>
+</div>
+</div>
+
+<!-- WISHLIST MODAL -->
+<div class="modal-bg" id="wish-modal">
+<div class="modal">
+<h2 id="wish-modal-title">Add Wishlist Item</h2>
+<div class="field"><label>Item &amp; Where to Find</label><input id="w-item" placeholder="e.g. Air fryer @ Amazon"/></div>
+<div class="field"><label>Approx Price</label><input type="number" id="w-price" placeholder="e.g. 89.99" step="0.01"/></div>
+<div class="btn-row"><button class="btn-cancel" onclick="closeModal('wish-modal')">Cancel</button><button class="btn-save" onclick="saveWish()">Save</button></div>
+<button class="btn-delete" id="wish-del-btn" style="display:none;" onclick="deleteWish()">Delete</button>
+</div>
+</div>
+
+<!-- RESTORE CONFIRMATION MODAL -->
+<div class="modal-bg" id="restore-confirm-modal">
+<div class="modal">
+<h2 id="restore-confirm-title">Restore this backup?</h2>
+<div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.5;margin-bottom:14px;" id="restore-confirm-detail">This will replace your current data.</div>
+<div class="btn-row"><button class="btn-cancel" onclick="cancelRestore()">Cancel</button><button class="btn-delete" onclick="confirmRestoreNow()">Yes, Restore</button></div>
+</div>
+</div>
+
+<!-- GOOGLE DRIVE BACKUP PICKER MODAL -->
+<div class="modal-bg" id="gdrive-restore-modal">
+<div class="modal">
+<h2>Choose a backup</h2>
+<div style="font-size:var(--fs-sm);color:var(--text2);margin-bottom:14px;">Pick which version to restore.</div>
+<div id="gdrive-backup-list"></div>
+<button class="btn-cancel" style="width:100%;margin-top:4px;" onclick="closeGdriveRestorePicker()">Cancel</button>
+</div>
+</div>
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal-bg" id="delete-confirm-modal">
+<div class="modal">
+<h2 id="delete-confirm-title">Delete this?</h2>
+<div style="font-size:var(--fs-sm);color:var(--text2);line-height:1.5;margin-bottom:14px;" id="delete-confirm-detail">This cannot be undone.</div>
+<div class="btn-row"><button class="btn-cancel" onclick="document.getElementById('delete-confirm-modal').classList.remove('open')">Cancel</button><button class="btn-delete" style="margin-top:0;" onclick="_runPendingDelete()">Yes, Delete</button></div>
+</div>
+</div>
+<script>
+
+// ── TOAST ──
+function showToast(msg, isErr){
+  var t=document.getElementById('mfs-gifts-toast');
+  if(!t){
+    t=document.createElement('div');
+    t.id='mfs-gifts-toast';
+    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--green);color:#fff;padding:10px 22px;border-radius:18px;font-size:14px;opacity:0;transition:all .3s;z-index:999;pointer-events:none;white-space:normal;text-align:center;max-width:calc(100% - 48px);width:max-content;font-family:"EB Garamond",serif;';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg;
+  t.style.background=isErr?'var(--burg)':'var(--green)';
+  void t.offsetWidth;
+  t.style.opacity='1';
+  t.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(t._tmr);
+  t._tmr=setTimeout(function(){t.style.opacity='0';t.style.transform='translateX(-50%) translateY(10px)';},2500);
+}
+
+// ── DELETE CONFIRMATION (custom modal, replaces native confirm()) ──
+var _pendingDeleteCb = null;
+function showDeleteConfirm(title, detail, cb){
+  _pendingDeleteCb = cb;
+  document.getElementById('delete-confirm-title').textContent = title;
+  document.getElementById('delete-confirm-detail').textContent = detail;
+  document.getElementById('delete-confirm-modal').classList.add('open');
+}
+function _runPendingDelete(){
+  document.getElementById('delete-confirm-modal').classList.remove('open');
+  if (_pendingDeleteCb) { var cb = _pendingDeleteCb; _pendingDeleteCb = null; cb(); }
+}
+
+// ── EXPORT / IMPORT ──
+function exportData(){
+  var d=JSON.stringify(DB,null,2);
+  var filename='gifts-savings-backup-'+localDateStr()+'.json';
+  try{
+    var b=new Blob([d],{type:'application/json'});
+    var u=URL.createObjectURL(b);
+    var a=document.createElement('a');
+    a.href=u;a.download=filename;
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u);},100);
+    showToast('Backup downloaded!');
+  }catch(e){
+    showToast('Export failed - try a different browser',true);
+  }
+}
+function importData(){
+  var inp=document.createElement('input');
+  inp.type='file';inp.accept='.json,application/json';
+  inp.onchange=function(e){
+    var f=e.target.files[0];
+    if(!f){showToast('No file selected',true);return;}
+    var r=new FileReader();
+    r.onload=function(ev){
+      try{
+        var p=JSON.parse(ev.target.result);
+        if(!p.people){showToast('Invalid backup file',true);return;}
+        openRestoreConfirm(p, 'the file "'+f.name+'"', null);
+      }catch(er){showToast('Could not read file',true);}
+    };
+    r.readAsText(f);
+  };
+  document.body.appendChild(inp);
+  inp.click();
+  setTimeout(function(){document.body.removeChild(inp);},60000);
+}
+
+// ── LOCAL DATE HELPER (avoids UTC date-shifting issues) ──
+function localDateStr(d){d=d||new Date();var y=d.getFullYear();var m=String(d.getMonth()+1).padStart(2,'0');var day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day;}
+
+// ── RESTORE CONFIRMATION + ONE-STEP UNDO (shared by file import and Drive restore) ──
+function dataSummary(db){
+  db = db || DB;
+  var n = 0;
+  if (Array.isArray(db.people)) {
+    n += db.people.length;
+    db.people.forEach(function(p){
+      if (Array.isArray(p.bdayGifts)) n += p.bdayGifts.length;
+      if (Array.isArray(p.xmasGifts)) n += p.xmasGifts.length;
+    });
+  }
+  if (Array.isArray(db.datesRemember)) n += db.datesRemember.length;
+  if (Array.isArray(db.wishlist)) n += db.wishlist.length;
+  return n;
+}
+var _pendingRestoreData = null;
+function openRestoreConfirm(data, sourceLabel, whenLabel){
+  _pendingRestoreData = data;
+  var incoming = dataSummary(data);
+  var current = dataSummary(DB);
+  var title = 'Restore from ' + sourceLabel + (whenLabel ? (' (' + whenLabel + ')') : '') + '?';
+  var detail = 'This backup has ' + incoming + ' entries. Your current data has ' + current + ' entries. Restoring replaces what you have now — you can undo it right after if needed.';
+  if (incoming < current) {
+    detail = '⚠ This backup has FEWER entries (' + incoming + ') than your current data (' + current + '). Double-check this is the right one before continuing.';
+  }
+  document.getElementById('restore-confirm-title').textContent = title;
+  document.getElementById('restore-confirm-detail').textContent = detail;
+  document.getElementById('restore-confirm-modal').classList.add('open');
+}
+function cancelRestore(){
+  _pendingRestoreData = null;
+  document.getElementById('restore-confirm-modal').classList.remove('open');
+}
+function confirmRestoreNow(){
+  if (!_pendingRestoreData) { document.getElementById('restore-confirm-modal').classList.remove('open'); return; }
+  try{ localStorage.setItem('mfs_gifts_demo_v1_prerestore', JSON.stringify({db:DB, ts:Date.now()})); }catch(e){}
+  DB = _pendingRestoreData;
+  _pendingRestoreData = null;
+  sv();
+  document.getElementById('restore-confirm-modal').classList.remove('open');
+  showToast('Restored!');
+  renderLocalBackupExtras();
+  setTimeout(function(){ location.reload(); }, 1200);
+}
+function undoLastRestore(){
+  try{
+    var raw = localStorage.getItem('mfs_gifts_demo_v1_prerestore');
+    if (!raw) { showToast('Nothing to undo.', true); return; }
+    var snap = JSON.parse(raw);
+    DB = snap.db;
+    localStorage.removeItem('mfs_gifts_demo_v1_prerestore');
+    sv();
+    showToast('Restore undone!');
+    setTimeout(function(){ location.reload(); }, 1200);
+  } catch(e) { showToast('Could not undo.', true); }
+}
+function renderLocalBackupExtras(){
+  var el = document.getElementById('local-backup-undo-slot'); if (!el) return;
+  var hasUndo = !!localStorage.getItem('mfs_gifts_demo_v1_prerestore');
+  el.innerHTML = hasUndo
+    ? '<button class="btn-delete" style="width:100%;margin-top:8px" onclick="undoLastRestore()">Undo Last Restore</button>'
+    : '';
+}
+
+// ── GOOGLE DRIVE BACKUP (versioned: 1 live copy + up to 7 daily snapshots) ──
+const GDRIVE_CLIENT_ID = '636576283764-urkn6im4r86n5q4u3iokmska4ejid9o9.apps.googleusercontent.com';
+const GDRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+const GDRIVE_FILENAME = 'gifts-savings-backup.json';
+const GDRIVE_SNAPSHOT_PREFIX = 'gifts-savings-snapshot-';
+const GDRIVE_MAX_SNAPSHOTS = 7;
+var _gdriveToken = null;
+var _gdriveTokenClient = null;
+var _gdriveTokenWaiters = [];
+var _gdriveLastSilentFail = 0;
+var GDRIVE_SILENT_COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
+
+function gdriveInit() {
+  if (typeof google === 'undefined' || !google.accounts || !google.accounts.oauth2) {
+    setTimeout(gdriveInit, 500);
+    return;
+  }
+  _gdriveTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GDRIVE_CLIENT_ID,
+    scope: GDRIVE_SCOPE,
+    callback: function(resp) {
+      if (resp.access_token) {
+        var wasConnected = localStorage.getItem('mfs_gifts_gdrive_connected') === '1';
+        _gdriveToken = resp.access_token;
+        _gdriveLastSilentFail = 0;
+        localStorage.setItem('mfs_gifts_gdrive_connected', '1');
+        renderGdriveSection();
+        if (!wasConnected) {
+          gdriveFindFileByName(GDRIVE_FILENAME).then(function(existingId){
+            if (existingId) {
+              showToast('Backup found — tap Restore to load it');
+            } else {
+              gdriveBackupNow(false);
+              showToast('Google Drive connected!');
+            }
+          }).catch(function(){ showToast('Google Drive connected!'); });
+        }
+      }
+      var waiters = _gdriveTokenWaiters; _gdriveTokenWaiters = [];
+      waiters.forEach(function(fn){ fn(!!resp.access_token); });
+    }
+  });
+}
+
+function gdriveConnect() {
+  if (_gdriveTokenClient) { _gdriveTokenClient.requestAccessToken(); return; }
+  var attempts = 0;
+  var waitForClient = setInterval(function(){
+    attempts++;
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.oauth2) {
+      clearInterval(waitForClient);
+      if (!_gdriveTokenClient) gdriveInit();
+      setTimeout(function(){ if (_gdriveTokenClient) { _gdriveTokenClient.requestAccessToken(); } }, 100);
+    } else if (attempts > 40) {
+      clearInterval(waitForClient);
+      showToast('Could not load Google Drive. Check your connection.', true);
+    }
+  }, 500);
+}
+
+function gdriveDisconnect() {
+  _gdriveToken = null;
+  localStorage.removeItem('mfs_gifts_gdrive_connected');
+  showToast('Google Drive disconnected.');
+  renderGdriveSection();
+}
+
+function gdriveIsConnected() { return !!_gdriveToken; }
+
+// Gets a working access token for an action that needs one right now. Tries a silent
+// refresh first; if Google doesn't respond within 3s, falls back to a normal visible
+// prompt — but only when allowPrompt is true (i.e. the person tapped something).
+function gdriveEnsureToken(allowPrompt){
+  if (allowPrompt === undefined) allowPrompt = true;
+  return new Promise(function(resolve){
+    if (_gdriveToken) { resolve(true); return; }
+
+    if (!allowPrompt && _gdriveLastSilentFail && (Date.now() - _gdriveLastSilentFail) < GDRIVE_SILENT_COOLDOWN_MS) {
+      resolve(false);
+      return;
+    }
+
+    function proceedWithClient(){
+      var settled = false;
+      var waiter = function(ok){
+        if (settled) return; settled = true;
+        if (!ok && !allowPrompt) _gdriveLastSilentFail = Date.now();
+        resolve(ok);
+      };
+      _gdriveTokenWaiters.push(waiter);
+      _gdriveTokenClient.requestAccessToken({prompt:''});
+      setTimeout(function(){
+        if (settled) return;
+        var idx = _gdriveTokenWaiters.indexOf(waiter);
+        if (idx > -1) _gdriveTokenWaiters.splice(idx,1);
+        if (!allowPrompt) { waiter(false); return; }
+        _gdriveTokenWaiters.push(waiter);
+        _gdriveTokenClient.requestAccessToken(); // visible prompt if silent refresh didn't work
+      }, 3000);
+    }
+
+    if (_gdriveTokenClient) { proceedWithClient(); return; }
+
+    // Google's script/client may not have finished initializing yet — wait for it
+    // (up to ~10s) instead of failing immediately.
+    var attempts = 0;
+    var waitForClient = setInterval(function(){
+      attempts++;
+      if (_gdriveTokenClient) {
+        clearInterval(waitForClient);
+        proceedWithClient();
+      } else if (attempts > 20) {
+        clearInterval(waitForClient);
+        resolve(false);
+      }
+    }, 500);
+  });
+}
+
+async function gdriveApiGet(url){
+  var res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + _gdriveToken } });
+  var data;
+  try{ data = await res.json(); }catch(e){ data = null; }
+  if (!res.ok) {
+    var msg = data && data.error && data.error.message;
+    throw new Error('Drive API error ' + res.status + (msg ? (': ' + msg) : ''));
+  }
+  return data || {};
+}
+
+async function gdriveFindFileByName(name){
+  if (!_gdriveToken) return null;
+  var q = encodeURIComponent("name='" + name + "' and trashed=false");
+  var data = await gdriveApiGet('https://www.googleapis.com/drive/v3/files?q=' + q + '&spaces=drive&fields=files(id,name)');
+  return (data.files && data.files[0]) ? data.files[0].id : null;
+}
+
+async function gdriveUploadFile(name, content, existingId){
+  var metadata = { name: name, mimeType: 'application/json' };
+  var boundary = '-------mfs' + Date.now();
+  var body = '--' + boundary + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(metadata) +
+    '\r\n--' + boundary + '\r\nContent-Type: application/json\r\n\r\n' + content + '\r\n--' + boundary + '--';
+  var url = existingId
+    ? 'https://www.googleapis.com/upload/drive/v3/files/' + existingId + '?uploadType=multipart'
+    : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+  var method = existingId ? 'PATCH' : 'POST';
+  var res = await fetch(url, {
+    method: method,
+    headers: { 'Authorization': 'Bearer ' + _gdriveToken, 'Content-Type': 'multipart/related; boundary=' + boundary },
+    body: body
+  });
+  if (!res.ok) throw new Error('Drive upload failed (' + res.status + ')');
+}
+
+async function gdriveListSnapshots(){
+  if (!_gdriveToken) return [];
+  var q = encodeURIComponent("name contains '" + GDRIVE_SNAPSHOT_PREFIX + "' and trashed=false");
+  var data = await gdriveApiGet('https://www.googleapis.com/drive/v3/files?q=' + q + '&orderBy=' + encodeURIComponent('createdTime desc') + '&fields=' + encodeURIComponent('files(id,name,createdTime)') + '&spaces=drive');
+  return data.files || [];
+}
+
+async function gdrivePruneSnapshots(){
+  var files = await gdriveListSnapshots();
+  if (files.length <= GDRIVE_MAX_SNAPSHOTS) return;
+  var toDelete = files.slice(GDRIVE_MAX_SNAPSHOTS);
+  for (var i=0; i<toDelete.length; i++){
+    try{ await fetch('https://www.googleapis.com/drive/v3/files/' + toDelete[i].id, { method:'DELETE', headers:{ 'Authorization':'Bearer ' + _gdriveToken } }); }catch(e){}
+  }
+}
+
+async function gdriveBackupNow(interactive) {
+  // Background auto-backup never asks for a token, silently or otherwise — it only
+  // runs if a connection is already active in memory. Only an explicit tap (Back Up
+  // Now / Restore) is allowed to prompt for reconnection.
+  var ok = interactive ? await gdriveEnsureToken(true) : !!_gdriveToken;
+  if (!ok) { console.error('Drive backup skipped: no token available'); return {ok:false, error:'Could not connect to Google Drive'}; }
+  try {
+    var content = JSON.stringify(DB);
+    var liveId = await gdriveFindFileByName(GDRIVE_FILENAME);
+    await gdriveUploadFile(GDRIVE_FILENAME, content, liveId);
+    var snapName = GDRIVE_SNAPSHOT_PREFIX + localDateStr() + '.json';
+    var snapId = await gdriveFindFileByName(snapName);
+    if (!snapId) {
+      await gdriveUploadFile(snapName, content, null);
+      await gdrivePruneSnapshots();
+    }
+    return {ok:true};
+  } catch(e) { console.error('Drive backup failed:', e); return {ok:false, error: e.message || 'Unknown error'}; }
+}
+
+async function gdriveOpenRestorePicker(){
+  var connected = localStorage.getItem('mfs_gifts_gdrive_connected')==='1';
+  if (!connected) { showToast('Connect Google Drive first.', true); return; }
+  var el = document.getElementById('gdrive-backup-list');
+  el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text2);font-size:var(--fs-sm);">Loading backups…</div>';
+  document.getElementById('gdrive-restore-modal').classList.add('open');
+  try {
+    var ok = await gdriveEnsureToken();
+    if (!ok) { throw new Error('Could not connect to Google Drive'); }
+    var liveId = await gdriveFindFileByName(GDRIVE_FILENAME);
+    var snapshots = await gdriveListSnapshots();
+    var items = [];
+    if (liveId) items.push({id:liveId, label:'Most recent (auto-backup)', sub:'Always up to date'});
+    for (var i=0; i<snapshots.length; i++){
+      var f = snapshots[i];
+      var dateStr = f.name.replace(GDRIVE_SNAPSHOT_PREFIX,'').replace('.json','');
+      items.push({id:f.id, label:'Daily snapshot', sub:dateStr});
+    }
+    if (!items.length) { el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text2);font-size:var(--fs-sm);">No backups found in your Google Drive yet. Try "Back up now" first.</div>'; return; }
+    var h = '';
+    for (var j=0; j<items.length; j++){
+      h += '<div class="card" style="cursor:pointer;margin-bottom:8px;" onclick="gdriveSelectBackup(\'' + items[j].id + '\',\'' + items[j].label + ' · ' + items[j].sub + '\')">'
+        + '<div style="font-weight:600;font-size:var(--fs-sm);color:var(--text);">' + items[j].label + '</div>'
+        + '<div style="font-size:var(--fs-xs);color:var(--text2);">' + items[j].sub + '</div></div>';
+    }
+    el.innerHTML = h;
+  } catch(e) {
+    el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--burg,#a33);font-size:var(--fs-sm);">Couldn\'t load your backups.<br><span style="font-size:12px;color:var(--text2);">' + (e.message||'') + '</span></div>'
+      + '<button class="btn-save" style="width:100%;margin-top:10px;" onclick="gdriveOpenRestorePicker()">Try Again</button>';
+  }
+}
+function closeGdriveRestorePicker(){ document.getElementById('gdrive-restore-modal').classList.remove('open'); }
+
+async function gdriveSelectBackup(fileId, label){
+  closeGdriveRestorePicker();
+  try {
+    var res = await fetch('https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', { headers: { 'Authorization': 'Bearer ' + _gdriveToken } });
+    if (!res.ok) throw new Error('Drive returned an error (' + res.status + ')');
+    var data = await res.json();
+    if (!data || !data.people) { showToast('That backup looks invalid.', true); return; }
+    openRestoreConfirm(data, 'Google Drive', label);
+  } catch(e) { showToast('Could not load that backup: ' + (e.message||'try again'), true); }
+}
+
+function saveProfile(){
+  DB.profile=DB.profile||{};
+  DB.profile.name=document.getElementById('s-name').value.trim();
+  DB.profile.bday=document.getElementById('s-bday').value.trim();
+  sv();
+  renderDash();
+}
+function loadProfileFields(){
+  var n=document.getElementById('s-name');
+  var b=document.getElementById('s-bday');
+  var t=document.getElementById('s-thanksgiving');
+  if(n)n.value=(DB.profile&&DB.profile.name)||'';
+  if(b)b.value=(DB.profile&&DB.profile.bday)||'';
+  if(t)t.value=(DB.thanksgivingRegion==='ca')?'ca':'us';
+}
+function saveThanksgivingRegion(){
+  DB.thanksgivingRegion=document.getElementById('s-thanksgiving').value==='ca'?'ca':'us';
+  sv();renderDash();renderDates();
+  showToast(DB.thanksgivingRegion==='ca'?'Switched to Canadian Thanksgiving':'Switched to U.S. Thanksgiving');
+}
+function renderGdriveSection(){
+  loadProfileFields();
+  var el=document.getElementById('gdrive-section');if(!el)return;
+  el.innerHTML='<div class="upsell-card"><div class="upsell-title">Want automatic Google Drive backup?</div>'
+    +'<div class="upsell-text">This free demo saves locally on this device only. The full Gifts &amp; Savings Planner adds Google Drive backup, so your data is always safe and synced.</div>'
+    +'<a class="upsell-btn" href="ETSY_LISTING_URL_HERE" target="_blank" rel="noopener">Get it on Etsy</a></div>';
+}
+
+var DB={profile:{name:'',bday:''},people:[],xmasSaved:0,datesRemember:[],wishlist:[],thanksgivingRegion:'us'};
+var eId={person:null,personType:'bday',gift:null,giftPid:null,giftType:'bday',dtr:null,wish:null};
+
+var _gdriveBackupTimer=null;
+function sv(){
+  try{localStorage.setItem('mfs_gifts_demo_v1',JSON.stringify(DB));}catch(e){}
+  if(localStorage.getItem('mfs_gifts_gdrive_connected')==='1'){
+    clearTimeout(_gdriveBackupTimer);
+    _gdriveBackupTimer=setTimeout(function(){gdriveBackupNow(false);},3000);
+  }
+}
+function ld(){try{var d=localStorage.getItem('mfs_gifts_demo_v1');if(d){DB=JSON.parse(d);if(!DB.people)DB.people=[];if(!DB.datesRemember)DB.datesRemember=[];if(!DB.wishlist)DB.wishlist=[];if(DB.xmasSaved===undefined)DB.xmasSaved=0;if(!DB.profile)DB.profile={name:'',bday:''};if(DB.thanksgivingRegion!=='ca')DB.thanksgivingRegion='us';}}catch(e){}}
+ld();
+renderLocalBackupExtras();
+
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/gifts-planner-demo/sw.js').catch(function(){});});}
+
+/* ── DEMO ONLY: free trial window ── */
+var DEMO_TRIAL_DAYS=14;
+function demoTrialDaysLeft(){
+  var KEY='mfs_giftsplanner_demo_since';
+  var since;
+  try{since=localStorage.getItem(KEY);}catch(e){since=null;}
+  if(!since){since=Date.now();try{localStorage.setItem(KEY,since);}catch(e){}}
+  var elapsedDays=Math.floor((Date.now()-parseInt(since,10))/86400000);
+  return DEMO_TRIAL_DAYS-elapsedDays;
+}
+function enforceDemoTrial(){
+  var daysLeft=demoTrialDaysLeft();
+  var banner=document.getElementById('demo-banner');
+  if(daysLeft<=0){
+    document.getElementById('trial-lock').style.display='flex';
+    document.body.style.overflow='hidden';
+    if(banner)banner.style.display='none';
+    return true;
+  }
+  if(banner){
+    var noun=daysLeft===1?'day':'days';
+    banner.innerHTML='<b>Free demo</b> &middot; '+daysLeft+' '+noun+' left &middot; <a href="ETSY_LISTING_URL_HERE" target="_blank" rel="noopener">Get the full app &rarr;</a>';
+  }
+  return false;
+}
+enforceDemoTrial();
+
+function go(id,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('active');});
+  document.getElementById('pg-'+id).classList.add('active');el.classList.add('active');
+  if(id==='dash')renderDash();
+  if(id==='bday')renderBday();
+  if(id==='xmas')renderXmas();
+  if(id==='dates')renderDates();
+  if(id==='wish')renderWish();
+  if(id==='setup')renderGdriveSection();
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function fmt$(n){return'$'+(parseFloat(n)||0).toFixed(2);}
+function fmtDate(d){if(!d)return'';var p=d.split('-');return(+p[1])+'/'+(+p[2])+'/'+(p[0].slice(2));}
+
+function calcAge(dob){
+  if(!dob)return null;var p=dob.split('/');if(p.length<3)return null;
+  var born=new Date(+p[2],+p[0]-1,+p[1]);var now=new Date();
+  var age=now.getFullYear()-born.getFullYear();
+  if(now.getMonth()<born.getMonth()||(now.getMonth()===born.getMonth()&&now.getDate()<born.getDate()))age--;
+  return age;
+}
+function daysUntilBday(dob){
+  if(!dob)return null;var p=dob.split('/');if(p.length<3)return null;
+  var now=new Date();now.setHours(0,0,0,0);
+  var next=new Date(now.getFullYear(),+p[0]-1,+p[1]);
+  if(next<now)next.setFullYear(now.getFullYear()+1);
+  return Math.round((next-now)/86400000);
+}
+function savePerMonth(budget,days){if(!budget||!days)return 0;var m=days/30.44;if(m<1)m=1;return budget/m;}
+function daysUntilMMDD(mmdd){
+  if(!mmdd)return null;var p=mmdd.split('/');if(p.length<2)return null;
+  var now=new Date();now.setHours(0,0,0,0);
+  var next=new Date(now.getFullYear(),+p[0]-1,+p[1]);
+  if(next<now)next.setFullYear(now.getFullYear()+1);
+  return Math.round((next-now)/86400000);
+}
+function daysUntilXmas(){
+  var now=new Date();now.setHours(0,0,0,0);
+  var xmas=new Date(now.getFullYear(),11,25);
+  if(xmas<=now)xmas.setFullYear(now.getFullYear()+1);
+  return Math.round((xmas-now)/86400000);
+}
+// ── THANKSGIVING (US: 4th Thursday of Nov · Canada: 2nd Monday of Oct) ──
+function nthWeekdayOfMonth(year,month,weekday,n){
+  var d=new Date(year,month,1);
+  var offset=(weekday-d.getDay()+7)%7;
+  var day=1+offset+(n-1)*7;
+  return new Date(year,month,day);
+}
+function thanksgivingDateForYear(year,region){
+  return region==='ca'?nthWeekdayOfMonth(year,9,1,2):nthWeekdayOfMonth(year,10,4,4);
+}
+function getThanksgivingVirtualEntry(){
+  var now=new Date();now.setHours(0,0,0,0);
+  var region=(DB.thanksgivingRegion==='ca')?'ca':'us';
+  var t=thanksgivingDateForYear(now.getFullYear(),region);
+  if(t<now)t=thanksgivingDateForYear(now.getFullYear()+1,region);
+  var mm=String(t.getMonth()+1).padStart(2,'0');var dd=String(t.getDate()).padStart(2,'0');
+  return{id:'__thanksgiving',name:'Thanksgiving ('+(region==='ca'?'Canada':'U.S.')+')',date:mm+'/'+dd,occ:'Holiday',virtual:true};
+}
+function allGifts(){
+  var gifts=[];
+  DB.people.forEach(function(p){
+    (p.bdayGifts||[]).forEach(function(g){gifts.push(g);});
+    (p.xmasGifts||[]).forEach(function(g){gifts.push(g);});
+  });
+  return gifts;
+}
+
+// PERSON MODAL
+function openPersonModal(id,type){
+  eId.person=id;eId.personType=type||'bday';
+  var p=id?DB.people.find(function(x){return x.id===id;}):null;
+  document.getElementById('person-modal-title').textContent=id?'Edit Person':'Add Person';
+  document.getElementById('p-name').value=p?p.name:'';
+  document.getElementById('p-dob').value=p?p.dob:'';
+  document.getElementById('p-bday-budget').value=p?p.bdayBudget:'';
+  document.getElementById('p-xmas-budget').value=p?p.xmasBudget:'';
+  document.getElementById('person-del-btn').style.display=id?'block':'none';
+  openModal('person-modal');
+}
+function savePerson(){
+  var name=document.getElementById('p-name').value.trim();if(!name)return;
+  var entry={
+    id:eId.person||('p'+Date.now()),
+    name:name,
+    dob:document.getElementById('p-dob').value.trim(),
+    bdayBudget:parseFloat(document.getElementById('p-bday-budget').value)||0,
+    xmasBudget:parseFloat(document.getElementById('p-xmas-budget').value)||0,
+    bdayGifts:[],xmasGifts:[]
+  };
+  if(eId.person){
+    var ex=DB.people.find(function(x){return x.id===eId.person;});
+    if(ex){entry.bdayGifts=ex.bdayGifts||[];entry.xmasGifts=ex.xmasGifts||[];}
+    var i=DB.people.findIndex(function(x){return x.id===eId.person;});
+    if(i>-1)DB.people[i]=entry;
+  } else DB.people.push(entry);
+  sv();closeModal('person-modal');
+  if(eId.personType==='xmas')renderXmas();else renderBday();
+  renderDash();
+}
+function deletePerson(){
+  showDeleteConfirm('Delete this person?', 'This will remove them and all their gifts. This cannot be undone.', function(){
+    DB.people=DB.people.filter(function(x){return x.id!==eId.person;});
+    sv();closeModal('person-modal');renderBday();renderXmas();renderDash();
+  });
+}
+
+// GIFT MODAL
+function openGiftModal(pid,type,gid){
+  eId.giftPid=pid;eId.giftType=type;eId.gift=gid||null;
+  var p=DB.people.find(function(x){return x.id===pid;});
+  var gifts=p?(type==='bday'?(p.bdayGifts||[]):(p.xmasGifts||[])):[];
+  var g=gid?gifts.find(function(x){return x.id===gid;}):null;
+  document.getElementById('gift-modal-title').textContent=gid?'Edit Gift':'Add Gift Idea';
+  document.getElementById('g-name').value=g?g.name:'';
+  document.getElementById('g-price').value=g?g.price:'';
+  document.getElementById('g-status').value=g?g.status:'Idea';
+  document.getElementById('gift-del-btn').style.display=gid?'block':'none';
+  openModal('gift-modal');
+}
+function saveGift(){
+  var name=document.getElementById('g-name').value.trim();if(!name)return;
+  var p=DB.people.find(function(x){return x.id===eId.giftPid;});if(!p)return;
+  if(!p.bdayGifts)p.bdayGifts=[];if(!p.xmasGifts)p.xmasGifts=[];
+  var gifts=eId.giftType==='bday'?p.bdayGifts:p.xmasGifts;
+  var entry={id:eId.gift||('g'+Date.now()),name:name,price:parseFloat(document.getElementById('g-price').value)||0,status:document.getElementById('g-status').value};
+  if(eId.gift){var i=gifts.findIndex(function(x){return x.id===eId.gift;});if(i>-1)gifts[i]=entry;}
+  else gifts.push(entry);
+  sv();closeModal('gift-modal');
+  if(eId.giftType==='xmas')renderXmas();else renderBday();
+  renderDash();
+}
+function deleteGift(){
+  showDeleteConfirm('Delete this gift?', 'This cannot be undone.', function(){
+    var p=DB.people.find(function(x){return x.id===eId.giftPid;});if(!p)return;
+    if(eId.giftType==='bday')p.bdayGifts=(p.bdayGifts||[]).filter(function(x){return x.id!==eId.gift;});
+    else p.xmasGifts=(p.xmasGifts||[]).filter(function(x){return x.id!==eId.gift;});
+    sv();closeModal('gift-modal');
+    if(eId.giftType==='xmas')renderXmas();else renderBday();
+    renderDash();
+  });
+}
+
+// XMAS SAVINGS
+function saveXmasSaved(){DB.xmasSaved=parseFloat(document.getElementById('xs-saved').value)||0;sv();closeModal('xmas-saved-modal');renderXmas();renderDash();}
+
+// DTR
+function openDTRModal(id){
+  eId.dtr=id;
+  var d=id?DB.datesRemember.find(function(x){return x.id===id;}):null;
+  document.getElementById('dtr-modal-title').textContent=id?'Edit Date':'Add Date to Remember';
+  document.getElementById('dtr-name').value=d?d.name:'';
+  document.getElementById('dtr-date').value=d?d.date:'';
+  document.getElementById('dtr-occ').value=d?d.occ:'Birthday';
+  document.getElementById('dtr-del-btn').style.display=id?'block':'none';
+  openModal('dtr-modal');
+}
+function saveDTR(){
+  var name=document.getElementById('dtr-name').value.trim();if(!name)return;
+  var entry={id:eId.dtr||('dtr'+Date.now()),name:name,date:document.getElementById('dtr-date').value,occ:document.getElementById('dtr-occ').value};
+  if(eId.dtr){var i=DB.datesRemember.findIndex(function(x){return x.id===eId.dtr;});if(i>-1)DB.datesRemember[i]=entry;}
+  else DB.datesRemember.push(entry);
+  sv();closeModal('dtr-modal');renderDates();renderDash();
+}
+function deleteDTR(){
+  showDeleteConfirm('Delete this date?', 'This cannot be undone.', function(){
+    DB.datesRemember=DB.datesRemember.filter(function(x){return x.id!==eId.dtr;});
+    sv();closeModal('dtr-modal');renderDates();renderDash();
+  });
+}
+
+// WISHLIST
+function openWishModal(id){
+  eId.wish=id;
+  var w=id?DB.wishlist.find(function(x){return x.id===id;}):null;
+  document.getElementById('wish-modal-title').textContent=id?'Edit Item':'Add Wishlist Item';
+  document.getElementById('w-item').value=w?w.item:'';
+  document.getElementById('w-price').value=w?w.price:'';
+  document.getElementById('wish-del-btn').style.display=id?'block':'none';
+  openModal('wish-modal');
+}
+function saveWish(){
+  var item=document.getElementById('w-item').value.trim();if(!item)return;
+  var entry={id:eId.wish||('w'+Date.now()),item:item,price:parseFloat(document.getElementById('w-price').value)||0};
+  if(eId.wish){var i=DB.wishlist.findIndex(function(x){return x.id===eId.wish;});if(i>-1)DB.wishlist[i]=entry;}
+  else DB.wishlist.push(entry);
+  sv();closeModal('wish-modal');renderWish();
+}
+function deleteWish(){
+  showDeleteConfirm('Delete this item?', 'This cannot be undone.', function(){
+    DB.wishlist=DB.wishlist.filter(function(x){return x.id!==eId.wish;});
+    sv();closeModal('wish-modal');renderWish();
+  });
+}
+
+// RENDER DASHBOARD
+function renderDash(){
+  var now=new Date();
+  var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var h=now.getHours();
+  var greetingBase=(h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening');
+  var profileName=(DB.profile&&DB.profile.name)?', '+DB.profile.name:'';
+  var todayMMDD=String(now.getMonth()+1).padStart(2,'0')+'/'+String(now.getDate()).padStart(2,'0');
+  var isUserBday=DB.profile&&DB.profile.bday&&DB.profile.bday===todayMMDD;
+  document.getElementById('dash-greeting').textContent=isUserBday?('Happy Birthday'+profileName+'! 🎉'):(greetingBase+profileName);
+  document.getElementById('dash-date').textContent=days[now.getDay()]+', '+months[now.getMonth()]+' '+now.getDate()+', '+now.getFullYear();
+  // Christmas
+  var daysX=daysUntilXmas();
+  var xmasTotal=DB.people.reduce(function(s,p){return s+(parseFloat(p.xmasBudget)||0);},0);
+  var xmasSaved=DB.xmasSaved||0;
+  var xmasSPM=xmasTotal>0?xmasTotal/Math.max(1,daysX/30.44):0;
+  document.getElementById('dash-xmas-days').textContent=daysX;
+  document.getElementById('dash-xmas-save').textContent='Set aside '+fmt$(xmasSPM)+'/month';
+  document.getElementById('dash-xmas-saved').textContent=fmt$(xmasSaved);
+  document.getElementById('dash-xmas-total').textContent=fmt$(xmasTotal);
+  // Next birthday
+  var withBday=DB.people.filter(function(p){return p.dob;}).map(function(p){return{p:p,days:daysUntilBday(p.dob)};}).filter(function(x){return x.days!==null;}).sort(function(a,b){return a.days-b.days;});
+  var nb=document.getElementById('dash-next-bday');
+  if(withBday.length){
+    nb.style.display='flex';
+    document.getElementById('nb-days').textContent=withBday[0].days===0?'Today!':withBday[0].days;
+    document.getElementById('nb-days-label').style.display=withBday[0].days===0?'none':'block';
+    document.getElementById('nb-name').textContent=withBday[0].p.name;
+    var age=calcAge(withBday[0].p.dob);var spm=savePerMonth(withBday[0].p.bdayBudget,withBday[0].days);
+    document.getElementById('nb-meta').textContent=(age!==null?'Turning '+(age+1):'')+(spm>0?' · Save '+fmt$(spm)+'/mo':'');
+  } else nb.style.display='none';
+  // Budget totals
+  var bdayTotal=DB.people.reduce(function(s,p){return s+(parseFloat(p.bdayBudget)||0);},0);
+  var bdaySpent=DB.people.reduce(function(s,p){return s+(p.bdayGifts||[]).filter(function(g){return g.status!=='Idea';}).reduce(function(ss,g){return ss+(parseFloat(g.price)||0);},0);},0);
+  var xmasSpent=DB.people.reduce(function(s,p){return s+(p.xmasGifts||[]).filter(function(g){return g.status!=='Idea';}).reduce(function(ss,g){return ss+(parseFloat(g.price)||0);},0);},0);
+  document.getElementById('d-bday-budget').textContent=fmt$(bdayTotal);
+  document.getElementById('d-bday-spent').textContent=fmt$(bdaySpent)+' spent';
+  document.getElementById('d-xmas-budget').textContent=fmt$(xmasTotal);
+  document.getElementById('d-xmas-spent').textContent=fmt$(xmasSpent)+' spent';
+  // Gift status counts
+  var gifts=allGifts();
+  var counts={Idea:0,Ordered:0,Bought:0,Returned:0};
+  gifts.forEach(function(g){if(counts[g.status]!==undefined)counts[g.status]++;});
+  document.getElementById('gs-idea').textContent=counts.Idea;
+  document.getElementById('gs-ordered').textContent=counts.Ordered;
+  document.getElementById('gs-bought').textContent=counts.Bought;
+  document.getElementById('gs-returned').textContent=counts.Returned;
+  // Next important date
+  var sortedDTR=DB.datesRemember.concat([getThanksgivingVirtualEntry()]).sort(function(a,b){return(daysUntilMMDD(a.date)||9999)-(daysUntilMMDD(b.date)||9999);});
+  var nd=document.getElementById('dash-next-date');
+  if(sortedDTR.length){
+    var first=sortedDTR[0];var days2=daysUntilMMDD(first.date);var passed=days2===null||days2>364;
+    nd.innerHTML='<div class="card-tinted"><div style="display:flex;justify-content:space-between;align-items:center;"><div><div style="font-size:var(--fs-base);color:var(--text);font-weight:500;">'+first.name+'</div><div style="font-size:var(--fs-sm);color:var(--text2);font-style:italic;">'+first.date+' &middot; '+first.occ+'</div></div><div style="font-size:var(--fs-lg);font-weight:400;color:'+(passed?'var(--text3)':'var(--green)')+';font-style:italic;">'+(passed?'Passed':(days2===0?'Today!':days2+' days'))+'</div></div></div>';
+  } else nd.innerHTML='<div style="font-size:var(--fs-sm);color:var(--text2);font-style:italic;padding:6px 0;">No dates added yet.</div>';
+}
+
+// RENDER BIRTHDAYS
+function renderBday(){
+  var c=document.getElementById('bday-content');
+  var bdayTotal=DB.people.reduce(function(s,p){return s+(parseFloat(p.bdayBudget)||0);},0);
+  var html='<div class="card-tinted" style="margin-bottom:14px;"><div style="display:flex;justify-content:space-between;"><span style="font-size:var(--fs-sm);color:var(--text2);">Total Birthday Budget</span><span style="font-size:var(--fs-base);font-weight:500;color:var(--green);">'+fmt$(bdayTotal)+'</span></div></div>';
+  if(DB.people.length){
+    html+='<div class="sl">Birthday Savings Plan</div>';
+    html+='<div class="savings-hdr"><div style="font-size:var(--fs-xs);color:var(--text3);">Name</div><div style="font-size:var(--fs-xs);color:var(--text3);text-align:center;">Age</div><div style="font-size:var(--fs-xs);color:var(--text3);text-align:center;">Days</div><div style="font-size:var(--fs-xs);color:var(--text3);text-align:right;">Budget</div><div style="font-size:var(--fs-xs);color:var(--text3);text-align:right;">$/mo</div></div>';
+    html+=DB.people.map(function(p){
+      var age=calcAge(p.dob);var days=daysUntilBday(p.dob);var spm=days?savePerMonth(p.bdayBudget,days):0;
+      return'<div class="savings-row" onclick="openPersonModal(\''+p.id+'\',\'bday\')">'+
+        '<div style="font-size:var(--fs-sm);color:var(--text);font-weight:500;">'+p.name+'</div>'+
+        '<div style="font-size:var(--fs-xs);color:var(--text2);text-align:center;">'+(age!==null?age:'—')+'</div>'+
+        '<div style="font-size:var(--fs-xs);color:var(--green);text-align:center;">'+(days!==null?days:'—')+'</div>'+
+        '<div style="font-size:var(--fs-xs);color:var(--text2);text-align:right;">'+fmt$(p.bdayBudget)+'</div>'+
+        '<div style="font-size:var(--fs-xs);color:var(--burg);font-weight:500;text-align:right;">'+fmt$(spm)+'</div>'+
+        '</div>';
+    }).join('');
+    html+='<div class="sl" style="margin-top:16px;">Birthday Gifts · Per Person</div>';
+    html+=DB.people.map(function(p){
+      var gifts=p.bdayGifts||[];
+      var spent=gifts.filter(function(g){return g.status!=='Idea';}).reduce(function(s,g){return s+(parseFloat(g.price)||0);},0);
+      return'<div class="person-card">'+
+        '<div class="person-hdr">'+
+        '<div onclick="openPersonModal(\''+p.id+'\',\'bday\')">'+
+        '<div class="person-name">'+p.name+'</div>'+
+        '<div class="person-meta">Budget: '+fmt$(p.bdayBudget)+' &middot; Spent: '+fmt$(spent)+'<span class="edit-hint" style="margin-left:6px;">tap to edit</span></div>'+
+        '</div>'+
+        '<button onclick="openGiftModal(\''+p.id+'\',\'bday\',null)" style="background:var(--green);border:none;border-radius:8px;padding:6px 12px;color:white;font-family:\'EB Garamond\',serif;font-size:var(--fs-xs);cursor:pointer;">+ Gift</button>'+
+        '</div>'+
+        (gifts.length?
+          gifts.map(function(g){return'<div class="gift-row" onclick="openGiftModal(\''+p.id+'\',\'bday\',\''+g.id+'\')"><div class="gift-name">'+g.name+'</div><div class="gift-price">'+fmt$(g.price)+'</div><div class="gift-status gs-'+g.status+'">'+g.status+'</div></div>';}).join(''):
+          '<div style="font-size:var(--fs-sm);color:var(--text3);font-style:italic;padding:6px 0;">No gift ideas yet.</div>'
+        )+'</div>';
+    }).join('');
+  } else {
+    html+='<div class="empty">No people added yet.<br>Tap + to add someone.</div>';
+  }
+  c.innerHTML=html;
+}
+
+// RENDER CHRISTMAS
+function renderXmas(){
+  var c=document.getElementById('xmas-content');
+  var daysX=daysUntilXmas();
+  var xmasTotal=DB.people.reduce(function(s,p){return s+(parseFloat(p.xmasBudget)||0);},0);
+  var xmasSaved=DB.xmasSaved||0;
+  var xmasSPM=xmasTotal>0?xmasTotal/Math.max(1,daysX/30.44):0;
+  var html='<div class="xmas-banner-full"><div class="xmas-banner-label">Days till Christmas</div><div class="xmas-days-big">'+daysX+'</div><div class="xmas-save-line">Set aside '+fmt$(xmasSPM)+'/month to be fully funded</div></div>';
+  html+='<div class="card-burg" style="margin-bottom:14px;">'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'+
+    '<span style="font-size:var(--fs-sm);color:var(--burg);">Total Christmas Fund</span>'+
+    '<span style="font-size:var(--fs-base);font-weight:500;color:var(--burg);">'+fmt$(xmasTotal)+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between;align-items:center;">'+
+    '<span style="font-size:var(--fs-sm);color:var(--text2);">What I have saved</span>'+
+    '<div style="display:flex;align-items:center;gap:8px;">'+
+    '<span style="font-size:var(--fs-base);font-weight:500;color:var(--text);">'+fmt$(xmasSaved)+'</span>'+
+    '<button onclick="document.getElementById(\'xs-saved\').value=\''+xmasSaved+'\';openModal(\'xmas-saved-modal\')" style="background:var(--green3);border:.5px solid var(--green);border-radius:6px;padding:3px 8px;color:var(--green);font-family:\'EB Garamond\',serif;font-size:var(--fs-xs);cursor:pointer;">Edit</button>'+
+    '</div></div></div>';
+  var now=new Date();
+  var mNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  html+='<div class="sl">Monthly Savings Tracker</div><div class="card" style="margin-bottom:14px;">';
+  for(var mi=0;mi<12;mi++){
+    var isCurrent=mi===now.getMonth();var isPast=mi<now.getMonth();
+    var mAmt=mi>=now.getMonth()?xmasSPM:0;
+    var running=xmasSaved+Math.max(0,mi-now.getMonth())*xmasSPM;
+    html+='<div class="month-row"><div class="month-name" style="color:'+(isCurrent?'var(--green)':isPast?'var(--text3)':'var(--text)')+'">'+mNames[mi]+'</div>'+
+    '<div class="month-amt" style="color:'+(isPast?'var(--text3)':'var(--green2)')+'">'+fmt$(mAmt)+'</div>'+
+    '<div class="month-running">'+fmt$(running)+'</div></div>';
+  }
+  html+='</div>';
+  html+='<div class="sl">Christmas Gifts · Per Person</div>';
+  if(!DB.people.length)html+='<div class="empty">Add people in the Birthdays tab first.</div>';
+  else html+=DB.people.map(function(p){
+    var gifts=p.xmasGifts||[];
+    var spent=gifts.filter(function(g){return g.status!=='Idea';}).reduce(function(s,g){return s+(parseFloat(g.price)||0);},0);
+    return'<div class="person-card">'+
+      '<div class="person-hdr">'+
+      '<div onclick="openPersonModal(\''+p.id+'\',\'xmas\')">'+
+      '<div class="person-name">'+p.name+'</div>'+
+      '<div class="person-meta">Budget: '+fmt$(p.xmasBudget)+' &middot; Spent: '+fmt$(spent)+'<span class="edit-hint" style="margin-left:6px;">tap to edit</span></div>'+
+      '</div>'+
+      '<button onclick="openGiftModal(\''+p.id+'\',\'xmas\',null)" style="background:var(--burg);border:none;border-radius:8px;padding:6px 12px;color:white;font-family:\'EB Garamond\',serif;font-size:var(--fs-xs);cursor:pointer;">+ Gift</button>'+
+      '</div>'+
+      (gifts.length?
+        gifts.map(function(g){return'<div class="gift-row" onclick="openGiftModal(\''+p.id+'\',\'xmas\',\''+g.id+'\')"><div class="gift-name">'+g.name+'</div><div class="gift-price">'+fmt$(g.price)+'</div><div class="gift-status gs-'+g.status+'">'+g.status+'</div></div>';}).join(''):
+        '<div style="font-size:var(--fs-sm);color:var(--text3);font-style:italic;padding:6px 0;">No gift ideas yet.</div>'
+      )+'</div>';
+  }).join('');
+  c.innerHTML=html;
+}
+
+// RENDER DATES
+function renderDates(){
+  var c=document.getElementById('dates-content');
+  var sorted=DB.datesRemember.concat([getThanksgivingVirtualEntry()]).sort(function(a,b){return(daysUntilMMDD(a.date)||9999)-(daysUntilMMDD(b.date)||9999);});
+  c.innerHTML=sorted.map(function(d){
+    var days=daysUntilMMDD(d.date);var passed=days===null||days>364;
+    return'<div class="dtr-row"'+(d.virtual?' style="cursor:default;"':' onclick="openDTRModal(\''+d.id+'\')"')+'>'+
+      '<div style="flex:1;"><div class="dtr-name">'+d.name+'</div><div class="dtr-occ">'+d.date+' &middot; '+d.occ+'</div></div>'+
+      '<div class="dtr-days'+(passed?' passed':'')+'">'+( passed?'Passed':(days===0?'Today!':days+' days'))+'</div></div>';
+  }).join('');
+}
+
+// RENDER WISHLIST
+function renderWish(){
+  var c=document.getElementById('wish-content');
+  if(!DB.wishlist.length){c.innerHTML='<div class="empty">Your wishlist is empty.<br>Tap + to add an item.</div>';return;}
+  var total=DB.wishlist.reduce(function(s,w){return s+(parseFloat(w.price)||0);},0);
+  c.innerHTML='<div class="card-gold" style="margin-bottom:14px;"><div style="font-size:var(--fs-xs);letter-spacing:.1em;color:var(--gold);text-transform:uppercase;">Total Wishlist Value</div><div style="font-size:22px;font-weight:500;color:var(--gold);margin-top:3px;">'+fmt$(total)+'</div></div>'+
+  DB.wishlist.map(function(w){
+    return'<div class="row-item" onclick="openWishModal(\''+w.id+'\')">'+
+      '<div class="row-info"><div class="row-title">'+w.item+'</div></div>'+
+      '<div style="text-align:right;"><div style="font-size:var(--fs-base);color:var(--text2);">'+fmt$(w.price)+'</div><div class="edit-hint">tap to edit</div></div></div>';
+  }).join('');
+}
+
+renderDash();
+</script>
+</body>
+</html>
