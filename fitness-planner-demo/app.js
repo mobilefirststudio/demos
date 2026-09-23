@@ -1165,7 +1165,7 @@ function renderSettingsTheme(el){
 }
 function renderSettingsTools(el){
   el.innerHTML='<div class="section-title" style="margin-top:0;">Cloud Backup</div>'
-    +'<div class="upsell-card"><div class="upsell-title">Want automatic Google Drive backup?</div><div class="upsell-text">The full version of Fitness Planner backs up your workouts, routines, and progress to your own Google Drive automatically, so it\'s never at risk.</div><a class="upsell-btn" href="ETSY_LISTING_URL_HERE" target="_blank" rel="noopener">Get it on Etsy</a></div>'
+    +'<div class="upsell-card"><div class="upsell-title">Want automatic Google Drive backup?</div><div class="upsell-text">The full version of Fitness Planner backs up your workouts, routines, and progress to your own Google Drive automatically, so it\'s never at risk.</div><a class="upsell-btn" href="https://www.etsy.com/listing/4534561739/fitness-tracker-app-live-workout-timer" target="_blank" rel="noopener">Get it on Etsy</a></div>'
     +'<div class="section-title">Export</div>'
     +'<button class="btn-ghost" onclick="exportPDF()">Export PDF Report</button>'
     +'<button class="btn-ghost" onclick="downloadBackup()">Download Backup File</button>'
@@ -1417,7 +1417,7 @@ function enforceDemoTrial(){
   }
   if(banner){
     var noun=daysLeft===1?'day':'days';
-    banner.innerHTML='<b>Free demo</b> &middot; '+daysLeft+' '+noun+' left &middot; <a href="ETSY_LISTING_URL_HERE" target="_blank" rel="noopener">Get the full app &rarr;</a>';
+    banner.innerHTML='<b>Free demo</b> &middot; '+daysLeft+' '+noun+' left &middot; <a href="https://www.etsy.com/listing/4534561739/fitness-tracker-app-live-workout-timer" target="_blank" rel="noopener">Get the full app &rarr;</a>';
   }
   return false;
 }
