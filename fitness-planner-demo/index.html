@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Fitness Planner — Free Trial — Mobile First Studio</title>
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fitness Planner">
+<meta name="theme-color" content="#EBDDBE">
+<style>
+:root{
+  --bg:#EBDDBE; --bg2:#FBF5E9; --bg3:#DBC49B; --bg4:#F5EAD3;
+  --ink:#241C14; --text:#241C14; --text2:#6B5A42; --text3:#9C8A6B;
+  --accent:#A8562C; --accent2:#8B3F22; --accent-tint:#F2E2C4;
+  --accent-grad-1:#C97A3D; --accent-grad-2:#8B3F22;
+  --accent-grad: linear-gradient(135deg, var(--accent-grad-1) 0%, var(--accent-grad-2) 100%);
+  --accent-grad-soft: linear-gradient(135deg, color-mix(in srgb, var(--accent-grad-1) 22%, var(--bg2)) 0%, color-mix(in srgb, var(--accent-grad-2) 12%, var(--bg2)) 100%);
+  --glow: color-mix(in srgb, var(--accent-grad-2) 38%, transparent);
+  --glow-soft: color-mix(in srgb, var(--accent-grad-2) 16%, transparent);
+  --border:rgba(0,0,0,.1); --border2:rgba(0,0,0,.06);
+  --green:#31D48C; --red:#FF5C63; --gold:#E0A526; --blue:#4EA1FF;
+  --font-head:'Poppins','Segoe UI',Arial,sans-serif;
+  --font-body:'Inter','Segoe UI',Arial,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none;}
+.status-strip{background:var(--accent-grad);color:#fff;text-align:center;font-size:11px;letter-spacing:.14em;padding:8px 0;font-weight:600;}
+.page{display:none;min-height:100vh;padding-bottom:90px;}
+.page.active{display:block;}
+.ph{background:var(--accent-grad);color:#fff;padding:28px 24px 24px;box-shadow:0 6px 24px var(--glow-soft);}
+.ph .ey{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.9;margin-bottom:6px;font-weight:600;}
+.ph h1{font-family:var(--font-head);font-size:28px;font-weight:700;}
+.ps{padding:20px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 6px 16px rgba(0,0,0,.16);}
+.card-accent{background:var(--accent-grad-soft);border:1px solid color-mix(in srgb, var(--accent-grad-1) 40%, transparent);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 6px 20px var(--glow-soft);}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 6px 16px rgba(0,0,0,.16);}
+.stat-num{font-family:var(--font-head);font-size:26px;font-weight:700;background:var(--accent-grad);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.stat-label{font-size:11px;letter-spacing:.06em;color:var(--text2);text-transform:uppercase;margin-top:2px;}
+.section-title{font-family:var(--font-head);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);margin:20px 0 10px;font-weight:600;}
+.btn-full{width:100%;background:var(--accent-grad);color:#fff;border:none;border-radius:12px;padding:16px;font-family:var(--font-head);font-weight:600;font-size:15px;cursor:pointer;min-height:52px;box-shadow:0 8px 22px var(--glow);}
+.btn-ghost{width:100%;background:none;border:1.5px solid var(--accent);color:var(--accent2);border-radius:12px;padding:14px;font-family:var(--font-head);font-weight:600;font-size:14px;cursor:pointer;margin-top:10px;min-height:48px;}
+.btn-delete{width:100%;background:rgba(255,92,99,.10);border:1px solid rgba(255,92,99,.4);color:var(--red);border-radius:12px;padding:14px;font-weight:600;font-size:14px;cursor:pointer;margin-top:12px;min-height:48px;}
+.row-item{display:flex;align-items:center;justify-content:space-between;padding:14px 4px;border-bottom:1px solid var(--border2);cursor:pointer;}
+.row-item:last-child{border-bottom:none;}
+.row-title{font-size:15px;color:var(--text);font-weight:600;}
+.row-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.03em;}
+.pill-pr{background:rgba(255,201,77,.18);color:var(--gold);border:1px solid rgba(255,201,77,.35);}
+.empty{text-align:center;color:var(--text3);font-size:14px;padding:40px 20px;font-style:italic;}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid var(--border);display:flex;z-index:15;padding-bottom:env(safe-area-inset-bottom);}
+.ni{flex:1;background:none;border:none;padding:10px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--text3);font-size:9.5px;font-weight:600;letter-spacing:.01em;cursor:pointer;}
+.ni.active{color:var(--accent2);}
+.ni svg{width:21px;height:21px;}
+.fab{position:fixed;bottom:96px;right:20px;width:58px;height:58px;border-radius:50%;background:var(--accent-grad);color:#fff;border:none;font-size:28px;box-shadow:0 8px 22px var(--glow);cursor:pointer;z-index:16;display:flex;align-items:center;justify-content:center;}
+.modal-bg{position:fixed;inset:0;background:rgba(5,3,2,.65);z-index:30;display:none;align-items:flex-end;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg4);border-radius:20px 20px 0 0;padding:24px 20px 30px;width:100%;max-height:88vh;overflow-y:auto;border-top:1px solid var(--border);box-shadow:0 -12px 40px rgba(0,0,0,.5);}
+.modal h2{font-family:var(--font-head);font-size:19px;margin-bottom:18px;}
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600;}
+.field input,.field select,.field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;background:var(--bg);color:var(--text);font-family:var(--font-body);}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--glow-soft);}
+.field textarea{resize:vertical;min-height:60px;}
+.btn-row{display:flex;gap:10px;margin-top:10px;}
+.btn-row button{flex:1;padding:14px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;min-height:48px;}
+.btn-cancel{background:var(--bg3);border:none;color:var(--text2);}
+.btn-save{background:var(--accent-grad);border:none;color:#fff;box-shadow:0 6px 16px var(--glow);}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--bg4);color:var(--text);border:1px solid var(--border);padding:10px 22px;border-radius:20px;font-size:13px;opacity:0;transition:all .3s;z-index:40;pointer-events:none;white-space:normal;max-width:85vw;width:max-content;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.tab-row{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;}
+.tab-btn{background:var(--bg3);border:none;padding:9px 16px;border-radius:20px;font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.tab-btn.active{background:var(--accent-grad);color:#fff;box-shadow:0 4px 12px var(--glow);}
+.set-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border2);}
+.set-num{width:26px;height:26px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text2);flex-shrink:0;}
+.set-input{width:60px;padding:8px;border:1.5px solid var(--border);border-radius:8px;text-align:center;font-size:15px;background:var(--bg);color:var(--text);}
+.set-check{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.set-check.done{background:var(--green);border-color:var(--green);color:#0F1A14;}
+.ex-chip{font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;background:var(--bg3);color:var(--text2);margin-left:6px;}
+.theme-grid{display:flex;flex-direction:column;}
+
+.rings-row{display:flex;justify-content:space-around;align-items:center;margin-bottom:16px;}
+.ring-wrap{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.ring-label{font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.ring-value{font-size:11px;color:var(--text3);}
+
+.quick-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+.quick-btn{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 4px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 6px 16px rgba(0,0,0,.16);}
+.quick-btn svg{width:20px;height:20px;color:var(--accent2);}
+.quick-btn span{font-size:10px;font-weight:600;color:var(--text2);}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border2);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info .row-title{font-size:14px;}
+.toggle-info .row-sub{font-size:11.5px;}
+.switch{position:relative;width:46px;height:26px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.switch .slider{position:absolute;inset:0;background:var(--bg3);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:.2s;}
+.switch .slider:before{content:'';position:absolute;width:20px;height:20px;left:2px;top:2px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.4);}
+.switch input:checked + .slider{background:var(--accent-grad);border-color:transparent;}
+.switch input:checked + .slider:before{transform:translateX(20px);}
+
+.macro-bar-bg{height:8px;border-radius:4px;background:var(--bg3);overflow:hidden;margin-top:4px;}
+.macro-bar-fill{height:100%;border-radius:4px;background:var(--accent-grad);}
+
+.demo-banner{background:var(--accent-grad);color:#fff;text-align:center;padding:8px 14px;font-size:13px;letter-spacing:.02em;box-sizing:border-box;position:sticky;top:0;z-index:50;}
+.demo-banner b{font-weight:700;}
+.demo-banner a{color:#fff;text-decoration:underline;}
+.upsell-card{background:var(--accent-tint);border:1px solid color-mix(in srgb, var(--accent-grad-1) 40%, transparent);border-radius:12px;padding:16px 18px;margin-bottom:10px;}
+.upsell-title{font-family:var(--font-head);font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;}
+.upsell-text{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px;}
+.upsell-btn{display:block;width:100%;text-align:center;background:var(--accent-grad);color:#fff;border:none;border-radius:11px;padding:12px;font-family:var(--font-head);font-size:15px;font-weight:700;text-decoration:none;box-sizing:border-box;}
+#trial-lock{display:none;position:fixed;inset:0;z-index:99999;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 30px;max-width:430px;margin:0 auto;}
+#trial-lock .lock-icon{font-size:40px;margin-bottom:16px;}
+#trial-lock .lock-title{font-family:var(--font-head);font-size:22px;color:var(--text);margin-bottom:12px;font-weight:700;}
+#trial-lock .lock-body{font-size:14px;color:var(--text2);line-height:1.6;max-width:320px;margin-bottom:24px;}
+#trial-lock .lock-cta{display:inline-block;background:var(--accent-grad);color:#fff;border:none;border-radius:11px;padding:14px 32px;font-family:var(--font-head);font-size:15px;font-weight:700;text-decoration:none;margin-bottom:14px;box-shadow:0 8px 22px var(--glow);}
+#trial-lock .lock-sub{font-size:12px;color:var(--text3);}
+</style>
+</head>
+<body>
+
+<div id="trial-lock">
+  <div class="lock-icon">&#128274;</div>
+  <div class="lock-title">Your free trial has ended</div>
+  <div class="lock-body">You've had full access to Fitness Planner for 14 days. Your data is still safe on this device, get the full app to keep using it and back it up to your own Google Drive so it's never at risk.</div>
+  <a class="lock-cta" href="ETSY_LISTING_URL_HERE" target="_blank" rel="noopener">Get the Full App</a>
+  <div class="lock-sub">Your trial started 14 days ago on this device.</div>
+</div>
+<div class="demo-banner" id="demo-banner"><b>Free demo</b> &middot; <a href="ETSY_LISTING_URL_HERE" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+
+<div class="status-strip" id="statusStrip" style="display:none;">Could not connect. Check your internet connection.</div>
+
+<div class="page" id="pg-onboarding">
+  <div class="ph">
+    <div class="ey">Welcome</div>
+    <h1>Pick Your Style</h1>
+  </div>
+  <div class="ps">
+    <div style="font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.5;">Choose a look for Fitness Planner. You can always change this later in Settings.</div>
+    <div id="theme-onboarding-cards"></div>
+    <button class="btn-full" style="margin-top:10px;" onclick="finishOnboarding()">Get Started</button>
+  </div>
+</div>
+
+<div class="page active" id="pg-home">
+  <div class="ph">
+    <div class="ey" id="home-date">&nbsp;</div>
+    <h1 id="home-greeting">Let's train</h1>
+    <div id="home-streak-bar" style="margin-top:10px;min-height:20px;"></div>
+  </div>
+  <div class="ps">
+    <div class="rings-row" id="home-rings"></div>
+
+    <div class="quick-row">
+      <div class="quick-btn" onclick="openWeightModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+        <span>Weight</span>
+      </div>
+      <div class="quick-btn" onclick="openMealModal(null)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2v8a2 2 0 002 2v10M6 2v20M10 2v8M18 2v20M18 2a4 4 0 00-4 4v4h4"/></svg>
+        <span>Meal</span>
+      </div>
+      <div class="quick-btn" onclick="quickLogWater()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2s7 8 7 13a7 7 0 11-14 0c0-5 7-13 7-13z"/></svg>
+        <span>Water</span>
+      </div>
+      <div class="quick-btn" onclick="startBlankWorkout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M2 9h4M2 15h4M18 9h4M18 15h4M6 12h12"/></svg>
+        <span>Workout</span>
+      </div>
+    </div>
+
+    <div class="card-accent" id="today-workout-card"></div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num" id="h-streak">0</div><div class="stat-label">Day Streak</div></div>
+      <div class="stat-card"><div class="stat-num" id="h-week">0</div><div class="stat-label">This Week</div></div>
+    </div>
+
+    <div class="section-title">Recent Activity</div>
+    <div id="home-recent"></div>
+  </div>
+</div>
+
+<div class="page" id="pg-workouts">
+  <div class="ph"><div class="ey">Training</div><h1>Workouts</h1><div id="workouts-streak-bar" style="margin-top:10px;min-height:20px;"></div></div>
+  <div class="ps">
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchWorkoutsTab('log',this)">Log</button>
+      <button class="tab-btn" onclick="switchWorkoutsTab('routines',this)">Routines</button>
+      <button class="tab-btn" onclick="switchWorkoutsTab('exercises',this)">Exercises</button>
+    </div>
+    <div id="workouts-tab-content"></div>
+    <div style="height:70px;"></div>
+  </div>
+  <button class="fab" id="workouts-fab" onclick="workoutsFabAction()">+</button>
+</div>
+
+<div class="page" id="pg-progress">
+  <div class="ph"><div class="ey">Track It</div><h1>Progress</h1></div>
+  <div class="ps">
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchChartRange('week',this)">Weekly</button>
+      <button class="tab-btn" onclick="switchChartRange('month',this)">Monthly</button>
+    </div>
+    <div class="section-title" style="margin-top:0;">Body Weight</div>
+    <div class="card">
+      <canvas id="weight-chart" width="600" height="220" style="width:100%;height:160px;"></canvas>
+      <button class="btn-ghost" onclick="openWeightModal()">+ Log Weight</button>
+    </div>
+    <div class="section-title">Training Volume</div>
+    <div class="card">
+      <canvas id="volume-chart" width="600" height="220" style="width:100%;height:160px;"></canvas>
+    </div>
+    <div class="section-title">Personal Records</div>
+    <div id="pr-list"></div>
+  </div>
+</div>
+
+<div class="page" id="pg-nutrition">
+  <div class="ph"><div class="ey">Fuel</div><h1>Nutrition</h1></div>
+  <div class="ps">
+    <div class="card">
+      <div class="section-title" style="margin:0 0 10px;">Today's Macros</div>
+      <div id="macro-summary"></div>
+    </div>
+    <div class="card" id="water-section"></div>
+    <div class="section-title" style="margin-top:4px;">Today's Meals</div>
+    <div id="meal-list"></div>
+    <div style="height:70px;"></div>
+  </div>
+  <button class="fab" onclick="openMealModal(null)">+</button>
+</div>
+
+<div class="page" id="pg-setup">
+  <div class="ph"><div class="ey">Profile</div><h1>Settings</h1></div>
+  <div class="ps">
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchSettingsTab('profile',this)">Profile</button>
+      <button class="tab-btn" onclick="switchSettingsTab('theme',this)">Theme</button>
+      <button class="tab-btn" onclick="switchSettingsTab('tools',this)">Tools</button>
+      <button class="tab-btn" onclick="switchSettingsTab('library',this)">Library</button>
+    </div>
+    <div id="settings-tab-content"></div>
+    <div style="height:40px;"></div>
+  </div>
+</div>
+
+<div class="page" id="pg-active-workout">
+  <div class="ph" style="display:flex;align-items:center;justify-content:space-between;">
+    <div>
+      <div class="ey">Elapsed Time</div>
+      <div id="aw-timer" style="font-family:var(--font-head);font-weight:700;font-size:20px;margin-bottom:2px;">0:00</div>
+      <h1 style="font-size:22px;">Active Workout</h1>
+    </div>
+    <button onclick="finishWorkout()" style="background:#fff;color:var(--accent);border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;">Finish</button>
+  </div>
+  <div class="ps">
+    <div style="font-size:12.5px;color:var(--text2);background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:14px;line-height:1.5;">Enter the weight &amp; reps for each set, then tap the empty box on the right to mark that set complete.</div>
+    <div id="aw-exercise-list"></div>
+    <button class="btn-ghost" onclick="openAddExerciseToWorkout()">+ Add Exercise</button>
+    <button class="btn-delete" onclick="cancelWorkout()">Cancel Workout</button>
+    <div style="height:40px;"></div>
+  </div>
+</div>
+
+<div class="nav" id="main-nav">
+  <button class="ni active" onclick="go('home',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+    <span>Home</span>
+  </button>
+  <button class="ni" onclick="go('workouts',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4v16M18 4v16M2 9h4M2 15h4M18 9h4M18 15h4M6 12h12"/></svg>
+    <span>Workouts</span>
+  </button>
+  <button class="ni" onclick="go('progress',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8M14 6h7v7"/></svg>
+    <span>Progress</span>
+  </button>
+  <button class="ni" onclick="go('nutrition',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2v8a2 2 0 002 2v10M6 2v20M10 2v8M18 2v20M18 2a4 4 0 00-4 4v4h4"/></svg>
+    <span>Nutrition</span>
+  </button>
+  <button class="ni" onclick="go('setup',this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
+    <span>Settings</span>
+  </button>
+</div>
+
+<div class="modal-bg" id="routine-modal"><div class="modal">
+  <h2 id="routine-modal-title">New Routine</h2>
+  <div class="field"><label>Routine Name</label><input id="r-name" placeholder="e.g. Push Day"/></div>
+  <div class="field"><label>Scheduled Days (optional)</label>
+    <div id="r-days-row" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    <div style="font-size:11.5px;color:var(--text3);margin-top:8px;">Tap as many days as this routine repeats on.</div>
+  </div>
+  <div id="routine-exercise-list"></div>
+  <button class="btn-ghost" onclick="addExerciseToRoutineForm()">+ Add Exercise</button>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('routine-modal')">Cancel</button><button class="btn-save" onclick="saveRoutine()">Save</button></div>
+  <button class="btn-delete" id="routine-del-btn" style="display:none;" onclick="deleteRoutine()">Delete Routine</button>
+</div></div>
+
+<div class="modal-bg" id="exercise-picker-modal"><div class="modal">
+  <h2>Choose Exercise</h2>
+  <div class="field"><input id="exercise-search" placeholder="Search exercises..." oninput="renderExercisePicker()"/></div>
+  <div id="exercise-picker-list" style="max-height:50vh;overflow-y:auto;"></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="cancelExercisePicker()">Cancel</button><button class="btn-save" onclick="finalizeExercisePicker()">Done</button></div>
+</div></div>
+
+<div class="modal-bg" id="exercise-modal"><div class="modal">
+  <h2 id="exercise-modal-title">Add Exercise</h2>
+  <div class="field"><label>Exercise Name</label><input id="ex-name" placeholder="e.g. Bulgarian Split Squat"/></div>
+  <div class="field"><label>Category</label><select id="ex-category">
+    <option>Chest</option><option>Back</option><option>Legs</option><option>Shoulders</option>
+    <option>Arms</option><option>Core</option><option>Cardio</option><option>Other</option>
+  </select></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('exercise-modal')">Cancel</button><button class="btn-save" onclick="saveCustomExercise()">Save</button></div>
+  <button class="btn-delete" id="exercise-del-btn" style="display:none;" onclick="deleteCustomExercise()">Delete Exercise</button>
+</div></div>
+
+<div class="modal-bg" id="weight-modal"><div class="modal">
+  <h2>Log Body Weight</h2>
+  <div class="field"><label>Weight</label><input type="number" id="w-weight" step="0.1" placeholder="e.g. 165.5"/></div>
+  <div class="field"><label>Date</label><input type="date" id="w-date"/></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('weight-modal')">Cancel</button><button class="btn-save" onclick="saveWeight()">Save</button></div>
+</div></div>
+
+<div class="modal-bg" id="meal-modal"><div class="modal">
+  <h2 id="meal-modal-title">Log Meal</h2>
+  <div class="field"><label>Meal Type</label><select id="m-type">
+    <option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option>
+  </select></div>
+  <div class="field"><label>Food / Meal Name</label><input id="m-name" placeholder="e.g. Grilled chicken salad"/></div>
+  <div class="field"><label>Calories</label><input type="number" id="m-cal" placeholder="e.g. 450"/></div>
+  <div class="field"><label>Protein (g)</label><input type="number" id="m-protein" placeholder="e.g. 35"/></div>
+  <div class="field"><label>Carbs (g)</label><input type="number" id="m-carbs" placeholder="e.g. 40"/></div>
+  <div class="field"><label>Fat (g)</label><input type="number" id="m-fat" placeholder="e.g. 15"/></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('meal-modal')">Cancel</button><button class="btn-save" onclick="saveMeal()">Save</button></div>
+  <button class="btn-delete" id="meal-del-btn" style="display:none;" onclick="deleteMeal()">Delete Meal</button>
+</div></div>
+
+<div class="modal-bg" id="workout-detail-modal"><div class="modal">
+  <h2 id="wd-title">Workout</h2>
+  <div id="wd-body"></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('workout-detail-modal')">Close</button></div>
+  <button class="btn-delete" id="wd-del-btn" onclick="deleteWorkout()">Delete Workout</button>
+</div></div>
+
+<div class="modal-bg" id="confirm-modal"><div class="modal">
+  <h2 id="confirm-title">Delete this?</h2>
+  <div style="font-size:14px;color:var(--text2);margin-bottom:16px;" id="confirm-sub">This cannot be undone.</div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('confirm-modal')">Cancel</button><button class="btn-delete" style="margin-top:0;" onclick="confirmOk()">Yes, Delete</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js').catch(function(e) {
+      console.error('Service worker registration failed:', e);
+    });
+  });
+}
+</script>
+</body>
+</html>

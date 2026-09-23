@@ -1,0 +1,17 @@
+{
+  "name": "Fitness Planner — Free Trial",
+  "short_name": "Fitness Planner",
+  "description": "Track workouts, set fitness goals, and build healthy habits — your personal fitness planner.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EBDDBE",
+  "theme_color": "#8B3F22",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["health", "fitness", "lifestyle"],
+  "lang": "en-US"
+}
