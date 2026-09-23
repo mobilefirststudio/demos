@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Holiday Planner Demo"/>
+<meta name="theme-color" content="#1B2E28"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<link rel="icon" type="image/png" href="icons/icon-192.png"/>
+<title>Basic Holiday Planner — Free 14-Day Trial — Mobile First Studio</title>
+<style>
+:root, [data-theme="evergreen"] {
+  --bg: #1B2E28;
+  --card: #24382F;
+  --card-raised: #2C4238;
+  --border: #3A5347;
+  --gold: #C9A05C;
+  --gold-soft: rgba(201,160,92,0.15);
+  --cranberry: #8C3B3B;
+  --cranberry-soft: rgba(140,59,59,0.18);
+  --text: #F0EAE0;
+  --text-dim: #A8B8AE;
+  --text-faint: #6E8378;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+[data-theme="midnight-red"] {
+  --bg: #2B1B1E;
+  --card: #382226;
+  --card-raised: #45292E;
+  --border: #5A3A3F;
+  --gold: #C9A05C;
+  --gold-soft: rgba(201,160,92,0.15);
+  --cranberry: #8C3B3B;
+  --cranberry-soft: rgba(140,59,59,0.18);
+  --text: #F3E8E8;
+  --text-dim: #BFA0A0;
+  --text-faint: #83696A;
+}
+[data-theme="winter-berry"] {
+  --bg: #1E2B20;
+  --card: #26362A;
+  --card-raised: #2F4234;
+  --border: #3F5744;
+  --gold: #B5384A;
+  --gold-soft: rgba(181,56,74,0.15);
+  --cranberry: #8C3B3B;
+  --cranberry-soft: rgba(140,59,59,0.18);
+  --text: #EAF0EA;
+  --text-dim: #A3B8A8;
+  --text-faint: #6C7F6F;
+}
+[data-theme="berry-pine"] {
+  --bg: #2E1418;
+  --card: #3B1B20;
+  --card-raised: #482229;
+  --border: #5C2E35;
+  --gold: #5B9A6F;
+  --gold-soft: rgba(91,154,111,0.15);
+  --cranberry: #8C3B3B;
+  --cranberry-soft: rgba(140,59,59,0.18);
+  --text: #F0E8E8;
+  --text-dim: #C2A3A3;
+  --text-faint: #866969;
+}
+[data-theme="cream-holly"] {
+  --bg: #FAF3E8;
+  --card: #F2E8D8;
+  --card-raised: #EBDFC9;
+  --border: #D9C7A8;
+  --gold: #3D6B4F;
+  --gold-soft: rgba(61,107,79,0.12);
+  --cranberry: #A8455C;
+  --cranberry-soft: rgba(168,69,92,0.15);
+  --text: #2E2A20;
+  --text-dim: #6B6250;
+  --text-faint: #8F856E;
+}
+[data-theme="snow-cranberry"] {
+  --bg: #FAFAF8;
+  --card: #F1F0EC;
+  --card-raised: #E8E6E0;
+  --border: #D4D0C6;
+  --gold: #A8455C;
+  --gold-soft: rgba(168,69,92,0.12);
+  --cranberry: #A8455C;
+  --cranberry-soft: rgba(168,69,92,0.15);
+  --text: #2A2826;
+  --text-dim: #6B6660;
+  --text-faint: #918C82;
+}
+[data-theme="candlelight"] {
+  --bg: #FFF8ED;
+  --card: #F7EEDC;
+  --card-raised: #F0E4CC;
+  --border: #DDCBA0;
+  --gold: #B8863B;
+  --gold-soft: rgba(184,134,59,0.12);
+  --cranberry: #A8455C;
+  --cranberry-soft: rgba(168,69,92,0.15);
+  --text: #2E2818;
+  --text-dim: #6E6248;
+  --text-faint: #93856A;
+}
+[data-theme="peppermint"] {
+  --bg: #FFFCF5;
+  --card: #FBF5E8;
+  --card-raised: #F5EDDA;
+  --border: #E5D9BC;
+  --gold: #C1443F;
+  --gold-soft: rgba(193,68,63,0.12);
+  --cranberry: #C1443F;
+  --cranberry-soft: rgba(193,68,63,0.15);
+  --text: #2E2818;
+  --text-dim: #6E6248;
+  --text-faint: #93856A;
+}
+:root {
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+.demo-banner {
+  flex-shrink: 0;
+  background: var(--gold);
+  color: var(--bg);
+  padding: 9px 16px;
+  padding-top: calc(9px + env(safe-area-inset-top, 0px));
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.demo-banner a {
+  color: var(--bg);
+  text-decoration: underline;
+}
+
+#demoWrap {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+
+.upsell-card {
+  background: linear-gradient(160deg, var(--card-raised), var(--card));
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  margin: 4px 0 6px;
+}
+.upsell-card .upsell-title {
+  font-family: Georgia, serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 5px;
+}
+.upsell-card .upsell-text {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+.upsell-card .upsell-btn {
+  display: block;
+  text-align: center;
+  background: var(--gold);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+}
+
+.demo-banner b { color: #fff4de; }
+.demo-banner a {
+  color: var(--bg);
+  font-weight: 800;
+  text-decoration: underline;
+  white-space: nowrap;
+  margin-left: 4px;
+}
+
+#trial-lock {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: var(--bg);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 28px;
+}
+#trial-lock .lock-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--sage, var(--card-raised));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  font-size: 28px;
+  color: var(--gold);
+}
+#trial-lock .lock-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 26px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+#trial-lock .lock-body {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  max-width: 320px;
+  margin-bottom: 26px;
+}
+#trial-lock .lock-cta {
+  display: block;
+  width: 100%;
+  max-width: 280px;
+  background: var(--gold);
+  color: var(--bg);
+  text-decoration: none;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+#trial-lock .lock-sub {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+.display-font { font-family: Georgia, 'Times New Roman', serif; }
+
+header.topbar {
+  padding: env(safe-area-inset-top, 16px) 20px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+header.topbar .brand {
+  font-family: Georgia, serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+header.topbar .brand .accent { color: var(--gold); }
+.header-icons { display: flex; gap: 8px; }
+.icon-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 100px;
+  -webkit-overflow-scrolling: touch;
+}
+main::-webkit-scrollbar { width: 0; }
+
+.tab-panel { display: none; animation: fadeIn 0.25s ease; }
+.tab-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+
+.countdown-hero {
+  background: linear-gradient(160deg, var(--card-raised), var(--card));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.countdown-hero::after {
+  content: '';
+  position: absolute;
+  top: -40%; right: -20%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--gold-soft), transparent 70%);
+  pointer-events: none;
+}
+.countdown-hero .eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.countdown-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.countdown-chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 4px;
+  text-align: center;
+  min-width: 0;
+}
+.countdown-chip .num {
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+}
+.countdown-chip .lbl {
+  font-size: 9.5px;
+  color: var(--text-dim);
+  margin-top: 5px;
+  line-height: 1.2;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.summary-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+.summary-card .val {
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+.summary-card .lbl {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.summary-card.over .val { color: var(--cranberry); }
+.summary-card.good .val { color: var(--gold); }
+
+.section-title {
+  font-family: Georgia, serif;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 22px 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-title .count {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-dim);
+  font-family: -apple-system, sans-serif;
+}
+
+.item-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.item-card .status-dot {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  color: var(--bg);
+}
+.item-card.done .status-dot { background: var(--gold); border-color: var(--gold); }
+.item-card .body-text { flex: 1; min-width: 0; }
+.item-card .title-line {
+  font-size: 14.5px;
+  font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.item-card.done .title-line { color: var(--text-faint); text-decoration: line-through; }
+.item-card .sub-line {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.item-card .amount {
+  font-family: Georgia, serif;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-faint);
+}
+.empty-state .big-icon { font-size: 34px; margin-bottom: 10px; }
+.empty-state .msg { font-size: 13.5px; line-height: 1.5; }
+
+.fab {
+  position: fixed;
+  bottom: 90px;
+  right: calc(50% - 240px + 20px);
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  font-size: 26px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+  cursor: pointer;
+  z-index: 20;
+}
+@media (max-width: 480px) { .fab { right: 20px; } }
+
+nav.tabbar {
+  flex-shrink: 0;
+  display: flex;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+}
+nav.tabbar button {
+  flex: 1;
+  background: none; border: none;
+  color: var(--text-faint);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 10px;
+  padding: 6px 2px;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+nav.tabbar button svg { width: 20px; height: 20px; }
+nav.tabbar button.active { color: var(--gold); }
+
+.sheet-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 50;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet-backdrop.open { display: flex; }
+.sheet {
+  background: var(--card-raised);
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+  max-height: 86vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+}
+.sheet-backdrop.open .sheet { transform: translateY(0); }
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.sheet h3 {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: -apple-system, sans-serif;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.btn-row { display: flex; gap: 10px; margin-top: 18px; }
+.btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+.btn-primary { background: var(--gold); color: var(--bg); }
+.btn-secondary { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); }
+.btn-danger { background: var(--cranberry-soft); color: var(--cranberry); }
+
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--card-raised);
+  border: 1px solid var(--gold);
+  color: var(--text);
+  padding: 10px 14px 10px 18px;
+  border-radius: 30px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 100;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.toast:not(.show) { pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast-action {
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  font-family: -apple-system, sans-serif;
+}
+
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row .lbl-main { font-size: 14px; font-weight: 500; }
+.settings-row .lbl-sub { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
+.settings-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+<div id="trial-lock">
+  <div class="lock-icon">&#128274;</div>
+  <div class="lock-title">Your free trial has ended</div>
+  <div class="lock-body">You've had full access to the Basic Holiday Planner for 14 days. Your gift list, checklist, and cards are still safe on this device — get the full app to keep using it and back it up to Google Drive so it's never at risk.</div>
+  <a class="lock-cta" href="https://www.etsy.com/listing/4551984713/christmas-gift-tracker-holiday-planner" target="_blank" rel="noopener">Get the Full App</a>
+  <div class="lock-sub">Your trial started 14 days ago on this device.</div>
+</div>
+<div id="demoWrap">
+<div class="demo-banner" id="demo-banner"><b>Free demo</b> &middot; <a href="https://www.etsy.com/listing/4551984713/christmas-gift-tracker-holiday-planner" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+<div id="app">
+
+  <header class="topbar">
+    <div class="brand" id="brandText">Basic Holiday <span class="accent">Planner</span></div>
+    <div class="header-icons">
+      <div class="icon-btn" onclick="cycleTheme()" title="Change color theme">&#127876;</div>
+      <div class="icon-btn" onclick="openSettings()">&#9881;</div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section class="tab-panel active" id="tab-home">
+      <div class="countdown-hero">
+        <div class="eyebrow">Countdown</div>
+        <div class="countdown-row" id="countdownRow"></div>
+      </div>
+      <div class="summary-row" id="summaryRow"></div>
+
+      <div class="section-title">Coming up <span class="count" id="upNextCount"></span></div>
+      <div id="upNextList"></div>
+    </section>
+
+    <!-- GIFTS -->
+    <section class="tab-panel" id="tab-gifts">
+      <div class="summary-row" id="giftSummaryRow"></div>
+      <div class="section-title">Gift list <span class="count" id="giftCount"></span></div>
+      <div id="giftList"></div>
+    </section>
+
+    <!-- CHECKLIST -->
+    <section class="tab-panel" id="tab-checklist">
+      <div class="section-title">Season checklist <span class="count" id="checklistCount"></span></div>
+      <div id="checklistList"></div>
+    </section>
+
+    <!-- CARDS -->
+    <section class="tab-panel" id="tab-cards">
+      <div class="summary-row" id="cardSummaryRow"></div>
+      <div class="section-title">Card list <span class="count" id="cardCount"></span></div>
+      <div id="cardList"></div>
+    </section>
+  </main>
+
+  <button class="fab" id="fabBtn" onclick="handleFab()">+</button>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="home" onclick="switchTab('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+      Home
+    </button>
+    <button class="tab-btn" data-tab="gifts" onclick="switchTab('gifts')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 8h18M12 8v13"/><path d="M12 8c-1.5-4-6-4-6-1s3 1 6 1z"/><path d="M12 8c1.5-4 6-4 6-1s-3 1-6 1z"/></svg>
+      Gifts
+    </button>
+    <button class="tab-btn" data-tab="checklist" onclick="switchTab('checklist')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l2 2 4-4"/><rect x="3" y="4" width="18" height="17" rx="2"/></svg>
+      Checklist
+    </button>
+    <button class="tab-btn" data-tab="cards" onclick="switchTab('cards')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 8l9 5 9-5"/></svg>
+      Cards
+    </button>
+  </nav>
+</div>
+</div>
+
+<!-- Gift form sheet -->
+<div class="sheet-backdrop" id="giftSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="giftSheetTitle">Add gift</h3>
+    <div class="field">
+      <label>Recipient</label>
+      <input type="text" id="giftRecipient" placeholder="Mom, Alex, Grandpa...">
+    </div>
+    <div class="field">
+      <label>Gift idea</label>
+      <input type="text" id="giftIdea" placeholder="What are you thinking of getting them?">
+    </div>
+    <div class="field">
+      <label>Budget ($)</label>
+      <input type="number" id="giftBudget" placeholder="0" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Status</label>
+      <select id="giftStatus">
+        <option value="idea">Just an idea</option>
+        <option value="purchased">Purchased</option>
+        <option value="wrapped">Wrapped</option>
+        <option value="given">Given</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeGiftSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGift()">Save gift</button>
+    </div>
+    <div class="btn-row" id="giftDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteGift()">Delete gift</button>
+    </div>
+  </div>
+</div>
+
+<!-- Checklist task sheet -->
+<div class="sheet-backdrop" id="taskSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="taskSheetTitle">Add task</h3>
+    <div class="field">
+      <label>Task</label>
+      <input type="text" id="taskName" placeholder="Decorate the tree, wrap gifts...">
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="taskCategory">
+        <option value="shopping">Shopping</option>
+        <option value="decorating">Decorating</option>
+        <option value="cooking">Cooking</option>
+        <option value="travel">Travel</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeTaskSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Save task</button>
+    </div>
+    <div class="btn-row" id="taskDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteTask()">Delete task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Card sheet -->
+<div class="sheet-backdrop" id="cardSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="cardSheetTitle">Add card</h3>
+    <div class="field">
+      <label>Recipient</label>
+      <input type="text" id="cardRecipient" placeholder="Who's this card for?">
+    </div>
+    <div class="field">
+      <label>Status</label>
+      <select id="cardStatus">
+        <option value="planned">Planned</option>
+        <option value="written">Written</option>
+        <option value="sent">Sent</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeCardSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCard()">Save card</button>
+    </div>
+    <div class="btn-row" id="cardDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteCard()">Delete card</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings sheet -->
+<div class="sheet-backdrop" id="settingsSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>Settings</h3>
+    <div class="field">
+      <label>Planner name</label>
+      <input type="text" id="plannerNameInput" placeholder="Jessica's, The Smiths', ..." oninput="savePlannerName()">
+    </div>
+    <div class="field">
+      <label>Thanksgiving date</label>
+      <select id="thanksgivingRegionInput" onchange="saveThanksgivingRegion()">
+        <option value="us">United States — 4th Thursday of November</option>
+        <option value="ca">Canada — 2nd Monday of October</option>
+      </select>
+    </div>
+    <div class="upsell-card">
+      <div class="upsell-title">Want automatic Google Drive backup?</div>
+      <div class="upsell-text">This free demo saves locally on this device only. The full Basic Holiday Planner adds Google Drive backup, so your list is always safe and synced.</div>
+      <a class="upsell-btn" href="https://www.etsy.com/listing/4551984713/christmas-gift-tracker-holiday-planner" target="_blank" rel="noopener">Get it on Etsy</a>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Export data</div>
+        <div class="lbl-sub">Save a local backup file</div>
+      </div>
+      <button class="settings-btn" onclick="exportLocal()">Export</button>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Import data</div>
+        <div class="lbl-sub">Load from a local backup file</div>
+      </div>
+      <button class="settings-btn" onclick="document.getElementById('importFileInput').click()">Import</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importLocal(event)">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeSettings()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Quick add chooser sheet (Home tab FAB) -->
+<div class="sheet-backdrop" id="quickAddSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>What would you like to add?</h3>
+    <div class="btn-row" style="flex-direction:column;">
+      <button class="btn btn-primary" style="margin-bottom:10px;" onclick="closeQuickAddSheet(); openGiftSheet(null);">Gift</button>
+      <button class="btn btn-primary" style="margin-bottom:10px;" onclick="closeQuickAddSheet(); openTaskSheet(null);">Checklist task</button>
+      <button class="btn btn-primary" onclick="closeQuickAddSheet(); openCardSheet(null);">Card</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeQuickAddSheet()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== Holiday Planner — Basic tier — FREE DEMO ===== */
+/* Storage keys namespaced for the demo so they never collide with the real app */
+
+const STORAGE_KEY = 'mfs_holidayplanner_demo_v1';
+const THEME_STORAGE_KEY = 'mfs_holidayplanner_demo_theme';
+const THEMES = ['evergreen', 'midnight-red', 'winter-berry', 'berry-pine', 'cream-holly', 'snow-cranberry', 'candlelight', 'peppermint'];
+
+let state = {
+  plannerName: '',
+  thanksgivingRegion: 'us',  // 'us' = 4th Thursday of November, 'ca' = 2nd Monday of October
+  gifts: [],   // {id, recipient, idea, budget, status}
+  tasks: [],   // {id, name, category, done}
+  cards: [],   // {id, recipient, status}
+  events: {}
+};
+
+let editingGiftId = null;
+let editingTaskId = null;
+let editingCardId = null;
+let currentTab = 'home';
+
+/* ---------- date helpers (local-date safe, no UTC boundary bug) ---------- */
+function todayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function fourthThursdayNovember(year) {
+  const d = new Date(year, 10, 1);
+  let count = 0;
+  while (true) {
+    if (d.getDay() === 4) {
+      count++;
+      if (count === 4) break;
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  return d;
+}
+
+function secondMondayOctober(year) {
+  const d = new Date(year, 9, 1);
+  let count = 0;
+  while (true) {
+    if (d.getDay() === 1) {
+      count++;
+      if (count === 2) break;
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  return d;
+}
+
+function computeHolidayDates() {
+  const now = new Date();
+  const todayD = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let year = now.getFullYear();
+  const isCanada = state.thanksgivingRegion === 'ca';
+  const thanksgivingFor = isCanada ? secondMondayOctober : fourthThursdayNovember;
+  let thanksgiving = thanksgivingFor(year);
+  if (thanksgiving < todayD) {
+    thanksgiving = thanksgivingFor(year + 1);
+  }
+  const ty = thanksgiving.getFullYear();
+  const fmt = (dt) => `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+
+  const christmasEve = new Date(ty, 11, 24);
+  const christmas = new Date(ty, 11, 25);
+  const newYearsEve = new Date(ty, 11, 31);
+
+  return {
+    thanksgiving: fmt(thanksgiving),
+    christmasEve: fmt(christmasEve),
+    christmas: fmt(christmas),
+    newYearsEve: fmt(newYearsEve)
+  };
+}
+
+function daysUntil(dateStr) {
+  const today = new Date(todayStr() + 'T00:00:00');
+  const target = new Date(dateStr + 'T00:00:00');
+  return Math.round((target - today) / 86400000);
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+/* ---------- persistence ---------- */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        state.gifts = Array.isArray(parsed.gifts) ? parsed.gifts : [];
+        state.tasks = Array.isArray(parsed.tasks) ? parsed.tasks : [];
+        state.cards = Array.isArray(parsed.cards) ? parsed.cards : [];
+        state.plannerName = typeof parsed.plannerName === 'string' ? parsed.plannerName : '';
+        state.thanksgivingRegion = parsed.thanksgivingRegion === 'ca' ? 'ca' : 'us';
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load local state', e);
+  }
+  state.events = computeHolidayDates();
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ gifts: state.gifts, tasks: state.tasks, cards: state.cards, plannerName: state.plannerName, thanksgivingRegion: state.thanksgivingRegion }));
+  } catch (e) {
+    console.error('Failed to save local state', e);
+    showToast('Could not save — storage may be full');
+  }
+}
+
+/* ---------- rendering ---------- */
+function render() {
+  renderBrand();
+  renderCountdown();
+  renderSummary();
+  renderUpNext();
+  renderGifts();
+  renderChecklist();
+  renderCards();
+}
+
+function renderBrand() {
+  const el = document.getElementById('brandText');
+  const name = (state.plannerName || '').trim();
+  if (name) {
+    el.innerHTML = `${escapeHtml(name)} <span class="accent">Holiday Planner</span>`;
+  } else {
+    el.innerHTML = `Basic Holiday <span class="accent">Planner</span>`;
+  }
+}
+
+function renderCountdown() {
+  const row = document.getElementById('countdownRow');
+  const items = [
+    { key: 'thanksgiving', label: 'Thanksgiving' },
+    { key: 'christmasEve', label: 'Christmas Eve' },
+    { key: 'christmas', label: 'Christmas' },
+    { key: 'newYearsEve', label: "New Year's Eve" }
+  ];
+  row.innerHTML = items.map(it => {
+    const d = daysUntil(state.events[it.key]);
+    const num = d < 0 ? '—' : d;
+    return `<div class="countdown-chip"><div class="num">${num}</div><div class="lbl">${it.label}</div></div>`;
+  }).join('');
+}
+
+function renderSummary() {
+  const totalBudget = state.gifts.reduce((s, g) => s + (parseFloat(g.budget) || 0), 0);
+  const purchased = state.gifts.filter(g => g.status === 'purchased' || g.status === 'wrapped' || g.status === 'given').length;
+  const totalGifts = state.gifts.length;
+  const row = document.getElementById('summaryRow');
+  row.innerHTML = `
+    <div class="summary-card good">
+      <div class="val">${purchased}/${totalGifts}</div>
+      <div class="lbl">Gifts purchased</div>
+    </div>
+    <div class="summary-card">
+      <div class="val">$${totalBudget.toFixed(0)}</div>
+      <div class="lbl">Total gift budget</div>
+    </div>
+  `;
+}
+
+function renderUpNext() {
+  const openTasks = state.tasks.filter(t => !t.done).slice(0, 5);
+  const list = document.getElementById('upNextList');
+  document.getElementById('upNextCount').textContent = state.tasks.filter(t => !t.done).length + ' left';
+  if (openTasks.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="big-icon">&#127876;</div><div class="msg">Nothing on your list yet.<br>Add tasks from the Checklist tab.</div></div>`;
+    return;
+  }
+  list.innerHTML = openTasks.map(t => `
+    <div class="item-card" onclick="openTaskSheet('${t.id}')">
+      <div class="status-dot" onclick="event.stopPropagation(); toggleTask('${t.id}')"></div>
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(t.name)}</div>
+        <div class="sub-line">${capitalize(t.category)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderGifts() {
+  const totalBudget = state.gifts.reduce((s, g) => s + (parseFloat(g.budget) || 0), 0);
+  const purchased = state.gifts.filter(g => g.status !== 'idea').length;
+  document.getElementById('giftSummaryRow').innerHTML = `
+    <div class="summary-card good"><div class="val">${purchased}/${state.gifts.length}</div><div class="lbl">In progress</div></div>
+    <div class="summary-card"><div class="val">$${totalBudget.toFixed(0)}</div><div class="lbl">Total budget</div></div>
+  `;
+  const list = document.getElementById('giftList');
+  document.getElementById('giftCount').textContent = state.gifts.length + ' total';
+  if (state.gifts.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="big-icon">&#127873;</div><div class="msg">No gifts yet.<br>Tap + to add your first one.</div></div>`;
+    return;
+  }
+  const statusLabel = { idea: 'Idea', purchased: 'Purchased', wrapped: 'Wrapped', given: 'Given' };
+  list.innerHTML = state.gifts.map(g => `
+    <div class="item-card ${g.status === 'given' ? 'done' : ''}" onclick="openGiftSheet('${g.id}')">
+      <div class="status-dot" onclick="event.stopPropagation(); cycleGiftStatus('${g.id}')">${g.status === 'given' ? '&#10003;' : ''}</div>
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(g.idea || 'Gift idea TBD')}</div>
+        <div class="sub-line">${escapeHtml(g.recipient)} &middot; ${statusLabel[g.status] || 'Idea'}</div>
+      </div>
+      <div class="amount">${g.budget ? '$' + parseFloat(g.budget).toFixed(0) : ''}</div>
+    </div>
+  `).join('');
+}
+
+function renderChecklist() {
+  const list = document.getElementById('checklistList');
+  const openCount = state.tasks.filter(t => !t.done).length;
+  document.getElementById('checklistCount').textContent = `${openCount} left`;
+  if (state.tasks.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="big-icon">&#9989;</div><div class="msg">No tasks yet.<br>Tap + to add shopping, decorating and more.</div></div>`;
+    return;
+  }
+  const sorted = [...state.tasks].sort((a, b) => (a.done === b.done) ? 0 : a.done ? 1 : -1);
+  list.innerHTML = sorted.map(t => `
+    <div class="item-card ${t.done ? 'done' : ''}" onclick="openTaskSheet('${t.id}')">
+      <div class="status-dot" onclick="event.stopPropagation(); toggleTask('${t.id}')">${t.done ? '&#10003;' : ''}</div>
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(t.name)}</div>
+        <div class="sub-line">${capitalize(t.category)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCards() {
+  const total = state.cards.length;
+  const sent = state.cards.filter(c => c.status === 'sent').length;
+  document.getElementById('cardSummaryRow').innerHTML = `
+    <div class="summary-card good"><div class="val">${sent}/${total}</div><div class="lbl">Cards sent</div></div>
+    <div class="summary-card"><div class="val">${total - sent}</div><div class="lbl">Still to go</div></div>
+  `;
+  const list = document.getElementById('cardList');
+  document.getElementById('cardCount').textContent = total + ' total';
+  if (total === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="big-icon">&#128235;</div><div class="msg">No cards yet.<br>Tap + to start your list.</div></div>`;
+    return;
+  }
+  const statusLabel = { planned: 'Planned', written: 'Written', sent: 'Sent' };
+  list.innerHTML = state.cards.map(c => `
+    <div class="item-card ${c.status === 'sent' ? 'done' : ''}" onclick="openCardSheet('${c.id}')">
+      <div class="status-dot" onclick="event.stopPropagation(); cycleCardStatus('${c.id}')">${c.status === 'sent' ? '&#10003;' : ''}</div>
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(c.recipient)}</div>
+        <div class="sub-line">${statusLabel[c.status] || 'Planned'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+
+/* ---------- tab switching ---------- */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+  currentTab = tab;
+}
+
+function handleFab() {
+  if (currentTab === 'gifts') openGiftSheet(null);
+  else if (currentTab === 'checklist') openTaskSheet(null);
+  else if (currentTab === 'cards') openCardSheet(null);
+  else openQuickAddSheet();
+}
+function openQuickAddSheet() {
+  document.getElementById('quickAddSheetBackdrop').classList.add('open');
+}
+function closeQuickAddSheet() {
+  document.getElementById('quickAddSheetBackdrop').classList.remove('open');
+}
+
+/* ---------- gift CRUD ---------- */
+function openGiftSheet(id) {
+  editingGiftId = id;
+  const backdrop = document.getElementById('giftSheetBackdrop');
+  const deleteRow = document.getElementById('giftDeleteRow');
+  if (id) {
+    const g = state.gifts.find(x => x.id === id);
+    document.getElementById('giftSheetTitle').textContent = 'Edit gift';
+    document.getElementById('giftRecipient').value = g.recipient || '';
+    document.getElementById('giftIdea').value = g.idea || '';
+    document.getElementById('giftBudget').value = g.budget || '';
+    document.getElementById('giftStatus').value = g.status || 'idea';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('giftSheetTitle').textContent = 'Add gift';
+    document.getElementById('giftRecipient').value = '';
+    document.getElementById('giftIdea').value = '';
+    document.getElementById('giftBudget').value = '';
+    document.getElementById('giftStatus').value = 'idea';
+    deleteRow.style.display = 'none';
+  }
+  backdrop.classList.add('open');
+}
+function closeGiftSheet() {
+  document.getElementById('giftSheetBackdrop').classList.remove('open');
+  editingGiftId = null;
+}
+function saveGift() {
+  const recipient = document.getElementById('giftRecipient').value.trim();
+  const idea = document.getElementById('giftIdea').value.trim();
+  const budget = document.getElementById('giftBudget').value;
+  const status = document.getElementById('giftStatus').value;
+  if (!recipient) { showToast('Add a recipient name first'); return; }
+  if (editingGiftId) {
+    const g = state.gifts.find(x => x.id === editingGiftId);
+    g.recipient = recipient; g.idea = idea; g.budget = budget; g.status = status;
+  } else {
+    state.gifts.push({ id: uid(), recipient, idea, budget, status });
+  }
+  saveState(); render(); closeGiftSheet(); showToast('Gift saved');
+}
+function deleteGift() {
+  state.gifts = state.gifts.filter(g => g.id !== editingGiftId);
+  saveState(); render(); closeGiftSheet(); showToast('Gift deleted');
+}
+function cycleGiftStatus(id) {
+  const g = state.gifts.find(x => x.id === id);
+  const order = ['idea', 'purchased', 'wrapped', 'given'];
+  g.status = order[(order.indexOf(g.status) + 1) % order.length];
+  saveState(); render();
+}
+
+/* ---------- task CRUD ---------- */
+function openTaskSheet(id) {
+  editingTaskId = id;
+  const backdrop = document.getElementById('taskSheetBackdrop');
+  const deleteRow = document.getElementById('taskDeleteRow');
+  if (id) {
+    const t = state.tasks.find(x => x.id === id);
+    document.getElementById('taskSheetTitle').textContent = 'Edit task';
+    document.getElementById('taskName').value = t.name || '';
+    document.getElementById('taskCategory').value = t.category || 'other';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('taskSheetTitle').textContent = 'Add task';
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskCategory').value = 'shopping';
+    deleteRow.style.display = 'none';
+  }
+  backdrop.classList.add('open');
+}
+function closeTaskSheet() {
+  document.getElementById('taskSheetBackdrop').classList.remove('open');
+  editingTaskId = null;
+}
+function saveTask() {
+  const name = document.getElementById('taskName').value.trim();
+  const category = document.getElementById('taskCategory').value;
+  if (!name) { showToast('Add a task name first'); return; }
+  if (editingTaskId) {
+    const t = state.tasks.find(x => x.id === editingTaskId);
+    t.name = name; t.category = category;
+  } else {
+    state.tasks.push({ id: uid(), name, category, done: false });
+  }
+  saveState(); render(); closeTaskSheet(); showToast('Task saved');
+}
+function deleteTask() {
+  state.tasks = state.tasks.filter(t => t.id !== editingTaskId);
+  saveState(); render(); closeTaskSheet(); showToast('Task deleted');
+}
+function toggleTask(id) {
+  const t = state.tasks.find(x => x.id === id);
+  t.done = !t.done;
+  saveState(); render();
+}
+
+/* ---------- card CRUD ---------- */
+function openCardSheet(id) {
+  editingCardId = id;
+  const backdrop = document.getElementById('cardSheetBackdrop');
+  const deleteRow = document.getElementById('cardDeleteRow');
+  if (id) {
+    const c = state.cards.find(x => x.id === id);
+    document.getElementById('cardSheetTitle').textContent = 'Edit card';
+    document.getElementById('cardRecipient').value = c.recipient || '';
+    document.getElementById('cardStatus').value = c.status || 'planned';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('cardSheetTitle').textContent = 'Add card';
+    document.getElementById('cardRecipient').value = '';
+    document.getElementById('cardStatus').value = 'planned';
+    deleteRow.style.display = 'none';
+  }
+  backdrop.classList.add('open');
+}
+function closeCardSheet() {
+  document.getElementById('cardSheetBackdrop').classList.remove('open');
+  editingCardId = null;
+}
+function saveCard() {
+  const recipient = document.getElementById('cardRecipient').value.trim();
+  const status = document.getElementById('cardStatus').value;
+  if (!recipient) { showToast('Add a recipient first'); return; }
+  if (editingCardId) {
+    const c = state.cards.find(x => x.id === editingCardId);
+    c.recipient = recipient; c.status = status;
+  } else {
+    state.cards.push({ id: uid(), recipient, status });
+  }
+  saveState(); render(); closeCardSheet(); showToast('Card saved');
+}
+function deleteCard() {
+  state.cards = state.cards.filter(c => c.id !== editingCardId);
+  saveState(); render(); closeCardSheet(); showToast('Card deleted');
+}
+function cycleCardStatus(id) {
+  const c = state.cards.find(x => x.id === id);
+  const order = ['planned', 'written', 'sent'];
+  c.status = order[(order.indexOf(c.status) + 1) % order.length];
+  saveState(); render();
+}
+
+/* ---------- toast ---------- */
+let toastTimer = null;
+function showToast(msg, action) {
+  const el = document.getElementById('toast');
+  el.innerHTML = '';
+  el.appendChild(document.createTextNode(msg));
+  if (action) {
+    const btn = document.createElement('button');
+    btn.textContent = action.label;
+    btn.className = 'toast-action';
+    btn.onclick = () => {
+      el.classList.remove('show');
+      clearTimeout(toastTimer);
+      action.onClick();
+    };
+    el.appendChild(btn);
+  }
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), action ? 5000 : 2200);
+}
+
+/* ---------- settings sheet ---------- */
+function openSettings() {
+  document.getElementById('settingsSheetBackdrop').classList.add('open');
+  document.getElementById('plannerNameInput').value = state.plannerName || '';
+  document.getElementById('thanksgivingRegionInput').value = state.thanksgivingRegion || 'us';
+}
+function closeSettings() {
+  document.getElementById('settingsSheetBackdrop').classList.remove('open');
+}
+function savePlannerName() {
+  state.plannerName = document.getElementById('plannerNameInput').value;
+  saveState();
+  renderBrand();
+}
+function saveThanksgivingRegion() {
+  state.thanksgivingRegion = document.getElementById('thanksgivingRegionInput').value === 'ca' ? 'ca' : 'us';
+  state.events = computeHolidayDates();
+  saveState();
+  render();
+  showToast(state.thanksgivingRegion === 'ca' ? 'Switched to Canadian Thanksgiving' : 'Switched to U.S. Thanksgiving');
+}
+
+/* ---------- local export/import ---------- */
+function exportLocal() {
+  const payload = JSON.stringify({ gifts: state.gifts, tasks: state.tasks, cards: state.cards, plannerName: state.plannerName, thanksgivingRegion: state.thanksgivingRegion, exportedAt: new Date().toISOString() }, null, 2);
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `holiday-planner-backup-${todayStr()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Exported backup file');
+}
+
+function importLocal(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const incomingGifts = Array.isArray(data.gifts) ? data.gifts : null;
+      const incomingTasks = Array.isArray(data.tasks) ? data.tasks : null;
+      const incomingCards = Array.isArray(data.cards) ? data.cards : null;
+      if (incomingGifts === null || incomingTasks === null || incomingCards === null) {
+        showToast("That file doesn't look like a valid backup");
+        return;
+      }
+      const hasLocalData = state.gifts.length > 0 || state.tasks.length > 0 || state.cards.length > 0;
+      if (hasLocalData) {
+        const proceed = confirm('This will replace your current data with the imported file. Continue?');
+        if (!proceed) return;
+      }
+      state.gifts = incomingGifts;
+      state.tasks = incomingTasks;
+      state.cards = incomingCards;
+      if (typeof data.plannerName === 'string') state.plannerName = data.plannerName;
+      if (data.thanksgivingRegion === 'ca' || data.thanksgivingRegion === 'us') state.thanksgivingRegion = data.thanksgivingRegion;
+      state.events = computeHolidayDates();
+      saveState(); render();
+      showToast('Data imported');
+    } catch (err) {
+      showToast('Could not read that file');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ---------- free trial window ---------- */
+var DEMO_TRIAL_DAYS = 14;
+function demoTrialDaysLeft() {
+  var KEY = 'mfs_holidayplanner_demo_since';
+  var since;
+  try { since = localStorage.getItem(KEY); } catch (e) { since = null; }
+  if (!since) {
+    since = Date.now();
+    try { localStorage.setItem(KEY, since); } catch (e) {}
+  }
+  var elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
+  return DEMO_TRIAL_DAYS - elapsedDays;
+}
+function enforceDemoTrial() {
+  var daysLeft = demoTrialDaysLeft();
+  var banner = document.getElementById('demo-banner');
+  if (daysLeft <= 0) {
+    document.getElementById('trial-lock').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    if (banner) banner.style.display = 'none';
+    return true;
+  }
+  if (banner) {
+    var noun = daysLeft === 1 ? 'day' : 'days';
+    banner.innerHTML = '<b>Free demo</b> &middot; ' + daysLeft + ' ' + noun + ' left &middot; <a href="https://www.etsy.com/listing/4551984713/christmas-gift-tracker-holiday-planner" target="_blank" rel="noopener">Get the full app &rarr;</a>';
+  }
+  return false;
+}
+
+/* ---------- init ---------- */
+/* ---------- color theme ---------- */
+function applyTheme(themeName) {
+  document.documentElement.setAttribute('data-theme', themeName);
+}
+function loadTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem(THEME_STORAGE_KEY); } catch (e) {}
+  const theme = THEMES.includes(saved) ? saved : THEMES[0];
+  applyTheme(theme);
+  return theme;
+}
+function cycleTheme() {
+  let current = document.documentElement.getAttribute('data-theme') || THEMES[0];
+  const idx = THEMES.indexOf(current);
+  const next = THEMES[(idx + 1) % THEMES.length];
+  applyTheme(next);
+  try { localStorage.setItem(THEME_STORAGE_KEY, next); } catch (e) {}
+  showToast(themeLabel(next));
+}
+function themeLabel(themeName) {
+  const labels = {
+    'evergreen': 'Evergreen',
+    'midnight-red': 'Midnight Red',
+    'winter-berry': 'Winter Berry',
+    'berry-pine': 'Berry & Pine',
+    'cream-holly': 'Cream & Holly',
+    'snow-cranberry': 'Snow & Cranberry',
+    'candlelight': 'Candlelight',
+    'peppermint': 'Peppermint'
+  };
+  return labels[themeName] || themeName;
+}
+
+// Apply saved theme immediately (before DOMContentLoaded) to avoid a flash of the default theme
+loadTheme();
+
+function init() {
+  loadState();
+  render();
+  enforceDemoTrial();
+
+  document.querySelectorAll('.sheet-backdrop').forEach(bd => {
+    bd.addEventListener('click', (e) => {
+      if (e.target === bd) bd.classList.remove('open');
+    });
+  });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
