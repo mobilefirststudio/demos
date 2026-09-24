@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Ultimate Healing Habits Tracker — Free Trial — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#f4f1fb" id="theme-color-meta" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ---------- Dark themes ---------- */
+  :root, [data-theme="deep"] {
+    --bg-a: #17102c; --bg-b: #0d0a1c;
+    --card: rgba(28, 20, 51, 0.8); --card-hi: rgba(35, 25, 63, 0.88);
+    --accent-a: #c2b3ff; --accent-b: #9d84ff;
+    --text: #f3efff; --text-muted: #b3a4d9; --text-faint: #6f5f96;
+    --border-soft: rgba(157, 132, 255, 0.24); --on-accent: #1c1440;
+    --glow: rgba(157, 132, 255, 0.32);
+  }
+  [data-theme="rose"] {
+    --bg-a: #17102c; --bg-b: #0d0a1c;
+    --card: rgba(28, 20, 51, 0.8); --card-hi: rgba(35, 25, 63, 0.88);
+    --accent-a: #f3b8c8; --accent-b: #e08aa4;
+    --text: #f3efff; --text-muted: #b3a4d9; --text-faint: #6f5f96;
+    --border-soft: rgba(224, 138, 164, 0.26); --on-accent: #2f1420;
+    --glow: rgba(224, 138, 164, 0.32);
+  }
+  [data-theme="sage"] {
+    --bg-a: #17102c; --bg-b: #0d0a1c;
+    --card: rgba(28, 20, 51, 0.8); --card-hi: rgba(35, 25, 63, 0.88);
+    --accent-a: #b7d9a8; --accent-b: #8ab86e;
+    --text: #f3efff; --text-muted: #b3a4d9; --text-faint: #6f5f96;
+    --border-soft: rgba(138, 184, 110, 0.26); --on-accent: #16210f;
+    --glow: rgba(138, 184, 110, 0.32);
+  }
+  [data-theme="midnight"] {
+    --bg-a: #0b0f1f; --bg-b: #05070f;
+    --card: rgba(18, 24, 43, 0.82); --card-hi: rgba(24, 32, 56, 0.9);
+    --accent-a: #8fb8ff; --accent-b: #5b8cf0;
+    --text: #eaf1ff; --text-muted: #9aabcf; --text-faint: #5d6c8f;
+    --border-soft: rgba(91, 140, 240, 0.26); --on-accent: #0c1730;
+    --glow: rgba(91, 140, 240, 0.34);
+  }
+
+  /* ---------- Light themes ---------- */
+  [data-theme="soft"] {
+    --bg-a: #f4f1fb; --bg-b: #e2ddf3;
+    --card: rgba(255, 255, 255, 0.68); --card-hi: rgba(255, 255, 255, 0.82);
+    --accent-a: #b9aaf2; --accent-b: #8f78e8;
+    --text: #2a2145; --text-muted: #5c4f80; --text-faint: #8f82ad;
+    --border-soft: rgba(143, 120, 232, 0.28); --on-accent: #ffffff;
+    --glow: rgba(143, 120, 232, 0.28);
+  }
+  [data-theme="warm"] {
+    --bg-a: #f7ecf5; --bg-b: #ecd7ea;
+    --card: rgba(255, 255, 255, 0.62); --card-hi: rgba(255, 255, 255, 0.78);
+    --accent-a: #d9b8e8; --accent-b: #b98fd1;
+    --text: #3a1f3a; --text-muted: #6b4a68; --text-faint: #9c7a97;
+    --border-soft: rgba(185, 143, 209, 0.28); --on-accent: #2f1830;
+    --glow: rgba(185, 143, 209, 0.3);
+  }
+  [data-theme="cool"] {
+    --bg-a: #eef3fb; --bg-b: #dbe6f5;
+    --card: rgba(255, 255, 255, 0.64); --card-hi: rgba(255, 255, 255, 0.8);
+    --accent-a: #a8c5ea; --accent-b: #6f9bd8;
+    --text: #1e2c3f; --text-muted: #4f647d; --text-faint: #8296ac;
+    --border-soft: rgba(111, 155, 216, 0.28); --on-accent: #ffffff;
+    --glow: rgba(111, 155, 216, 0.3);
+  }
+  [data-theme="sand"] {
+    --bg-a: #faf3ea; --bg-b: #f0e2cf;
+    --card: rgba(255, 255, 255, 0.64); --card-hi: rgba(255, 255, 255, 0.8);
+    --accent-a: #e3c497; --accent-b: #c99b5c;
+    --text: #3a2b1a; --text-muted: #6b5740; --text-faint: #9c8a72;
+    --border-soft: rgba(201, 155, 92, 0.28); --on-accent: #2f2213;
+    --glow: rgba(201, 155, 92, 0.3);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, var(--bg-a), var(--bg-b));
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  .app { width: 100%; max-width: 480px; min-height: 100vh; padding: 1.1rem 1rem calc(6rem + env(safe-area-inset-bottom)); position: relative; }
+
+  header { position: relative; display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.1rem; gap: 0.6rem; }
+  header::before {
+    content: ""; position: absolute; top: -30px; left: -20px; width: 220px; height: 140px;
+    background: radial-gradient(circle, var(--glow), transparent 70%);
+    filter: blur(18px); z-index: -1; pointer-events: none;
+  }
+  .header-text { display: flex; flex-direction: column; gap: 0.15rem; }
+  .eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-faint); }
+  .app-name { font-family: "Lora", Georgia, serif; font-style: italic; font-weight: 500; font-size: 1.32rem; color: var(--accent-b); line-height: 1.25; }
+  .app-subtitle { font-size: 0.76rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.2rem; }
+
+  .theme-btn {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-soft);
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 20px var(--glow);
+  }
+
+  main { width: 100%; }
+  .screen { display: none; width: 100%; animation: screenIn 0.25s ease; }
+  .screen.active-screen { display: block; }
+  @keyframes screenIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border-soft); border-radius: 1.15rem;
+    padding: 1.15rem 1.05rem;
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.1), 0 4px 18px var(--glow);
+    margin-bottom: 0.85rem;
+    backdrop-filter: blur(8px);
+  }
+  .card-header { margin-bottom: 0.7rem; }
+  .card-title { font-family: "Lora", Georgia, serif; font-style: italic; font-size: 1.08rem; color: var(--text); }
+  .card-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+  .note { margin-top: 0.7rem; font-size: 0.72rem; color: var(--text-faint); line-height: 1.55; }
+
+  .signature-row { display: flex; gap: 0.7rem; }
+  .signature-half { flex: 1; display: flex; align-items: center; gap: 0.7rem; }
+
+  .wheel-wrap { position: relative; width: 62px; height: 62px; flex-shrink: 0; }
+  .wheel-wrap svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 10px var(--glow)); }
+  .wheel-quadrant { transition: opacity 0.6s ease; }
+  .wheel-center { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--card-hi); border: 1px solid var(--border-soft); }
+
+  .pulse-wrap { position: relative; width: 62px; height: 62px; flex-shrink: 0; }
+  .pulse-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); filter: drop-shadow(0 4px 10px var(--glow)); }
+  .pulse-bg { fill: none; stroke: var(--border-soft); stroke-width: 6; }
+  .pulse-fill { fill: none; stroke: url(#pulseGradient); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+  .pulse-center { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: "Lora", Georgia, serif; font-size: 0.85rem; color: var(--text); }
+
+  .signature-label { font-family: "Lora", Georgia, serif; font-style: italic; font-size: 0.88rem; color: var(--text); line-height: 1.3; }
+  .signature-sub { font-size: 0.66rem; color: var(--text-muted); margin-top: 0.1rem; line-height: 1.4; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .stat { background: rgba(255, 255, 255, 0.42); border: 1px solid var(--border-soft); border-radius: 0.75rem; padding: 0.6rem 0.5rem; text-align: center; }
+  .stat-value { font-family: "Lora", Georgia, serif; font-size: 1.2rem; color: var(--text); }
+  .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+
+  .progress-container { background: rgba(255, 255, 255, 0.38); border: 1px solid var(--border-soft); border-radius: 999px; height: 16px; width: 100%; overflow: hidden; margin-top: 0.5rem; }
+  .progress-fill { background: linear-gradient(90deg, var(--accent-a), var(--accent-b)); height: 100%; width: 0%; border-radius: 999px; transition: width 0.5s ease; }
+  .progress-score-text { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+  .field { margin-bottom: 0.75rem; }
+  .field label { display: block; font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+  .field textarea {
+    width: 100%; min-height: 62px; padding: 0.65rem 0.75rem; border-radius: 0.75rem; resize: vertical;
+    border: 1px solid var(--border-soft); background: var(--card-hi);
+    color: var(--text); font-family: "Inter", sans-serif; font-size: 0.82rem; line-height: 1.5;
+  }
+  .field textarea::placeholder { color: var(--text-faint); opacity: 1; }
+  .field textarea:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+
+  .btn-primary {
+    width: 100%; padding: 0.68rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
+    box-shadow: 0 10px 26px var(--glow);
+    transition: transform 0.15s ease;
+  }
+  .btn-primary:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .btn-primary.pulse { animation: btnPulse 0.4s ease; }
+  @keyframes btnPulse { 0% { transform: scale(1); } 45% { transform: scale(1.035); } 100% { transform: scale(1); } }
+
+  .btn-secondary {
+    width: 100%; padding: 0.6rem; border-radius: 999px; margin-top: 0.5rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.76rem; cursor: pointer;
+  }
+
+  .subtab-row { display: flex; gap: 0.35rem; margin-bottom: 0.85rem; overflow-x: auto; }
+  .subtab {
+    flex-shrink: 0; padding: 0.4rem 0.7rem; border-radius: 999px; font-size: 0.68rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); cursor: pointer;
+    display: flex; align-items: center; gap: 0.3rem;
+  }
+  .subtab.active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; border-color: transparent; }
+  .subtab .step-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+  .subtab.done .step-dot { opacity: 1; }
+
+  .today-summary-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-soft); }
+  .today-summary-row:last-child { border-bottom: none; }
+  .today-summary-label { font-size: 0.68rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .today-summary-value { font-size: 0.82rem; color: var(--text); text-align: right; line-height: 1.5; }
+
+  .list-item { background: rgba(255, 255, 255, 0.42); border: 1px solid var(--border-soft); border-radius: 0.85rem; padding: 0.7rem 0.8rem; margin-bottom: 0.5rem; cursor: pointer; }
+  .list-item-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .list-item-state { font-size: 0.82rem; color: var(--text); font-weight: 500; }
+  .list-item-date { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.2rem; }
+  .detail-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-soft); }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-label { font-size: 0.68rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .detail-value { font-size: 0.8rem; color: var(--text); text-align: right; line-height: 1.5; }
+
+  .empty-state { margin-top: 0.7rem; padding: 1.1rem 0.9rem; border: 1px dashed var(--border-soft); border-radius: 0.85rem; text-align: center; font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+  .backup-status-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.42); }
+  .backup-status-text { font-size: 0.75rem; color: var(--text-muted); }
+  .backup-status-sub { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.1rem; }
+  .backup-badge { font-size: 0.62rem; padding: 0.2rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .backup-badge.connected { color: #16210f; background: linear-gradient(135deg, #b7d99a, #8ab86a); }
+  .backup-badge.disconnected { color: var(--text-faint); background: rgba(255, 255, 255, 0.4); }
+  .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
+  .backup-btn { padding: 0.6rem 0.5rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: transparent; color: var(--text); font-size: 0.74rem; font-weight: 500; cursor: pointer; font-family: "Inter", sans-serif; }
+  .backup-btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+  .backup-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
+  .backup-section-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+
+  .tabbar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px; display: flex; justify-content: space-between; gap: 0.2rem;
+    padding: 0.6rem 0.6rem calc(0.6rem + env(safe-area-inset-bottom));
+    border-radius: 0; background: var(--card-hi); border: none; border-top: 1px solid var(--border-soft);
+    backdrop-filter: blur(12px); z-index: 50; box-shadow: 0 -4px 20px var(--glow);
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+  .tab { flex: 1; text-align: center; font-size: 0.68rem; padding: 0.5rem 0.2rem; border-radius: 999px; color: var(--text-faint); cursor: pointer; border: none; background: transparent; font-family: "Inter", sans-serif; transition: background 0.2s ease, color 0.2s ease; }
+  .tab:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .tab-active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20, 15, 30, 0.42); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft);
+    border-top-left-radius: 1.4rem; border-top-right-radius: 1.4rem;
+    padding: 1.3rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom)); width: 100%; max-width: 480px;
+    max-height: 82vh; overflow-y: auto; box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.2); animation: modalUp 0.28s ease-out;
+    backdrop-filter: blur(12px);
+  }
+  @keyframes modalUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .modal-title { font-family: "Lora", Georgia, serif; font-style: italic; font-size: 1.2rem; color: var(--text); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--text-muted); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .modal-body-text { margin-top: 0.7rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+  .modal-section { margin-top: 0.6rem; }
+  .modal-cta { margin-top: 1.1rem; width: 100%; padding: 0.7rem; border-radius: 999px; border: none; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .modal-cta.danger { background: linear-gradient(135deg, #eba3ac, #cf5a68); color: #2a0a0c; }
+  .modal-cta-secondary { margin-top: 0.6rem; width: 100%; padding: 0.65rem; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; }
+
+  .toast {
+    position: fixed; bottom: 5.6rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--card-hi); border: 1px solid var(--border-soft); color: var(--text);
+    font-size: 0.78rem; padding: 0.6rem 1rem; border-radius: 1.1rem; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000;
+    white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+    backdrop-filter: blur(8px);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-action { color: var(--text); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; }
+
+  /* ---------- Free trial demo ---------- */
+  .demo-banner {
+    position: sticky; top: 0; z-index: 60;
+    margin: -1.1rem -1rem 0.85rem -1rem;
+    padding: 0.55rem 1rem;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent);
+    font-size: 0.72rem; font-weight: 600; text-align: center;
+    letter-spacing: 0.01em;
+  }
+  .demo-banner a { color: var(--on-accent); text-decoration: underline; }
+
+  .upsell-card {
+    border-radius: 0.85rem; padding: 0.9rem 1rem; margin-bottom: 0.9rem;
+    background: var(--card); border: 1px solid var(--border-soft);
+  }
+  .upsell-title { font-size: 0.78rem; font-weight: 600; color: var(--text); margin-bottom: 0.35rem; }
+  .upsell-text { font-size: 0.74rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 0.7rem; }
+  .upsell-btn {
+    display: inline-block; padding: 0.55rem 0.9rem; border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 0.74rem; font-weight: 600; text-decoration: none;
+  }
+
+  #trial-lock {
+    display: none; position: fixed; inset: 0; z-index: 900;
+    background: rgba(20, 15, 30, 0.55); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 1.5rem;
+  }
+  #trial-lock .lock-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft);
+    border-radius: 1.1rem; padding: 1.6rem 1.4rem; max-width: 360px; text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  }
+  #trial-lock .lock-title { font-family: "Lora", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--text); margin-bottom: 0.6rem; }
+  #trial-lock .lock-text { font-size: 0.82rem; line-height: 1.55; color: var(--text-muted); margin-bottom: 1.1rem; }
+  #trial-lock .lock-cta {
+    display: inline-block; padding: 0.7rem 1.3rem; border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 0.85rem; font-weight: 600; text-decoration: none;
+  }
+</style>
+</head>
+<body data-theme="soft">
+
+<div class="app">
+  <div class="demo-banner" id="demo-banner"><span id="demo-banner-text">Free trial — 14 days left</span></div>
+  <div id="trial-lock">
+    <div class="lock-card">
+      <div class="lock-title">Your free trial has ended</div>
+      <div class="lock-text">Your 14-day trial of Ultimate Healing Habits Tracker has ended. Purchase the full version on Etsy to keep tracking your habits, reset sessions, and progress, with no interruptions and optional Google Drive backup.</div>
+      <a class="lock-cta" href="https://www.etsy.com/listing/4535921614/ultimate-healing-habits-tracker-guided" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-text">
+      <div class="eyebrow">Mobile First Studio</div>
+      <div class="app-name">Ultimate Healing Habits Tracker</div>
+      <div class="app-subtitle">Daily habits + emotional reset + grounding + somatic calm.</div>
+    </div>
+    <button class="theme-btn" id="theme-btn" title="Change theme">✨</button>
+  </header>
+
+  <main>
+
+    <section id="screen-home" class="screen active-screen">
+      <section class="card">
+        <div class="card-header"><div class="card-title">Today's Signal</div></div>
+
+        <div class="signature-row">
+          <div class="signature-half">
+            <div class="wheel-wrap">
+              <svg viewBox="0 0 62 62">
+                <path class="wheel-quadrant" id="q-somatic" d="M31,31 L31,0 A31,31 0 0,1 62,31 Z" fill="var(--accent-b)" />
+                <path class="wheel-quadrant" id="q-cognitive" d="M31,31 L62,31 A31,31 0 0,1 31,62 Z" fill="var(--accent-a)" />
+                <path class="wheel-quadrant" id="q-emotional" d="M31,31 L31,62 A31,31 0 0,1 0,31 Z" fill="var(--accent-b)" />
+                <path class="wheel-quadrant" id="q-spiritual" d="M31,31 L0,31 A31,31 0 0,1 31,0 Z" fill="var(--accent-a)" />
+              </svg>
+              <div class="wheel-center"></div>
+            </div>
+            <div>
+              <div class="signature-label">Habits</div>
+              <div class="signature-sub" id="wheel-sub">Last 7 days</div>
+            </div>
+          </div>
+
+          <div class="signature-half">
+            <div class="pulse-wrap">
+              <svg viewBox="0 0 62 62">
+                <defs>
+                  <linearGradient id="pulseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="var(--accent-a)" />
+                    <stop offset="100%" stop-color="var(--accent-b)" />
+                  </linearGradient>
+                </defs>
+                <circle class="pulse-bg" cx="31" cy="31" r="25" />
+                <circle class="pulse-fill" id="pulse-fill" cx="31" cy="31" r="25" stroke-dasharray="157" stroke-dashoffset="157" />
+              </svg>
+              <div class="pulse-center" id="pulse-center-text">0/3</div>
+            </div>
+            <div>
+              <div class="signature-label">Reset</div>
+              <div class="signature-sub" id="pulse-sub">Not started</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat"><div class="stat-value" id="home-stat-streak">0</div><div class="stat-label">Habit streak</div></div>
+          <div class="stat"><div class="stat-value" id="home-stat-sessions">0</div><div class="stat-label">Resets logged</div></div>
+          <div class="stat"><div class="stat-value" id="home-stat-week">0</div><div class="stat-label">Resets this week</div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><div class="card-title">Today's Healing Anchor</div></div>
+        <div class="note" id="anchor-text" style="margin-top:0;">No anchor set yet.</div>
+      </section>
+
+      <button class="btn-primary" id="home-action-btn">Start Guided Flow</button>
+    </section>
+
+    <section id="screen-practice" class="screen">
+      <section class="card">
+        <div class="subtab-row">
+          <button class="subtab active" data-subtab="daily"><span class="step-dot"></span>Daily</button>
+          <button class="subtab" data-subtab="reset"><span class="step-dot"></span>Reset</button>
+          <button class="subtab" data-subtab="somatic"><span class="step-dot"></span>Somatic</button>
+          <button class="subtab" data-subtab="grounding"><span class="step-dot"></span>Grounding</button>
+        </div>
+
+        <div class="practice-panel" data-panel="daily">
+          <div class="card-header"><div class="card-title">Daily Healing Habits</div></div>
+          <div class="field"><label>Somatic habit</label><textarea id="d-somatic" placeholder="Movement, stretching, grounding…"></textarea></div>
+          <div class="field"><label>Cognitive habit</label><textarea id="d-cognitive" placeholder="Reframing, journaling, thought work…"></textarea></div>
+          <div class="field"><label>Emotional habit</label><textarea id="d-emotional" placeholder="Self-compassion, emotional check-in…"></textarea></div>
+          <div class="field"><label>Spiritual habit</label><textarea id="d-spiritual" placeholder="Meditation, prayer, ritual…"></textarea></div>
+          <button class="btn-primary" id="save-daily-btn">Save daily habits</button>
+        </div>
+
+        <div class="practice-panel" data-panel="reset" style="display:none;">
+          <div class="card-header"><div class="card-title">Emotional Reset</div><div class="card-subtitle">Part of today's reset session.</div></div>
+          <div class="field"><label>Anxious thought</label><textarea id="r-thought" placeholder="What thought is causing tension?"></textarea></div>
+          <div class="field"><label>Softer truth</label><textarea id="r-truth" placeholder="A gentler, more compassionate truth…"></textarea></div>
+          <button class="btn-primary" id="save-reset-btn">Save emotional reset</button>
+        </div>
+
+        <div class="practice-panel" data-panel="somatic" style="display:none;">
+          <div class="card-header"><div class="card-title">Somatic Calm</div><div class="card-subtitle">Part of today's reset session.</div></div>
+          <div class="field"><label>Somatic action</label><textarea id="s-action" placeholder="Stretching, shaking, tapping…"></textarea></div>
+          <div class="field"><label>Body response</label><textarea id="s-response" placeholder="What softened or released?"></textarea></div>
+          <button class="btn-primary" id="save-somatic-btn">Save somatic calm</button>
+        </div>
+
+        <div class="practice-panel" data-panel="grounding" style="display:none;">
+          <div class="card-header"><div class="card-title">Grounding Tool</div><div class="card-subtitle">Part of today's reset session.</div></div>
+          <div class="field"><label>Grounding tool used</label><textarea id="g-tool" placeholder="5-4-3-2-1, cold water, sensory grounding…"></textarea></div>
+          <div class="field"><label>Why it helped</label><textarea id="g-why" placeholder="What shifted in your body or mind?"></textarea></div>
+          <button class="btn-primary" id="save-grounding-btn">Save grounding tool</button>
+          <button class="btn-primary" id="finish-session-btn" style="margin-top:0.6rem;">Finish &amp; log this reset session</button>
+          <div class="note">Finishing archives Reset + Somatic + Grounding together and clears these forms for next time.</div>
+        </div>
+      </section>
+    </section>
+
+    <section id="screen-progress" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Healing Progress</div>
+          <div class="card-subtitle">Daily habits are a 7-day rolling average.</div>
+        </div>
+        <div id="progress-scores"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Reset Session History</div>
+          <div class="card-subtitle">Every completed reset session, most recent first.</div>
+        </div>
+        <div id="history-list"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Backup &amp; Sync</div>
+          <div class="card-subtitle">Keep your habits and reset history safe.</div>
+        </div>
+
+        <div class="upsell-card">
+          <div class="upsell-title">Google Drive backup is a full-version feature</div>
+          <div class="upsell-text">The full Ultimate Healing Habits Tracker backs your daily habits and reset history up to your own Google Drive automatically. This trial keeps everything local to this device.</div>
+          <a class="upsell-btn" href="https://www.etsy.com/listing/4535921614/ultimate-healing-habits-tracker-guided" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+        </div>
+
+        <div class="backup-divider">
+          <div class="backup-section-label">Local backup file</div>
+          <div class="backup-actions">
+            <button class="backup-btn" id="export-btn">Export backup file</button>
+            <button class="backup-btn" id="import-btn">Import backup file</button>
+          </div>
+        </div>
+
+        <div class="note">Exporting or backing up saves everything in this app. It never includes anything else from your device.</div>
+      </section>
+    </section>
+
+  </main>
+
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+
+  <div class="tabbar">
+    <button class="tab tab-active" data-target="screen-home">Home</button>
+    <button class="tab" data-target="screen-practice">Practice</button>
+    <button class="tab" data-target="screen-progress">Progress</button>
+  </div>
+</div>
+
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body-text" id="modal-body-text"></div>
+    <div id="modal-detail-body"></div>
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta-secondary" id="modal-secondary-btn"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const STORE_KEY = "hhh_data_demo_v1";
+  const RESET_FIELDS = {
+    reset: ["thought", "truth"],
+    somatic: ["action", "response"],
+    grounding: ["tool", "why"]
+  };
+
+  function defaultResetDraft() {
+    return { thought: "", truth: "", action: "", response: "", tool: "", why: "" };
+  }
+  function defaultDB() {
+    return { theme: "soft", dailyEntries: {}, resetDraft: defaultResetDraft(), resetHistory: [] };
+  }
+
+  let DB = defaultDB();
+
+  function ld() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        DB = Object.assign(defaultDB(), parsed);
+        DB.resetDraft = Object.assign(defaultResetDraft(), DB.resetDraft || {});
+      }
+    } catch (e) { DB = defaultDB(); }
+  }
+  function sv() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+  }
+
+  function todayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  function uid() { return Date.now() + Math.floor(Math.random() * 1000); }
+
+  function dayKeysWithinLastN(n) {
+    const keys = [];
+    const cursor = new Date();
+    for (let i = 0; i < n; i++) { keys.push(todayKey(cursor)); cursor.setDate(cursor.getDate() - 1); }
+    return keys;
+  }
+
+  function computeStreakInfo() {
+    const activeDays = new Set(Object.keys(DB.dailyEntries));
+    let current = 0;
+    const cursor = new Date();
+    while (activeDays.has(todayKey(cursor))) { current += 1; cursor.setDate(cursor.getDate() - 1); }
+    return { current };
+  }
+
+  const THEME_COLORS = {
+    deep: "#17102c", rose: "#17102c", sage: "#17102c", midnight: "#0b0f1f",
+    soft: "#f4f1fb", warm: "#f7ecf5", cool: "#eef3fb", sand: "#faf3ea"
+  };
+  const THEMES = ["deep", "rose", "sage", "midnight", "soft", "warm", "cool", "sand"];
+
+  function applyTheme() {
+    document.body.setAttribute("data-theme", DB.theme);
+    document.getElementById("theme-color-meta").setAttribute("content", THEME_COLORS[DB.theme]);
+  }
+  function cycleTheme() {
+    const idx = THEMES.indexOf(DB.theme);
+    DB.theme = THEMES[(idx + 1) % THEMES.length];
+    sv();
+    applyTheme();
+    showToast(`Theme: ${DB.theme[0].toUpperCase() + DB.theme.slice(1)}`);
+  }
+
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => { onAction(); el.classList.remove("show"); });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+
+  function pulseButton(btn) {
+    btn.classList.remove("pulse");
+    void btn.offsetWidth;
+    btn.classList.add("pulse");
+  }
+
+  function openModal({ title, bodyText, detailHtml, ctaLabel, onCta, ctaDanger, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+
+    document.getElementById("modal-detail-body").innerHTML = detailHtml || "";
+
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    if (ctaLabel) {
+      ctaBtn.style.display = "block";
+      ctaBtn.textContent = ctaLabel;
+      ctaBtn.classList.toggle("danger", !!ctaDanger);
+      ctaBtn.onclick = onCta || null;
+    } else { ctaBtn.style.display = "none"; ctaBtn.onclick = null; }
+
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    if (secondaryLabel) {
+      secondaryBtn.style.display = "block";
+      secondaryBtn.textContent = secondaryLabel;
+      secondaryBtn.onclick = onSecondary || closeModal;
+    } else { secondaryBtn.style.display = "none"; secondaryBtn.onclick = null; }
+
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function closeModal() { document.getElementById("app-modal").classList.remove("open"); }
+
+  function buildDetailRows(pairs) {
+    const html = pairs.map(([label]) => `
+      <div class="detail-row"><div class="detail-label">${label}</div><div class="detail-value" data-field="${label}"></div></div>
+    `).join("");
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = html;
+    wrapper.querySelectorAll("[data-field]").forEach((el) => {
+      const match = pairs.find(([label]) => label === el.dataset.field);
+      el.textContent = match && match[1] ? match[1] : "—";
+    });
+    return wrapper.innerHTML;
+  }
+
+  function switchToTab(targetId) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
+    document.getElementById(targetId).classList.add("active-screen");
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("tab-active", t.dataset.target === targetId));
+    if (targetId === "screen-home") renderHome();
+    if (targetId === "screen-progress") { renderProgress(); renderHistory(); }
+  }
+
+  let activePanel = "daily";
+  function switchPanel(panel) {
+    activePanel = panel;
+    document.querySelectorAll(".practice-panel").forEach((el) => { el.style.display = el.dataset.panel === panel ? "block" : "none"; });
+    renderSubtabs();
+    if (panel === "daily") loadDailyIntoForm();
+  }
+
+  function resetStepDone(stepKey) {
+    return RESET_FIELDS[stepKey].some((f) => DB.resetDraft[f]);
+  }
+  function renderSubtabs() {
+    document.querySelectorAll(".subtab").forEach((btn) => {
+      const key = btn.dataset.subtab;
+      btn.classList.toggle("active", key === activePanel);
+      if (key === "daily") return;
+      btn.classList.toggle("done", resetStepDone(key));
+    });
+  }
+
+  function computeDailyQuadrantScores() {
+    const last7Keys = dayKeysWithinLastN(7);
+    const last7 = last7Keys.map((k) => DB.dailyEntries[k]).filter(Boolean);
+    function fillRate(field) {
+      return last7.length ? (last7.filter((e) => e[field]).length / last7.length) * 100 : 0;
+    }
+    return {
+      somatic: Math.round(fillRate("somatic")),
+      cognitive: Math.round(fillRate("cognitive")),
+      emotional: Math.round(fillRate("emotional")),
+      spiritual: Math.round(fillRate("spiritual"))
+    };
+  }
+
+  function renderWheel() {
+    const scores = computeDailyQuadrantScores();
+    document.getElementById("q-somatic").style.opacity = (0.2 + (scores.somatic / 100) * 0.8).toFixed(2);
+    document.getElementById("q-cognitive").style.opacity = (0.2 + (scores.cognitive / 100) * 0.8).toFixed(2);
+    document.getElementById("q-emotional").style.opacity = (0.2 + (scores.emotional / 100) * 0.8).toFixed(2);
+    document.getElementById("q-spiritual").style.opacity = (0.2 + (scores.spiritual / 100) * 0.8).toFixed(2);
+    const avg = Math.round((scores.somatic + scores.cognitive + scores.emotional + scores.spiritual) / 4);
+    document.getElementById("wheel-sub").textContent = avg === 0 ? "Not started" : `${avg}% over 7 days`;
+    return scores;
+  }
+
+  function renderPulse() {
+    const stepsDone = Object.keys(RESET_FIELDS).filter((k) => resetStepDone(k)).length;
+    const circumference = 157;
+    const offset = circumference * (1 - stepsDone / 3);
+    document.getElementById("pulse-fill").setAttribute("stroke-dashoffset", offset.toFixed(1));
+    document.getElementById("pulse-center-text").textContent = `${stepsDone}/3`;
+    const subEl = document.getElementById("pulse-sub");
+    if (stepsDone === 0) subEl.textContent = "Not started";
+    else if (stepsDone < 3) subEl.textContent = "In progress";
+    else subEl.textContent = "Ready to finish";
+    return stepsDone;
+  }
+
+  function renderHome() {
+    renderWheel();
+    const stepsDone = renderPulse();
+
+    const { current } = computeStreakInfo();
+    document.getElementById("home-stat-streak").textContent = current;
+    document.getElementById("home-stat-sessions").textContent = DB.resetHistory.length;
+
+    const weekAgo = Date.now() - 7 * 86400000;
+    const sessionsThisWeek = DB.resetHistory.filter((h) => new Date(h.completedAt).getTime() >= weekAgo).length;
+    document.getElementById("home-stat-week").textContent = sessionsThisWeek;
+
+    const latestTruth = DB.resetDraft.truth || (DB.resetHistory[0] && DB.resetHistory[0].truth);
+    document.getElementById("anchor-text").textContent = latestTruth || "No anchor set yet.";
+
+    const actionBtn = document.getElementById("home-action-btn");
+    if (stepsDone === 0) {
+      actionBtn.textContent = "Start Guided Flow";
+      actionBtn.onclick = () => { switchToTab("screen-practice"); switchPanel("daily"); };
+    } else if (stepsDone < 3) {
+      actionBtn.textContent = "Continue Reset Session";
+      actionBtn.onclick = () => {
+        switchToTab("screen-practice");
+        const nextStep = Object.keys(RESET_FIELDS).find((k) => !resetStepDone(k)) || "grounding";
+        loadResetIntoForm();
+        switchPanel(nextStep);
+      };
+    } else {
+      actionBtn.textContent = "Finish This Reset Session";
+      actionBtn.onclick = () => { switchToTab("screen-practice"); loadResetIntoForm(); switchPanel("grounding"); };
+    }
+  }
+
+  function loadDailyIntoForm() {
+    const entry = DB.dailyEntries[todayKey(new Date())] || {};
+    document.getElementById("d-somatic").value = entry.somatic || "";
+    document.getElementById("d-cognitive").value = entry.cognitive || "";
+    document.getElementById("d-emotional").value = entry.emotional || "";
+    document.getElementById("d-spiritual").value = entry.spiritual || "";
+  }
+
+  function saveDaily() {
+    const entry = {
+      somatic: document.getElementById("d-somatic").value.trim(),
+      cognitive: document.getElementById("d-cognitive").value.trim(),
+      emotional: document.getElementById("d-emotional").value.trim(),
+      spiritual: document.getElementById("d-spiritual").value.trim()
+    };
+    if (!Object.values(entry).some(Boolean)) { showToast("Fill in at least one field before saving."); return; }
+    DB.dailyEntries[todayKey(new Date())] = { ...entry, loggedAt: new Date().toISOString() };
+    sv();
+    pulseButton(document.getElementById("save-daily-btn"));
+    showToast("Daily habits saved.");
+  }
+
+  function loadResetIntoForm() {
+    document.getElementById("r-thought").value = DB.resetDraft.thought || "";
+    document.getElementById("r-truth").value = DB.resetDraft.truth || "";
+    document.getElementById("s-action").value = DB.resetDraft.action || "";
+    document.getElementById("s-response").value = DB.resetDraft.response || "";
+    document.getElementById("g-tool").value = DB.resetDraft.tool || "";
+    document.getElementById("g-why").value = DB.resetDraft.why || "";
+  }
+
+  function saveReset() {
+    DB.resetDraft.thought = document.getElementById("r-thought").value.trim();
+    DB.resetDraft.truth = document.getElementById("r-truth").value.trim();
+    sv();
+    pulseButton(document.getElementById("save-reset-btn"));
+    showToast("Emotional reset saved.");
+    renderSubtabs();
+  }
+  function saveSomatic() {
+    DB.resetDraft.action = document.getElementById("s-action").value.trim();
+    DB.resetDraft.response = document.getElementById("s-response").value.trim();
+    sv();
+    pulseButton(document.getElementById("save-somatic-btn"));
+    showToast("Somatic calm saved.");
+    renderSubtabs();
+  }
+  function saveGrounding() {
+    DB.resetDraft.tool = document.getElementById("g-tool").value.trim();
+    DB.resetDraft.why = document.getElementById("g-why").value.trim();
+    sv();
+    pulseButton(document.getElementById("save-grounding-btn"));
+    showToast("Grounding saved.");
+    renderSubtabs();
+  }
+
+  function finishResetSession() {
+    DB.resetDraft.tool = document.getElementById("g-tool").value.trim() || DB.resetDraft.tool;
+    DB.resetDraft.why = document.getElementById("g-why").value.trim() || DB.resetDraft.why;
+
+    const hasAnything = Object.values(DB.resetDraft).some(Boolean);
+    if (!hasAnything) { showToast("Fill in at least one field before finishing."); return; }
+
+    DB.resetHistory.unshift({ ...DB.resetDraft, id: uid(), completedAt: new Date().toISOString() });
+    DB.resetDraft = defaultResetDraft();
+    sv();
+
+    ["r-thought", "r-truth", "s-action", "s-response", "g-tool", "g-why"].forEach((id) => { document.getElementById(id).value = ""; });
+    showToast("Reset session logged.");
+    switchToTab("screen-home");
+  }
+
+  function renderProgress() {
+    const daily = computeDailyQuadrantScores();
+    const rows = [
+      ["Somatic Habit Score", daily.somatic],
+      ["Cognitive Habit Score", daily.cognitive],
+      ["Emotional Habit Score", daily.emotional],
+      ["Spiritual Habit Score", daily.spiritual]
+    ];
+    document.getElementById("progress-scores").innerHTML = rows.map(([label, value]) => `
+      <div style="margin-bottom:1rem;">
+        <div class="today-summary-label" style="margin-bottom:0.35rem;">${label}</div>
+        <div class="progress-container"><div class="progress-fill" style="width:${value}%;"></div></div>
+        <div class="progress-score-text">${value}/100 over the last 7 days</div>
+      </div>
+    `).join("");
+  }
+
+  function renderHistory() {
+    const listEl = document.getElementById("history-list");
+    if (!DB.resetHistory.length) {
+      listEl.innerHTML = `<div class="empty-state">No reset sessions logged yet. Complete one from the Reset tab.</div>`;
+      return;
+    }
+    listEl.innerHTML = DB.resetHistory.map((h) => {
+      const dateLabel = new Date(h.completedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+      return `
+        <div class="list-item" data-id="${h.id}">
+          <div class="list-item-top">
+            <div>
+              <div class="list-item-state" data-text-id="${h.id}"></div>
+              <div class="list-item-date">${dateLabel}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    listEl.querySelectorAll("[data-text-id]").forEach((el) => {
+      const h = DB.resetHistory.find((r) => r.id === Number(el.dataset.textId));
+      el.textContent = h.truth || h.thought || "(no summary text logged)";
+    });
+  }
+
+  function openHistoryDetail(id) {
+    const h = DB.resetHistory.find((r) => r.id === id);
+    if (!h) return;
+    const dateLabel = new Date(h.completedAt).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+    const detailHtml = buildDetailRows([
+      ["Anxious thought", h.thought], ["Softer truth", h.truth],
+      ["Somatic action", h.action], ["Body response", h.response],
+      ["Grounding tool", h.tool], ["Why it helped", h.why]
+    ]);
+    openModal({
+      title: dateLabel,
+      detailHtml,
+      ctaLabel: "Delete this session",
+      ctaDanger: true,
+      onCta: () => confirmDeleteHistory(id),
+      secondaryLabel: "Close",
+      onSecondary: closeModal
+    });
+  }
+
+  function confirmDeleteHistory(id) {
+    openModal({
+      title: "Delete this reset session?",
+      bodyText: "This removes it from your history permanently.",
+      ctaLabel: "Delete",
+      ctaDanger: true,
+      onCta: () => {
+        DB.resetHistory = DB.resetHistory.filter((h) => h.id !== id);
+        sv(); closeModal(); renderHistory(); renderHome();
+        showToast("Deleted.");
+      },
+      secondaryLabel: "Keep it",
+      onSecondary: closeModal
+    });
+  }
+
+  /* =========================================================
+     GOOGLE DRIVE BACKUP — removed for the free trial demo.
+     The full version backs up to the user's own Google Drive;
+     this trial is local-device-only, so all Drive OAuth/API
+     code and its Settings UI were removed rather than hidden.
+     ========================================================= */
+  function buildBackupPayload() {
+    return JSON.stringify({ ...DB, exportedAt: new Date().toISOString(), source: "Ultimate Healing Habits Tracker" }, null, 2);
+  }
+
+  function confirmAndApplyRestore(parsed, sourceDate, sourceLabel) {
+    const incomingDays = parsed.dailyEntries && typeof parsed.dailyEntries === "object" ? Object.keys(parsed.dailyEntries).length : 0;
+    const incomingSessions = Array.isArray(parsed.resetHistory) ? parsed.resetHistory.length : 0;
+    const currentDays = Object.keys(DB.dailyEntries).length;
+    const currentSessions = DB.resetHistory.length;
+    const dateLabel = sourceDate ? new Date(sourceDate).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "an earlier backup";
+
+    openModal({
+      title: `Restore from ${sourceLabel}`,
+      bodyText: `This replaces ${currentDays} logged daily ${currentDays === 1 ? "entry" : "entries"} and ${currentSessions} reset ${currentSessions === 1 ? "session" : "sessions"} on this device with ${incomingDays} daily ${incomingDays === 1 ? "entry" : "entries"} and ${incomingSessions} reset ${incomingSessions === 1 ? "session" : "sessions"} from a backup made ${dateLabel}. Your current in-progress reset draft will be replaced too. You'll be able to undo this immediately after.`,
+      ctaLabel: "Restore backup",
+      onCta: () => { applyRestoredData(parsed); closeModal(); },
+      secondaryLabel: "Cancel", onSecondary: closeModal
+    });
+  }
+
+  function applyRestoredData(parsed) {
+    localStorage.setItem(DRIVE_KEYS.preRestoreSnapshot, JSON.stringify({ data: DB, savedAt: new Date().toISOString() }));
+    DB = Object.assign(defaultDB(), parsed);
+    DB.resetDraft = Object.assign(defaultResetDraft(), DB.resetDraft || {});
+    sv();
+    applyTheme();
+    loadDailyIntoForm(); loadResetIntoForm();
+    renderHome(); renderProgress(); renderHistory(); renderSubtabs();
+    showToast("Backup restored.", "Undo", undoRestore);
+  }
+
+  function undoRestore() {
+    const raw = localStorage.getItem(DRIVE_KEYS.preRestoreSnapshot);
+    if (!raw) { showToast("Nothing to undo."); return; }
+    try {
+      const snap = JSON.parse(raw);
+      DB = Object.assign(defaultDB(), snap.data);
+      DB.resetDraft = Object.assign(defaultResetDraft(), DB.resetDraft || {});
+      sv();
+      localStorage.removeItem(DRIVE_KEYS.preRestoreSnapshot);
+      applyTheme();
+      loadDailyIntoForm(); loadResetIntoForm();
+      renderHome(); renderProgress(); renderHistory(); renderSubtabs();
+      showToast("Restore undone.");
+    } catch (e) {
+      showToast("Could not undo — the previous snapshot was unreadable.");
+    }
+  }
+
+  function exportBackupFile() {
+    const payload = buildBackupPayload();
+    const blob = new Blob([payload], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `healing-hybrid-backup-${todayKey(new Date())}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Backup file downloaded.");
+  }
+  function triggerImportPicker() { document.getElementById("import-file-input").click(); }
+  function handleImportFileChange(event) {
+    const file = event.target.files[0];
+    event.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let parsed;
+      try { parsed = JSON.parse(reader.result); }
+      catch (e) { showToast("This file is not a valid backup."); return; }
+      if (!parsed || typeof parsed !== "object") { showToast("This file is not a valid backup."); return; }
+      confirmAndApplyRestore(parsed, parsed.exportedAt, "file");
+    };
+    reader.onerror = () => showToast("Could not read that file.");
+    reader.readAsText(file);
+  }
+
+  const DEMO_TRIAL_DAYS = 14;
+  const DEMO_SINCE_KEY = "hhh_demo_since";
+  function demoTrialDaysLeft() {
+    let since = localStorage.getItem(DEMO_SINCE_KEY);
+    if (!since) { since = String(Date.now()); localStorage.setItem(DEMO_SINCE_KEY, since); }
+    const elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
+    return DEMO_TRIAL_DAYS - elapsedDays;
+  }
+  function enforceDemoTrial() {
+    const daysLeft = demoTrialDaysLeft();
+    const lock = document.getElementById("trial-lock");
+    const banner = document.getElementById("demo-banner");
+    if (daysLeft <= 0) {
+      lock.style.display = "flex";
+      document.body.style.overflow = "hidden";
+    } else {
+      const bannerText = document.getElementById("demo-banner-text");
+      if (bannerText) bannerText.textContent = `Free trial — ${daysLeft} day${daysLeft === 1 ? "" : "s"} left`;
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    ld();
+    applyTheme();
+    loadDailyIntoForm();
+    loadResetIntoForm();
+    switchPanel("daily");
+    renderHome();
+    renderProgress();
+    renderHistory();
+
+    document.getElementById("theme-btn").addEventListener("click", cycleTheme);
+
+    document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => switchToTab(tab.dataset.target)));
+
+    document.querySelectorAll(".subtab").forEach((btn) => btn.addEventListener("click", () => switchPanel(btn.dataset.subtab)));
+
+    document.getElementById("save-daily-btn").addEventListener("click", saveDaily);
+    document.getElementById("save-reset-btn").addEventListener("click", saveReset);
+    document.getElementById("save-somatic-btn").addEventListener("click", saveSomatic);
+    document.getElementById("save-grounding-btn").addEventListener("click", saveGrounding);
+    document.getElementById("finish-session-btn").addEventListener("click", finishResetSession);
+
+    document.getElementById("history-list").addEventListener("click", (e) => {
+      const item = e.target.closest(".list-item");
+      if (!item) return;
+      openHistoryDetail(Number(item.dataset.id));
+    });
+
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => { if (e.target.id === "app-modal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileChange);
+
+    enforceDemoTrial();
+  });
+</script>
+
+</body>
+</html>
