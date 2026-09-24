@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Moon Ritual Planner — Free Trial — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#05060f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg-void: #05060f;
+    --bg-deep: #0a0c1c;
+    --bg-card: #10122a;
+    --bg-card-hi: #151832;
+    --gold: #d8b478;
+    --gold-bright: #f0d8a6;
+    --violet: #a596d6;
+    --violet-soft: rgba(165, 150, 214, 0.16);
+    --text-primary: #f3f1ea;
+    --text-muted: #8b8ea3;
+    --text-faint: #5c5f74;
+    --border-soft: rgba(216, 180, 120, 0.14);
+    --border-violet: rgba(165, 150, 214, 0.18);
+    --danger: #d98686;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at 20% -10%, rgba(165, 150, 214, 0.10), transparent 40%),
+      radial-gradient(circle at 85% 0%, rgba(216, 180, 120, 0.08), transparent 45%),
+      var(--bg-void);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    display: block;
+    padding: 1.1rem 1rem calc(6rem + env(safe-area-inset-bottom));
+    position: relative;
+  }
+
+  .display {
+    font-family: "Cormorant Garamond", Georgia, serif;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .eyebrow {
+    font-size: 0.66rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .app-name {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    font-size: 1.65rem;
+    font-weight: 500;
+    color: var(--gold-bright);
+    letter-spacing: 0.01em;
+  }
+
+  .app-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  main { display: block; width: 100%; }
+
+  .screen { display: none; width: 100%; }
+  .screen.active-screen { display: block; }
+
+  /* ---------- Cards ---------- */
+  .card {
+    background: linear-gradient(160deg, var(--bg-card-hi), var(--bg-card) 60%);
+    border: 1px solid var(--border-soft);
+    border-radius: 1.1rem;
+    padding: 1.1rem 1.05rem;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
+    margin-bottom: 0.85rem;
+  }
+
+  .card-header { margin-bottom: 0.75rem; }
+
+  .card-title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .card-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+  }
+
+  .note {
+    margin-top: 0.7rem;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    line-height: 1.5;
+  }
+
+  /* ---------- Moon dial (signature element) ---------- */
+  .dial-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .moon-dial {
+    position: relative;
+    width: 76px;
+    height: 76px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #1a1c33;
+    box-shadow:
+      inset 0 0 0 1px rgba(216, 180, 120, 0.25),
+      0 0 26px rgba(216, 180, 120, 0.18);
+  }
+
+  .moon-dial .lit,
+  .moon-dial .shadow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+
+  .moon-dial .lit {
+    background: radial-gradient(circle at 32% 28%, var(--gold-bright), var(--gold) 55%, #b98f4c 100%);
+  }
+
+  .moon-dial .shadow {
+    background: #1a1c33;
+    transform: translateX(var(--moon-shadow-x, 0px));
+    transition: transform 0.6s ease;
+  }
+
+  .dial-info { flex: 1; min-width: 0; }
+
+  .dial-phase-name {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--gold-bright);
+  }
+
+  .dial-meta {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+  }
+
+  .energy-note {
+    margin-top: 0.85rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-violet);
+  }
+
+  /* Suggested ritual pill on dashboard */
+  .suggested-ritual {
+    margin-top: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-violet);
+    background: var(--violet-soft);
+    cursor: pointer;
+  }
+
+  .suggested-ritual-text { font-size: 0.78rem; color: var(--text-primary); }
+  .suggested-ritual-label { font-size: 0.65rem; color: var(--violet); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.15rem; }
+  .suggested-ritual-arrow { color: var(--violet); font-size: 0.95rem; }
+
+  /* ---------- Stat row (dashboard + progress share this) ---------- */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin-top: 0.9rem;
+  }
+
+  .stat {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-soft);
+    border-radius: 0.75rem;
+    padding: 0.6rem 0.5rem;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--gold-bright);
+  }
+
+  .stat-label {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 0.15rem;
+  }
+
+  /* ---------- Calendar ---------- */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.32rem;
+    margin-top: 0.7rem;
+  }
+
+  .calendar-dow {
+    text-align: center;
+    font-size: 0.6rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-bottom: 0.2rem;
+  }
+
+  .calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-soft);
+    border-radius: 0.6rem;
+    font-size: 0.68rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    position: relative;
+  }
+
+  .calendar-day.is-today {
+    border-color: var(--violet);
+    box-shadow: 0 0 0 1px var(--violet-soft);
+  }
+
+  .calendar-day.full-moon { border-color: rgba(216, 180, 120, 0.65); }
+  .calendar-day.new-moon { border-color: rgba(165, 150, 214, 0.55); }
+
+  .calendar-moon-icon {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #1a1c33;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .calendar-moon-icon .lit,
+  .calendar-moon-icon .shadow {
+    position: absolute; inset: 0; border-radius: 50%;
+  }
+
+  .calendar-moon-icon .lit {
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+  }
+
+  .calendar-moon-icon .shadow {
+    background: #1a1c33;
+  }
+
+  /* ---------- Ritual library ---------- */
+  .ritual-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-top: 0.6rem;
+  }
+
+  .ritual-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-soft);
+    border-radius: 0.85rem;
+    padding: 0.75rem 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+
+  .ritual-card:hover,
+  .ritual-card:focus-visible {
+    background: rgba(216, 180, 120, 0.06);
+    border-color: rgba(216, 180, 120, 0.4);
+    outline: none;
+  }
+
+  .ritual-name {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.02rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .ritual-tags { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.2rem; }
+  .ritual-align {
+    font-size: 0.63rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.2rem;
+  }
+
+  .ritual-check {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--border-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    cursor: pointer;
+  }
+
+  .ritual-check.done {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(216, 180, 120, 0.12);
+  }
+
+  /* ---------- Journal ---------- */
+  .journal-input {
+    width: 100%;
+    min-height: 110px;
+    border-radius: 0.85rem;
+    border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-primary);
+    padding: 0.7rem 0.8rem;
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  .journal-input:focus-visible {
+    outline: 2px solid var(--violet);
+    outline-offset: 2px;
+  }
+
+  .journal-save {
+    margin-top: 0.6rem;
+    width: 100%;
+    padding: 0.65rem;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold) 70%);
+    color: #201404;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+  }
+
+  .journal-save:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+
+  .journal-list {
+    margin-top: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .journal-entry {
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-soft);
+    padding: 0.6rem 0.7rem;
+    background: rgba(255, 255, 255, 0.015);
+    position: relative;
+  }
+
+  .journal-entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .journal-entry-date {
+    font-size: 0.65rem;
+    color: var(--text-faint);
+  }
+
+  .journal-entry-phase {
+    font-size: 0.63rem;
+    color: var(--gold);
+  }
+
+  .journal-entry-text {
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    margin-top: 0.3rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+  }
+
+  .journal-entry-delete {
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 0.9rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.1rem 0.3rem;
+  }
+
+  .journal-entry-delete:hover { color: var(--danger); }
+
+  .empty-state {
+    margin-top: 0.7rem;
+    padding: 1.1rem 0.9rem;
+    border: 1px dashed var(--border-soft);
+    border-radius: 0.85rem;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ---------- Progress ---------- */
+  .progress-stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+    margin-top: 0.7rem;
+  }
+
+  .cycle-bar-track {
+    margin-top: 0.9rem;
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    overflow: hidden;
+  }
+
+  .cycle-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--violet), var(--gold));
+    transition: width 0.6s ease;
+  }
+
+  .cycle-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    color: var(--text-faint);
+    margin-top: 0.35rem;
+  }
+
+  /* ---------- Backup & Sync ---------- */
+  .backup-status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 0.7rem;
+    border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .backup-status-text { font-size: 0.75rem; color: var(--text-muted); }
+  .backup-status-sub { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.1rem; }
+
+  .backup-badge {
+    font-size: 0.62rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  .backup-badge.connected {
+    color: #1f2a16;
+    background: linear-gradient(135deg, #b7d99a, #8ab86a);
+  }
+
+  .backup-badge.disconnected {
+    color: var(--text-faint);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .backup-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    margin-top: 0.65rem;
+  }
+
+  .backup-btn {
+    padding: 0.6rem 0.5rem;
+    border-radius: 0.7rem;
+    border: 1px solid var(--border-soft);
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.74rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: "Inter", sans-serif;
+  }
+
+  .backup-btn.primary {
+    border-color: transparent;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color: #201404;
+    font-weight: 600;
+  }
+
+  .backup-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .backup-divider {
+    margin: 0.9rem 0 0.6rem;
+    border-top: 1px solid var(--border-soft);
+    padding-top: 0.7rem;
+  }
+
+  .backup-section-label {
+    font-size: 0.68rem;
+    color: var(--violet);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    margin-bottom: 0.5rem;
+  }
+
+  .backup-link-btn {
+    margin-top: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 0.7rem;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  /* ---------- Tabbar ---------- */
+  .tabbar {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.2rem;
+    padding: 0.6rem 0.6rem calc(0.6rem + env(safe-area-inset-bottom));
+    border-radius: 0;
+    background: var(--bg-card-hi);
+    border: none;
+    border-top: 1px solid var(--border-soft);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.45);
+    z-index: 50;
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    font-size: 0.66rem;
+    padding: 0.5rem 0.2rem;
+    border-radius: 999px;
+    color: var(--text-faint);
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-family: "Inter", sans-serif;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .tab:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+
+  .tab-active {
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color: #201404;
+    font-weight: 600;
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 3, 10, 0.75);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 999;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-card {
+    background: linear-gradient(160deg, var(--bg-card-hi), var(--bg-deep) 70%);
+    border: 1px solid var(--border-soft);
+    border-top-left-radius: 1.4rem;
+    border-top-right-radius: 1.4rem;
+    padding: 1.3rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom));
+    width: 100%;
+    max-width: 480px;
+    max-height: 82vh;
+    overflow-y: auto;
+    box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.6);
+    animation: modalUp 0.28s ease-out;
+  }
+
+  @keyframes modalUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.6rem;
+  }
+
+  .modal-title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    color: var(--gold);
+    cursor: pointer;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .modal-alignment {
+    margin-top: 0.3rem;
+    font-size: 0.72rem;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .modal-body-text {
+    margin-top: 0.7rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+
+  .modal-section { margin-top: 1rem; }
+
+  .modal-section-title {
+    font-size: 0.72rem;
+    color: var(--violet);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+
+  .modal-section ul,
+  .modal-section ol {
+    padding-left: 1.1rem;
+  }
+
+  .modal-section li {
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    margin-bottom: 0.4rem;
+    line-height: 1.45;
+  }
+
+  .modal-cta {
+    margin-top: 1.1rem;
+    width: 100%;
+    padding: 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold-bright);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .modal-cta.is-done {
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color: #201404;
+    border-color: transparent;
+  }
+
+  .modal-cta.secondary {
+    margin-top: 0.6rem;
+    border-color: var(--border-soft);
+    color: var(--text-muted);
+    background: transparent;
+  }
+
+  /* Drive backup list rows inside the shared modal */
+  .drive-backup-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 0.7rem;
+    border-radius: 0.7rem;
+    border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.02);
+    margin-top: 0.5rem;
+    cursor: pointer;
+  }
+  .drive-backup-row:hover { border-color: rgba(216, 180, 120, 0.4); }
+  .drive-backup-row-label { font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
+  .drive-backup-row-sub { font-size: 0.68rem; color: var(--text-faint); margin-top: 0.1rem; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed;
+    bottom: 5.6rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--bg-card-hi);
+    border: 1px solid var(--border-soft);
+    color: var(--text-primary);
+    font-size: 0.78rem;
+    padding: 0.6rem 1rem;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 1000;
+    white-space: normal;
+    text-align: center;
+    max-width: calc(100% - 48px);
+    width: max-content;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .toast-action {
+    color: var(--gold-bright);
+    text-decoration: underline;
+    margin-left: 0.5rem;
+    cursor: pointer;
+  }
+
+  /* ---------- Free trial demo ---------- */
+  .demo-banner {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    margin: -1.1rem -1rem 0.85rem -1rem;
+    padding: 0.55rem 1rem;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color: #201404;
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .demo-banner a {
+    color: #201404;
+    text-decoration: underline;
+    font-weight: 700;
+  }
+
+  .upsell-card {
+    border: 1px solid var(--border-soft);
+    border-radius: 0.9rem;
+    padding: 1rem 1.05rem;
+    background: linear-gradient(160deg, rgba(216, 180, 120, 0.12), rgba(165, 150, 214, 0.08));
+    text-align: center;
+  }
+
+  .upsell-title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--gold-bright);
+    margin-bottom: 0.4rem;
+  }
+
+  .upsell-text {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 0.85rem;
+  }
+
+  .upsell-btn {
+    display: inline-block;
+    padding: 0.65rem 1.3rem;
+    border-radius: 0.7rem;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color: #201404;
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-decoration: none;
+  }
+
+  #trial-lock {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(5, 6, 15, 0.92);
+    backdrop-filter: blur(6px);
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  #trial-lock .lock-card {
+    max-width: 360px;
+    width: 100%;
+    background: linear-gradient(160deg, var(--bg-card-hi), var(--bg-card) 60%);
+    border: 1px solid var(--border-soft);
+    border-radius: 1.1rem;
+    padding: 1.8rem 1.6rem;
+    text-align: center;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+  }
+
+  #trial-lock .lock-title {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-style: italic;
+    font-size: 1.4rem;
+    color: var(--gold-bright);
+    margin-bottom: 0.6rem;
+  }
+
+  #trial-lock .lock-text {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin-bottom: 1.3rem;
+  }
+
+  #trial-lock .lock-cta {
+    display: inline-block;
+    padding: 0.8rem 1.6rem;
+    border-radius: 0.8rem;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+    color: #201404;
+    font-weight: 700;
+    font-size: 0.86rem;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="demo-banner" id="demo-banner"><b>Free demo</b> &middot; 14 days left &middot; <a href="https://www.etsy.com/listing/4535214371/moon-ritual-tracker-app-real-lunar-phase" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+
+  <div id="trial-lock">
+    <div class="lock-card">
+      <div class="lock-title">Your free trial has ended</div>
+      <div class="lock-text">Your 14 days with Moon Ritual Planner are up. Get the full version to keep tracking cycles, rituals, and journal entries, and pick up right where you left off.</div>
+      <a class="lock-cta" href="https://www.etsy.com/listing/4535214371/moon-ritual-tracker-app-real-lunar-phase" target="_blank" rel="noopener">Get the full app</a>
+    </div>
+  </div>
+
+  <header>
+    <div class="eyebrow">Mobile First Studio</div>
+    <div class="app-name">Moon Ritual Planner</div>
+    <div class="app-subtitle" id="header-phase">Reading tonight's sky…</div>
+  </header>
+
+  <main>
+
+    <!-- DASHBOARD -->
+    <section id="screen-dashboard" class="screen active-screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Tonight's Sky</div>
+          <div class="card-subtitle" id="dashboard-date"></div>
+        </div>
+
+        <div class="dial-row">
+          <div class="moon-dial" id="dashboard-dial">
+            <div class="lit"></div>
+            <div class="shadow"></div>
+          </div>
+          <div class="dial-info">
+            <div class="dial-phase-name" id="dashboard-phase-name">—</div>
+            <div class="dial-meta" id="dashboard-illumination">—</div>
+          </div>
+        </div>
+
+        <div class="energy-note" id="dashboard-energy-note"></div>
+
+        <div class="suggested-ritual" id="dashboard-suggested-ritual">
+          <div>
+            <div class="suggested-ritual-label">Suggested tonight</div>
+            <div class="suggested-ritual-text" id="dashboard-suggested-name">—</div>
+          </div>
+          <div class="suggested-ritual-arrow">→</div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat">
+            <div class="stat-value" id="dashboard-stat-rituals">0</div>
+            <div class="stat-label">Rituals · 7d</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="dashboard-stat-journal">0</div>
+            <div class="stat-label">Entries this cycle</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="dashboard-stat-streak">0</div>
+            <div class="stat-label">Day streak</div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- CALENDAR -->
+    <section id="screen-calendar" class="screen">
+      <section class="card">
+        <div class="card-header" style="display:flex; align-items:center; justify-content:space-between; gap:0.6rem;">
+          <div>
+            <div class="card-title">Moon Calendar</div>
+            <div class="card-subtitle" id="calendar-month-label"></div>
+          </div>
+          <div style="display:flex; gap:0.4rem; flex-shrink:0;">
+            <button id="calendar-prev-month" aria-label="Previous month" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--border-soft);background:rgba(255,255,255,0.02);color:var(--text-primary);cursor:pointer;font-size:1rem;">‹</button>
+            <button id="calendar-next-month" aria-label="Next month" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--border-soft);background:rgba(255,255,255,0.02);color:var(--text-primary);cursor:pointer;font-size:1rem;">›</button>
+          </div>
+        </div>
+        <div class="calendar-grid" id="calendar-dow-row"></div>
+        <div class="calendar-grid" id="moon-calendar"></div>
+        <div class="note">Tap any date to see its phase, illumination, and a suggested ritual.</div>
+      </section>
+    </section>
+
+    <!-- RITUAL LIBRARY -->
+    <section id="screen-rituals" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Ritual Library</div>
+          <div class="card-subtitle">Daily · Full Moon · New Moon · Cleansing · Manifestation</div>
+        </div>
+        <div class="ritual-list" id="ritual-list"></div>
+        <div class="note">Tap a ritual to view materials, steps, and moon alignment. Mark it complete once you're done.</div>
+      </section>
+    </section>
+
+    <!-- JOURNAL -->
+    <section id="screen-journal" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Moon Journal</div>
+          <div class="card-subtitle">Capture intentions, releases, and reflections.</div>
+        </div>
+        <div id="journal-edit-banner" style="display:none; font-size:0.72rem; color:var(--violet); margin-bottom:0.5rem;">
+          Editing entry — <button id="journal-cancel-edit-btn" style="background:none;border:none;color:var(--text-faint);font-size:0.72rem;text-decoration:underline;cursor:pointer;padding:0;">cancel</button>
+        </div>
+        <textarea id="journal-input" class="journal-input" placeholder="Write tonight's intention, release, or reflection…"></textarea>
+        <button class="journal-save" id="journal-save-btn">Save entry</button>
+        <div class="journal-list" id="journal-list"></div>
+      </section>
+    </section>
+
+    <!-- PROGRESS -->
+    <section id="screen-progress" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Progress</div>
+          <div class="card-subtitle">Your ritual consistency and lunar alignment.</div>
+        </div>
+
+        <div class="progress-stat-row">
+          <div class="stat">
+            <div class="stat-value" id="progress-rituals-total">0</div>
+            <div class="stat-label">Rituals done</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="progress-journal-total">0</div>
+            <div class="stat-label">Journal entries</div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="progress-streak">0</div>
+            <div class="stat-label">Day streak</div>
+          </div>
+        </div>
+
+        <div class="cycle-bar-track">
+          <div class="cycle-bar-fill" id="cycle-bar-fill" style="width:0%"></div>
+        </div>
+        <div class="cycle-bar-label">
+          <span>New moon</span>
+          <span id="cycle-bar-percent">0% through this cycle</span>
+          <span>New moon</span>
+        </div>
+
+        <div class="note">Consistency across cycles builds deeper alignment with your intentions.</div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Backup &amp; Sync</div>
+          <div class="card-subtitle">Keep your journal and ritual history safe.</div>
+        </div>
+
+        <div class="upsell-card">
+          <div class="upsell-title">Google Drive backup is a full-version feature</div>
+          <div class="upsell-text">The full Moon Ritual Planner backs your journal and ritual history up to your own Google Drive automatically. This trial keeps everything local to this device.</div>
+          <a class="upsell-btn" href="https://www.etsy.com/listing/4535214371/moon-ritual-tracker-app-real-lunar-phase" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+        </div>
+
+        <div class="backup-divider">
+          <div class="backup-section-label">Local backup file</div>
+          <div class="backup-actions">
+            <button class="backup-btn" id="export-btn">Export backup file</button>
+            <button class="backup-btn" id="import-btn">Import backup file</button>
+          </div>
+          <div id="local-restore-undo-slot"></div>
+        </div>
+
+        <div class="note">Exporting or backing up saves your journal entries and ritual completions. It never includes anything from your device beyond this app's data.</div>
+      </section>
+    </section>
+
+  </main>
+
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+
+  <div class="tabbar">
+    <button class="tab tab-active" data-target="screen-dashboard">Dashboard</button>
+    <button class="tab" data-target="screen-calendar">Calendar</button>
+    <button class="tab" data-target="screen-rituals">Rituals</button>
+    <button class="tab" data-target="screen-journal">Journal</button>
+    <button class="tab" data-target="screen-progress">Progress</button>
+  </div>
+</div>
+
+<!-- SHARED MODAL -->
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title"></div>
+        <div class="modal-alignment" id="modal-alignment"></div>
+      </div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+
+    <div class="modal-body-text" id="modal-body-text"></div>
+
+    <div class="modal-section" id="modal-materials-section">
+      <div class="modal-section-title">Materials</div>
+      <ul id="modal-materials"></ul>
+    </div>
+
+    <div class="modal-section" id="modal-steps-section">
+      <div class="modal-section-title">Steps</div>
+      <ol id="modal-steps"></ol>
+    </div>
+
+    <div class="modal-section" id="modal-extra-section" style="display:none;"></div>
+
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta secondary" id="modal-cta-secondary-btn" style="display:none;"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* =========================================================
+     MOON PHASE ENGINE
+     Real synodic-month calculation, replacing the old
+     hardcoded "Waxing Gibbous" placeholder text.
+     ========================================================= */
+  const SYNODIC_MONTH = 29.530588853;
+  const KNOWN_NEW_MOON = Date.UTC(2000, 0, 6, 18, 14, 0);
+
+  // Returns phase as a fraction 0..1 (0 = new moon, 0.5 = full moon)
+  function getMoonPhaseFraction(date) {
+    const diffDays = (date.getTime() - KNOWN_NEW_MOON) / 86400000;
+    let phase = (diffDays % SYNODIC_MONTH) / SYNODIC_MONTH;
+    if (phase < 0) phase += 1;
+    return phase;
+  }
+
+  function getIllumination(phase) {
+    return Math.round(((1 - Math.cos(2 * Math.PI * phase)) / 2) * 100);
+  }
+
+  function getPhaseName(phase) {
+    if (phase < 0.033 || phase >= 0.967) return "New Moon";
+    if (phase < 0.216) return "Waxing Crescent";
+    if (phase < 0.283) return "First Quarter";
+    if (phase < 0.466) return "Waxing Gibbous";
+    if (phase < 0.533) return "Full Moon";
+    if (phase < 0.716) return "Waning Gibbous";
+    if (phase < 0.783) return "Last Quarter";
+    return "Waning Crescent";
+  }
+
+  function getEnergyNote(phaseName) {
+    const notes = {
+      "New Moon": "A blank sky for fresh starts. Good for setting new intentions.",
+      "Waxing Crescent": "Early momentum is building. Good for small, steady actions.",
+      "First Quarter": "Decisions come into focus now. Good for pushing through resistance.",
+      "Waxing Gibbous": "Energy is rising toward the peak. Good for refining and adjusting.",
+      "Full Moon": "Energy peaks tonight. Good for release, gratitude, and manifestation.",
+      "Waning Gibbous": "The pull is softening. Good for reflection and sharing what you've learned.",
+      "Last Quarter": "A natural checkpoint. Good for releasing what no longer serves you.",
+      "Waning Crescent": "Rest before the next cycle. Good for stillness and quiet cleansing."
+    };
+    return notes[phaseName] || "";
+  }
+
+  // Maps a phase name to the most fitting ritual in the library
+  function getSuggestedRitual(phaseName) {
+    if (phaseName === "New Moon") return "New Moon Manifestation Ritual";
+    if (phaseName === "Full Moon") return "Full Moon Release Ritual";
+    if (phaseName === "Waxing Crescent" || phaseName === "First Quarter" || phaseName === "Waxing Gibbous") {
+      return "Manifestation Candle Ritual";
+    }
+    if (phaseName === "Waning Gibbous" || phaseName === "Last Quarter" || phaseName === "Waning Crescent") {
+      return "Cleansing Smoke Ritual";
+    }
+    return "Daily Intention Setting";
+  }
+
+  // Finds the most recent new moon on/before the given date (used to
+  // scope "entries this cycle" on the dashboard)
+  function findLastNewMoonDate(date) {
+    const cursor = new Date(date);
+    for (let i = 0; i < 40; i++) {
+      const p = getMoonPhaseFraction(cursor);
+      if (p < 0.02 || p > 0.98) return new Date(cursor);
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    return new Date(date);
+  }
+
+  // Renders a lit/shadow moon icon into a container element
+  function renderMoonIcon(container, phase) {
+    const shadowEl = container.querySelector(".shadow");
+    if (!shadowEl) return;
+    const width = container.offsetWidth || 76;
+    const k = (1 - Math.cos(2 * Math.PI * phase)) / 2; // 0 at new/new, 1 at full
+    const offset = k * width * 2;
+    shadowEl.style.setProperty("--moon-shadow-x", `${offset}px`);
+    shadowEl.style.transform = `translateX(${offset}px)`;
+  }
+
+  /* =========================================================
+     RITUAL DATA
+     ========================================================= */
+  const rituals = {
+    "Daily Intention Setting": {
+      alignment: "All phases",
+      tags: "Daily · 5 min",
+      materials: ["Journal", "Pen", "Quiet space"],
+      steps: [
+        "Sit comfortably and breathe deeply.",
+        "Write your intention for the day.",
+        "Repeat it aloud three times.",
+        "Carry the intention with you."
+      ]
+    },
+    "Full Moon Release Ritual": {
+      alignment: "Full Moon",
+      tags: "Full Moon · Water · Candle",
+      materials: ["White candle", "Bowl of water", "Paper", "Matches"],
+      steps: [
+        "Light the candle and breathe slowly.",
+        "Write what you want to release.",
+        "Fold the paper and place it in the water.",
+        "Visualize the release leaving your body."
+      ]
+    },
+    "New Moon Manifestation Ritual": {
+      alignment: "New Moon",
+      tags: "New Moon · Journaling",
+      materials: ["Journal", "Pen", "Crystal (optional)"],
+      steps: [
+        "Sit quietly and visualize your goals.",
+        "Write 3–5 manifestations.",
+        "Read them aloud with confidence.",
+        "Place the journal under your pillow."
+      ]
+    },
+    "Cleansing Smoke Ritual": {
+      alignment: "Waning Moon",
+      tags: "Cleansing · Herbs",
+      materials: ["Herbs or incense", "Fire-safe dish"],
+      steps: [
+        "Light the herbs safely.",
+        "Let the smoke cleanse your space.",
+        "Move clockwise around your room.",
+        "Extinguish safely when finished."
+      ]
+    },
+    "Manifestation Candle Ritual": {
+      alignment: "Waxing Moon",
+      tags: "Manifestation · Fire · Focus",
+      materials: ["Candle", "Paper", "Pen"],
+      steps: [
+        "Light the candle.",
+        "Write your manifestation.",
+        "Hold the paper and visualize it.",
+        "Place the paper under the candle."
+      ]
+    }
+  };
+
+  /* =========================================================
+     STORAGE
+     ========================================================= */
+  const STORE_KEYS = {
+    journal: "mrp_journal_demo_v1",
+    completions: "mrp_completions_demo_v1"
+  };
+
+  function loadJournal() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEYS.journal)) || []; }
+    catch (e) { return []; }
+  }
+
+  function saveJournal(entries) {
+    try { localStorage.setItem(STORE_KEYS.journal, JSON.stringify(entries)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+    scheduleAutoBackup();
+  }
+
+  function loadCompletions() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEYS.completions)) || []; }
+    catch (e) { return []; }
+  }
+
+  function saveCompletions(list) {
+    try { localStorage.setItem(STORE_KEYS.completions, JSON.stringify(list)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+    scheduleAutoBackup();
+  }
+
+  function todayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
+  function isRitualCompletedToday(name) {
+    const today = todayKey(new Date());
+    return loadCompletions().some((c) => c.ritual === name && todayKey(new Date(c.date)) === today);
+  }
+
+  function toggleRitualCompletion(name) {
+    const list = loadCompletions();
+    const today = todayKey(new Date());
+    const idx = list.findIndex((c) => c.ritual === name && todayKey(new Date(c.date)) === today);
+    if (idx >= 0) {
+      list.splice(idx, 1);
+      saveCompletions(list);
+      return false;
+    }
+    list.push({ ritual: name, date: new Date().toISOString() });
+    saveCompletions(list);
+    return true;
+  }
+
+  /* =========================================================
+     TOAST (replaces alert() for confirmations)
+     ========================================================= */
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => {
+        onAction();
+        el.classList.remove("show");
+      });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+
+  /* =========================================================
+     SHARED MODAL
+     ========================================================= */
+  function openModal({ title, alignment, bodyText, materials, steps, extraHtml, ctaLabel, onCta, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+    document.getElementById("modal-alignment").textContent = alignment || "";
+    document.getElementById("modal-alignment").style.display = alignment ? "block" : "none";
+
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+
+    const materialsSection = document.getElementById("modal-materials-section");
+    const stepsSection = document.getElementById("modal-steps-section");
+
+    if (materials && materials.length) {
+      materialsSection.style.display = "block";
+      document.getElementById("modal-materials").innerHTML = materials.map((m) => `<li>${m}</li>`).join("");
+    } else {
+      materialsSection.style.display = "none";
+    }
+
+    if (steps && steps.length) {
+      stepsSection.style.display = "block";
+      document.getElementById("modal-steps").innerHTML = steps.map((s) => `<li>${s}</li>`).join("");
+    } else {
+      stepsSection.style.display = "none";
+    }
+
+    const extraSection = document.getElementById("modal-extra-section");
+    if (extraHtml) {
+      extraSection.style.display = "block";
+      extraSection.innerHTML = extraHtml;
+    } else {
+      extraSection.style.display = "none";
+      extraSection.innerHTML = "";
+    }
+
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    ctaBtn.className = "modal-cta";
+    if (ctaLabel) {
+      ctaBtn.style.display = "block";
+      ctaBtn.textContent = ctaLabel;
+      ctaBtn.onclick = onCta || null;
+    } else {
+      ctaBtn.style.display = "none";
+      ctaBtn.onclick = null;
+    }
+
+    const secBtn = document.getElementById("modal-cta-secondary-btn");
+    if (secondaryLabel) {
+      secBtn.style.display = "block";
+      secBtn.textContent = secondaryLabel;
+      secBtn.onclick = onSecondary || null;
+    } else {
+      secBtn.style.display = "none";
+      secBtn.onclick = null;
+    }
+
+    document.getElementById("app-modal").classList.add("open");
+  }
+
+  function closeModal() {
+    document.getElementById("app-modal").classList.remove("open");
+  }
+
+  /* =========================================================
+     RITUAL MODAL
+     ========================================================= */
+  function openRitualModal(name) {
+    const data = rituals[name];
+    if (!data) return;
+    renderRitualModalContent(name, data);
+  }
+
+  function renderRitualModalContent(name, data) {
+    const done = isRitualCompletedToday(name);
+    openModal({
+      title: name,
+      alignment: `Best for: ${data.alignment}`,
+      materials: data.materials,
+      steps: data.steps,
+      ctaLabel: done ? "✓ Completed today — tap to unmark" : "Mark ritual complete",
+      onCta: () => {
+        toggleRitualCompletion(name);
+        renderRitualModalContent(name, data);
+        renderRitualList();
+        refreshAllStats();
+        showToast(isRitualCompletedToday(name) ? "Ritual marked complete." : "Completion removed.");
+      }
+    });
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    ctaBtn.classList.toggle("is-done", done);
+  }
+
+  /* =========================================================
+     CALENDAR DAY MODAL
+     ========================================================= */
+  function getCompletedRitualsOnDate(date) {
+    const key = todayKey(date);
+    const names = loadCompletions()
+      .filter((c) => todayKey(new Date(c.date)) === key)
+      .map((c) => c.ritual);
+    return Array.from(new Set(names));
+  }
+
+  function openDayModal(date) {
+    const phase = getMoonPhaseFraction(date);
+    const phaseName = getPhaseName(phase);
+    const illumination = getIllumination(phase);
+    const suggested = getSuggestedRitual(phaseName);
+    const dateLabel = date.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+    const completedNames = getCompletedRitualsOnDate(date);
+
+    let bodyText = getEnergyNote(phaseName);
+    if (completedNames.length) {
+      bodyText += `\n\nCompleted that day: ${completedNames.join(", ")}.`;
+    }
+
+    openModal({
+      title: dateLabel,
+      alignment: `${phaseName} · ${illumination}% illuminated`,
+      bodyText,
+      ctaLabel: `View ${suggested}`,
+      onCta: () => openRitualModal(suggested)
+    });
+  }
+
+  /* =========================================================
+     TAB NAVIGATION
+     ========================================================= */
+  function switchTab(button) {
+    const targetId = button.getAttribute("data-target");
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
+    document.getElementById(targetId).classList.add("active-screen");
+    document.querySelectorAll(".tab").forEach((t) => t.classList.remove("tab-active"));
+    button.classList.add("tab-active");
+
+    if (targetId === "screen-calendar") generateMoonCalendar();
+    if (targetId === "screen-progress") renderProgress();
+  }
+
+  /* =========================================================
+     DASHBOARD
+     ========================================================= */
+  function renderDashboard() {
+    const now = new Date();
+    const phase = getMoonPhaseFraction(now);
+    const phaseName = getPhaseName(phase);
+    const illumination = getIllumination(phase);
+    const suggested = getSuggestedRitual(phaseName);
+
+    document.getElementById("header-phase").textContent = `${phaseName} · ${illumination}% illuminated`;
+    document.getElementById("dashboard-date").textContent = now.toLocaleDateString(undefined, {
+      weekday: "long", month: "long", day: "numeric"
+    });
+    document.getElementById("dashboard-phase-name").textContent = phaseName;
+    document.getElementById("dashboard-illumination").textContent = `${illumination}% illuminated tonight`;
+    document.getElementById("dashboard-energy-note").textContent = getEnergyNote(phaseName);
+    document.getElementById("dashboard-suggested-name").textContent = suggested;
+
+    renderMoonIcon(document.getElementById("dashboard-dial"), phase);
+
+    document.getElementById("dashboard-suggested-ritual").onclick = () => openRitualModal(suggested);
+
+    refreshAllStats();
+  }
+
+  function refreshAllStats() {
+    const completions = loadCompletions();
+    const journal = loadJournal();
+    const now = new Date();
+
+    // Rituals completed in the last 7 days
+    const weekAgo = now.getTime() - 7 * 86400000;
+    const ritualsThisWeek = completions.filter((c) => new Date(c.date).getTime() >= weekAgo).length;
+
+    // Journal entries since the last new moon
+    const cycleStart = findLastNewMoonDate(now);
+    const entriesThisCycle = journal.filter((e) => new Date(e.date).getTime() >= cycleStart.getTime()).length;
+
+    const streak = computeStreak(journal, completions);
+
+    document.getElementById("dashboard-stat-rituals").textContent = ritualsThisWeek;
+    document.getElementById("dashboard-stat-journal").textContent = entriesThisCycle;
+    document.getElementById("dashboard-stat-streak").textContent = streak;
+  }
+
+  function computeStreak(journal, completions) {
+    const activeDays = new Set();
+    journal.forEach((e) => activeDays.add(todayKey(new Date(e.date))));
+    completions.forEach((c) => activeDays.add(todayKey(new Date(c.date))));
+
+    let streak = 0;
+    const cursor = new Date();
+    while (activeDays.has(todayKey(cursor))) {
+      streak += 1;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    return streak;
+  }
+
+  /* =========================================================
+     CALENDAR
+     ========================================================= */
+  const _today = new Date();
+  let calendarViewYear = _today.getFullYear();
+  let calendarViewMonth = _today.getMonth();
+
+  function calendarGoToPrevMonth() {
+    calendarViewMonth -= 1;
+    if (calendarViewMonth < 0) { calendarViewMonth = 11; calendarViewYear -= 1; }
+    generateMoonCalendar();
+  }
+
+  function calendarGoToNextMonth() {
+    calendarViewMonth += 1;
+    if (calendarViewMonth > 11) { calendarViewMonth = 0; calendarViewYear += 1; }
+    generateMoonCalendar();
+  }
+
+  function generateMoonCalendar() {
+    const calendarEl = document.getElementById("moon-calendar");
+    const dowRow = document.getElementById("calendar-dow-row");
+    const monthLabel = document.getElementById("calendar-month-label");
+
+    const today = new Date();
+    const year = calendarViewYear;
+    const month = calendarViewMonth;
+    const viewedDate = new Date(year, month, 1);
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthName = viewedDate.toLocaleString("default", { month: "long" });
+    monthLabel.textContent = `${monthName} ${year}`;
+
+    dowRow.innerHTML = ["S", "M", "T", "W", "T", "F", "S"]
+      .map((d) => `<div class="calendar-dow">${d}</div>`).join("");
+
+    calendarEl.innerHTML = "";
+    for (let i = 0; i < firstDay; i++) {
+      calendarEl.innerHTML += `<div></div>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const phase = getMoonPhaseFraction(date);
+      const isFull = phase > 0.47 && phase < 0.53;
+      const isNew = phase < 0.03 || phase > 0.97;
+      const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+
+      let classes = "calendar-day";
+      if (isFull) classes += " full-moon";
+      if (isNew) classes += " new-moon";
+      if (isToday) classes += " is-today";
+
+      calendarEl.innerHTML += `
+        <div class="${classes}" data-day="${day}">
+          <div class="calendar-moon-icon" data-phase="${phase}">
+            <div class="lit"></div>
+            <div class="shadow"></div>
+          </div>
+          ${day}
+        </div>
+      `;
+    }
+
+    // Render each mini moon icon now that elements exist in the DOM
+    calendarEl.querySelectorAll(".calendar-moon-icon").forEach((el) => {
+      renderMoonIcon(el, parseFloat(el.dataset.phase));
+    });
+  }
+
+  /* =========================================================
+     RITUAL LIBRARY
+     ========================================================= */
+  function renderRitualList() {
+    const listEl = document.getElementById("ritual-list");
+    listEl.innerHTML = Object.entries(rituals).map(([name, data]) => {
+      const done = isRitualCompletedToday(name);
+      return `
+        <div class="ritual-card" data-ritual="${name}" tabindex="0" role="button">
+          <div>
+            <div class="ritual-name">${name}</div>
+            <div class="ritual-tags">${data.tags}</div>
+            <div class="ritual-align">${data.alignment}</div>
+          </div>
+          <div class="ritual-check ${done ? "done" : ""}" data-toggle="${name}" title="${done ? "Tap to unmark complete" : "Tap to mark complete"}">${done ? "✓" : ""}</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  /* =========================================================
+     JOURNAL
+     ========================================================= */
+  let editingJournalIndex = null;
+
+  function renderJournal() {
+    const entries = loadJournal();
+    const listEl = document.getElementById("journal-list");
+
+    if (!entries.length) {
+      listEl.innerHTML = `<div class="empty-state">No entries yet. Write tonight's intention, release, or reflection above to begin.</div>`;
+      return;
+    }
+
+    listEl.innerHTML = entries.map((entry, idx) => {
+      const date = new Date(entry.date);
+      const dateLabel = date.toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+      const phaseName = getPhaseName(getMoonPhaseFraction(date));
+      return `
+        <div class="journal-entry">
+          <div class="journal-entry-header">
+            <div>
+              <span class="journal-entry-date">${dateLabel}</span>
+              <span class="journal-entry-phase"> · ${phaseName}</span>
+            </div>
+            <span class="journal-actions" style="display:flex; gap:0.6rem;">
+              <button class="journal-entry-edit" data-idx="${idx}" aria-label="Edit entry" style="background:none;border:none;color:var(--text-faint);font-size:0.68rem;cursor:pointer;padding:0;">Edit</button>
+              <button class="journal-entry-delete" data-idx="${idx}" aria-label="Delete entry">×</button>
+            </span>
+          </div>
+          <div class="journal-entry-text"></div>
+        </div>
+      `;
+    }).join("");
+
+    // Set text via textContent to avoid HTML injection from journal content
+    listEl.querySelectorAll(".journal-entry-text").forEach((el, i) => {
+      el.textContent = entries[i].text;
+    });
+  }
+
+  function startEditingJournalEntry(idx) {
+    const entries = loadJournal();
+    const entry = entries[idx];
+    if (!entry) return;
+    editingJournalIndex = idx;
+    document.getElementById("journal-input").value = entry.text;
+    document.getElementById("journal-edit-banner").style.display = "block";
+    document.getElementById("journal-input").focus();
+  }
+
+  function cancelJournalEdit() {
+    editingJournalIndex = null;
+    document.getElementById("journal-input").value = "";
+    document.getElementById("journal-edit-banner").style.display = "none";
+  }
+
+  function saveJournalEntry() {
+    const input = document.getElementById("journal-input");
+    const text = input.value.trim();
+    if (!text) {
+      showToast("Write something first.");
+      return;
+    }
+    const entries = loadJournal();
+    if (editingJournalIndex !== null && entries[editingJournalIndex]) {
+      entries[editingJournalIndex].text = text;
+      saveJournal(entries);
+      showToast("Entry updated.");
+    } else {
+      entries.unshift({ text, date: new Date().toISOString() });
+      saveJournal(entries);
+      showToast("Entry saved.");
+    }
+    cancelJournalEdit();
+    input.value = "";
+    renderJournal();
+    refreshAllStats();
+  }
+
+  function deleteJournalEntry(idx) {
+    const entries = loadJournal();
+    entries.splice(idx, 1);
+    saveJournal(entries);
+    if (editingJournalIndex === idx) cancelJournalEdit();
+    renderJournal();
+    refreshAllStats();
+    showToast("Entry deleted.");
+  }
+
+  /* =========================================================
+     PROGRESS
+     ========================================================= */
+  function renderProgress() {
+    const completions = loadCompletions();
+    const journal = loadJournal();
+    const now = new Date();
+
+    document.getElementById("progress-rituals-total").textContent = completions.length;
+    document.getElementById("progress-journal-total").textContent = journal.length;
+    document.getElementById("progress-streak").textContent = computeStreak(journal, completions);
+
+    const phase = getMoonPhaseFraction(now);
+    const percentThroughCycle = Math.round(phase * 100);
+    document.getElementById("cycle-bar-fill").style.width = `${percentThroughCycle}%`;
+    document.getElementById("cycle-bar-percent").textContent = `${percentThroughCycle}% through this cycle`;
+  }
+
+  /* =========================================================
+     RESTORE — shared confirmation flow for both file import
+     and Google Drive restore. Uses the existing shared modal
+     so no new markup was needed.
+     ========================================================= */
+  function dataSummary(payload) {
+    if (!payload) return 0;
+    const j = Array.isArray(payload.journal) ? payload.journal.length : 0;
+    const c = Array.isArray(payload.completions) ? payload.completions.length : 0;
+    return j + c;
+  }
+
+  let _pendingRestorePayload = null;
+
+  function openRestoreConfirm(payload, sourceLabel) {
+    _pendingRestorePayload = payload;
+    const incoming = dataSummary(payload);
+    const current = dataSummary({ journal: loadJournal(), completions: loadCompletions() });
+    let body = `This backup has ${incoming} entries (journal + completions). Your current data has ${current} entries. Restoring replaces what you have now — you can undo it right after if needed.`;
+    if (incoming < current) {
+      body = `⚠ This backup has FEWER entries (${incoming}) than your current data (${current}). Double-check this is the right one before continuing.`;
+    }
+    openModal({
+      title: `Restore from ${sourceLabel}?`,
+      bodyText: body,
+      ctaLabel: "Yes, restore",
+      onCta: confirmRestoreNow,
+      secondaryLabel: "Cancel",
+      onSecondary: () => { _pendingRestorePayload = null; closeModal(); }
+    });
+  }
+
+  function confirmRestoreNow() {
+    if (!_pendingRestorePayload) { closeModal(); return; }
+    try {
+      localStorage.setItem("mrp_pre_restore_snapshot", JSON.stringify({
+        journal: loadJournal(),
+        completions: loadCompletions(),
+        ts: Date.now()
+      }));
+    } catch (e) {}
+    saveJournal(Array.isArray(_pendingRestorePayload.journal) ? _pendingRestorePayload.journal : []);
+    saveCompletions(Array.isArray(_pendingRestorePayload.completions) ? _pendingRestorePayload.completions : []);
+    _pendingRestorePayload = null;
+    closeModal();
+    renderJournal(); renderRitualList(); renderDashboard(); renderProgress();
+    showToast("Restored!");
+  }
+
+  function undoLastRestore() {
+    try {
+      const raw = localStorage.getItem("mrp_pre_restore_snapshot");
+      if (!raw) { showToast("Nothing to undo."); return; }
+      const snap = JSON.parse(raw);
+      saveJournal(snap.journal || []);
+      saveCompletions(snap.completions || []);
+      localStorage.removeItem("mrp_pre_restore_snapshot");
+      renderJournal(); renderRitualList(); renderDashboard(); renderProgress();
+      showToast("Restore undone.");
+      renderLocalRestoreUndo();
+    } catch (e) { showToast("Could not undo."); }
+  }
+
+  function renderLocalRestoreUndo() {
+    const el = document.getElementById("local-restore-undo-slot");
+    if (!el) return;
+    const hasUndo = !!localStorage.getItem("mrp_pre_restore_snapshot");
+    el.innerHTML = hasUndo
+      ? '<button class="backup-btn" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger);" onclick="undoLastRestore()">Undo Last Restore</button>'
+      : '';
+  }
+
+  /* =========================================================
+     LOCAL FILE BACKUP — real export + real import
+     ========================================================= */
+  function buildBackupPayload() {
+    return {
+      journal: loadJournal(),
+      completions: loadCompletions(),
+      exportedAt: new Date().toISOString(),
+      source: "Moon Ritual Planner"
+    };
+  }
+
+  function localDateStr(d) {
+    d = d || new Date();
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function exportBackupFile() {
+    try {
+      const content = JSON.stringify(buildBackupPayload(), null, 2);
+      const blob = new Blob([content], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `moon-ritual-planner-backup-${localDateStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast("Backup file downloaded.");
+    } catch (e) {
+      showToast("Export failed — try a different browser.");
+    }
+  }
+
+  function triggerImportPicker() {
+    document.getElementById("import-file-input").click();
+  }
+
+  function handleImportFileSelected(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const data = JSON.parse(evt.target.result);
+        if (!data || (!Array.isArray(data.journal) && !Array.isArray(data.completions))) {
+          showToast("That file doesn't look like a valid backup.");
+          return;
+        }
+        openRestoreConfirm(data, `the file "${file.name}"`);
+      } catch (err) {
+        showToast("Could not read that file.");
+      }
+    };
+    reader.onerror = () => showToast("Error reading file.");
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
+  /* =========================================================
+     GOOGLE DRIVE BACKUP — removed for the free trial demo.
+     The full version backs up to the user's own Google Drive;
+     this trial is local-device-only, so all Drive OAuth/API
+     code and its Settings UI were removed rather than hidden.
+     scheduleAutoBackup() is kept as a no-op since saveJournal()/
+     saveCompletions() still call it.
+     ========================================================= */
+  function scheduleAutoBackup() {}
+
+  /* =========================================================
+     FREE TRIAL ENFORCEMENT
+     ========================================================= */
+  var DEMO_TRIAL_DAYS = 14;
+  function demoTrialDaysLeft() {
+    var KEY = "mrp_demo_since";
+    var since;
+    try { since = localStorage.getItem(KEY); } catch (e) { since = null; }
+    if (!since) {
+      since = Date.now();
+      try { localStorage.setItem(KEY, since); } catch (e) {}
+    }
+    var elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
+    return DEMO_TRIAL_DAYS - elapsedDays;
+  }
+  function enforceDemoTrial() {
+    var daysLeft = demoTrialDaysLeft();
+    var banner = document.getElementById("demo-banner");
+    if (daysLeft <= 0) {
+      document.getElementById("trial-lock").style.display = "flex";
+      document.body.style.overflow = "hidden";
+      if (banner) banner.style.display = "none";
+      return true;
+    }
+    if (banner) {
+      var noun = daysLeft === 1 ? "day" : "days";
+      banner.innerHTML = "<b>Free demo</b> &middot; " + daysLeft + " " + noun + " left &middot; <a href=\"https://www.etsy.com/listing/4535214371/moon-ritual-tracker-app-real-lunar-phase\" target=\"_blank\" rel=\"noopener\">Get the full app &rarr;</a>";
+    }
+    return false;
+  }
+
+  /* =========================================================
+     INIT + EVENT WIRING
+     ========================================================= */
+  document.addEventListener("DOMContentLoaded", () => {
+    renderDashboard();
+    renderRitualList();
+    renderJournal();
+    renderProgress();
+    renderLocalRestoreUndo();
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => switchTab(tab));
+    });
+
+    document.getElementById("journal-save-btn").addEventListener("click", saveJournalEntry);
+    document.getElementById("journal-cancel-edit-btn").addEventListener("click", cancelJournalEdit);
+
+    document.getElementById("journal-list").addEventListener("click", (e) => {
+      const editBtn = e.target.closest(".journal-entry-edit");
+      if (editBtn) { startEditingJournalEntry(parseInt(editBtn.dataset.idx, 10)); return; }
+      const btn = e.target.closest(".journal-entry-delete");
+      if (!btn) return;
+      deleteJournalEntry(parseInt(btn.dataset.idx, 10));
+    });
+
+    document.getElementById("ritual-list").addEventListener("click", (e) => {
+      const checkBadge = e.target.closest(".ritual-check");
+      if (checkBadge) {
+        toggleRitualCompletion(checkBadge.dataset.toggle);
+        renderRitualList();
+        refreshAllStats();
+        showToast(isRitualCompletedToday(checkBadge.dataset.toggle) ? "Ritual marked complete." : "Completion removed.");
+        return;
+      }
+      const card = e.target.closest(".ritual-card");
+      if (!card) return;
+      openRitualModal(card.dataset.ritual);
+    });
+
+    document.getElementById("moon-calendar").addEventListener("click", (e) => {
+      const dayEl = e.target.closest(".calendar-day");
+      if (!dayEl) return;
+      const date = new Date(calendarViewYear, calendarViewMonth, parseInt(dayEl.dataset.day, 10));
+      openDayModal(date);
+    });
+    document.getElementById("calendar-prev-month").addEventListener("click", calendarGoToPrevMonth);
+    document.getElementById("calendar-next-month").addEventListener("click", calendarGoToNextMonth);
+
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => {
+      if (e.target.id === "app-modal") closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeModal();
+    });
+
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileSelected);
+
+    enforceDemoTrial();
+
+    window.__APP_READY__ = true;
+  });
+</script>
+<script>
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(err){ console.error('SW registration failed:', err); });
+  });
+}
+</script>
+
+</body>
+</html>
