@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Daily Intuition Log — Free Trial — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#0a0c1a" id="theme-color-meta" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root, body:not([data-theme]), body[data-theme="deep"] {
+    --bg-a: #10142a; --bg-b: #0a0c1a;
+    --card: #171c38; --card-hi: #1d2342;
+    --accent-a: #5fd4c4; --accent-b: #8fe8db;
+    --accent-soft: rgba(139, 124, 246, 0.14);
+    --text: #eef0fb; --text-muted: #9a9fc4; --text-faint: #5f6390;
+    --border-soft: rgba(95, 212, 196, 0.14); --on-accent: #0a1420;
+    --danger: #e2777f;
+  }
+  body[data-theme="soft"] {
+    --bg-a: #eae4ff; --bg-b: #c9beef;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.7);
+    --accent-a: #b899ff; --accent-b: #9b7cf6;
+    --accent-soft: rgba(155, 124, 246, 0.16);
+    --text: #241c3a; --text-muted: #574a72; --text-faint: #837a99;
+    --border-soft: rgba(155, 124, 246, 0.22); --on-accent: #ffffff;
+  }
+  body[data-theme="warm"] {
+    --bg-a: #ffe3d0; --bg-b: #ffc2a8;
+    --card: rgba(255, 255, 255, 0.5); --card-hi: rgba(255, 255, 255, 0.68);
+    --accent-a: #ff9e7a; --accent-b: #ee7e56;
+    --accent-soft: rgba(238, 126, 86, 0.16);
+    --text: #2a1710; --text-muted: #6b4b3a; --text-faint: #9a7a68;
+    --border-soft: rgba(238, 126, 86, 0.22); --on-accent: #2a1710;
+  }
+  body[data-theme="cool"] {
+    --bg-a: #dcefff; --bg-b: #b8dcf5;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.7);
+    --accent-a: #7ecbe8; --accent-b: #4fa8d6;
+    --accent-soft: rgba(79, 168, 214, 0.16);
+    --text: #0f2433; --text-muted: #3d5b6e; --text-faint: #6f8a99;
+    --border-soft: rgba(79, 168, 214, 0.22); --on-accent: #ffffff;
+  }
+  body[data-theme="rose"] {
+    --bg-a: #10142a; --bg-b: #0a0c1a;
+    --card: #171c38; --card-hi: #1d2342;
+    --accent-a: #ff9ebd; --accent-b: #f2678f;
+    --accent-soft: rgba(242, 103, 143, 0.14);
+    --text: #eef0fb; --text-muted: #9a9fc4; --text-faint: #5f6390;
+    --border-soft: rgba(242, 103, 143, 0.18); --on-accent: #2a0d1a;
+  }
+  body[data-theme="sage"] {
+    --bg-a: #10142a; --bg-b: #0a0c1a;
+    --card: #171c38; --card-hi: #1d2342;
+    --accent-a: #8fc9a0; --accent-b: #5fa877;
+    --accent-soft: rgba(95, 168, 119, 0.14);
+    --text: #eef0fb; --text-muted: #9a9fc4; --text-faint: #5f6390;
+    --border-soft: rgba(95, 168, 119, 0.18); --on-accent: #0d1a12;
+  }
+  body[data-theme="sand"] {
+    --bg-a: #f5ead8; --bg-b: #e6d0ac;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.7);
+    --accent-a: #d8a866; --accent-b: #b8823f;
+    --accent-soft: rgba(184, 130, 63, 0.16);
+    --text: #2e2313; --text-muted: #6b5738; --text-faint: #98815f;
+    --border-soft: rgba(184, 130, 63, 0.22); --on-accent: #2e2313;
+  }
+  body[data-theme="midnight"] {
+    --bg-a: #161225; --bg-b: #05040a;
+    --card: rgba(22, 18, 37, 0.85); --card-hi: rgba(30, 25, 50, 0.9);
+    --accent-a: #f5c56a; --accent-b: #d89b3c;
+    --accent-soft: rgba(245, 197, 106, 0.14);
+    --text: #f3efe4; --text-muted: #b0a48c; --text-faint: #6b6252;
+    --border-soft: rgba(245, 197, 106, 0.16); --on-accent: #241a06;
+  }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, var(--bg-a), var(--bg-b));
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  .app { width: 100%; max-width: 480px; min-height: 100vh; padding: 1.1rem 1rem calc(6rem + env(safe-area-inset-bottom)); }
+  header { display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 1.1rem; }
+  .eyebrow-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+  .eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-faint); }
+  .app-name { font-family: "Spectral", Georgia, serif; font-style: italic; font-weight: 500; font-size: 1.55rem; color: var(--accent-b); }
+  .app-subtitle { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.1rem; }
+
+  .theme-btn {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-soft);
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+
+  main { width: 100%; }
+  .screen { display: none; width: 100%; }
+  .screen.active-screen { display: block; }
+
+  .card {
+    background: linear-gradient(160deg, var(--card-hi), var(--card) 60%);
+    border: 1px solid var(--border-soft);
+    border-radius: 1.1rem;
+    padding: 1.1rem 1.05rem;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+    margin-bottom: 0.85rem;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+
+  .card-header { margin-bottom: 0.7rem; }
+  .card-title { font-family: "Spectral", Georgia, serif; font-size: 1.1rem; font-weight: 600; color: var(--text); }
+  .card-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+  .note { margin-top: 0.7rem; font-size: 0.72rem; color: var(--text-faint); line-height: 1.55; }
+
+  .compass-row { display: flex; align-items: center; gap: 0.9rem; }
+  .compass {
+    position: relative; width: 66px; height: 66px; flex-shrink: 0; border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, var(--card), var(--bg-b) 80%);
+    box-shadow: inset 0 0 0 1px var(--border-soft);
+  }
+  .compass::before {
+    content: ""; position: absolute; inset: 8px; border-radius: 50%;
+    border: 1px dashed var(--border-soft);
+  }
+  .compass-needle {
+    position: absolute; left: 50%; top: 50%; width: 3px; height: 24px;
+    background: linear-gradient(to top, var(--accent-b), transparent);
+    border-radius: 3px;
+    transform-origin: bottom center;
+    transform: translate(-50%, -100%) rotate(var(--needle-angle, 0deg));
+    transition: transform 0.6s ease;
+    box-shadow: 0 0 8px rgba(143, 232, 219, 0.7);
+  }
+  .compass-dot { position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-b); transform: translate(-50%, -50%); }
+
+  .compass-info { flex: 1; min-width: 0; }
+  .compass-label { font-family: "Spectral", Georgia, serif; font-size: 1.05rem; font-weight: 600; color: var(--accent-b); }
+  .compass-sub { font-size: 0.74rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .stat { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-soft); border-radius: 0.75rem; padding: 0.6rem 0.5rem; text-align: center; }
+  .stat-value { font-family: "Spectral", Georgia, serif; font-size: 1.25rem; font-weight: 600; color: var(--accent-b); }
+  .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+
+  .heatmap-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.3rem; margin-top: 0.5rem; }
+  .heatmap-cell { aspect-ratio: 1; border-radius: 4px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-soft); }
+  .heatmap-cell.active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); border-color: transparent; }
+
+  .subtab-row { display: flex; gap: 0.4rem; margin-bottom: 0.85rem; }
+  .subtab {
+    flex: 1; padding: 0.4rem 0.6rem; border-radius: 999px; font-size: 0.72rem; text-align: center;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); cursor: pointer;
+  }
+  .subtab.active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; border-color: transparent; }
+
+  .field { margin-bottom: 0.75rem; }
+  .field.full-only-field { display: none; }
+  .field label { display: block; font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+  .field textarea, .field input {
+    width: 100%; padding: 0.65rem 0.75rem; border-radius: 0.75rem;
+    border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.02);
+    color: var(--text); font-family: "Inter", sans-serif; font-size: 0.82rem; line-height: 1.5;
+  }
+  .field textarea { min-height: 60px; resize: vertical; }
+  .field textarea:focus-visible, .field input:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+
+  .confidence-row { display: flex; gap: 0.4rem; margin-top: 0.35rem; }
+  .confidence-dot {
+    flex: 1; padding: 0.55rem; text-align: center; border-radius: 0.6rem;
+    border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.02);
+    color: var(--text-muted); font-size: 0.85rem; cursor: pointer;
+  }
+  .confidence-dot.selected { border-color: transparent; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+
+  .btn-primary {
+    width: 100%; padding: 0.65rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b) 75%);
+    color: var(--on-accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
+  }
+  .btn-primary:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .btn-secondary {
+    width: 100%; padding: 0.6rem; border-radius: 999px; margin-top: 0.5rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted);
+    font-size: 0.76rem; cursor: pointer;
+  }
+
+  .today-summary-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-soft); }
+  .today-summary-row:last-child { border-bottom: none; }
+  .today-summary-label { font-size: 0.68rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .today-summary-value { font-size: 0.82rem; color: var(--text); text-align: right; line-height: 1.5; }
+
+  .list-item {
+    background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-soft); border-radius: 0.85rem;
+    padding: 0.7rem 0.8rem; margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer;
+  }
+  .list-item-body { flex: 1; min-width: 0; }
+  .list-item-text { font-size: 0.82rem; color: var(--text); line-height: 1.5; white-space: pre-wrap; }
+  .list-item-date { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.25rem; }
+  .list-item-actions { display: flex; gap: 0.5rem; margin-top: 0.35rem; }
+  .list-item-action-btn { background: none; border: none; color: var(--text-muted); font-size: 0.68rem; cursor: pointer; padding: 0; }
+  .list-item-action-btn:hover { color: var(--accent-b); }
+  .list-item-action-btn.danger:hover { color: var(--danger); }
+  .list-item-delete { flex-shrink: 0; background: none; border: none; color: var(--text-faint); font-size: 0.9rem; cursor: pointer; padding: 0 0.15rem; }
+  .list-item-delete:hover { color: var(--danger); }
+
+  .empty-state {
+    margin-top: 0.7rem; padding: 1.1rem 0.9rem; border: 1px dashed var(--border-soft); border-radius: 0.85rem;
+    text-align: center; font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;
+  }
+
+  .pattern-chip-row { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.5rem; }
+  .pattern-chip {
+    font-size: 0.72rem; padding: 0.35rem 0.65rem; border-radius: 999px;
+    border: 1px solid var(--border-soft); background: var(--accent-soft); color: var(--text);
+  }
+  .pattern-chip strong { color: var(--accent-b); }
+
+  .backup-status-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.02); }
+  .backup-status-text { font-size: 0.75rem; color: var(--text-muted); }
+  .backup-status-sub { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.1rem; }
+  .backup-badge { font-size: 0.62rem; padding: 0.2rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .backup-badge.connected { color: #16210f; background: linear-gradient(135deg, #b7d99a, #8ab86a); }
+  .backup-badge.disconnected { color: var(--text-faint); background: rgba(255, 255, 255, 0.06); }
+  .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
+  .backup-btn { padding: 0.6rem 0.5rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: transparent; color: var(--text); font-size: 0.74rem; font-weight: 500; cursor: pointer; font-family: "Inter", sans-serif; }
+  .backup-btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+  .backup-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
+  .backup-section-label { font-size: 0.68rem; color: var(--accent-b); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+
+  .tabbar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px; display: flex; justify-content: space-between; gap: 0.2rem;
+    padding: 0.6rem 0.6rem calc(0.6rem + env(safe-area-inset-bottom));
+    border-radius: 0; background: var(--card-hi);
+    border: none; border-top: 1px solid var(--border-soft);
+    backdrop-filter: blur(10px); box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12);
+    transition: background 0.3s ease, border-color 0.3s ease; z-index: 50;
+  }
+  .tab { flex: 1; text-align: center; font-size: 0.66rem; padding: 0.5rem 0.2rem; border-radius: 999px; color: var(--text-faint); cursor: pointer; border: none; background: transparent; font-family: "Inter", sans-serif; transition: background 0.2s ease, color 0.2s ease; }
+  .tab:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .tab-active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(3, 4, 12, 0.78); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: linear-gradient(160deg, var(--card-hi), var(--card-hi) 70%); border: 1px solid var(--border-soft);
+    border-top-left-radius: 1.4rem; border-top-right-radius: 1.4rem;
+    padding: 1.3rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom)); width: 100%; max-width: 480px;
+    max-height: 82vh; overflow-y: auto; box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.6); animation: modalUp 0.28s ease-out;
+  }
+  @keyframes modalUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .modal-title { font-family: "Spectral", Georgia, serif; font-size: 1.3rem; font-weight: 600; color: var(--text); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--accent-a); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .modal-body-text { margin-top: 0.7rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; white-space: pre-wrap; }
+  .modal-cta { margin-top: 1.1rem; width: 100%; padding: 0.7rem; border-radius: 999px; border: none; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .modal-cta.danger { background: linear-gradient(135deg, #f09aa0, var(--danger)); color: #2a0a0c; }
+  .modal-cta-secondary { margin-top: 0.6rem; width: 100%; padding: 0.65rem; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; }
+
+  .toast {
+    position: fixed; bottom: 5.6rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--card-hi); border: 1px solid var(--border-soft); color: var(--text);
+    font-size: 0.78rem; padding: 0.6rem 1rem; border-radius: 18px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000;
+    white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-action { color: var(--accent-b); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; }
+
+  /* ---------- Free trial demo ---------- */
+  .demo-banner {
+    position: sticky; top: 0; z-index: 60;
+    margin: -1.1rem -1rem 0.85rem -1rem;
+    padding: 0.55rem 1rem;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent);
+    font-size: 0.72rem; font-weight: 600; text-align: center;
+    letter-spacing: 0.01em;
+  }
+  .demo-banner a { color: var(--on-accent); text-decoration: underline; }
+
+  .upsell-card {
+    border-radius: 0.85rem; padding: 0.9rem 1rem; margin-bottom: 0.9rem;
+    background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-soft);
+  }
+  .upsell-title { font-size: 0.78rem; font-weight: 600; color: var(--text); margin-bottom: 0.35rem; }
+  .upsell-text { font-size: 0.74rem; line-height: 1.5; color: var(--text-muted); margin-bottom: 0.7rem; }
+  .upsell-btn {
+    display: inline-block; padding: 0.55rem 0.9rem; border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 0.74rem; font-weight: 600; text-decoration: none;
+  }
+
+  #trial-lock {
+    display: none; position: fixed; inset: 0; z-index: 900;
+    background: rgba(3, 4, 12, 0.72); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 1.5rem;
+  }
+  #trial-lock .lock-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft);
+    border-radius: 1.1rem; padding: 1.6rem 1.4rem; max-width: 360px; text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  }
+  #trial-lock .lock-title { font-family: "Spectral", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--text); margin-bottom: 0.6rem; }
+  #trial-lock .lock-text { font-size: 0.82rem; line-height: 1.55; color: var(--text-muted); margin-bottom: 1.1rem; }
+  #trial-lock .lock-cta {
+    display: inline-block; padding: 0.7rem 1.3rem; border-radius: 999px;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 0.85rem; font-weight: 600; text-decoration: none;
+  }
+</style>
+</head>
+<body data-theme="deep">
+
+<div class="app">
+  <div class="demo-banner" id="demo-banner"><span id="demo-banner-text">Free trial — 14 days left</span> &middot; <a href="ETSY_URL_PLACEHOLDER" target="_blank" rel="noopener">Buy the full version</a></div>
+  <div id="trial-lock">
+    <div class="lock-card">
+      <div class="lock-title">Your free trial has ended</div>
+      <div class="lock-text">Your 14-day trial of Daily Intuition Log has ended. Purchase the full version on Etsy to keep logging your daily signals, signs, and journal entries, with no interruptions and optional Google Drive backup.</div>
+      <a class="lock-cta" href="ETSY_URL_PLACEHOLDER" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+    </div>
+  </div>
+
+  <header>
+    <div class="eyebrow-row">
+      <div class="eyebrow">Mobile First Studio</div>
+      <button class="theme-btn" id="theme-btn" title="Change theme" aria-label="Change theme">✨</button>
+    </div>
+    <div class="app-name">Daily Intuition Log</div>
+    <div class="app-subtitle">Strengthen your inner voice.</div>
+  </header>
+
+  <main>
+
+    <!-- TODAY -->
+    <section id="screen-today" class="screen active-screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Signal Strength</div>
+          <div class="card-subtitle" id="today-date-label"></div>
+        </div>
+        <div class="compass-row">
+          <div class="compass" id="insight-compass"><div class="compass-needle"></div><div class="compass-dot"></div></div>
+          <div class="compass-info">
+            <div class="compass-label" id="compass-label">Not yet logged today</div>
+            <div class="compass-sub" id="compass-sub">Log today's entry to see your signal.</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-value" id="today-stat-streak">0</div><div class="stat-label">Streak</div></div>
+          <div class="stat"><div class="stat-value" id="today-stat-entries">0</div><div class="stat-label">Entries</div></div>
+          <div class="stat"><div class="stat-value" id="today-stat-avg">—</div><div class="stat-label">7-day avg</div></div>
+        </div>
+      </section>
+
+      <section class="card" id="daily-form-card">
+        <div class="card-header">
+          <div class="card-title">Today's Log</div>
+          <div class="card-subtitle">Capture what your intuition picked up on today.</div>
+        </div>
+        <div class="subtab-row" id="daily-mode-row">
+          <button class="subtab active" data-mode="quick">Quick log</button>
+          <button class="subtab" data-mode="full">Full log</button>
+        </div>
+        <div class="field"><label>Intuitive hit</label><textarea id="f-hit" placeholder="What did you just know, without knowing why?"></textarea></div>
+        <div class="field">
+          <label>Confidence today</label>
+          <div class="confidence-row" id="confidence-row">
+            <div class="confidence-dot" data-value="1">1</div>
+            <div class="confidence-dot" data-value="2">2</div>
+            <div class="confidence-dot" data-value="3">3</div>
+            <div class="confidence-dot" data-value="4">4</div>
+            <div class="confidence-dot" data-value="5">5</div>
+          </div>
+        </div>
+        <div class="field full-only-field"><label>Body signal</label><textarea id="f-body" placeholder="Where did you feel it — gut, chest, shoulders?"></textarea></div>
+        <div class="field full-only-field"><label>Emotion</label><textarea id="f-emotion" placeholder="What emotion came with it?"></textarea></div>
+        <div class="field full-only-field"><label>Inner voice message</label><textarea id="f-message" placeholder="If it could speak plainly, what would it say?"></textarea></div>
+        <div class="field full-only-field"><label>Synchronicity</label><textarea id="f-sync" placeholder="Any sign or coincidence today?"></textarea></div>
+        <div class="field full-only-field"><label>Action taken</label><textarea id="f-action" placeholder="Did you act on it?"></textarea></div>
+        <div class="field full-only-field"><label>Outcome</label><textarea id="f-outcome" placeholder="What happened as a result, if anything yet?"></textarea></div>
+        <button class="btn-primary" id="save-daily-btn">Save today's log</button>
+      </section>
+
+      <section class="card" id="today-summary-card" style="display:none;">
+        <div class="card-header"><div class="card-title">Today, so far</div></div>
+        <div id="today-summary-body"></div>
+        <button class="btn-secondary" id="edit-today-btn">Edit today's log</button>
+      </section>
+    </section>
+
+    <!-- SIGNS -->
+    <section id="screen-signs" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Synchronicity Log</div>
+          <div class="card-subtitle">Signs, symbols, and coincidences worth remembering.</div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <textarea id="sign-input" placeholder="Add a sign or symbol you noticed…"></textarea>
+        </div>
+        <button class="btn-primary" id="sign-add-btn" style="margin-top:0.5rem;">Add</button>
+        <div id="sign-list" style="margin-top:0.85rem;"></div>
+      </section>
+    </section>
+
+    <!-- JOURNAL -->
+    <section id="screen-journal" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Intuition Journal</div>
+          <div class="card-subtitle">Longer reflections on how your inner voice is developing.</div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <textarea id="journal-input" placeholder="Reflect freely…" style="min-height:110px;"></textarea>
+        </div>
+        <button class="btn-primary" id="journal-save-btn" style="margin-top:0.6rem;">Save entry</button>
+        <button class="btn-secondary" id="journal-cancel-edit-btn" style="display:none;">Cancel edit</button>
+        <div id="journal-list" style="margin-top:0.85rem;"></div>
+      </section>
+    </section>
+
+    <!-- INSIGHTS -->
+    <section id="screen-insights" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Weekly Patterns</div>
+          <div class="card-subtitle">What's repeating across the last 7 logged days.</div>
+        </div>
+        <div id="patterns-output"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Confidence Analytics</div>
+          <div class="card-subtitle">How your trust in your own signal is trending.</div>
+        </div>
+        <div class="stat-row" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+          <div class="stat"><div class="stat-value" id="analytics-avg-all">—</div><div class="stat-label">All-time avg</div></div>
+          <div class="stat"><div class="stat-value" id="analytics-avg-7">—</div><div class="stat-label">Last 7 days</div></div>
+          <div class="stat"><div class="stat-value" id="analytics-entries">0</div><div class="stat-label">Entries logged</div></div>
+          <div class="stat"><div class="stat-value" id="analytics-longest">0</div><div class="stat-label">Longest streak</div></div>
+        </div>
+        <div class="backup-section-label" style="margin-top:0.9rem;">Last 5 weeks</div>
+        <div class="heatmap-grid" id="streak-heatmap"></div>
+        <div class="note" id="analytics-trend-note"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Log History</div>
+          <div class="card-subtitle">Every day you've logged, most recent first. Tap a day to view or edit it.</div>
+        </div>
+        <div id="history-list"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Backup &amp; Sync</div>
+          <div class="card-subtitle">Keep your logs and journal safe.</div>
+        </div>
+
+        <div class="upsell-card">
+          <div class="upsell-title">Google Drive backup is a full-version feature</div>
+          <div class="upsell-text">The full Daily Intuition Log backs your logs, signs, and journal up to your own Google Drive automatically. This trial keeps everything local to this device.</div>
+          <a class="upsell-btn" href="ETSY_URL_PLACEHOLDER" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+        </div>
+
+        <div class="backup-divider">
+          <div class="backup-section-label">Local backup file</div>
+          <div class="backup-actions">
+            <button class="backup-btn" id="export-btn">Export backup file</button>
+            <button class="backup-btn" id="import-btn">Import backup file</button>
+          </div>
+          <div id="local-restore-undo-slot"></div>
+        </div>
+
+        <div class="note">Exporting or backing up saves everything in this app. It never includes anything else from your device.</div>
+      </section>
+    </section>
+
+  </main>
+
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+
+  <div class="tabbar">
+    <button class="tab tab-active" data-target="screen-today">Today</button>
+    <button class="tab" data-target="screen-signs">Signs</button>
+    <button class="tab" data-target="screen-journal">Journal</button>
+    <button class="tab" data-target="screen-insights">Insights</button>
+  </div>
+</div>
+
+<!-- SHARED MODAL -->
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body-text" id="modal-body-text"></div>
+    <div id="modal-extra-body"></div>
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta-secondary" id="modal-secondary-btn"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* =========================================================
+     STORAGE
+     ========================================================= */
+  const STORE_KEY = "dil_data_demo_v1";
+
+  function defaultDB() {
+    return { dailyLogs: {}, synchronicities: [], journalEntries: [], theme: "deep" };
+  }
+
+  let DB = defaultDB();
+
+  function ld() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) DB = Object.assign(defaultDB(), JSON.parse(raw));
+    } catch (e) { DB = defaultDB(); }
+  }
+  function sv() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+    scheduleAutoBackup();
+  }
+
+  function todayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  function uid() { return Date.now() + Math.floor(Math.random() * 1000); }
+
+  function dayKeysWithinLastN(n) {
+    const keys = [];
+    const cursor = new Date();
+    for (let i = 0; i < n; i++) {
+      keys.push(todayKey(cursor));
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    return keys;
+  }
+
+  /* =========================================================
+     THEME SWITCHER
+     ========================================================= */
+  const THEMES = ["deep", "rose", "sage", "midnight", "soft", "warm", "cool", "sand"];
+  const THEME_COLORS = { deep: "#0a0c1a", soft: "#c9beef", warm: "#ffc2a8", cool: "#b8dcf5", rose: "#0a0c1a", sage: "#0a0c1a", sand: "#e6d0ac", midnight: "#05040a" };
+
+  function applyTheme() {
+    document.body.setAttribute("data-theme", DB.theme);
+    document.getElementById("theme-color-meta").setAttribute("content", THEME_COLORS[DB.theme] || THEME_COLORS.deep);
+  }
+  function cycleTheme() {
+    const idx = THEMES.indexOf(DB.theme);
+    DB.theme = THEMES[(idx + 1) % THEMES.length];
+    sv();
+    applyTheme();
+    showToast(`Theme: ${DB.theme[0].toUpperCase() + DB.theme.slice(1)}`);
+  }
+
+  /* =========================================================
+     STREAK — based on which calendar days have a logged entry
+     ========================================================= */
+  function computeStreakInfo() {
+    const activeDays = new Set(Object.keys(DB.dailyLogs));
+    let current = 0;
+    const cursor = new Date();
+    while (activeDays.has(todayKey(cursor))) {
+      current += 1;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    const sortedDays = Array.from(activeDays).sort();
+    let longest = 0, run = 0, prevDate = null;
+    sortedDays.forEach((dayStr) => {
+      const d = new Date(dayStr + "T00:00:00");
+      if (prevDate && (d - prevDate) / 86400000 === 1) run += 1;
+      else run = 1;
+      longest = Math.max(longest, run);
+      prevDate = d;
+    });
+    return { current, longest };
+  }
+
+  /* =========================================================
+     TOAST
+     ========================================================= */
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => { onAction(); el.classList.remove("show"); });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+
+  /* =========================================================
+     SHARED MODAL
+     ========================================================= */
+  function openModal({ title, bodyText, extraHtml, ctaLabel, onCta, ctaDanger, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+    document.getElementById("modal-extra-body").innerHTML = extraHtml || "";
+
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    if (ctaLabel) {
+      ctaBtn.style.display = "block";
+      ctaBtn.textContent = ctaLabel;
+      ctaBtn.classList.toggle("danger", !!ctaDanger);
+      ctaBtn.onclick = onCta || null;
+    } else { ctaBtn.style.display = "none"; ctaBtn.onclick = null; }
+
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    if (secondaryLabel) {
+      secondaryBtn.style.display = "block";
+      secondaryBtn.textContent = secondaryLabel;
+      secondaryBtn.onclick = onSecondary || closeModal;
+    } else { secondaryBtn.style.display = "none"; secondaryBtn.onclick = null; }
+
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function closeModal() { document.getElementById("app-modal").classList.remove("open"); }
+
+  /* =========================================================
+     TAB NAVIGATION
+     ========================================================= */
+  function switchToTab(targetId) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
+    document.getElementById(targetId).classList.add("active-screen");
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("tab-active", t.dataset.target === targetId));
+    if (targetId === "screen-insights") renderInsights();
+  }
+
+  /* =========================================================
+     TODAY / DAILY LOG
+     ========================================================= */
+  let selectedConfidence = null;
+  let dailyFormMode = "quick";
+
+  function setDailyFormMode(mode) {
+    dailyFormMode = mode;
+    document.querySelectorAll("#daily-mode-row .subtab").forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+    document.querySelectorAll("#daily-form-card .full-only-field").forEach((f) => { f.style.display = mode === "full" ? "block" : "none"; });
+  }
+
+  function renderToday() {
+    const now = new Date();
+    document.getElementById("today-date-label").textContent = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+
+    const key = todayKey(now);
+    const entry = DB.dailyLogs[key];
+    const { current } = computeStreakInfo();
+    const allEntries = Object.values(DB.dailyLogs);
+
+    document.getElementById("today-stat-streak").textContent = current;
+    document.getElementById("today-stat-entries").textContent = allEntries.length;
+
+    const last7Keys = dayKeysWithinLastN(7);
+    const last7Scores = last7Keys.map((k) => DB.dailyLogs[k]).filter(Boolean).map((e) => e.confidence);
+    const avg7 = last7Scores.length ? (last7Scores.reduce((a, b) => a + b, 0) / last7Scores.length) : null;
+    document.getElementById("today-stat-avg").textContent = avg7 !== null ? avg7.toFixed(1) : "—";
+
+    const compass = document.getElementById("insight-compass");
+    const confidenceForNeedle = entry ? entry.confidence : (avg7 || 3);
+    const angle = -60 + ((confidenceForNeedle - 1) / 4) * 120;
+    compass.style.setProperty("--needle-angle", `${angle}deg`);
+
+    const labelEl = document.getElementById("compass-label");
+    const subEl = document.getElementById("compass-sub");
+    if (!entry) {
+      labelEl.textContent = "Not yet logged today";
+      subEl.textContent = "Log today's entry to see your signal.";
+    } else if (entry.confidence >= 4) {
+      labelEl.textContent = "Clear signal";
+      subEl.textContent = "You're trusting what you're picking up on today.";
+    } else if (entry.confidence === 3) {
+      labelEl.textContent = "Tuning in";
+      subEl.textContent = "A steady middle ground — worth sitting with.";
+    } else {
+      labelEl.textContent = "Static today";
+      subEl.textContent = "Low confidence is useful data too. Note it and move on.";
+    }
+
+    const formCard = document.getElementById("daily-form-card");
+    const summaryCard = document.getElementById("today-summary-card");
+    if (entry) {
+      formCard.style.display = "none";
+      summaryCard.style.display = "block";
+      renderTodaySummary(entry);
+    } else {
+      formCard.style.display = "block";
+      summaryCard.style.display = "none";
+      clearDailyForm();
+    }
+  }
+
+  function renderTodaySummary(entry) {
+    document.getElementById("today-summary-body").innerHTML = "";
+    const container = document.getElementById("today-summary-body");
+    buildSummaryRows(entry).forEach((row) => container.appendChild(row));
+  }
+
+  function buildSummaryRows(entry) {
+    const rows = [
+      ["Intuitive hit", entry.hit],
+      ["Body signal", entry.body],
+      ["Emotion", entry.emotion],
+      ["Inner voice message", entry.message],
+      ["Synchronicity", entry.sync],
+      ["Action taken", entry.action],
+      ["Outcome", entry.outcome],
+      ["Confidence", entry.confidence ? `${entry.confidence} / 5` : null]
+    ];
+    return rows.map(([label, value]) => {
+      const row = document.createElement("div");
+      row.className = "today-summary-row";
+      const labelEl = document.createElement("div");
+      labelEl.className = "today-summary-label";
+      labelEl.textContent = label;
+      const valueEl = document.createElement("div");
+      valueEl.className = "today-summary-value";
+      valueEl.textContent = value || "—";
+      row.appendChild(labelEl);
+      row.appendChild(valueEl);
+      return row;
+    });
+  }
+
+  function clearDailyForm() {
+    ["f-hit", "f-body", "f-emotion", "f-message", "f-sync", "f-action", "f-outcome"].forEach((id) => {
+      document.getElementById(id).value = "";
+    });
+    selectedConfidence = null;
+    renderConfidenceRow();
+    setDailyFormMode("quick");
+  }
+
+  function renderConfidenceRow() {
+    document.querySelectorAll("#confidence-row .confidence-dot").forEach((dot) => {
+      dot.classList.toggle("selected", Number(dot.dataset.value) === selectedConfidence);
+    });
+  }
+
+  function loadTodayIntoForm() {
+    const entry = DB.dailyLogs[todayKey(new Date())];
+    if (!entry) { clearDailyForm(); return; }
+    document.getElementById("f-hit").value = entry.hit || "";
+    document.getElementById("f-body").value = entry.body || "";
+    document.getElementById("f-emotion").value = entry.emotion || "";
+    document.getElementById("f-message").value = entry.message || "";
+    document.getElementById("f-sync").value = entry.sync || "";
+    document.getElementById("f-action").value = entry.action || "";
+    document.getElementById("f-outcome").value = entry.outcome || "";
+    selectedConfidence = entry.confidence || null;
+    renderConfidenceRow();
+    const hasFullFields = !!(entry.body || entry.emotion || entry.message || entry.sync || entry.action || entry.outcome);
+    setDailyFormMode(hasFullFields ? "full" : "quick");
+  }
+
+  function saveDailyLog() {
+    const fields = {
+      hit: document.getElementById("f-hit").value.trim(),
+      body: document.getElementById("f-body").value.trim(),
+      emotion: document.getElementById("f-emotion").value.trim(),
+      message: document.getElementById("f-message").value.trim(),
+      sync: document.getElementById("f-sync").value.trim(),
+      action: document.getElementById("f-action").value.trim(),
+      outcome: document.getElementById("f-outcome").value.trim()
+    };
+    if (!Object.values(fields).some(Boolean)) {
+      showToast("Fill in at least one field before saving.");
+      return;
+    }
+
+    const key = todayKey(new Date());
+    DB.dailyLogs[key] = { ...fields, confidence: selectedConfidence || 3, loggedAt: new Date().toISOString() };
+    sv();
+    showToast("Today's log saved.");
+    renderToday();
+  }
+
+  function editToday() {
+    document.getElementById("daily-form-card").style.display = "block";
+    document.getElementById("today-summary-card").style.display = "none";
+    loadTodayIntoForm();
+  }
+
+  /* =========================================================
+     HISTORY — view + edit any past day's log
+     ========================================================= */
+  function openHistoryDayModal(key) {
+    const entry = DB.dailyLogs[key];
+    if (!entry) return;
+    const dateLabel = new Date(key + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+
+    document.getElementById("modal-title").textContent = dateLabel;
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.style.display = "none";
+    bodyEl.textContent = "";
+
+    const extra = document.getElementById("modal-extra-body");
+    extra.innerHTML = "";
+    buildSummaryRows(entry).forEach((row) => extra.appendChild(row));
+
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    ctaBtn.style.display = "block";
+    ctaBtn.textContent = "Edit this day";
+    ctaBtn.classList.remove("danger");
+    ctaBtn.onclick = () => openHistoryEditModal(key);
+
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    secondaryBtn.style.display = "block";
+    secondaryBtn.textContent = "Close";
+    secondaryBtn.onclick = closeModal;
+
+    document.getElementById("app-modal").classList.add("open");
+  }
+
+  function openHistoryEditModal(key) {
+    const entry = DB.dailyLogs[key];
+    if (!entry) return;
+    const dateLabel = new Date(key + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+
+    document.getElementById("modal-title").textContent = `Edit ${dateLabel}`;
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.style.display = "none";
+    bodyEl.textContent = "";
+
+    const extra = document.getElementById("modal-extra-body");
+    extra.innerHTML = "";
+
+    const fieldDefs = [
+      ["hit", "Intuitive hit"], ["body", "Body signal"], ["emotion", "Emotion"],
+      ["message", "Inner voice message"], ["sync", "Synchronicity"],
+      ["action", "Action taken"], ["outcome", "Outcome"]
+    ];
+    fieldDefs.forEach(([field, label]) => {
+      const wrap = document.createElement("div");
+      wrap.className = "field";
+      const lbl = document.createElement("label");
+      lbl.textContent = label;
+      const ta = document.createElement("textarea");
+      ta.id = `edit-${field}`;
+      ta.value = entry[field] || "";
+      wrap.appendChild(lbl);
+      wrap.appendChild(ta);
+      extra.appendChild(wrap);
+    });
+
+    const confWrap = document.createElement("div");
+    confWrap.className = "field";
+    const confLabel = document.createElement("label");
+    confLabel.textContent = "Confidence";
+    const confRow = document.createElement("div");
+    confRow.className = "confidence-row";
+    confRow.id = "edit-confidence-row";
+    for (let i = 1; i <= 5; i++) {
+      const dot = document.createElement("div");
+      dot.className = "confidence-dot" + (entry.confidence === i ? " selected" : "");
+      dot.dataset.value = i;
+      dot.textContent = i;
+      dot.addEventListener("click", () => {
+        confRow.querySelectorAll(".confidence-dot").forEach((d) => d.classList.toggle("selected", d === dot));
+      });
+      confRow.appendChild(dot);
+    }
+    confWrap.appendChild(confLabel);
+    confWrap.appendChild(confRow);
+    extra.appendChild(confWrap);
+
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    ctaBtn.style.display = "block";
+    ctaBtn.textContent = "Save changes";
+    ctaBtn.classList.remove("danger");
+    ctaBtn.onclick = () => {
+      const updated = {};
+      fieldDefs.forEach(([field]) => { updated[field] = document.getElementById(`edit-${field}`).value.trim(); });
+      const selectedDot = confRow.querySelector(".confidence-dot.selected");
+      updated.confidence = selectedDot ? Number(selectedDot.dataset.value) : (entry.confidence || 3);
+      updated.loggedAt = entry.loggedAt;
+      DB.dailyLogs[key] = updated;
+      sv();
+      closeModal();
+      renderHistory(); renderPatterns(); renderAnalytics(); renderToday();
+      showToast("Day updated.");
+    };
+
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    secondaryBtn.style.display = "block";
+    secondaryBtn.textContent = "Cancel";
+    secondaryBtn.onclick = closeModal;
+
+    document.getElementById("app-modal").classList.add("open");
+  }
+
+  /* =========================================================
+     SIGNS (synchronicity log)
+     ========================================================= */
+  function renderSigns() {
+    const items = DB.synchronicities.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    const listEl = document.getElementById("sign-list");
+    if (!items.length) { listEl.innerHTML = `<div class="empty-state">No synchronicities logged yet.</div>`; return; }
+    listEl.innerHTML = items.map((item) => {
+      const dateLabel = new Date(item.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      return `
+        <div class="list-item" style="cursor:default;">
+          <div class="list-item-body">
+            <div class="list-item-text" data-text-id="${item.id}"></div>
+            <div class="list-item-date">${dateLabel}</div>
+            <div class="list-item-actions">
+              <button class="list-item-action-btn" data-edit-sign="${item.id}">Edit</button>
+              <button class="list-item-action-btn danger" data-delete-id="${item.id}">Delete</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    listEl.querySelectorAll("[data-text-id]").forEach((el) => {
+      const item = items.find((i) => i.id === Number(el.dataset.textId));
+      el.textContent = item.text;
+    });
+  }
+
+  function addSign() {
+    const input = document.getElementById("sign-input");
+    const text = input.value.trim();
+    if (!text) { showToast("Write something first."); return; }
+    DB.synchronicities.push({ id: uid(), text, createdAt: new Date().toISOString() });
+    sv();
+    input.value = "";
+    renderSigns();
+    showToast("Added.");
+  }
+
+  function openEditSignModal(id) {
+    const item = DB.synchronicities.find((i) => i.id === id);
+    if (!item) return;
+    document.getElementById("modal-title").textContent = "Edit sign";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.style.display = "block";
+    bodyEl.innerHTML = "";
+    const textarea = document.createElement("textarea");
+    textarea.id = "edit-sign-input";
+    textarea.style.cssText = "width:100%; min-height:100px; padding:0.65rem 0.75rem; border-radius:0.75rem; border:1px solid var(--border-soft); background:rgba(255,255,255,0.02); color:var(--text); font-family:'Inter',sans-serif; font-size:0.82rem; line-height:1.5; resize:vertical;";
+    textarea.value = item.text;
+    bodyEl.appendChild(textarea);
+
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    ctaBtn.style.display = "block";
+    ctaBtn.textContent = "Save changes";
+    ctaBtn.classList.remove("danger");
+    ctaBtn.onclick = () => {
+      const newText = document.getElementById("edit-sign-input").value.trim();
+      if (!newText) { showToast("Write something first."); return; }
+      item.text = newText;
+      sv();
+      closeModal();
+      renderSigns();
+      showToast("Updated.");
+    };
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    secondaryBtn.style.display = "block";
+    secondaryBtn.textContent = "Cancel";
+    secondaryBtn.onclick = closeModal;
+    document.getElementById("app-modal").classList.add("open");
+  }
+
+  function confirmDeleteSign(id) {
+    openModal({
+      title: "Delete this?",
+      bodyText: "This can't be undone once confirmed.",
+      ctaLabel: "Delete",
+      ctaDanger: true,
+      onCta: () => {
+        DB.synchronicities = DB.synchronicities.filter((i) => i.id !== id);
+        sv(); closeModal(); renderSigns();
+        showToast("Deleted.");
+      },
+      secondaryLabel: "Keep it",
+      onSecondary: closeModal
+    });
+  }
+
+  /* =========================================================
+     JOURNAL
+     ========================================================= */
+  let editingJournalId = null;
+
+  function renderJournal() {
+    const entries = DB.journalEntries.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    const listEl = document.getElementById("journal-list");
+    if (!entries.length) { listEl.innerHTML = `<div class="empty-state">Your reflections will appear here as you write.</div>`; return; }
+    listEl.innerHTML = entries.map((entry) => {
+      const dateLabel = new Date(entry.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+      return `
+        <div class="list-item" style="cursor:default;">
+          <div class="list-item-body">
+            <div class="list-item-date" style="margin-bottom:0.25rem;">${dateLabel}</div>
+            <div class="list-item-text" data-text-id="${entry.id}"></div>
+            <div class="list-item-actions">
+              <button class="list-item-action-btn" data-edit-id="${entry.id}">Edit</button>
+              <button class="list-item-action-btn danger" data-delete-id="${entry.id}">Delete</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    listEl.querySelectorAll("[data-text-id]").forEach((el) => {
+      const entry = entries.find((e) => e.id === Number(el.dataset.textId));
+      el.textContent = entry.text;
+    });
+  }
+
+  function saveJournalEntry() {
+    const input = document.getElementById("journal-input");
+    const text = input.value.trim();
+    if (!text) { showToast("Write something first."); return; }
+
+    if (editingJournalId) {
+      const entry = DB.journalEntries.find((e) => e.id === editingJournalId);
+      if (entry) entry.text = text;
+      editingJournalId = null;
+      document.getElementById("journal-cancel-edit-btn").style.display = "none";
+      showToast("Entry updated.");
+    } else {
+      DB.journalEntries.push({ id: uid(), text, createdAt: new Date().toISOString() });
+      showToast("Entry saved.");
+    }
+    sv();
+    input.value = "";
+    renderJournal();
+  }
+
+  function startEditingJournal(id) {
+    const entry = DB.journalEntries.find((e) => e.id === id);
+    if (!entry) return;
+    editingJournalId = id;
+    document.getElementById("journal-input").value = entry.text;
+    document.getElementById("journal-cancel-edit-btn").style.display = "inline-block";
+    document.getElementById("journal-input").focus();
+  }
+  function cancelJournalEdit() {
+    editingJournalId = null;
+    document.getElementById("journal-input").value = "";
+    document.getElementById("journal-cancel-edit-btn").style.display = "none";
+  }
+  function confirmDeleteJournalEntry(id) {
+    openModal({
+      title: "Delete this entry?",
+      bodyText: "This can't be undone once confirmed.",
+      ctaLabel: "Delete entry",
+      ctaDanger: true,
+      onCta: () => {
+        DB.journalEntries = DB.journalEntries.filter((e) => e.id !== id);
+        sv();
+        if (editingJournalId === id) cancelJournalEdit();
+        closeModal();
+        renderJournal();
+      },
+      secondaryLabel: "Keep entry",
+      onSecondary: closeModal
+    });
+  }
+
+  /* =========================================================
+     INSIGHTS — Weekly Patterns, Confidence Analytics, History
+     ========================================================= */
+  function countOccurrences(values) {
+    const counts = {};
+    values.forEach((raw) => {
+      const v = (raw || "").trim();
+      if (!v) return;
+      const key = v.toLowerCase();
+      if (!counts[key]) counts[key] = { label: v, count: 0 };
+      counts[key].count += 1;
+    });
+    return Object.values(counts).filter((c) => c.count >= 2).sort((a, b) => b.count - a.count);
+  }
+
+  function renderPatterns() {
+    const last7Keys = dayKeysWithinLastN(7);
+    const last7Entries = last7Keys.map((k) => DB.dailyLogs[k]).filter(Boolean);
+    const output = document.getElementById("patterns-output");
+
+    if (!last7Entries.length) {
+      output.innerHTML = `<div class="empty-state">No entries logged in the last 7 days yet.</div>`;
+      return;
+    }
+
+    const repeatedSigns = countOccurrences(last7Entries.map((e) => e.sync));
+    const repeatedEmotions = countOccurrences(last7Entries.map((e) => e.emotion));
+    const repeatedHits = countOccurrences(last7Entries.map((e) => e.hit));
+
+    function section(title, items) {
+      const chips = items.length
+        ? `<div class="pattern-chip-row">${items.map((i) => `<span class="pattern-chip">${escapeHtml(i.label)} <strong>×${i.count}</strong></span>`).join("")}</div>`
+        : `<div class="note" style="margin-top:0.4rem;">Nothing repeating yet in this window — that's normal with a short history.</div>`;
+      return `<div style="margin-bottom:0.9rem;"><div class="today-summary-label" style="margin-bottom:0.3rem;">${title}</div>${chips}</div>`;
+    }
+
+    output.innerHTML =
+      section("Repeated signs", repeatedSigns) +
+      section("Repeated emotions", repeatedEmotions) +
+      section("Repeated intuitive hits", repeatedHits);
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderAnalytics() {
+    const allEntries = Object.values(DB.dailyLogs);
+    const last7Keys = dayKeysWithinLastN(7);
+    const last7Entries = last7Keys.map((k) => DB.dailyLogs[k]).filter(Boolean);
+    const { longest } = computeStreakInfo();
+
+    const avgAll = allEntries.length ? allEntries.reduce((a, e) => a + e.confidence, 0) / allEntries.length : null;
+    const avg7 = last7Entries.length ? last7Entries.reduce((a, e) => a + e.confidence, 0) / last7Entries.length : null;
+
+    document.getElementById("analytics-avg-all").textContent = avgAll !== null ? avgAll.toFixed(1) : "—";
+    document.getElementById("analytics-avg-7").textContent = avg7 !== null ? avg7.toFixed(1) : "—";
+    document.getElementById("analytics-entries").textContent = allEntries.length;
+    document.getElementById("analytics-longest").textContent = longest;
+
+    const trendEl = document.getElementById("analytics-trend-note");
+    if (avgAll === null || avg7 === null) {
+      trendEl.textContent = "Log a few more days to start seeing trends.";
+    } else {
+      const diff = avg7 - avgAll;
+      if (Math.abs(diff) < 0.3) trendEl.textContent = "The last 7 days are about the same as your overall average.";
+      else if (diff > 0) trendEl.textContent = "The last 7 days are running higher than your overall average — a good stretch.";
+      else trendEl.textContent = "The last 7 days are running lower than your overall average. Worth noting, not worrying about.";
+    }
+
+    renderStreakHeatmap();
+  }
+
+  function renderStreakHeatmap() {
+    const el = document.getElementById("streak-heatmap");
+    if (!el) return;
+    const days = [];
+    const cursor = new Date();
+    for (let i = 34; i >= 0; i--) {
+      const d = new Date(cursor);
+      d.setDate(d.getDate() - i);
+      days.push(d);
+    }
+    el.innerHTML = "";
+    days.forEach((d) => {
+      const cell = document.createElement("div");
+      cell.className = "heatmap-cell" + (DB.dailyLogs[todayKey(d)] ? " active" : "");
+      cell.title = d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      el.appendChild(cell);
+    });
+  }
+
+  function renderHistory() {
+    const entries = Object.entries(DB.dailyLogs).sort((a, b) => b[0].localeCompare(a[0]));
+    const listEl = document.getElementById("history-list");
+    if (!entries.length) { listEl.innerHTML = `<div class="empty-state">No days logged yet.</div>`; return; }
+    listEl.innerHTML = entries.map(([key, entry]) => {
+      const dateLabel = new Date(key + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+      return `
+        <div class="list-item" data-day-key="${key}">
+          <div class="list-item-body">
+            <div class="list-item-date" style="margin-bottom:0.2rem;">${dateLabel} · Confidence ${entry.confidence}/5</div>
+            <div class="list-item-text" data-text-id="${key}"></div>
+            <div class="list-item-actions">
+              <button class="list-item-action-btn danger" data-delete-day="${key}">Delete this day</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    listEl.querySelectorAll("[data-text-id]").forEach((el) => {
+      const entry = DB.dailyLogs[el.dataset.textId];
+      el.textContent = entry.hit || entry.body || entry.emotion || "(no summary text logged)";
+    });
+  }
+
+  function confirmDeleteDay(key) {
+    openModal({
+      title: "Delete this day's log?",
+      bodyText: "This removes that day's entry entirely and can't be undone.",
+      ctaLabel: "Delete this day",
+      ctaDanger: true,
+      onCta: () => {
+        delete DB.dailyLogs[key];
+        sv(); closeModal();
+        renderHistory(); renderPatterns(); renderAnalytics(); renderToday();
+        showToast("Day deleted.");
+      },
+      secondaryLabel: "Keep it",
+      onSecondary: closeModal
+    });
+  }
+
+  function renderInsights() {
+    renderPatterns();
+    renderAnalytics();
+    renderHistory();
+  }
+
+  /* =========================================================
+     RESTORE — shared confirmation flow for both file import
+     and Google Drive restore, using the existing shared modal.
+     ========================================================= */
+  function dataSummary(db) {
+    db = db || DB;
+    let n = Object.keys(db.dailyLogs || {}).length;
+    if (Array.isArray(db.synchronicities)) n += db.synchronicities.length;
+    if (Array.isArray(db.journalEntries)) n += db.journalEntries.length;
+    return n;
+  }
+
+  let _pendingRestoreData = null;
+  function openRestoreConfirm(data, sourceLabel) {
+    _pendingRestoreData = data;
+    const incoming = dataSummary(data);
+    const current = dataSummary(DB);
+    let body = `This backup has ${incoming} items (daily logs, signs, journal entries). Your current data has ${current} items. Restoring replaces what you have now — you can undo it right after if needed.`;
+    if (incoming < current) {
+      body = `⚠ This backup has FEWER items (${incoming}) than your current data (${current}). Double-check this is the right one before continuing.`;
+    }
+    openModal({
+      title: `Restore from ${sourceLabel}?`,
+      bodyText: body,
+      ctaLabel: "Yes, restore",
+      onCta: confirmRestoreNow,
+      secondaryLabel: "Cancel",
+      onSecondary: () => { _pendingRestoreData = null; closeModal(); }
+    });
+  }
+
+  function confirmRestoreNow() {
+    if (!_pendingRestoreData) { closeModal(); return; }
+    try {
+      localStorage.setItem("dil_pre_restore_snapshot", JSON.stringify({ data: DB, ts: Date.now() }));
+    } catch (e) {}
+    DB = Object.assign(defaultDB(), _pendingRestoreData);
+    _pendingRestoreData = null;
+    sv();
+    closeModal();
+    applyTheme();
+    renderToday(); renderSigns(); renderJournal(); renderInsights();
+    renderLocalRestoreUndo();
+    showToast("Restored!");
+  }
+
+  function undoLastRestore() {
+    try {
+      const raw = localStorage.getItem("dil_pre_restore_snapshot");
+      if (!raw) { showToast("Nothing to undo."); return; }
+      const snap = JSON.parse(raw);
+      DB = Object.assign(defaultDB(), snap.data);
+      localStorage.removeItem("dil_pre_restore_snapshot");
+      sv();
+      applyTheme();
+      renderToday(); renderSigns(); renderJournal(); renderInsights();
+      renderLocalRestoreUndo();
+      showToast("Restore undone.");
+    } catch (e) { showToast("Could not undo."); }
+  }
+
+  function renderLocalRestoreUndo() {
+    const el = document.getElementById("local-restore-undo-slot");
+    if (!el) return;
+    const hasUndo = !!localStorage.getItem("dil_pre_restore_snapshot");
+    el.innerHTML = hasUndo
+      ? '<button class="backup-btn" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger);" onclick="undoLastRestore()">Undo Last Restore</button>'
+      : '';
+  }
+
+  /* =========================================================
+     LOCAL FILE BACKUP — real export + real import
+     ========================================================= */
+  function buildBackupPayload() {
+    return { ...DB, exportedAt: new Date().toISOString(), source: "Daily Intuition Log" };
+  }
+
+  function localDateStr(d) {
+    d = d || new Date();
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function exportBackupFile() {
+    try {
+      const content = JSON.stringify(buildBackupPayload(), null, 2);
+      const blob = new Blob([content], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `daily-intuition-log-backup-${localDateStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast("Backup file downloaded.");
+    } catch (e) {
+      showToast("Export failed — try a different browser.");
+    }
+  }
+
+  function triggerImportPicker() {
+    document.getElementById("import-file-input").click();
+  }
+
+  function handleImportFileSelected(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const data = JSON.parse(evt.target.result);
+        if (!data || typeof data.dailyLogs !== "object") {
+          showToast("That file doesn't look like a valid backup.");
+          return;
+        }
+        openRestoreConfirm(data, `the file "${file.name}"`);
+      } catch (err) {
+        showToast("Could not read that file.");
+      }
+    };
+    reader.onerror = () => showToast("Error reading file.");
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
+  /* =========================================================
+     GOOGLE DRIVE BACKUP — removed for the free trial demo.
+     The full version backs up to the user's own Google Drive;
+     this trial is local-device-only, so all Drive OAuth/API
+     code and its Settings UI were removed rather than hidden.
+     scheduleAutoBackup() is kept as a no-op since sv() still
+     calls it after every save.
+     ========================================================= */
+  function scheduleAutoBackup() {}
+
+  /* =========================================================
+     FREE TRIAL
+     ========================================================= */
+  const DEMO_TRIAL_DAYS = 14;
+  const DEMO_SINCE_KEY = "dil_demo_since";
+  function demoTrialDaysLeft() {
+    let since = localStorage.getItem(DEMO_SINCE_KEY);
+    if (!since) { since = String(Date.now()); localStorage.setItem(DEMO_SINCE_KEY, since); }
+    const elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
+    return DEMO_TRIAL_DAYS - elapsedDays;
+  }
+  function enforceDemoTrial() {
+    const daysLeft = demoTrialDaysLeft();
+    if (daysLeft <= 0) {
+      document.getElementById("trial-lock").style.display = "flex";
+      document.body.style.overflow = "hidden";
+    } else {
+      const bannerText = document.getElementById("demo-banner-text");
+      if (bannerText) bannerText.textContent = `Free trial — ${daysLeft} day${daysLeft === 1 ? "" : "s"} left`;
+    }
+  }
+
+  /* =========================================================
+     INIT + EVENT WIRING
+     ========================================================= */
+  document.addEventListener("DOMContentLoaded", () => {
+    ld();
+    applyTheme();
+    renderToday();
+    renderSigns();
+    renderJournal();
+    renderLocalRestoreUndo();
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => switchToTab(tab.dataset.target));
+    });
+
+    document.getElementById("theme-btn").addEventListener("click", cycleTheme);
+
+    document.getElementById("daily-mode-row").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-mode]");
+      if (!btn) return;
+      setDailyFormMode(btn.dataset.mode);
+    });
+
+    document.getElementById("confidence-row").addEventListener("click", (e) => {
+      const dot = e.target.closest(".confidence-dot");
+      if (!dot) return;
+      selectedConfidence = Number(dot.dataset.value);
+      renderConfidenceRow();
+    });
+    document.getElementById("save-daily-btn").addEventListener("click", saveDailyLog);
+    document.getElementById("edit-today-btn").addEventListener("click", editToday);
+
+    document.getElementById("sign-add-btn").addEventListener("click", addSign);
+    document.getElementById("sign-list").addEventListener("click", (e) => {
+      const editBtn = e.target.closest("[data-edit-sign]");
+      if (editBtn) { openEditSignModal(Number(editBtn.dataset.editSign)); return; }
+      const del = e.target.closest("[data-delete-id]");
+      if (del) confirmDeleteSign(Number(del.dataset.deleteId));
+    });
+
+    document.getElementById("journal-save-btn").addEventListener("click", saveJournalEntry);
+    document.getElementById("journal-cancel-edit-btn").addEventListener("click", cancelJournalEdit);
+    document.getElementById("journal-list").addEventListener("click", (e) => {
+      const editBtn = e.target.closest("[data-edit-id]");
+      if (editBtn) { startEditingJournal(Number(editBtn.dataset.editId)); return; }
+      const delBtn = e.target.closest("[data-delete-id]");
+      if (delBtn) confirmDeleteJournalEntry(Number(delBtn.dataset.deleteId));
+    });
+
+    document.getElementById("history-list").addEventListener("click", (e) => {
+      const delBtn = e.target.closest("[data-delete-day]");
+      if (delBtn) { confirmDeleteDay(delBtn.dataset.deleteDay); return; }
+      const row = e.target.closest("[data-day-key]");
+      if (row) openHistoryDayModal(row.dataset.dayKey);
+    });
+
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => { if (e.target.id === "app-modal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileSelected);
+
+    enforceDemoTrial();
+  });
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("./sw.js").catch(function () {});
+    });
+  }
+</script>
+
+</body>
+</html>
