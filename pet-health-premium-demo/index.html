@@ -1,0 +1,2091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Premium Pet Health Tracker"/>
+<meta name="theme-color" content="#FBF7F2"/>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="apple-touch-icon" href="./icons/icon-192.png"/>
+<title>Premium Pet Health Tracker — Free Trial — Mobile First Studio</title>
+<style>
+:root, [data-mode="light"] {
+  --bg: #FBF7F2;
+  --card: #FFFFFF;
+  --card-raised: #F5EEE4;
+  --border: #E8DFD1;
+  --clay: #C1662F;
+  --clay-soft: rgba(193,102,47,0.12);
+  --forest: #3D6B4F;
+  --forest-soft: rgba(61,107,79,0.12);
+  --cranberry: #B5453D;
+  --cranberry-soft: rgba(181,69,61,0.15);
+  --text: #2B2420;
+  --text-dim: #6B5F53;
+  --text-faint: #9A8F80;
+  --radius: 16px;
+  --radius-sm: 11px;
+}
+[data-mode="dark"] {
+  --bg: #211B16;
+  --card: #2B241D;
+  --card-raised: #352C23;
+  --border: #453B30;
+  --clay: #E08A4F;
+  --clay-soft: rgba(224,138,79,0.18);
+  --forest: #6FA383;
+  --forest-soft: rgba(111,163,131,0.18);
+  --cranberry: #E5726A;
+  --cranberry-soft: rgba(229,114,106,0.18);
+  --text: #F2ECE3;
+  --text-dim: #C4B8A8;
+  --text-faint: #8A7D6C;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { background: var(--bg); }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 90px;
+}
+.wrap { max-width: 520px; margin: 0 auto; padding: 0 16px; }
+header.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 16px 14px;
+}
+.brand-block { display: flex; flex-direction: column; }
+.brand { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+.brand .accent { color: var(--clay); }
+.tier-badge {
+  display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.06em; padding: 3px 9px; border-radius: 20px;
+  background: var(--card-raised); color: var(--text-dim); border: 1px solid var(--border);
+  width: fit-content;
+}
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--card);
+  border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-dim);
+}
+.icon-btn:active { transform: scale(0.94); }
+
+/* Pet header card */
+.pet-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 14px;
+  cursor: pointer;
+}
+.pet-avatar {
+  width: 52px; height: 52px; border-radius: 50%; background: var(--clay-soft);
+  color: var(--clay); display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 18px; flex-shrink: 0;
+}
+.pet-info .pet-name { font-size: 17px; font-weight: 700; }
+.pet-info .pet-sub { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+
+/* Multi-pet switcher */
+.pet-switcher { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; margin-bottom: 14px; }
+.pet-pill {
+  flex-shrink: 0; display: flex; align-items: center; gap: 7px; padding: 8px 14px;
+  border-radius: 30px; background: var(--card); border: 1px solid var(--border);
+  font-size: 13.5px; font-weight: 700; color: var(--text-dim); cursor: pointer;
+}
+.pet-pill.active { background: var(--clay); border-color: var(--clay); color: #fff; }
+.pet-pill-add {
+  flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--card-raised);
+  border: 1px dashed var(--border); color: var(--text-dim); display: flex; align-items: center;
+  justify-content: center; font-size: 18px; cursor: pointer;
+}
+
+/* Fleet-style health summary (Premium) */
+.health-score-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; margin-bottom: 16px; text-align: center;
+}
+.health-score-val { font-size: 40px; font-weight: 800; color: var(--forest); }
+.health-score-lbl { font-size: 12.5px; color: var(--text-dim); margin-top: 2px; }
+.health-score-card.warn .health-score-val { color: var(--cranberry); }
+
+/* Summary pills row */
+.summary-row { display: flex; gap: 10px; margin-bottom: 18px; }
+.summary-card {
+  flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 13px; text-align: center;
+}
+.summary-card .val { font-size: 22px; font-weight: 800; }
+.summary-card .lbl { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.summary-card.warn .val { color: var(--cranberry); }
+.summary-card.good .val { color: var(--forest); }
+
+.section-title {
+  font-size: 14px; font-weight: 700; margin: 22px 0 10px; display: flex;
+  align-items: center; justify-content: space-between; color: var(--text);
+}
+.section-title .count { font-size: 12px; font-weight: 500; color: var(--text-faint); }
+
+.item-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+  padding: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer;
+}
+.item-card:active { transform: scale(0.99); }
+.item-body { flex: 1; min-width: 0; }
+.item-title { font-size: 14.5px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.item-sub { font-size: 12.5px; color: var(--text-dim); margin-top: 2px; }
+.item-amount { font-size: 13px; font-weight: 700; color: var(--text-dim); text-align: right; flex-shrink: 0; }
+.item-amount.warn { color: var(--cranberry); }
+.item-amount.good { color: var(--forest); }
+
+.badge-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; display: inline-block; }
+.badge-dot.warn { background: var(--cranberry); }
+.badge-dot.ok { background: var(--forest); }
+
+.empty-state { text-align: center; padding: 30px 16px; color: var(--text-faint); font-size: 13.5px; }
+
+.btn-add-inline {
+  width: 100%; background: var(--clay-soft); border: 1.5px dashed var(--clay); color: var(--clay);
+  padding: 13px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 700; cursor: pointer;
+  margin-top: 4px; margin-bottom: 8px; font-family: inherit;
+}
+
+nav.tabbar {
+  position: fixed; bottom: 0; left: 0; right: 0; background: var(--card);
+  border-top: 1px solid var(--border); display: flex; padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+  z-index: 30;
+}
+.tab-btn {
+  flex: 1; background: none; border: none; display: flex; flex-direction: column; align-items: center;
+  gap: 3px; padding: 6px 2px; color: var(--text-faint); font-size: 10.5px; font-weight: 600; cursor: pointer;
+  font-family: inherit;
+}
+.tab-btn svg { width: 21px; height: 21px; stroke: currentColor; }
+.tab-btn.active { color: var(--clay); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Sheets */
+.sheet-backdrop {
+  position: fixed; inset: 0; background: rgba(43,36,32,0.4); display: none;
+  align-items: flex-end; justify-content: center; z-index: 100;
+}
+.sheet-backdrop.open { display: flex; }
+.sheet {
+  background: var(--bg); width: 100%; max-width: 520px; border-radius: 20px 20px 0 0;
+  padding: 10px 20px 28px; max-height: 88vh; overflow-y: auto;
+  transform: translateY(100%); transition: transform 0.25s ease;
+}
+.sheet-backdrop.open .sheet { transform: translateY(0); }
+.sheet-handle { width: 38px; height: 4px; background: var(--border); border-radius: 4px; margin: 8px auto 16px; }
+.sheet h3 { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12.5px; font-weight: 700; color: var(--text-dim); margin-bottom: 6px; }
+.field input, .field select, .field textarea {
+  width: 100%; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14.5px; font-family: inherit; background: var(--card); color: var(--text);
+}
+.field textarea { min-height: 70px; resize: vertical; }
+.field-hint { font-size: 11.5px; color: var(--text-faint); margin-top: 5px; line-height: 1.4; }
+.btn-row { display: flex; gap: 10px; margin-top: 18px; }
+.btn { flex: 1; padding: 13px; border-radius: var(--radius-sm); font-size: 14.5px; font-weight: 700;
+  cursor: pointer; border: none; font-family: inherit; }
+.btn-primary { background: var(--clay); color: #fff; }
+.btn-secondary { background: var(--card-raised); color: var(--text-dim); }
+.btn-danger { background: var(--cranberry-soft); color: var(--cranberry); }
+
+.fab {
+  position: fixed; bottom: 84px; right: 20px; width: 56px; height: 56px; border-radius: 50%;
+  background: var(--clay); color: #fff; border: none; font-size: 26px; display: flex;
+  align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(193,102,47,0.35);
+  cursor: pointer; z-index: 20;
+}
+.fab:active { transform: scale(0.94); }
+
+.toast {
+  position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--text); color: var(--bg); padding: 11px 20px; border-radius: 18px;
+  font-size: 13.5px; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.25s ease; z-index: 200;
+  white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.settings-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0;
+  border-bottom: 1px solid var(--border); }
+.settings-row:last-of-type { border-bottom: none; }
+.lbl-main { font-size: 14px; font-weight: 700; }
+.lbl-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.settings-btn { background: var(--card-raised); border: 1px solid var(--border); color: var(--text);
+  padding: 8px 14px; border-radius: 20px; font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+.disclaimer-box {
+  background: var(--card-raised); border-radius: var(--radius-sm); padding: 11px 13px;
+  font-size: 11.5px; color: var(--text-dim); line-height: 1.5; margin-bottom: 14px;
+}
+
+/* =========================================================
+   FREE TRIAL DEMO — banner + lock overlay
+   ========================================================= */
+.demo-banner {
+  position: sticky; top: 0; z-index: 60;
+  padding: 0.55rem 1rem;
+  background: linear-gradient(135deg, #E08A4F, var(--clay));
+  color: #fff; font-size: 0.72rem; font-weight: 600; text-align: center;
+  letter-spacing: 0.01em;
+}
+.demo-banner a { color: #fff; text-decoration: underline; font-weight: 700; }
+#trial-lock {
+  display: none; position: fixed; inset: 0; z-index: 998;
+  background: rgba(43,36,32,0.6); backdrop-filter: blur(6px);
+  align-items: center; justify-content: center; padding: 1.5rem;
+}
+.lock-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 1.1rem;
+  padding: 1.6rem 1.4rem; max-width: 380px; width: 100%; text-align: center;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+.lock-title { font-size: 1.2rem; font-weight: 800; color: var(--text); margin-bottom: 0.6rem; }
+.lock-text { font-size: 0.85rem; color: var(--text-dim); line-height: 1.55; margin-bottom: 1.1rem; }
+.lock-cta {
+  display: inline-block; width: 100%; padding: 0.7rem; border-radius: 999px; text-decoration: none;
+  background: linear-gradient(135deg, #E08A4F, var(--clay)); color: #fff;
+  font-size: 0.85rem; font-weight: 700;
+}
+.upsell-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px; margin-top: 6px;
+}
+.upsell-title { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.upsell-text { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; margin-bottom: 12px; }
+.upsell-btn {
+  display: block; width: 100%; text-align: center; padding: 0.65rem; border-radius: 999px; text-decoration: none;
+  background: linear-gradient(135deg, #E08A4F, var(--clay)); color: #fff;
+  font-size: 13px; font-weight: 700;
+}
+</style>
+</head>
+<body>
+
+<div class="demo-banner" id="demo-banner"><span id="demo-banner-text">Free trial — 14 days left</span> &middot; <a href="https://www.etsy.com/listing/4557161688/premium-pet-health-tracker-multi-pet" target="_blank" rel="noopener">Buy the full version</a></div>
+<div id="trial-lock">
+  <div class="lock-card">
+    <div class="lock-title">Your free trial has ended</div>
+    <div class="lock-text">Your 14-day trial of Premium Pet Health Tracker has ended. Purchase the full version on Etsy to keep tracking every pet's vaccines, meds, vet visits, and health history, with no interruptions and optional Google Drive backup.</div>
+    <a class="lock-cta" href="https://www.etsy.com/listing/4557161688/premium-pet-health-tracker-multi-pet" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+</div>
+
+<header class="topbar">
+  <div class="brand-block">
+    <div class="brand"><span class="accent">Pet</span> Health Tracker</div>
+    <div class="tier-badge">PREMIUM</div>
+  </div>
+  <div style="display:flex; gap:8px;">
+    <div class="icon-btn" onclick="toggleMode()" id="modeToggleBtn">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </div>
+    <div class="icon-btn" onclick="openSettings()">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="pet-switcher" id="petSwitcher"></div>
+
+  <!-- HOME -->
+  <section class="tab-panel active" id="tab-home">
+    <div class="health-score-card" id="fleetHealthCard"></div>
+    <div class="summary-row" id="homeSummaryRow"></div>
+    <div class="section-title">Due soon <span class="count" id="dueSoonCount"></span></div>
+    <div id="dueSoonList"></div>
+  </section>
+
+  <!-- VACCINES -->
+  <section class="tab-panel" id="tab-vaccines">
+    <div class="section-title">Vaccines <span class="count" id="vaccineCount"></span></div>
+    <div id="vaccineList"></div>
+    <button class="btn-add-inline" onclick="openVaccineSheet(null)">+ Add vaccine</button>
+  </section>
+
+  <!-- HEALTH -->
+  <section class="tab-panel" id="tab-health">
+    <div class="section-title" style="margin-top:0;">Weight <span class="count" id="weightCount"></span></div>
+    <div id="weightChartCard"></div>
+    <div id="weightList"></div>
+    <button class="btn-add-inline" onclick="openWeightSheet(null)">+ Log weight</button>
+
+    <div class="section-title">Medications <span class="count" id="medCount"></span></div>
+    <div id="medList"></div>
+    <button class="btn-add-inline" onclick="openMedSheet(null)">+ Add medication</button>
+
+    <div class="section-title">Vet visits <span class="count" id="vetCount"></span></div>
+    <div id="vetList"></div>
+    <button class="btn-add-inline" onclick="openVetSheet(null)">+ Log vet visit</button>
+
+    <div class="section-title">Feeding <span class="count" id="feedCount"></span></div>
+    <div id="feedList"></div>
+    <button class="btn-add-inline" onclick="openFeedSheet(null)">+ Log feeding</button>
+
+    <div class="section-title">Walks <span class="count" id="walkCount"></span></div>
+    <div id="walkList"></div>
+    <button class="btn-add-inline" onclick="openWalkSheet(null)">+ Log walk</button>
+
+    <div class="section-title">Grooming <span class="count" id="groomCount"></span></div>
+    <div id="groomList"></div>
+    <button class="btn-add-inline" onclick="openGroomSheet(null)">+ Log grooming</button>
+  </section>
+
+  <!-- REMINDERS -->
+  <section class="tab-panel" id="tab-reminders">
+    <div class="section-title" style="margin-top:0;">Reminders <span class="count" id="reminderCount"></span></div>
+    <div id="reminderList"></div>
+    <button class="btn-add-inline" onclick="openReminderSheet(null)">+ Add reminder</button>
+  </section>
+
+  <!-- SETUP -->
+  <section class="tab-panel" id="tab-setup">
+    <div class="section-title" style="margin-top:0;">Pet profile</div>
+    <div id="petProfileCard"></div>
+
+    <div class="section-title">Custom categories</div>
+    <div id="customCategoryList"></div>
+
+    <div class="section-title">Reports</div>
+    <div class="settings-row">
+      <div><div class="lbl-main">Export pet report</div><div class="lbl-sub">PDF summary of the active pet</div></div>
+      <button class="settings-btn" onclick="exportPetReportPdf()">Export PDF</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="lbl-main">Export household report</div><div class="lbl-sub">PDF summary across all pets</div></div>
+      <button class="settings-btn" onclick="exportHouseholdReportPdf()">Export PDF</button>
+    </div>
+  </section>
+
+</div>
+
+<button class="fab" id="fabBtn" onclick="handleFab()">+</button>
+
+<nav class="tabbar">
+  <button class="tab-btn active" data-tab="home" onclick="switchTab('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+    Home
+  </button>
+  <button class="tab-btn" data-tab="vaccines" onclick="switchTab('vaccines')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 3l2 2-9 9-4 1 1-4 9-9z"/><path d="M13 7l4 4"/></svg>
+    Vaccines
+  </button>
+  <button class="tab-btn" data-tab="health" onclick="switchTab('health')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    Health
+  </button>
+  <button class="tab-btn" data-tab="reminders" onclick="switchTab('reminders')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+    Dates
+  </button>
+  <button class="tab-btn" data-tab="setup" onclick="switchTab('setup')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82"/></svg>
+    Setup
+  </button>
+</nav>
+<!-- Vaccine sheet -->
+<div class="sheet-backdrop" id="vaccineSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="vaccineSheetTitle">Add vaccine</h3>
+    <div class="disclaimer-box">Default intervals are general guidelines, not veterinary or legal advice. Rabies laws vary by state — confirm timing with your vet.</div>
+    <div class="field">
+      <label>Vaccine</label>
+      <select id="vaccineType" onchange="onVaccineTypeChange()">
+        <option value="">Select or choose custom...</option>
+      </select>
+    </div>
+    <div class="field" id="vaccineCustomNameField" style="display:none;">
+      <label>Vaccine name</label>
+      <input type="text" id="vaccineCustomName" placeholder="e.g. Lyme">
+    </div>
+    <div class="field">
+      <label>Date given</label>
+      <input type="date" id="vaccineDateGiven">
+    </div>
+    <div class="field">
+      <label>Next due date</label>
+      <input type="date" id="vaccineNextDue">
+      <div class="field-hint" id="vaccineIntervalHint"></div>
+    </div>
+    <div class="field">
+      <label>Notes (optional)</label>
+      <textarea id="vaccineNotes" placeholder="Vet, lot number, reaction notes..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeVaccineSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveVaccine()">Save</button>
+    </div>
+    <div class="btn-row" id="vaccineDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteVaccine()">Delete vaccine</button>
+    </div>
+  </div>
+</div>
+
+<!-- Medication sheet -->
+<div class="sheet-backdrop" id="medSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="medSheetTitle">Add medication</h3>
+    <div class="field">
+      <label>Medication name</label>
+      <input type="text" id="medName" placeholder="e.g. Heartworm prevention">
+    </div>
+    <div class="field">
+      <label>Dose (optional)</label>
+      <input type="text" id="medDose" placeholder="e.g. 1 tablet">
+    </div>
+    <div class="field">
+      <label>Frequency (optional)</label>
+      <input type="text" id="medFrequency" placeholder="e.g. Once monthly">
+    </div>
+    <div class="field">
+      <label>Next due date (optional)</label>
+      <input type="date" id="medNextDue">
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="medNotes"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeMedSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMed()">Save</button>
+    </div>
+    <div class="btn-row" id="medDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteMed()">Delete medication</button>
+    </div>
+  </div>
+</div>
+
+<!-- Vet visit sheet -->
+<div class="sheet-backdrop" id="vetSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="vetSheetTitle">Log vet visit</h3>
+    <div class="field">
+      <label>Reason for visit</label>
+      <input type="text" id="vetReason" placeholder="Annual checkup, ear infection...">
+    </div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="vetDate">
+    </div>
+    <div class="field">
+      <label>Vet or clinic (optional)</label>
+      <input type="text" id="vetName" placeholder="Dr. Patel, Maple Animal Hospital">
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="vetNotes" placeholder="Diagnosis, follow-up, cost..."></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeVetSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveVet()">Save</button>
+    </div>
+    <div class="btn-row" id="vetDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteVet()">Delete visit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reminder sheet -->
+<div class="sheet-backdrop" id="reminderSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="reminderSheetTitle">Add reminder</h3>
+    <div class="field">
+      <label>Title</label>
+      <input type="text" id="reminderTitle" placeholder="Grooming appointment, license renewal...">
+    </div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="reminderDate">
+    </div>
+    <div class="field">
+      <label>Notes (optional)</label>
+      <textarea id="reminderNotes"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeReminderSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveReminder()">Save</button>
+    </div>
+    <div class="btn-row" id="reminderDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteReminder()">Delete reminder</button>
+    </div>
+  </div>
+</div>
+
+<!-- Weight sheet -->
+<div class="sheet-backdrop" id="weightSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="weightSheetTitle">Log weight</h3>
+    <div class="field">
+      <label>Weight</label>
+      <input type="number" id="weightValue" step="0.1" placeholder="e.g. 42.5">
+    </div>
+    <div class="field">
+      <label>Unit</label>
+      <select id="weightUnit">
+        <option value="lbs">lbs</option>
+        <option value="kg">kg</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="weightDate">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeWeightSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveWeight()">Save</button>
+    </div>
+    <div class="btn-row" id="weightDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteWeight()">Delete entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Feeding sheet -->
+<div class="sheet-backdrop" id="feedSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="feedSheetTitle">Log feeding</h3>
+    <div class="field">
+      <label>Amount (optional)</label>
+      <input type="text" id="feedAmount" placeholder="e.g. 1 cup">
+    </div>
+    <div class="field">
+      <label>Food type (optional)</label>
+      <input type="text" id="feedType" placeholder="e.g. Kibble, wet food">
+    </div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="feedDate">
+    </div>
+    <div class="field">
+      <label>Notes (optional)</label>
+      <textarea id="feedNotes"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeFeedSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveFeed()">Save</button>
+    </div>
+    <div class="btn-row" id="feedDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteFeed()">Delete entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Walk sheet -->
+<div class="sheet-backdrop" id="walkSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="walkSheetTitle">Log walk</h3>
+    <div class="field">
+      <label>Duration in minutes (optional)</label>
+      <input type="number" id="walkDuration" placeholder="e.g. 20">
+    </div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="walkDate">
+    </div>
+    <div class="field">
+      <label>Notes (optional)</label>
+      <textarea id="walkNotes"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeWalkSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveWalk()">Save</button>
+    </div>
+    <div class="btn-row" id="walkDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteWalk()">Delete entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Grooming sheet -->
+<div class="sheet-backdrop" id="groomSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="groomSheetTitle">Log grooming</h3>
+    <div class="field">
+      <label>Type</label>
+      <input type="text" id="groomType" placeholder="e.g. Bath, nail trim, haircut">
+    </div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="groomDate">
+    </div>
+    <div class="field">
+      <label>Notes (optional)</label>
+      <textarea id="groomNotes"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeGroomSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveGroom()">Save</button>
+    </div>
+    <div class="btn-row" id="groomDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteGroom()">Delete entry</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Pet profile sheet -->
+<div class="sheet-backdrop" id="petSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="petSheetTitle">Add pet</h3>
+    <div class="field">
+      <label>Name</label>
+      <input type="text" id="petName" placeholder="Bailey, Whiskers...">
+    </div>
+    <div class="field">
+      <label>Species</label>
+      <select id="petSpecies">
+        <option value="dog">Dog</option>
+        <option value="cat">Cat</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Breed (optional)</label>
+      <input type="text" id="petBreed" placeholder="e.g. Labrador">
+    </div>
+    <div class="field">
+      <label>Birthday (optional)</label>
+      <input type="date" id="petBirthday">
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="petNotes" placeholder="Allergies, vet clinic, anything worth remembering"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closePetSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="savePet()">Save</button>
+    </div>
+    <div class="btn-row" id="petDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deletePet()">Delete pet</button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom category sheet -->
+<div class="sheet-backdrop" id="categorySheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>New category</h3>
+    <div class="field">
+      <label>Category name</label>
+      <input type="text" id="categoryNameInput" placeholder="e.g. Physical therapy" maxlength="40">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeCategorySheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveCategorySheet()">Add category</button>
+    </div>
+  </div>
+</div>
+
+<!-- Quick-add sheet -->
+<div class="sheet-backdrop" id="quickAddBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>What do you want to add?</h3>
+    <div class="btn-row" style="flex-direction:column;">
+      <button class="btn btn-secondary" style="width:100%;" onclick="quickAddChoose('vaccine')">Vaccine</button>
+      <button class="btn btn-secondary" style="width:100%;" onclick="quickAddChoose('med')">Medication</button>
+      <button class="btn btn-secondary" style="width:100%;" onclick="quickAddChoose('vet')">Vet visit</button>
+      <button class="btn btn-secondary" style="width:100%;" onclick="quickAddChoose('weight')">Weight</button>
+      <button class="btn btn-secondary" style="width:100%;" onclick="quickAddChoose('feed')">Feeding</button>
+      <button class="btn btn-secondary" style="width:100%;" onclick="quickAddChoose('walk')">Walk</button>
+      <button class="btn btn-secondary" style="width:100%;" onclick="quickAddChoose('groom')">Grooming</button>
+      <button class="btn btn-secondary" style="width:100%;" onclick="quickAddChoose('reminder')">Reminder</button>
+      <button class="btn btn-secondary" style="width:100%; color:var(--text-faint);" onclick="closeQuickAdd()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings sheet -->
+<div class="sheet-backdrop" id="settingsSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>Settings</h3>
+    <div class="section-title" style="margin-top:0;">Premium Pet Health Tracker</div>
+    <div style="font-size:13px; color:var(--text-dim); line-height:1.7; margin-bottom:14px;">
+      ✓ Multi-pet support, unlimited pets<br>
+      ✓ Household health score<br>
+      ✓ Vaccine, medication & vet visit log<br>
+      ✓ Weight, feeding, walk & grooming logs<br>
+      ✓ Custom categories<br>
+      ✓ PDF reports, per-pet and household-wide<br>
+      ✓ Light + dark mode<br>
+      ✓ Google Drive + local backup
+    </div>
+    <div class="settings-row">
+      <div><div class="lbl-main">Export data</div><div class="lbl-sub">Save a local backup file</div></div>
+      <button class="settings-btn" onclick="exportLocal()">Export</button>
+    </div>
+    <div class="settings-row">
+      <div><div class="lbl-main">Import data</div><div class="lbl-sub">Load from a local backup file</div></div>
+      <button class="settings-btn" onclick="document.getElementById('importFileInput').click()">Import</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importLocal(event)">
+    </div>
+    <div class="upsell-card">
+      <div class="upsell-title">Google Drive backup is a full-version feature</div>
+      <div class="upsell-text">The full Premium Pet Health Tracker backs every pet's vaccines, meds, vet visits, and history up to your own Google Drive automatically. This trial keeps everything local to this device.</div>
+      <a class="upsell-btn" href="https://www.etsy.com/listing/4557161688/premium-pet-health-tracker-multi-pet" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeSettings()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Shared confirm dialog -->
+<div class="sheet-backdrop" id="confirmSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="confirmSheetTitle">Are you sure?</h3>
+    <p id="confirmSheetMessage" style="color:var(--text-dim); font-size:14px; line-height:1.5; margin:4px 0 18px;"></p>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="confirmSheetCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="confirmSheetOkBtn">Continue</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+/* ===== Pet Health Tracker — Premium tier (Free Trial Demo) ===== */
+
+const STORAGE_KEY = 'pethealth_premium_demo_v1';
+const MODE_STORAGE_KEY = 'pethealth_premium_mode';
+
+/* Default vaccine intervals — general veterinary guidelines (AAHA/WSAVA), editable per entry.
+   Not veterinary or legal advice; rabies law varies by state. */
+const VACCINE_DEFAULTS = {
+  dog: [
+    { key: 'rabies', label: 'Rabies', intervalDays: 1095 },
+    { key: 'dhpp', label: 'DHPP (distemper/parvo)', intervalDays: 1095 },
+    { key: 'bordetella', label: 'Bordetella (kennel cough)', intervalDays: 365 },
+    { key: 'leptospirosis', label: 'Leptospirosis', intervalDays: 365 }
+  ],
+  cat: [
+    { key: 'rabies', label: 'Rabies', intervalDays: 1095 },
+    { key: 'fvrcp', label: 'FVRCP', intervalDays: 1095 },
+    { key: 'felv', label: 'FeLV', intervalDays: 365 }
+  ],
+  other: []
+};
+
+function newPet(name, species, breed) {
+  return {
+    id: uid(),
+    name: name || 'New Pet',
+    species: species || 'dog',
+    breed: breed || '',
+    birthday: '',
+    notes: '',
+    weightUnit: 'lbs',
+    vaccines: [],
+    meds: [],
+    vetVisits: [],
+    reminders: [],
+    weight: [],
+    feed: [],
+    walk: [],
+    groom: [],
+    customCategories: [] // [{id, label}]
+  };
+}
+
+let state = {
+  pets: [],
+  activePetId: null
+};
+
+function currentPet() {
+  return state.pets.find(p => p.id === state.activePetId) || state.pets[0] || null;
+}
+
+let editingVaccineId = null;
+let editingMedId = null;
+let editingVetId = null;
+let editingReminderId = null;
+let editingWeightId = null;
+let editingFeedId = null;
+let editingWalkId = null;
+let editingGroomId = null;
+let petSheetMode = 'edit'; // 'edit' current pet, or 'add' a new one
+let categorySheetTarget = null; // {kind: 'vaccine'|'reminder', ...} reserved for future use
+let currentTab = 'home';
+
+/* ---------- date helpers (local-date safe, no UTC boundary bug) ---------- */
+function todayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+function addDays(dateStr, days) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const today = new Date(todayStr() + 'T00:00:00');
+  const target = new Date(dateStr + 'T00:00:00');
+  return Math.round((target - today) / 86400000);
+}
+function fmtDate(dateStr) {
+  if (!dateStr) return 'No date';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function dueLabel(dateStr) {
+  const diff = daysUntil(dateStr);
+  if (diff === null) return { label: 'No date set', overdue: false, dueSoon: false };
+  if (diff < 0) return { label: `${Math.abs(diff)}d overdue`, overdue: true, dueSoon: false };
+  if (diff === 0) return { label: 'Due today', overdue: false, dueSoon: true };
+  if (diff <= 30) return { label: `Due in ${diff}d`, overdue: false, dueSoon: true };
+  return { label: `Due ${fmtDate(dateStr)}`, overdue: false, dueSoon: false };
+}
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ---------- persistence ---------- */
+function migratePet(raw) {
+  return {
+    id: raw.id || uid(),
+    name: raw.name || 'New Pet',
+    species: raw.species || 'dog',
+    breed: raw.breed || '',
+    birthday: raw.birthday || '',
+    notes: raw.notes || '',
+    weightUnit: raw.weightUnit || 'lbs',
+    vaccines: Array.isArray(raw.vaccines) ? raw.vaccines : [],
+    meds: Array.isArray(raw.meds) ? raw.meds : [],
+    vetVisits: Array.isArray(raw.vetVisits) ? raw.vetVisits : [],
+    reminders: Array.isArray(raw.reminders) ? raw.reminders : [],
+    weight: Array.isArray(raw.weight) ? raw.weight : [],
+    feed: Array.isArray(raw.feed) ? raw.feed : [],
+    walk: Array.isArray(raw.walk) ? raw.walk : [],
+    groom: Array.isArray(raw.groom) ? raw.groom : [],
+    customCategories: Array.isArray(raw.customCategories) ? raw.customCategories : []
+  };
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object' && Array.isArray(parsed.pets)) {
+        state.pets = parsed.pets.map(migratePet);
+        state.activePetId = typeof parsed.activePetId === 'string' ? parsed.activePetId : (state.pets[0] ? state.pets[0].id : null);
+      }
+    }
+  } catch (e) { console.error('Failed to load state', e); }
+}
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.error('Failed to save local state', e);
+    showToast('Could not save — storage may be full');
+  }
+}
+
+/* ---------- render ---------- */
+function render() {
+  renderPetSwitcher();
+  renderFleetHealth();
+  renderHomeSummary();
+  renderDueSoon();
+  renderVaccines();
+  renderMeds();
+  renderVetVisits();
+  renderReminders();
+  renderWeight();
+  renderFeed();
+  renderWalk();
+  renderGroom();
+  renderPetProfileCard();
+  renderCustomCategoryList();
+}
+
+function petInitial(pet) {
+  return pet && pet.name ? pet.name.trim().charAt(0).toUpperCase() : '?';
+}
+
+function renderPetSwitcher() {
+  const el = document.getElementById('petSwitcher');
+  if (state.pets.length === 0) {
+    el.innerHTML = `<button class="pet-pill-add" onclick="openPetSheet('add')">+</button>`;
+    return;
+  }
+  const pills = state.pets.map(p => `
+    <button class="pet-pill ${p.id === state.activePetId ? 'active' : ''}" onclick="switchPet('${p.id}')">${escapeHtml(p.name)}</button>
+  `).join('');
+  el.innerHTML = pills + `<button class="pet-pill-add" onclick="openPetSheet('add')">+</button>`;
+}
+function switchPet(id) {
+  state.activePetId = id;
+  saveState(); render();
+}
+
+/* ---------- fleet-style health score (household composite) ---------- */
+function taskStatusForPet(pet) {
+  const items = [];
+  pet.vaccines.forEach(v => { if (v.nextDue) items.push(v.nextDue); });
+  pet.meds.forEach(m => { if (m.nextDue) items.push(m.nextDue); });
+  pet.reminders.forEach(r => items.push(r.date));
+  const overdue = items.filter(d => dueLabel(d).overdue).length;
+  return { total: items.length, overdue };
+}
+function computeHouseholdHealth() {
+  let totalItems = 0, totalOverdue = 0;
+  state.pets.forEach(p => {
+    const s = taskStatusForPet(p);
+    totalItems += s.total;
+    totalOverdue += s.overdue;
+  });
+  if (totalItems === 0) return null;
+  const score = Math.max(0, Math.round(100 - (totalOverdue / totalItems) * 100));
+  return { score, totalOverdue, totalItems };
+}
+function renderFleetHealth() {
+  const card = document.getElementById('fleetHealthCard');
+  if (state.pets.length === 0) {
+    card.innerHTML = `<div class="health-score-val">—</div><div class="health-score-lbl">Add a pet to get started</div>`;
+    return;
+  }
+  const h = computeHouseholdHealth();
+  if (!h) {
+    card.innerHTML = `<div class="health-score-val">—</div><div class="health-score-lbl">No tracked items yet</div>`;
+    return;
+  }
+  card.className = 'health-score-card' + (h.totalOverdue > 0 ? ' warn' : '');
+  card.innerHTML = `
+    <div class="health-score-val">${h.score}</div>
+    <div class="health-score-lbl">Household health score${state.pets.length > 1 ? ' · ' + state.pets.length + ' pets' : ''}</div>
+  `;
+}
+
+function allDueItemsForActivePet() {
+  const pet = currentPet();
+  if (!pet) return [];
+  const items = [];
+  pet.vaccines.forEach(v => items.push({ kind: 'Vaccine', title: v.label, date: v.nextDue, id: v.id, openFn: () => openVaccineSheet(v.id) }));
+  pet.meds.forEach(m => { if (m.nextDue) items.push({ kind: 'Medication', title: m.name, date: m.nextDue, id: m.id, openFn: () => openMedSheet(m.id) }); });
+  pet.reminders.forEach(r => items.push({ kind: 'Reminder', title: r.title, date: r.date, id: r.id, openFn: () => openReminderSheet(r.id) }));
+  return items;
+}
+
+function renderHomeSummary() {
+  const items = allDueItemsForActivePet();
+  const overdue = items.filter(i => dueLabel(i.date).overdue).length;
+  const dueSoon = items.filter(i => dueLabel(i.date).dueSoon).length;
+  const pet = currentPet();
+  const row = document.getElementById('homeSummaryRow');
+  row.innerHTML = `
+    <div class="summary-card ${overdue > 0 ? 'warn' : ''}"><div class="val">${overdue}</div><div class="lbl">Overdue</div></div>
+    <div class="summary-card ${dueSoon > 0 ? 'good' : ''}"><div class="val">${dueSoon}</div><div class="lbl">Due soon</div></div>
+    <div class="summary-card"><div class="val">${pet ? pet.vaccines.length : 0}</div><div class="lbl">Vaccines</div></div>
+  `;
+}
+
+function renderDueSoon() {
+  const items = allDueItemsForActivePet()
+    .filter(i => i.date)
+    .map(i => ({ ...i, status: dueLabel(i.date) }))
+    .filter(i => i.status.overdue || i.status.dueSoon)
+    .sort((a, b) => daysUntil(a.date) - daysUntil(b.date));
+  document.getElementById('dueSoonCount').textContent = items.length + ' total';
+  const list = document.getElementById('dueSoonList');
+  if (!currentPet()) {
+    list.innerHTML = `<div class="empty-state">Add a pet to get started.</div>`;
+    return;
+  }
+  if (items.length === 0) {
+    list.innerHTML = `<div class="empty-state">Nothing due soon for ${escapeHtml(currentPet().name)}.</div>`;
+    return;
+  }
+  list.innerHTML = items.map(i => `
+    <div class="item-card" onclick="(${i.openFn.toString()})()">
+      <span class="badge-dot ${i.status.overdue ? 'warn' : 'ok'}"></span>
+      <div class="item-body">
+        <div class="item-title">${escapeHtml(i.title)}</div>
+        <div class="item-sub">${i.kind}</div>
+      </div>
+      <div class="item-amount ${i.status.overdue ? 'warn' : 'good'}">${i.status.label}</div>
+    </div>
+  `).join('');
+}
+
+/* ---------- vaccines ---------- */
+function renderVaccines() {
+  const pet = currentPet();
+  const list = document.getElementById('vaccineList');
+  if (!pet) { document.getElementById('vaccineCount').textContent = '0 total'; list.innerHTML = `<div class="empty-state">Add a pet to get started.</div>`; return; }
+  document.getElementById('vaccineCount').textContent = pet.vaccines.length + ' total';
+  if (pet.vaccines.length === 0) {
+    list.innerHTML = `<div class="empty-state">No vaccines logged yet for ${escapeHtml(pet.name)}. Common vaccines come with a suggested due date you can edit.</div>`;
+    return;
+  }
+  const sorted = [...pet.vaccines].sort((a, b) => (a.nextDue || '9999').localeCompare(b.nextDue || '9999'));
+  list.innerHTML = sorted.map(v => {
+    const status = dueLabel(v.nextDue);
+    return `
+    <div class="item-card" onclick="openVaccineSheet('${v.id}')">
+      <span class="badge-dot ${status.overdue ? 'warn' : 'ok'}"></span>
+      <div class="item-body">
+        <div class="item-title">${escapeHtml(v.label)}</div>
+        <div class="item-sub">Given ${fmtDate(v.dateGiven)}</div>
+      </div>
+      <div class="item-amount ${status.overdue || status.dueSoon ? 'warn' : ''}">${status.label}</div>
+    </div>
+  `;
+  }).join('');
+}
+function populateVaccineTypeOptions() {
+  const sel = document.getElementById('vaccineType');
+  const pet = currentPet();
+  const species = pet ? pet.species : 'dog';
+  const defaults = VACCINE_DEFAULTS[species] || [];
+  sel.innerHTML = '<option value="">Select a vaccine...</option>' +
+    defaults.map(d => `<option value="${d.key}">${d.label}</option>`).join('') +
+    '<option value="custom">Custom / other</option>';
+}
+function onVaccineTypeChange() {
+  const sel = document.getElementById('vaccineType');
+  const key = sel.value;
+  const customField = document.getElementById('vaccineCustomNameField');
+  const hint = document.getElementById('vaccineIntervalHint');
+  customField.style.display = key === 'custom' ? 'block' : 'none';
+  const pet = currentPet();
+  if (key && key !== 'custom' && pet) {
+    const def = (VACCINE_DEFAULTS[pet.species] || []).find(d => d.key === key);
+    if (def) {
+      const given = document.getElementById('vaccineDateGiven').value || todayStr();
+      document.getElementById('vaccineDateGiven').value = given;
+      document.getElementById('vaccineNextDue').value = addDays(given, def.intervalDays);
+      const years = Math.round(def.intervalDays / 365 * 10) / 10;
+      hint.textContent = `Suggested: every ${years} year${years === 1 ? '' : 's'} — edit the date above if your vet says otherwise.`;
+      return;
+    }
+  }
+  hint.textContent = '';
+}
+function openVaccineSheet(id) {
+  if (!currentPet()) { showToast('Add a pet first'); return; }
+  editingVaccineId = id;
+  populateVaccineTypeOptions();
+  const deleteRow = document.getElementById('vaccineDeleteRow');
+  const customField = document.getElementById('vaccineCustomNameField');
+  const pet = currentPet();
+  if (id) {
+    const v = pet.vaccines.find(x => x.id === id);
+    document.getElementById('vaccineSheetTitle').textContent = 'Edit vaccine';
+    document.getElementById('vaccineType').value = (VACCINE_DEFAULTS[pet.species] || []).some(d => d.key === v.key) ? v.key : 'custom';
+    customField.style.display = document.getElementById('vaccineType').value === 'custom' ? 'block' : 'none';
+    document.getElementById('vaccineCustomName').value = v.label || '';
+    document.getElementById('vaccineDateGiven').value = v.dateGiven || '';
+    document.getElementById('vaccineNextDue').value = v.nextDue || '';
+    document.getElementById('vaccineNotes').value = v.notes || '';
+    document.getElementById('vaccineIntervalHint').textContent = '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('vaccineSheetTitle').textContent = 'Add vaccine';
+    document.getElementById('vaccineType').value = '';
+    customField.style.display = 'none';
+    document.getElementById('vaccineCustomName').value = '';
+    document.getElementById('vaccineDateGiven').value = todayStr();
+    document.getElementById('vaccineNextDue').value = '';
+    document.getElementById('vaccineNotes').value = '';
+    document.getElementById('vaccineIntervalHint').textContent = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('vaccineSheetBackdrop').classList.add('open');
+}
+function closeVaccineSheet() {
+  document.getElementById('vaccineSheetBackdrop').classList.remove('open');
+  editingVaccineId = null;
+}
+function saveVaccine() {
+  const pet = currentPet();
+  if (!pet) return;
+  const typeKey = document.getElementById('vaccineType').value;
+  const customName = document.getElementById('vaccineCustomName').value.trim();
+  const dateGiven = document.getElementById('vaccineDateGiven').value;
+  const nextDue = document.getElementById('vaccineNextDue').value;
+  const notes = document.getElementById('vaccineNotes').value.trim();
+  if (!typeKey) { showToast('Choose a vaccine first'); return; }
+  let label = customName;
+  if (typeKey !== 'custom') {
+    const def = (VACCINE_DEFAULTS[pet.species] || []).find(d => d.key === typeKey);
+    label = def ? def.label : typeKey;
+  }
+  if (!label) { showToast('Enter a vaccine name'); return; }
+  if (editingVaccineId) {
+    const v = pet.vaccines.find(x => x.id === editingVaccineId);
+    v.key = typeKey; v.label = label; v.dateGiven = dateGiven; v.nextDue = nextDue; v.notes = notes;
+  } else {
+    pet.vaccines.push({ id: uid(), key: typeKey, label, dateGiven, nextDue, notes });
+  }
+  saveState(); render(); closeVaccineSheet();
+  showToast('Vaccine saved');
+}
+function deleteVaccine() {
+  const pet = currentPet();
+  if (!pet) return;
+  pet.vaccines = pet.vaccines.filter(v => v.id !== editingVaccineId);
+  saveState(); render(); closeVaccineSheet();
+  showToast('Vaccine deleted');
+}
+
+/* ---------- medications ---------- */
+function renderMeds() {
+  const pet = currentPet();
+  const list = document.getElementById('medList');
+  if (!pet) { document.getElementById('medCount').textContent = '0 total'; list.innerHTML = `<div class="empty-state">Add a pet to get started.</div>`; return; }
+  document.getElementById('medCount').textContent = pet.meds.length + ' total';
+  if (pet.meds.length === 0) { list.innerHTML = `<div class="empty-state">No medications tracked yet.</div>`; return; }
+  const sorted = [...pet.meds].sort((a, b) => (a.nextDue || '9999').localeCompare(b.nextDue || '9999'));
+  list.innerHTML = sorted.map(m => {
+    const status = dueLabel(m.nextDue);
+    return `
+    <div class="item-card" onclick="openMedSheet('${m.id}')">
+      <div class="item-body">
+        <div class="item-title">${escapeHtml(m.name)}</div>
+        <div class="item-sub">${[m.dose, m.frequency].filter(Boolean).map(escapeHtml).join(' · ') || 'No details added'}</div>
+      </div>
+      ${m.nextDue ? `<div class="item-amount ${status.overdue || status.dueSoon ? 'warn' : ''}">${status.label}</div>` : ''}
+    </div>
+  `;
+  }).join('');
+}
+function openMedSheet(id) {
+  if (!currentPet()) { showToast('Add a pet first'); return; }
+  editingMedId = id;
+  const deleteRow = document.getElementById('medDeleteRow');
+  if (id) {
+    const m = currentPet().meds.find(x => x.id === id);
+    document.getElementById('medSheetTitle').textContent = 'Edit medication';
+    document.getElementById('medName').value = m.name || '';
+    document.getElementById('medDose').value = m.dose || '';
+    document.getElementById('medFrequency').value = m.frequency || '';
+    document.getElementById('medNextDue').value = m.nextDue || '';
+    document.getElementById('medNotes').value = m.notes || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('medSheetTitle').textContent = 'Add medication';
+    document.getElementById('medName').value = '';
+    document.getElementById('medDose').value = '';
+    document.getElementById('medFrequency').value = '';
+    document.getElementById('medNextDue').value = '';
+    document.getElementById('medNotes').value = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('medSheetBackdrop').classList.add('open');
+}
+function closeMedSheet() {
+  document.getElementById('medSheetBackdrop').classList.remove('open');
+  editingMedId = null;
+}
+function saveMed() {
+  const pet = currentPet();
+  if (!pet) return;
+  const name = document.getElementById('medName').value.trim();
+  const dose = document.getElementById('medDose').value.trim();
+  const frequency = document.getElementById('medFrequency').value.trim();
+  const nextDue = document.getElementById('medNextDue').value;
+  const notes = document.getElementById('medNotes').value.trim();
+  if (!name) { showToast('Enter a medication name'); return; }
+  if (editingMedId) {
+    const m = pet.meds.find(x => x.id === editingMedId);
+    m.name = name; m.dose = dose; m.frequency = frequency; m.nextDue = nextDue; m.notes = notes;
+  } else {
+    pet.meds.push({ id: uid(), name, dose, frequency, nextDue, notes });
+  }
+  saveState(); render(); closeMedSheet();
+  showToast('Medication saved');
+}
+function deleteMed() {
+  const pet = currentPet();
+  if (!pet) return;
+  pet.meds = pet.meds.filter(m => m.id !== editingMedId);
+  saveState(); render(); closeMedSheet();
+  showToast('Medication deleted');
+}
+
+/* ---------- vet visits ---------- */
+function renderVetVisits() {
+  const pet = currentPet();
+  const list = document.getElementById('vetList');
+  if (!pet) { document.getElementById('vetCount').textContent = '0 total'; list.innerHTML = `<div class="empty-state">Add a pet to get started.</div>`; return; }
+  document.getElementById('vetCount').textContent = pet.vetVisits.length + ' total';
+  if (pet.vetVisits.length === 0) { list.innerHTML = `<div class="empty-state">No vet visits logged yet.</div>`; return; }
+  const sorted = [...pet.vetVisits].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  list.innerHTML = sorted.map(v => `
+    <div class="item-card" onclick="openVetSheet('${v.id}')">
+      <div class="item-body">
+        <div class="item-title">${escapeHtml(v.reason || 'Visit')}</div>
+        <div class="item-sub">${fmtDate(v.date)}${v.vetName ? ' · ' + escapeHtml(v.vetName) : ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+function openVetSheet(id) {
+  if (!currentPet()) { showToast('Add a pet first'); return; }
+  editingVetId = id;
+  const deleteRow = document.getElementById('vetDeleteRow');
+  if (id) {
+    const v = currentPet().vetVisits.find(x => x.id === id);
+    document.getElementById('vetSheetTitle').textContent = 'Edit vet visit';
+    document.getElementById('vetReason').value = v.reason || '';
+    document.getElementById('vetDate').value = v.date || '';
+    document.getElementById('vetName').value = v.vetName || '';
+    document.getElementById('vetNotes').value = v.notes || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('vetSheetTitle').textContent = 'Log vet visit';
+    document.getElementById('vetReason').value = '';
+    document.getElementById('vetDate').value = todayStr();
+    document.getElementById('vetName').value = '';
+    document.getElementById('vetNotes').value = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('vetSheetBackdrop').classList.add('open');
+}
+function closeVetSheet() {
+  document.getElementById('vetSheetBackdrop').classList.remove('open');
+  editingVetId = null;
+}
+function saveVet() {
+  const pet = currentPet();
+  if (!pet) return;
+  const reason = document.getElementById('vetReason').value.trim();
+  const date = document.getElementById('vetDate').value;
+  const vetName = document.getElementById('vetName').value.trim();
+  const notes = document.getElementById('vetNotes').value.trim();
+  if (!reason) { showToast('Enter a reason for the visit'); return; }
+  if (editingVetId) {
+    const v = pet.vetVisits.find(x => x.id === editingVetId);
+    v.reason = reason; v.date = date; v.vetName = vetName; v.notes = notes;
+  } else {
+    pet.vetVisits.push({ id: uid(), reason, date, vetName, notes });
+  }
+  saveState(); render(); closeVetSheet();
+  showToast('Vet visit saved');
+}
+function deleteVet() {
+  const pet = currentPet();
+  if (!pet) return;
+  pet.vetVisits = pet.vetVisits.filter(v => v.id !== editingVetId);
+  saveState(); render(); closeVetSheet();
+  showToast('Vet visit deleted');
+}
+
+/* ---------- weight ---------- */
+function renderWeight() {
+  const pet = currentPet();
+  const chartCard = document.getElementById('weightChartCard');
+  const list = document.getElementById('weightList');
+  if (!pet) { document.getElementById('weightCount').textContent = '0 total'; chartCard.innerHTML = ''; list.innerHTML = `<div class="empty-state">Add a pet to get started.</div>`; return; }
+  document.getElementById('weightCount').textContent = pet.weight.length + ' total';
+  if (pet.weight.length === 0) {
+    chartCard.innerHTML = '';
+    list.innerHTML = `<div class="empty-state">No weight logged yet.</div>`;
+    return;
+  }
+  const sorted = [...pet.weight].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const unit = pet.weightUnit || 'lbs';
+  const latest = sorted[0];
+  const prev = sorted[1];
+  let trendHtml = '';
+  if (prev) {
+    const diff = (parseFloat(latest.value) - parseFloat(prev.value));
+    const sign = diff > 0 ? '+' : '';
+    trendHtml = `<div class="item-sub">${sign}${diff.toFixed(1)} ${unit} since last entry</div>`;
+  }
+  chartCard.innerHTML = `
+    <div class="summary-card" style="text-align:left; padding:16px; margin-bottom:10px;">
+      <div class="val" style="font-size:26px;">${latest.value} ${unit}</div>
+      <div class="lbl" style="text-align:left;">Latest — ${fmtDate(latest.date)}</div>
+      ${trendHtml}
+    </div>
+  `;
+  list.innerHTML = sorted.map(w => `
+    <div class="item-card" onclick="openWeightSheet('${w.id}')">
+      <div class="item-body">
+        <div class="item-title">${w.value} ${w.unit || unit}</div>
+        <div class="item-sub">${fmtDate(w.date)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+function openWeightSheet(id) {
+  if (!currentPet()) { showToast('Add a pet first'); return; }
+  editingWeightId = id;
+  const pet = currentPet();
+  const deleteRow = document.getElementById('weightDeleteRow');
+  if (id) {
+    const w = pet.weight.find(x => x.id === id);
+    document.getElementById('weightSheetTitle').textContent = 'Edit weight entry';
+    document.getElementById('weightValue').value = w.value || '';
+    document.getElementById('weightUnit').value = w.unit || pet.weightUnit || 'lbs';
+    document.getElementById('weightDate').value = w.date || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('weightSheetTitle').textContent = 'Log weight';
+    document.getElementById('weightValue').value = '';
+    document.getElementById('weightUnit').value = pet.weightUnit || 'lbs';
+    document.getElementById('weightDate').value = todayStr();
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('weightSheetBackdrop').classList.add('open');
+}
+function closeWeightSheet() {
+  document.getElementById('weightSheetBackdrop').classList.remove('open');
+  editingWeightId = null;
+}
+function saveWeight() {
+  const pet = currentPet();
+  if (!pet) return;
+  const value = document.getElementById('weightValue').value;
+  const unit = document.getElementById('weightUnit').value;
+  const date = document.getElementById('weightDate').value;
+  if (!value || parseFloat(value) <= 0) { showToast('Enter a valid weight'); return; }
+  pet.weightUnit = unit;
+  if (editingWeightId) {
+    const w = pet.weight.find(x => x.id === editingWeightId);
+    w.value = value; w.unit = unit; w.date = date;
+  } else {
+    pet.weight.push({ id: uid(), value, unit, date });
+  }
+  saveState(); render(); closeWeightSheet();
+  showToast('Weight saved');
+}
+function deleteWeight() {
+  const pet = currentPet();
+  if (!pet) return;
+  pet.weight = pet.weight.filter(w => w.id !== editingWeightId);
+  saveState(); render(); closeWeightSheet();
+  showToast('Weight entry deleted');
+}
+
+/* ---------- feeding ---------- */
+function renderFeed() {
+  const pet = currentPet();
+  const list = document.getElementById('feedList');
+  if (!pet) { document.getElementById('feedCount').textContent = '0 total'; list.innerHTML = `<div class="empty-state">Add a pet to get started.</div>`; return; }
+  document.getElementById('feedCount').textContent = pet.feed.length + ' total';
+  if (pet.feed.length === 0) { list.innerHTML = `<div class="empty-state">No feedings logged yet.</div>`; return; }
+  const sorted = [...pet.feed].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  list.innerHTML = sorted.map(f => `
+    <div class="item-card" onclick="openFeedSheet('${f.id}')">
+      <div class="item-body">
+        <div class="item-title">${escapeHtml(f.amount || 'Feeding')}${f.foodType ? ' · ' + escapeHtml(f.foodType) : ''}</div>
+        <div class="item-sub">${fmtDate(f.date)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+function openFeedSheet(id) {
+  if (!currentPet()) { showToast('Add a pet first'); return; }
+  editingFeedId = id;
+  const deleteRow = document.getElementById('feedDeleteRow');
+  if (id) {
+    const f = currentPet().feed.find(x => x.id === id);
+    document.getElementById('feedSheetTitle').textContent = 'Edit feeding';
+    document.getElementById('feedAmount').value = f.amount || '';
+    document.getElementById('feedType').value = f.foodType || '';
+    document.getElementById('feedDate').value = f.date || '';
+    document.getElementById('feedNotes').value = f.notes || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('feedSheetTitle').textContent = 'Log feeding';
+    document.getElementById('feedAmount').value = '';
+    document.getElementById('feedType').value = '';
+    document.getElementById('feedDate').value = todayStr();
+    document.getElementById('feedNotes').value = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('feedSheetBackdrop').classList.add('open');
+}
+function closeFeedSheet() {
+  document.getElementById('feedSheetBackdrop').classList.remove('open');
+  editingFeedId = null;
+}
+function saveFeed() {
+  const pet = currentPet();
+  if (!pet) return;
+  const amount = document.getElementById('feedAmount').value.trim();
+  const foodType = document.getElementById('feedType').value.trim();
+  const date = document.getElementById('feedDate').value;
+  const notes = document.getElementById('feedNotes').value.trim();
+  if (editingFeedId) {
+    const f = pet.feed.find(x => x.id === editingFeedId);
+    f.amount = amount; f.foodType = foodType; f.date = date; f.notes = notes;
+  } else {
+    pet.feed.push({ id: uid(), amount, foodType, date, notes });
+  }
+  saveState(); render(); closeFeedSheet();
+  showToast('Feeding saved');
+}
+function deleteFeed() {
+  const pet = currentPet();
+  if (!pet) return;
+  pet.feed = pet.feed.filter(f => f.id !== editingFeedId);
+  saveState(); render(); closeFeedSheet();
+  showToast('Feeding deleted');
+}
+
+/* ---------- walks ---------- */
+function renderWalk() {
+  const pet = currentPet();
+  const list = document.getElementById('walkList');
+  if (!pet) { document.getElementById('walkCount').textContent = '0 total'; list.innerHTML = `<div class="empty-state">Add a pet to get started.</div>`; return; }
+  document.getElementById('walkCount').textContent = pet.walk.length + ' total';
+  if (pet.walk.length === 0) { list.innerHTML = `<div class="empty-state">No walks logged yet.</div>`; return; }
+  const sorted = [...pet.walk].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  list.innerHTML = sorted.map(w => `
+    <div class="item-card" onclick="openWalkSheet('${w.id}')">
+      <div class="item-body">
+        <div class="item-title">${w.duration ? w.duration + ' min' : 'Walk'}</div>
+        <div class="item-sub">${fmtDate(w.date)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+function openWalkSheet(id) {
+  if (!currentPet()) { showToast('Add a pet first'); return; }
+  editingWalkId = id;
+  const deleteRow = document.getElementById('walkDeleteRow');
+  if (id) {
+    const w = currentPet().walk.find(x => x.id === id);
+    document.getElementById('walkSheetTitle').textContent = 'Edit walk';
+    document.getElementById('walkDuration').value = w.duration || '';
+    document.getElementById('walkDate').value = w.date || '';
+    document.getElementById('walkNotes').value = w.notes || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('walkSheetTitle').textContent = 'Log walk';
+    document.getElementById('walkDuration').value = '';
+    document.getElementById('walkDate').value = todayStr();
+    document.getElementById('walkNotes').value = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('walkSheetBackdrop').classList.add('open');
+}
+function closeWalkSheet() {
+  document.getElementById('walkSheetBackdrop').classList.remove('open');
+  editingWalkId = null;
+}
+function saveWalk() {
+  const pet = currentPet();
+  if (!pet) return;
+  const duration = document.getElementById('walkDuration').value;
+  const date = document.getElementById('walkDate').value;
+  const notes = document.getElementById('walkNotes').value.trim();
+  if (editingWalkId) {
+    const w = pet.walk.find(x => x.id === editingWalkId);
+    w.duration = duration; w.date = date; w.notes = notes;
+  } else {
+    pet.walk.push({ id: uid(), duration, date, notes });
+  }
+  saveState(); render(); closeWalkSheet();
+  showToast('Walk saved');
+}
+function deleteWalk() {
+  const pet = currentPet();
+  if (!pet) return;
+  pet.walk = pet.walk.filter(w => w.id !== editingWalkId);
+  saveState(); render(); closeWalkSheet();
+  showToast('Walk deleted');
+}
+
+/* ---------- grooming ---------- */
+function renderGroom() {
+  const pet = currentPet();
+  const list = document.getElementById('groomList');
+  if (!pet) { document.getElementById('groomCount').textContent = '0 total'; list.innerHTML = `<div class="empty-state">Add a pet to get started.</div>`; return; }
+  document.getElementById('groomCount').textContent = pet.groom.length + ' total';
+  if (pet.groom.length === 0) { list.innerHTML = `<div class="empty-state">No grooming logged yet.</div>`; return; }
+  const sorted = [...pet.groom].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  list.innerHTML = sorted.map(g => `
+    <div class="item-card" onclick="openGroomSheet('${g.id}')">
+      <div class="item-body">
+        <div class="item-title">${escapeHtml(g.type || 'Grooming')}</div>
+        <div class="item-sub">${fmtDate(g.date)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+function openGroomSheet(id) {
+  if (!currentPet()) { showToast('Add a pet first'); return; }
+  editingGroomId = id;
+  const deleteRow = document.getElementById('groomDeleteRow');
+  if (id) {
+    const g = currentPet().groom.find(x => x.id === id);
+    document.getElementById('groomSheetTitle').textContent = 'Edit grooming';
+    document.getElementById('groomType').value = g.type || '';
+    document.getElementById('groomDate').value = g.date || '';
+    document.getElementById('groomNotes').value = g.notes || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('groomSheetTitle').textContent = 'Log grooming';
+    document.getElementById('groomType').value = '';
+    document.getElementById('groomDate').value = todayStr();
+    document.getElementById('groomNotes').value = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('groomSheetBackdrop').classList.add('open');
+}
+function closeGroomSheet() {
+  document.getElementById('groomSheetBackdrop').classList.remove('open');
+  editingGroomId = null;
+}
+function saveGroom() {
+  const pet = currentPet();
+  if (!pet) return;
+  const type = document.getElementById('groomType').value.trim();
+  const date = document.getElementById('groomDate').value;
+  const notes = document.getElementById('groomNotes').value.trim();
+  if (!type) { showToast('Enter a grooming type'); return; }
+  if (editingGroomId) {
+    const g = pet.groom.find(x => x.id === editingGroomId);
+    g.type = type; g.date = date; g.notes = notes;
+  } else {
+    pet.groom.push({ id: uid(), type, date, notes });
+  }
+  saveState(); render(); closeGroomSheet();
+  showToast('Grooming saved');
+}
+function deleteGroom() {
+  const pet = currentPet();
+  if (!pet) return;
+  pet.groom = pet.groom.filter(g => g.id !== editingGroomId);
+  saveState(); render(); closeGroomSheet();
+  showToast('Grooming entry deleted');
+}
+
+/* ---------- reminders ---------- */
+function renderReminders() {
+  const pet = currentPet();
+  const list = document.getElementById('reminderList');
+  if (!pet) { document.getElementById('reminderCount').textContent = '0 total'; list.innerHTML = `<div class="empty-state">Add a pet to get started.</div>`; return; }
+  document.getElementById('reminderCount').textContent = pet.reminders.length + ' total';
+  if (pet.reminders.length === 0) { list.innerHTML = `<div class="empty-state">No reminders yet.</div>`; return; }
+  const sorted = [...pet.reminders].sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
+  list.innerHTML = sorted.map(r => {
+    const status = dueLabel(r.date);
+    return `
+    <div class="item-card" onclick="openReminderSheet('${r.id}')">
+      <div class="item-body">
+        <div class="item-title">${escapeHtml(r.title)}</div>
+        <div class="item-sub">${r.notes ? escapeHtml(r.notes) : fmtDate(r.date)}</div>
+      </div>
+      <div class="item-amount ${status.overdue || status.dueSoon ? 'warn' : ''}">${status.label}</div>
+    </div>
+  `;
+  }).join('');
+}
+function openReminderSheet(id) {
+  if (!currentPet()) { showToast('Add a pet first'); return; }
+  editingReminderId = id;
+  const deleteRow = document.getElementById('reminderDeleteRow');
+  if (id) {
+    const r = currentPet().reminders.find(x => x.id === id);
+    document.getElementById('reminderSheetTitle').textContent = 'Edit reminder';
+    document.getElementById('reminderTitle').value = r.title || '';
+    document.getElementById('reminderDate').value = r.date || '';
+    document.getElementById('reminderNotes').value = r.notes || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('reminderSheetTitle').textContent = 'Add reminder';
+    document.getElementById('reminderTitle').value = '';
+    document.getElementById('reminderDate').value = todayStr();
+    document.getElementById('reminderNotes').value = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('reminderSheetBackdrop').classList.add('open');
+}
+function closeReminderSheet() {
+  document.getElementById('reminderSheetBackdrop').classList.remove('open');
+  editingReminderId = null;
+}
+function saveReminder() {
+  const pet = currentPet();
+  if (!pet) return;
+  const title = document.getElementById('reminderTitle').value.trim();
+  const date = document.getElementById('reminderDate').value;
+  const notes = document.getElementById('reminderNotes').value.trim();
+  if (!title) { showToast('Enter a title'); return; }
+  if (editingReminderId) {
+    const r = pet.reminders.find(x => x.id === editingReminderId);
+    r.title = title; r.date = date; r.notes = notes;
+  } else {
+    pet.reminders.push({ id: uid(), title, date, notes });
+  }
+  saveState(); render(); closeReminderSheet();
+  showToast('Reminder saved');
+}
+function deleteReminder() {
+  const pet = currentPet();
+  if (!pet) return;
+  pet.reminders = pet.reminders.filter(r => r.id !== editingReminderId);
+  saveState(); render(); closeReminderSheet();
+  showToast('Reminder deleted');
+}
+
+/* ---------- pet profile management (add / edit / delete / switch) ---------- */
+function renderPetProfileCard() {
+  const card = document.getElementById('petProfileCard');
+  const pet = currentPet();
+  if (!pet) {
+    card.innerHTML = `<button class="btn-add-inline" onclick="openPetSheet('add')">+ Add your first pet</button>`;
+    return;
+  }
+  const speciesLabel = { dog: 'Dog', cat: 'Cat', other: 'Pet' }[pet.species] || 'Pet';
+  card.innerHTML = `
+    <div class="item-card" onclick="openPetSheet('edit')">
+      <div class="pet-avatar" style="width:40px;height:40px;font-size:15px;">${petInitial(pet)}</div>
+      <div class="item-body">
+        <div class="item-title">${escapeHtml(pet.name)}</div>
+        <div class="item-sub">${[speciesLabel, pet.breed].filter(Boolean).join(' · ')}</div>
+      </div>
+    </div>
+    <button class="btn-add-inline" onclick="openPetSheet('add')">+ Add another pet</button>
+  `;
+}
+function openPetSheet(mode) {
+  petSheetMode = mode === 'add' ? 'add' : 'edit';
+  const deleteRow = document.getElementById('petDeleteRow');
+  if (petSheetMode === 'add') {
+    document.getElementById('petSheetTitle').textContent = 'Add pet';
+    document.getElementById('petName').value = '';
+    document.getElementById('petSpecies').value = 'dog';
+    document.getElementById('petBreed').value = '';
+    document.getElementById('petBirthday').value = '';
+    document.getElementById('petNotes').value = '';
+    deleteRow.style.display = 'none';
+  } else {
+    const pet = currentPet();
+    if (!pet) { petSheetMode = 'add'; return openPetSheet('add'); }
+    document.getElementById('petSheetTitle').textContent = 'Edit pet';
+    document.getElementById('petName').value = pet.name || '';
+    document.getElementById('petSpecies').value = pet.species || 'dog';
+    document.getElementById('petBreed').value = pet.breed || '';
+    document.getElementById('petBirthday').value = pet.birthday || '';
+    document.getElementById('petNotes').value = pet.notes || '';
+    deleteRow.style.display = state.pets.length > 0 ? 'flex' : 'none';
+  }
+  document.getElementById('petSheetBackdrop').classList.add('open');
+}
+function closePetSheet() {
+  document.getElementById('petSheetBackdrop').classList.remove('open');
+}
+function savePet() {
+  const name = document.getElementById('petName').value.trim();
+  const species = document.getElementById('petSpecies').value;
+  const breed = document.getElementById('petBreed').value.trim();
+  const birthday = document.getElementById('petBirthday').value;
+  const notes = document.getElementById('petNotes').value.trim();
+  if (!name) { showToast('Enter a name first'); return; }
+  if (petSheetMode === 'add') {
+    const p = newPet(name, species, breed);
+    p.birthday = birthday; p.notes = notes;
+    state.pets.push(p);
+    state.activePetId = p.id;
+  } else {
+    const pet = currentPet();
+    pet.name = name; pet.species = species; pet.breed = breed; pet.birthday = birthday; pet.notes = notes;
+  }
+  saveState(); render(); closePetSheet();
+  showToast('Pet saved');
+}
+async function deletePet() {
+  const pet = currentPet();
+  if (!pet) return;
+  const proceed = await themedConfirm('Delete this pet?', `This removes ${pet.name} and all of their vaccines, medications, and history. This can't be undone.`, 'Delete');
+  if (!proceed) return;
+  state.pets = state.pets.filter(p => p.id !== pet.id);
+  state.activePetId = state.pets[0] ? state.pets[0].id : null;
+  saveState(); render(); closePetSheet();
+  showToast('Pet deleted');
+}
+
+/* ---------- custom categories (reserved for vaccine/reminder tagging in future updates) ---------- */
+function renderCustomCategoryList() {
+  const list = document.getElementById('customCategoryList');
+  const pet = currentPet();
+  if (!pet || pet.customCategories.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:16px 12px;">No custom categories yet. Add one below.</div><button class="btn-add-inline" onclick="openCategorySheet()">+ Add category</button>`;
+    return;
+  }
+  list.innerHTML = pet.customCategories.map(c => `
+    <div class="item-card" style="cursor:default;">
+      <div class="item-body">
+        <div class="item-title">${escapeHtml(c.label)}</div>
+      </div>
+      <button class="icon-btn" style="width:32px;height:32px;color:var(--cranberry);" onclick="deleteCustomCategory('${c.id}')" aria-label="Delete category">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+      </button>
+    </div>
+  `).join('') + `<button class="btn-add-inline" onclick="openCategorySheet()">+ Add category</button>`;
+}
+function openCategorySheet() {
+  if (!currentPet()) { showToast('Add a pet first'); return; }
+  document.getElementById('categoryNameInput').value = '';
+  document.getElementById('categorySheetBackdrop').classList.add('open');
+  setTimeout(() => document.getElementById('categoryNameInput').focus(), 50);
+}
+function closeCategorySheet() {
+  document.getElementById('categorySheetBackdrop').classList.remove('open');
+}
+function saveCategorySheet() {
+  const pet = currentPet();
+  if (!pet) return;
+  const label = document.getElementById('categoryNameInput').value.trim();
+  if (!label) { document.getElementById('categoryNameInput').focus(); return; }
+  pet.customCategories.push({ id: 'custom_' + uid(), label });
+  saveState(); render(); closeCategorySheet();
+  showToast('Category added');
+}
+async function deleteCustomCategory(id) {
+  const pet = currentPet();
+  if (!pet) return;
+  const cat = pet.customCategories.find(c => c.id === id);
+  if (!cat) return;
+  const proceed = await themedConfirm('Delete category', `Delete the "${cat.label}" category?`, 'Delete');
+  if (!proceed) return;
+  pet.customCategories = pet.customCategories.filter(c => c.id !== id);
+  saveState(); render();
+  showToast('Category deleted');
+}
+
+/* ---------- quick add (FAB) ---------- */
+function handleFab() {
+  if (!currentPet()) { openPetSheet('add'); return; }
+  document.getElementById('quickAddBackdrop').classList.add('open');
+}
+function closeQuickAdd() {
+  document.getElementById('quickAddBackdrop').classList.remove('open');
+}
+function quickAddChoose(type) {
+  closeQuickAdd();
+  if (type === 'vaccine') openVaccineSheet(null);
+  else if (type === 'med') openMedSheet(null);
+  else if (type === 'vet') openVetSheet(null);
+  else if (type === 'weight') openWeightSheet(null);
+  else if (type === 'feed') openFeedSheet(null);
+  else if (type === 'walk') openWalkSheet(null);
+  else if (type === 'groom') openGroomSheet(null);
+  else if (type === 'reminder') openReminderSheet(null);
+}
+
+/* ---------- tabs ---------- */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+  currentTab = tab;
+}
+
+/* ---------- settings ---------- */
+function openSettings() { document.getElementById('settingsSheetBackdrop').classList.add('open'); }
+function closeSettings() { document.getElementById('settingsSheetBackdrop').classList.remove('open'); }
+
+/* ---------- light / dark mode ---------- */
+function applyMode(mode) {
+  document.documentElement.setAttribute('data-mode', mode === 'dark' ? 'dark' : 'light');
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) metaTheme.setAttribute('content', mode === 'dark' ? '#211B16' : '#FBF7F2');
+}
+function loadMode() {
+  let saved = null;
+  try { saved = localStorage.getItem(MODE_STORAGE_KEY); } catch (e) {}
+  applyMode(saved === 'dark' ? 'dark' : 'light');
+}
+function toggleMode() {
+  let current = 'light';
+  try { current = localStorage.getItem(MODE_STORAGE_KEY) || 'light'; } catch (e) {}
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyMode(next);
+  try { localStorage.setItem(MODE_STORAGE_KEY, next); } catch (e) {}
+  showToast(next === 'dark' ? 'Dark mode' : 'Light mode');
+}
+
+/* ---------- themed confirm dialog (replaces native confirm()) ---------- */
+function themedConfirm(title, message, okLabel) {
+  return new Promise((resolve) => {
+    const backdrop = document.getElementById('confirmSheetBackdrop');
+    document.getElementById('confirmSheetTitle').textContent = title;
+    document.getElementById('confirmSheetMessage').textContent = message;
+    const okBtn = document.getElementById('confirmSheetOkBtn');
+    const cancelBtn = document.getElementById('confirmSheetCancelBtn');
+    okBtn.textContent = okLabel || 'Continue';
+    const cleanup = (result) => {
+      backdrop.classList.remove('open');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      resolve(result);
+    };
+    const onOk = () => cleanup(true);
+    const onCancel = () => cleanup(false);
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    backdrop.classList.add('open');
+  });
+}
+
+/* =========================================================
+   GOOGLE DRIVE BACKUP — removed for the free trial demo.
+   The full version backs up every pet's records to the
+   user's own Google Drive; this trial is local-device-only,
+   so all Drive OAuth/API code and its Settings UI were
+   removed rather than hidden.
+   ========================================================= */
+
+/* ---------- local export/import ---------- */
+function exportLocal() {
+  const payload = JSON.stringify({ ...state, exportedAt: new Date().toISOString() }, null, 2);
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pet-health-backup-${todayStr()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Exported backup file');
+}
+function importLocal(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const incomingPets = Array.isArray(data.pets) ? data.pets.map(migratePet) : null;
+      if (incomingPets === null) {
+        showToast("That file doesn't look like a valid backup");
+        return;
+      }
+      const hasLocalData = state.pets.length > 0;
+      if (hasLocalData) {
+        const proceed = await themedConfirm('Replace current data?', 'This will replace your current data with the imported file. Continue?', 'Import');
+        if (!proceed) return;
+      }
+      state.pets = incomingPets;
+      state.activePetId = typeof data.activePetId === 'string' ? data.activePetId : (incomingPets[0] ? incomingPets[0].id : null);
+      saveState(); render();
+      showToast('Data imported');
+    } catch (err) {
+      showToast('Could not read that file');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ---------- PDF export (pdf-lib, client-side) ---------- */
+async function drawReportPage(pdfDoc, font, fontBold, title, subtitle) {
+  const page = pdfDoc.addPage([612, 792]);
+  const { width, height } = page.getSize();
+  const margin = 50;
+  let y = height - margin;
+  page.drawText(title, { x: margin, y, size: 18, font: fontBold, color: PDFLib.rgb(0.17, 0.14, 0.13) });
+  y -= 22;
+  if (subtitle) {
+    page.drawText(subtitle, { x: margin, y, size: 10, font, color: PDFLib.rgb(0.42, 0.37, 0.33) });
+    y -= 20;
+  }
+  y -= 10;
+  return { page, width, height, margin, y };
+}
+function pdfSectionHeader(page, font, x, y, text) {
+  page.drawText(text, { x, y, size: 12, font, color: PDFLib.rgb(0.76, 0.4, 0.18) });
+  return y - 18;
+}
+function pdfLine(page, font, x, y, text, size) {
+  page.drawText(text, { x, y, size: size || 10, font, color: PDFLib.rgb(0.17, 0.14, 0.13) });
+  return y - (size ? size + 6 : 16);
+}
+async function exportPetReportPdf() {
+  if (typeof PDFLib === 'undefined') { showToast('PDF library still loading — try again in a moment'); return; }
+  const pet = currentPet();
+  if (!pet) { showToast('Add a pet first'); return; }
+  showToast('Generating PDF...');
+  try {
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    let { page, width, height, margin, y } = await drawReportPage(pdfDoc, font, fontBold, `${pet.name} — Health Report`, `Generated ${todayStr()}${pet.breed ? ' · ' + pet.breed : ''}`);
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Vaccines');
+    if (pet.vaccines.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No vaccines recorded.');
+    } else {
+      pet.vaccines.forEach(v => {
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+        y = pdfLine(page, font, margin, y, `${v.label}  —  given ${fmtDate(v.dateGiven)}  —  next due ${fmtDate(v.nextDue)}`);
+      });
+    }
+    y -= 10;
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Medications');
+    if (pet.meds.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No medications recorded.');
+    } else {
+      pet.meds.forEach(m => {
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+        y = pdfLine(page, font, margin, y, `${m.name}  —  ${[m.dose, m.frequency].filter(Boolean).join(', ') || 'no details'}`);
+      });
+    }
+    y -= 10;
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Vet visits');
+    if (pet.vetVisits.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No vet visits recorded.');
+    } else {
+      pet.vetVisits.forEach(v => {
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+        y = pdfLine(page, font, margin, y, `${fmtDate(v.date)}  —  ${v.reason}${v.vetName ? '  —  ' + v.vetName : ''}`);
+      });
+    }
+    y -= 10;
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Weight history');
+    if (pet.weight.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No weight logged.');
+    } else {
+      [...pet.weight].sort((a, b) => (b.date || '').localeCompare(a.date || '')).forEach(w => {
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+        y = pdfLine(page, font, margin, y, `${fmtDate(w.date)}  —  ${w.value} ${w.unit || pet.weightUnit}`);
+      });
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    downloadPdfBytes(pdfBytes, `${pet.name.replace(/[^a-z0-9]/gi, '-')}-health-report-${todayStr()}.pdf`);
+    showToast('PDF exported');
+  } catch (e) {
+    console.error(e);
+    showToast('Could not generate PDF — try again');
+  }
+}
+async function exportHouseholdReportPdf() {
+  if (typeof PDFLib === 'undefined') { showToast('PDF library still loading — try again in a moment'); return; }
+  if (state.pets.length === 0) { showToast('Add a pet first'); return; }
+  showToast('Generating household PDF...');
+  try {
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    const h = computeHouseholdHealth();
+    let { page, width, height, margin, y } = await drawReportPage(pdfDoc, font, fontBold, 'Household Health Report', `Generated ${todayStr()} · ${state.pets.length} pet${state.pets.length === 1 ? '' : 's'}${h ? ' · Health score ' + h.score : ''}`);
+
+    state.pets.forEach(pet => {
+      if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+      y = pdfSectionHeader(page, fontBold, margin, y, pet.name);
+      const s = taskStatusForPet(pet);
+      y = pdfLine(page, font, margin, y, `${pet.vaccines.length} vaccines, ${pet.meds.length} medications, ${s.overdue} overdue`);
+      y -= 6;
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    downloadPdfBytes(pdfBytes, `household-health-report-${todayStr()}.pdf`);
+    showToast('PDF exported');
+  } catch (e) {
+    console.error(e);
+    showToast('Could not generate PDF — try again');
+  }
+}
+function downloadPdfBytes(pdfBytes, filename) {
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* =========================================================
+   FREE TRIAL DEMO — 14-day countdown
+   ========================================================= */
+const DEMO_TRIAL_DAYS = 14;
+const DEMO_SINCE_KEY = 'pethealth_premium_demo_since';
+function demoTrialDaysLeft() {
+  let since = localStorage.getItem(DEMO_SINCE_KEY);
+  if (!since) { since = String(Date.now()); localStorage.setItem(DEMO_SINCE_KEY, since); }
+  const elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
+  return DEMO_TRIAL_DAYS - elapsedDays;
+}
+function enforceDemoTrial() {
+  const daysLeft = demoTrialDaysLeft();
+  if (daysLeft <= 0) {
+    document.getElementById('trial-lock').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  } else {
+    const bannerText = document.getElementById('demo-banner-text');
+    if (bannerText) bannerText.textContent = `Free trial — ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`;
+  }
+}
+
+/* ---------- init ---------- */
+loadMode();
+loadState();
+render();
+enforceDemoTrial();
+
+// Register service worker for offline support (fails silently if unsupported or files aren't served)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((err) => {
+      console.warn('Service worker registration failed', err);
+    });
+  });
+}
+
+document.querySelectorAll('.sheet-backdrop').forEach(backdrop => {
+  backdrop.addEventListener('click', (e) => {
+    if (e.target === backdrop) backdrop.classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>
