@@ -1,0 +1,3166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Premium Car Maintenance Tracker"/>
+<meta name="theme-color" content="#F7F7F8"/>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="apple-touch-icon" href="./icons/icon-192.png"/>
+<title>Premium Car Maintenance Tracker — Free Trial — Mobile First Studio</title>
+<style>
+:root, [data-mode="light"] {
+  --bg: #F7F7F8;
+  --card: #FFFFFF;
+  --card-raised: #E9EEF7;
+  --border: #ECECEE;
+  --gold: #0053BA;
+  --gold-soft: rgba(0,83,186,0.12);
+  --cranberry: #C1443D;
+  --cranberry-soft: rgba(193,68,61,0.15);
+  --text: #1A1A1E;
+  --text-dim: #6B6B74;
+  --text-faint: #A3A3AC;
+  --radius: 8px;
+  --radius-sm: 5px;
+}
+[data-mode="dark"] {
+  --bg: #14181F;
+  --card: #1D222C;
+  --card-raised: #262C38;
+  --border: #333A48;
+  --cranberry: #E5726A;
+  --cranberry-soft: rgba(229,114,106,0.18);
+  --text: #F2F3F5;
+  --text-dim: #A3A9B7;
+  --text-faint: #6C7382;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { background: var(--bg); }
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); }
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.display-font { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+header.topbar {
+  padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.brand-block { display: flex; flex-direction: column; gap: 4px; }
+header.topbar .brand {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+header.topbar .brand .accent { color: var(--gold); }
+.tier-badge {
+  align-self: flex-start;
+  font-family: -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.tier-badge-basic {
+  background: var(--card-raised);
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+}
+.tier-badge-standard {
+  background: var(--gold-soft);
+  color: var(--gold);
+  border: 1px solid var(--gold);
+}
+.tier-badge-premium {
+  background: rgba(212,175,55,0.15);
+  color: #D4AF37;
+  border: 1px solid #D4AF37;
+}
+.header-icons { display: flex; gap: 8px; }
+.icon-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 16px;
+}
+.icon-btn-accent {
+  background: var(--gold);
+  border: none;
+  color: #fff;
+  box-shadow: 0 3px 10px var(--gold-soft);
+}
+
+.vehicle-switcher {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 14px;
+  overflow-x: auto;
+}
+.vehicle-pill {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+  white-space: nowrap;
+  transition: background-color 0.22s ease, color 0.22s ease, border-color 0.22s ease;
+}
+.vehicle-pill.active { background: var(--gold); color: #fff; border-color: var(--gold); }
+.vehicle-pill-add {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px dashed var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 170px;
+  -webkit-overflow-scrolling: touch;
+}
+main::-webkit-scrollbar { width: 0; }
+
+.tab-panel { display: none; animation: fadeIn 0.25s ease; }
+.tab-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+
+.countdown-hero {
+  background: linear-gradient(160deg, var(--card-raised), var(--card));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.countdown-hero::after {
+  content: '';
+  position: absolute;
+  top: -40%; right: -20%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--gold-soft), transparent 70%);
+  pointer-events: none;
+}
+.countdown-hero .eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.countdown-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.countdown-chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 4px;
+  text-align: center;
+  min-width: 0;
+}
+.countdown-chip .num {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+}
+.countdown-chip .lbl {
+  font-size: 9.5px;
+  color: var(--text-dim);
+  margin-top: 5px;
+  line-height: 1.2;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cal-header .cal-month-label {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+}
+.cal-header .cal-nav-btn {
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 20px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-faint);
+  padding-bottom: 6px;
+}
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 12.5px;
+  position: relative;
+}
+.cal-cell.empty { visibility: hidden; }
+.cal-cell.today { border-color: var(--gold); font-weight: 700; }
+.cal-cell.selected { background: var(--gold); color: var(--bg); }
+.cal-cell .cal-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-top: 2px;
+}
+.cal-cell.selected .cal-dot { background: var(--bg); }
+.cal-cell.overdue-dot .cal-dot { background: var(--cranberry); }
+.cal-cell.selected.overdue-dot .cal-dot { background: var(--bg); }
+
+.seasonal-tabs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.seasonal-tab-btn {
+  padding: 12px 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+  text-align: center;
+}
+.seasonal-tab-btn.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+
+.filter-scroll-wrap {
+  position: relative;
+  margin-bottom: 6px;
+}
+.filter-scroll-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+}
+.filter-scroll-row::-webkit-scrollbar { display: none; }
+.filter-pill {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+.filter-pill.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+.filter-scroll-fade {
+  position: absolute;
+  top: 0; right: 0; bottom: 10px;
+  width: 36px;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none;
+}
+
+.portfolio-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 20px;
+}
+.portfolio-title {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #D4AF37;
+  margin-bottom: 4px;
+}
+.portfolio-health-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.portfolio-health-score {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+}
+.portfolio-health-label {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.portfolio-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.portfolio-stat {
+  background: var(--card-raised);
+  border-radius: var(--radius-sm);
+  padding: 10px 8px;
+}
+.portfolio-stat .val { font-family: -apple-system, sans-serif; font-weight: 700; font-size: 15px; }
+.portfolio-stat .lbl { font-size: 9.5px; color: var(--text-dim); margin-top: 1px; }
+.portfolio-vehicle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.portfolio-vehicle-row .veh-name { font-weight: 700; }
+.portfolio-vehicle-row .veh-metrics { color: var(--text-dim); text-align: right; }
+
+.chart-block { margin-bottom: 18px; }
+.chart-title {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+.chart-bars-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 90px;
+}
+.chart-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+.chart-bar-track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+.chart-bar-fill {
+  width: 100%;
+  background: #D4AF37;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.4s ease;
+  min-height: 0;
+}
+.chart-bar-label { font-size: 9px; color: var(--text-faint); margin-top: 5px; }
+.split-bar {
+  display: flex;
+  width: 100%;
+  height: 14px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: var(--card-raised);
+}
+.split-bar-seg { transition: width 0.4s ease; }
+.split-bar-legend {
+  display: flex;
+  gap: 14px;
+  margin-top: 8px;
+  font-size: 10.5px;
+  color: var(--text-dim);
+}
+.legend-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.ring-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ring-wrap { position: relative; width: 92px; height: 92px; }
+.ring-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: var(--border); stroke-width: 8; }
+.ring-fill {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 264;
+  stroke-dashoffset: 264;
+  transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;
+}
+.ring-label {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.ring-num { font-family: -apple-system, sans-serif; font-weight: 700; font-size: 20px; color: var(--gold); line-height: 1; }
+.ring-sub { font-size: 9px; color: var(--text-dim); margin-top: 3px; text-align: center; line-height: 1.2; }
+.dash-side { display: flex; flex-direction: column; gap: 10px; }
+
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.summary-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+.summary-card .val {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 22px;
+  font-weight: 600;
+}
+.summary-card .lbl {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.summary-card.over .val { color: var(--cranberry); }
+.summary-card.good .val { color: var(--gold); }
+
+.section-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 22px 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-title .count {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-dim);
+  font-family: -apple-system, sans-serif;
+}
+
+.document-preview {
+  margin-top: 10px;
+}
+.document-preview .doc-thumb {
+  display: block;
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.document-preview .doc-pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.document-preview .doc-filename {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+.document-preview .doc-remove {
+  display: block;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--cranberry);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.btn-add-inline {
+  width: 100%;
+  background: var(--card);
+  border: 1px dashed var(--border);
+  color: var(--gold);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-family: -apple-system, sans-serif;
+}
+
+.item-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.item-card .status-dot {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  color: var(--bg);
+}
+.item-card.done .status-dot { background: var(--gold); border-color: var(--gold); }
+.item-card .body-text { flex: 1; min-width: 0; }
+.item-card .title-line {
+  font-size: 14.5px;
+  font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.item-card.done .title-line { color: var(--text-faint); text-decoration: line-through; }
+.item-card .sub-line {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.item-card .amount {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.priority-flag {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  margin-bottom: 2px;
+}
+.priority-flag.high { background: var(--cranberry); }
+.priority-flag.medium { background: var(--gold); }
+.priority-flag.low { background: var(--text-faint); }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-faint);
+}
+.empty-state .big-icon { font-size: 34px; margin-bottom: 10px; }
+.empty-state .msg { font-size: 13.5px; line-height: 1.5; }
+
+.suggestion-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px 20px;
+}
+.suggestion-label {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-bottom: 2px;
+}
+.suggestion-chip {
+  background: var(--card);
+  border: 1px dashed var(--border);
+  color: var(--gold);
+  padding: 9px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+.suggestion-chip:active { transform: scale(0.96); }
+.suggestion-chip:hover { border-color: var(--gold); }
+
+.fab {
+  position: fixed;
+  bottom: 90px;
+  right: calc(50% - 240px + 20px);
+  width: 52px; height: 52px;
+  border-radius: 8px;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  cursor: pointer;
+  z-index: 20;
+}
+@media (max-width: 480px) { .fab { right: 20px; } }
+
+nav.tabbar {
+  flex-shrink: 0;
+  display: flex;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+}
+nav.tabbar button {
+  flex: 1;
+  background: none; border: none;
+  color: var(--text-faint);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 10px;
+  padding: 6px 2px;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+nav.tabbar button svg { width: 20px; height: 20px; }
+nav.tabbar button.active { color: var(--gold); }
+
+.sheet-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 50;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet-backdrop.open { display: flex; }
+.sheet {
+  background: var(--card-raised);
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+  max-height: 86vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+}
+.sheet-backdrop.open .sheet { transform: translateY(0); }
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.sheet h3 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: -apple-system, sans-serif;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.btn-row { display: flex; gap: 10px; margin-top: 18px; }
+.btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+.btn-primary { background: var(--gold); color: var(--bg); }
+.btn-secondary { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); }
+.btn-danger { background: var(--cranberry-soft); color: var(--cranberry); }
+
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--card-raised);
+  border: 1px solid var(--gold);
+  color: var(--text);
+  padding: 10px 18px;
+  border-radius: 18px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 100;
+  pointer-events: none;
+  white-space: normal;
+  text-align: center;
+  max-width: calc(100% - 48px);
+  width: max-content;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.tier-info-card {
+  background: var(--card-raised);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.tier-info-title {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.tier-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row .lbl-main { font-size: 14px; font-weight: 500; }
+.settings-row .lbl-sub { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
+.settings-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.demo-banner {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #2E7DD1, #0053BA);
+  color: #fff;
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  z-index: 10;
+}
+.demo-banner a { color: #fff; text-decoration: underline; }
+#trial-lock {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(20,24,26,0.72);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.lock-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 26px 22px;
+  max-width: 340px;
+  text-align: center;
+}
+.lock-title {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.lock-text {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-dim);
+  margin-bottom: 18px;
+}
+.lock-cta {
+  display: inline-block;
+  background: var(--gold);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 11px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.upsell-card {
+  background: var(--card-raised);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.upsell-title {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.upsell-text {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+.upsell-btn {
+  display: inline-block;
+  background: var(--gold);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 9px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="demo-banner" id="demo-banner"><span id="demo-banner-text">Free trial — 14 days left</span> &middot; <a href="https://www.etsy.com/listing/4554954004/car-maintenance-tracker-fleet-management" target="_blank" rel="noopener">Buy the full version</a></div>
+  <div id="trial-lock">
+    <div class="lock-card">
+      <div class="lock-title">Your free trial has ended</div>
+      <div class="lock-text">Your 14-day trial of Premium Car Maintenance Tracker has ended. Purchase the full version on Etsy to keep tracking every vehicle's tasks, mileage, fuel, and expenses, with no interruptions and optional Google Drive backup.</div>
+      <a class="lock-cta" href="https://www.etsy.com/listing/4554954004/car-maintenance-tracker-fleet-management" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand-block">
+      <div class="brand" id="brandText">Premium Car <span class="accent">Maintenance</span></div>
+      <div class="tier-badge tier-badge-premium">PREMIUM</div>
+    </div>
+    <div class="header-icons">
+      <div class="icon-btn icon-btn-accent" id="accentBtn" title="Tap to change color, hold for dark mode">&#9673;</div>
+      <div class="icon-btn" onclick="openSettings()">&#9881;</div>
+    </div>
+  </header>
+
+  <div class="vehicle-switcher" id="vehicleSwitcher"></div>
+
+  <main>
+    <!-- HOME -->
+    <section class="tab-panel active" id="tab-home">
+      <div id="portfolioSection"></div>
+
+      <div class="dash-grid">
+        <div class="ring-card">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 100 100" class="ring-svg">
+              <circle cx="50" cy="50" r="42" class="ring-track"/>
+              <circle cx="50" cy="50" r="42" class="ring-fill" id="onTrackRingFill"/>
+            </svg>
+            <div class="ring-label">
+              <div class="ring-num" id="ringPct">0%</div>
+              <div class="ring-sub" id="ringSubLabel">on track</div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-side">
+          <div class="summary-card over" id="dashOverdueCard"></div>
+          <div class="summary-card" id="dashMileageCard"></div>
+        </div>
+      </div>
+
+      <div class="section-title">Overdue <span class="count" id="overdueCount"></span></div>
+      <div id="overdueList"></div>
+
+      <div class="section-title">Due soon <span class="count" id="dueSoonCount"></span></div>
+      <div id="dueSoonList"></div>
+    </section>
+
+    <!-- TASKS -->
+    <section class="tab-panel" id="tab-tasks">
+      <div class="section-title">All tasks <span class="count" id="taskCount"></span></div>
+      <div id="taskFilterRow"></div>
+      <div id="taskList"></div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="tab-panel" id="tab-calendar">
+      <div id="calendarHeader"></div>
+      <div id="calendarGrid" class="cal-grid"></div>
+      <div class="section-title">Tasks this day <span class="count" id="calendarDayCount"></span></div>
+      <div id="calendarDayList"></div>
+    </section>
+
+    <!-- EXPENSES -->
+    <section class="tab-panel" id="tab-expenses">
+      <div class="dash-grid">
+        <div class="ring-card" style="flex-direction:column; gap:4px;">
+          <div class="ring-num" id="expenseYtdVal" style="font-size:24px;">$0</div>
+          <div class="ring-sub">YTD</div>
+        </div>
+        <div class="dash-side">
+          <div class="summary-card" id="expenseMonthCard"></div>
+          <div class="summary-card" id="expenseCountCard"></div>
+        </div>
+      </div>
+      <div id="costPerMileCard"></div>
+      <div class="section-title">Expenses <span class="count" id="expenseCount"></span></div>
+      <div id="expenseList"></div>
+    </section>
+
+    <!-- SETUP -->
+    <section class="tab-panel" id="tab-setup">
+      <div class="section-title">Vehicle</div>
+      <div id="vehicleProfileCard"></div>
+
+      <div class="section-title">Mileage log <span class="count" id="mileageLogCount"></span></div>
+      <div id="mileageLogList"></div>
+      <button class="btn-add-inline" onclick="openMileageLogSheet(null)">+ Log mileage</button>
+
+      <div class="section-title">Fuel log <span class="count" id="fuelLogCount"></span></div>
+      <div id="fuelMpgSummary"></div>
+      <div id="fuelLogList"></div>
+      <button class="btn-add-inline" onclick="openFuelLogSheet(null)">+ Log fill-up</button>
+
+      <div class="section-title">Documents <span class="count" id="documentCount"></span></div>
+      <div id="documentList"></div>
+      <button class="btn-add-inline" onclick="openDocumentSheet(null)">+ Add document</button>
+    </section>
+  </main>
+
+  <button class="fab" id="fabBtn" onclick="handleFab()">+</button>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="home" onclick="switchTab('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+      Home
+    </button>
+    <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l2 2 4-4"/><rect x="3" y="4" width="18" height="17" rx="2"/></svg>
+      Tasks
+    </button>
+    <button class="tab-btn" data-tab="calendar" onclick="switchTab('calendar')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      Calendar
+    </button>
+    <button class="tab-btn" data-tab="expenses" onclick="switchTab('expenses')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1.4 1.3-2.5 3-2.5s3 .8 3 2c0 3-6 1.5-6 4.5 0 1.2 1.3 2 3 2s3-1.1 3-2.5"/></svg>
+      Expenses
+    </button>
+    <button class="tab-btn" data-tab="setup" onclick="switchTab('setup')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 21v-6h6v6"/></svg>
+      Setup
+    </button>
+  </nav>
+</div>
+
+
+<!-- Task form sheet -->
+<div class="sheet-backdrop" id="taskSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="taskSheetTitle">Add task</h3>
+    <div class="field">
+      <label>Task</label>
+      <input type="text" id="taskName" placeholder="Oil change, tire rotation, registration...">
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="taskCategory" onchange="handleCategorySelectChange(this)">
+        <option value="engine">Engine</option>
+        <option value="tires">Tires</option>
+        <option value="fluids">Fluids</option>
+        <option value="brakes">Brakes</option>
+        <option value="registration">Registration</option>
+        <option value="other">Other</option>
+        <option value="__add_custom__">+ Add custom category...</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Priority</label>
+      <select id="taskPriority">
+        <option value="low">Low</option>
+        <option value="medium" selected>Medium</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Interval type</label>
+      <select id="taskIntervalType" onchange="onIntervalTypeChange()">
+        <option value="date">By date</option>
+        <option value="mileage">By mileage</option>
+      </select>
+    </div>
+    <div class="field" id="dateFrequencyField">
+      <label>Repeats</label>
+      <select id="taskFrequency" onchange="onFrequencyChange()">
+        <option value="30">Monthly</option>
+        <option value="90">Every 3 months</option>
+        <option value="182">Every 6 months</option>
+        <option value="365">Yearly</option>
+        <option value="custom">Custom (days)</option>
+        <option value="once">One-time (doesn't repeat)</option>
+      </select>
+    </div>
+    <div class="field" id="customDaysField" style="display:none;">
+      <label>Repeat every (days)</label>
+      <input type="number" id="taskCustomDays" placeholder="e.g. 45" inputmode="numeric">
+    </div>
+    <div class="field" id="mileageIntervalField" style="display:none;">
+      <label>Repeat every (miles)</label>
+      <input type="number" id="taskMileageInterval" placeholder="e.g. 5000" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Last done (optional)</label>
+      <input type="date" id="taskLastDone">
+    </div>
+    <div class="field" id="lastDoneMileageField" style="display:none;">
+      <label>Mileage when last done (optional)</label>
+      <input type="number" id="taskLastDoneMileage" placeholder="e.g. 42000" inputmode="numeric">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeTaskSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Save task</button>
+    </div>
+    <div class="btn-row" id="taskDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteTask()">Delete task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Vehicle profile sheet -->
+<div class="sheet-backdrop" id="vehicleProfileSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>Vehicle</h3>
+    <div class="field">
+      <label>Nickname (optional)</label>
+      <input type="text" id="vehicleName" placeholder="My Car, The Truck...">
+    </div>
+    <div class="field">
+      <label>Year</label>
+      <input type="text" id="vehicleYear" placeholder="e.g. 2021" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Make</label>
+      <input type="text" id="vehicleMake" placeholder="e.g. Toyota">
+    </div>
+    <div class="field">
+      <label>Model</label>
+      <input type="text" id="vehicleModel" placeholder="e.g. Camry">
+    </div>
+    <div class="field">
+      <label>License plate (optional)</label>
+      <input type="text" id="vehiclePlate" placeholder="e.g. ABC1234">
+    </div>
+    <div class="field">
+      <label>VIN (optional)</label>
+      <input type="text" id="vehicleVin" placeholder="17-character VIN" maxlength="17" style="text-transform:uppercase;">
+    </div>
+    <div class="field">
+      <label>Current mileage</label>
+      <input type="number" id="vehicleMileage" placeholder="e.g. 42000" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="vehicleNotes" placeholder="Anything worth remembering about this vehicle" style="min-height:90px; resize:vertical;"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeVehicleProfileSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveVehicleProfile()">Save</button>
+    </div>
+    <div class="btn-row" id="vehicleDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteVehicle()">Delete vehicle</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mileage log sheet -->
+<div class="sheet-backdrop" id="mileageLogSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="mileageLogSheetTitle">Log mileage</h3>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="mileageLogDate">
+    </div>
+    <div class="field">
+      <label>Odometer reading</label>
+      <input type="number" id="mileageLogMileage" placeholder="e.g. 48500" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Note (optional)</label>
+      <input type="text" id="mileageLogNote" placeholder="Road trip, before service...">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeMileageLogSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveMileageLog()">Save</button>
+    </div>
+    <div class="btn-row" id="mileageLogDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteMileageLog()">Delete entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Fuel log sheet -->
+<div class="sheet-backdrop" id="fuelLogSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="fuelLogSheetTitle">Log fill-up</h3>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="fuelLogDate">
+    </div>
+    <div class="field">
+      <label>Odometer reading</label>
+      <input type="number" id="fuelLogMileage" placeholder="e.g. 48500" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Gallons</label>
+      <input type="number" id="fuelLogGallons" placeholder="e.g. 12.4" step="0.01" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Total cost (optional)</label>
+      <input type="number" id="fuelLogCost" placeholder="e.g. 45.20" step="0.01" inputmode="decimal">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeFuelLogSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveFuelLog()">Save</button>
+    </div>
+    <div class="btn-row" id="fuelLogDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteFuelLog()">Delete entry</button>
+    </div>
+  </div>
+</div>
+
+<!-- Document sheet -->
+<div class="sheet-backdrop" id="documentSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="documentSheetTitle">Add document</h3>
+    <div class="field">
+      <label>Label</label>
+      <input type="text" id="documentLabel" placeholder="Registration, insurance card, receipt...">
+    </div>
+    <div class="field">
+      <label>File</label>
+      <input type="file" id="documentFile" accept="image/*,.pdf" onchange="handleDocumentFileSelect(event)">
+      <div id="documentPreview" class="document-preview"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeDocumentSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveDocument()">Save</button>
+    </div>
+    <div class="btn-row" id="documentDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteDocument()">Delete document</button>
+    </div>
+  </div>
+</div>
+
+<!-- Expense sheet -->
+<div class="sheet-backdrop" id="expenseSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="expenseSheetTitle">Add expense</h3>
+    <div class="field">
+      <label>Amount ($)</label>
+      <input type="number" id="expenseAmount" placeholder="0" inputmode="decimal">
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="expenseCategory">
+        <option value="repairs">Repairs</option>
+        <option value="insurance">Insurance</option>
+        <option value="registration">Registration</option>
+        <option value="parts">Parts</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Date</label>
+      <input type="date" id="expenseDate">
+    </div>
+    <div class="field">
+      <label>Note (optional)</label>
+      <input type="text" id="expenseNote" placeholder="What was this for?">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeExpenseSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveExpense()">Save expense</button>
+    </div>
+    <div class="btn-row" id="expenseDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteExpense()">Delete expense</button>
+    </div>
+  </div>
+</div>
+
+<!-- Custom category sheet -->
+<div class="sheet-backdrop" id="customCategorySheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>New category</h3>
+    <div class="field">
+      <label>Category name</label>
+      <input type="text" id="customCategoryName" placeholder="e.g. Detailing" maxlength="30">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeCustomCategorySheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmCustomCategory()">Add category</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Settings sheet -->
+<div class="sheet-backdrop" id="settingsSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>Settings</h3>
+    <div class="tier-info-card">
+      <div class="tier-info-title">Premium Car Maintenance</div>
+      <div class="tier-info-list">
+        <div>&#10003; Unlimited vehicles</div>
+        <div>&#10003; Fleet-wide portfolio analytics</div>
+        <div>&#10003; Expense tracking</div>
+        <div>&#10003; PDF reports (vehicle &amp; fleet)</div>
+        <div>&#10003; Custom categories &amp; priority flags</div>
+        <div>&#10003; Mileage log, fuel log &amp; MPG</div>
+        <div>&#10003; Document uploads</div>
+        <div>&#10003; 10 color accents &amp; dark mode</div>
+        <div>&#10003; Google Drive backup</div>
+      </div>
+    </div>
+    <div class="upsell-card">
+      <div class="upsell-title">Google Drive backup is a full-version feature</div>
+      <div class="upsell-text">The full Premium Car Maintenance Tracker backs every vehicle's tasks, mileage, fuel, and expenses up to your own Google Drive automatically. This trial keeps everything local to this device.</div>
+      <a class="upsell-btn" href="https://www.etsy.com/listing/4554954004/car-maintenance-tracker-fleet-management" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Export data</div>
+        <div class="lbl-sub">Save a local backup file</div>
+      </div>
+      <button class="settings-btn" onclick="exportLocal()">Export</button>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Import data</div>
+        <div class="lbl-sub">Load from a local backup file</div>
+      </div>
+      <button class="settings-btn" onclick="document.getElementById('importFileInput').click()">Import</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importLocal(event)">
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Export vehicle report</div>
+        <div class="lbl-sub">PDF summary of the active vehicle</div>
+      </div>
+      <button class="settings-btn" onclick="exportVehicleReportPdf()">Export PDF</button>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Export fleet report</div>
+        <div class="lbl-sub">PDF summary across all vehicles</div>
+      </div>
+      <button class="settings-btn" onclick="exportFleetReportPdf()">Export PDF</button>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Export digital glovebox</div>
+        <div class="lbl-sub">Maintenance report plus registration, insurance, and receipts</div>
+      </div>
+      <button class="settings-btn" onclick="exportGloveboxPdf()">Export PDF</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeSettings()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+/* ===== Premium Car Maintenance Tracker — Free Trial ===== */
+
+const STORAGE_KEY = 'carmaint_premium_demo_v1';
+
+function newVehicle(name, year, make, model, plate) {
+  return {
+    id: uid(),
+    name: name || 'New Vehicle',
+    year: year || '',
+    make: make || '',
+    model: model || '',
+    plate: plate || '',
+    vin: '',
+    mileage: '',
+    notes: '',
+    tasks: [],        // {id, name, category, intervalType:'date'|'mileage', frequencyDays, lastDone, mileageInterval, lastDoneMileage, priority}
+    mileageLogs: [],  // {id, date, mileage, note}
+    fuelLogs: [],     // {id, date, mileage, gallons, cost}
+    documents: [],    // {id, label, fileName, mimeType, data}
+    expenses: [],     // {id, amount, category, note, date}
+    customCategories: [] // [{id, label}]
+  };
+}
+
+const BASE_TASK_CATEGORIES = [
+  { value: 'engine', label: 'Engine' },
+  { value: 'tires', label: 'Tires' },
+  { value: 'fluids', label: 'Fluids' },
+  { value: 'brakes', label: 'Brakes' },
+  { value: 'registration', label: 'Registration' },
+  { value: 'other', label: 'Other' }
+];
+function allTaskCategories() {
+  const v = currentVehicle();
+  const custom = (v.customCategories || []).map(c => ({ value: c.id, label: c.label }));
+  return BASE_TASK_CATEGORIES.concat(custom);
+}
+
+let state = {
+  vehicles: [],
+  activeVehicleId: null
+};
+
+function currentVehicle() {
+  return state.vehicles.find(v => v.id === state.activeVehicleId) || state.vehicles[0] || null;
+}
+
+let editingTaskId = null;
+let editingMileageLogId = null;
+let editingFuelLogId = null;
+let currentTab = 'home';
+let currentTaskFilter = 'all';
+
+/* ---------- date helpers (local-date safe, no UTC boundary bug) ---------- */
+function todayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function daysUntil(dateStr) {
+  const today = new Date(todayStr() + 'T00:00:00');
+  const target = new Date(dateStr + 'T00:00:00');
+  return Math.round((target - today) / 86400000);
+}
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function computeNextDue(task) {
+  // Date-based tasks (existing logic, unchanged)
+  if (task.frequencyDays === 0) {
+    return task.lastDone || todayStr();
+  }
+  const base = task.lastDone || todayStr();
+  return addDays(base, task.frequencyDays);
+}
+
+/* ---------- mileage-aware task status ----------
+   Returns a unified status object so date and mileage tasks can render consistently:
+   { overdue: bool, dueLabel: string, sortValue: number (smaller = more urgent) } */
+function taskStatus(task) {
+  if (task.intervalType === 'mileage') {
+    const v = currentVehicle();
+    const currentMileage = parseFloat(v && v.mileage) || 0;
+    const lastDoneMileage = parseFloat(task.lastDoneMileage) || 0;
+    const interval = parseFloat(task.mileageInterval) || 0;
+    const dueAtMileage = lastDoneMileage + interval;
+    const milesRemaining = dueAtMileage - currentMileage;
+    const overdue = milesRemaining < 0;
+    const dueSoon = !overdue && milesRemaining <= 500;
+    const dueLabel = overdue
+      ? `${Math.abs(Math.round(milesRemaining))} mi overdue`
+      : (milesRemaining === 0 ? 'Due now' : `Due in ${Math.round(milesRemaining)} mi`);
+    return { overdue, dueSoon, dueLabel, sortValue: milesRemaining, dueDate: null };
+  }
+  // Date-based
+  const due = computeNextDue(task);
+  const diff = daysUntil(due);
+  const overdue = diff < 0;
+  const dueSoon = !overdue && diff <= 30;
+  const dueLabel = overdue
+    ? `${Math.abs(diff)}d overdue`
+    : (diff === 0 ? 'Due today' : `Due in ${diff}d`);
+  return { overdue, dueSoon, dueLabel, sortValue: diff, dueDate: due };
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+/* ---------- persistence ---------- */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        if (Array.isArray(parsed.vehicles)) {
+          // current multi-vehicle shape
+          state.vehicles = parsed.vehicles;
+          state.activeVehicleId = typeof parsed.activeVehicleId === 'string' ? parsed.activeVehicleId : (parsed.vehicles[0] ? parsed.vehicles[0].id : null);
+        } else if (Array.isArray(parsed.tasks) || parsed.vehicle) {
+          // migrate from an older single-vehicle Basic-tier backup
+          const v = parsed.vehicle || {};
+          const migrated = newVehicle(v.name || 'My Vehicle', v.year, v.make, v.model, v.plate);
+          migrated.mileage = v.mileage || '';
+          migrated.notes = v.notes || '';
+          migrated.tasks = Array.isArray(parsed.tasks) ? parsed.tasks : [];
+          state.vehicles = [migrated];
+          state.activeVehicleId = migrated.id;
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load local state', e);
+  }
+  if (state.vehicles.length === 0) {
+    const first = newVehicle('My Vehicle', '', '', '', '');
+    state.vehicles = [first];
+    state.activeVehicleId = first.id;
+  }
+  // Normalize: any vehicle loaded from an older backup shape may be missing newer fields
+  state.vehicles.forEach(v => {
+    if (!Array.isArray(v.tasks)) v.tasks = [];
+    if (!Array.isArray(v.mileageLogs)) v.mileageLogs = [];
+    if (!Array.isArray(v.fuelLogs)) v.fuelLogs = [];
+    if (!Array.isArray(v.documents)) v.documents = [];
+    if (!Array.isArray(v.expenses)) v.expenses = [];
+    if (!Array.isArray(v.customCategories)) v.customCategories = [];
+    v.tasks.forEach(t => { if (!t.priority) t.priority = 'medium'; });
+  });
+  if (!state.vehicles.find(v => v.id === state.activeVehicleId)) {
+    state.activeVehicleId = state.vehicles[0].id;
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ vehicles: state.vehicles, activeVehicleId: state.activeVehicleId }));
+  } catch (e) {
+    console.error('Failed to save local state', e);
+    showToast('Could not save — storage may be full');
+  }
+}
+
+/* ---------- rendering ---------- */
+function render() {
+  renderVehicleSwitcher();
+  renderPortfolio();
+  renderBrand();
+  renderDashboard();
+  renderOverdueAndDueSoon();
+  renderTasks();
+  renderCalendar();
+  renderVehicleProfile();
+  renderMileageLog();
+  renderFuelLog();
+  renderDocuments();
+  renderExpenses();
+}
+
+function renderBrand() {
+  const el = document.getElementById('brandText');
+  const name = (currentVehicle().name || '').trim();
+  if (name) {
+    el.innerHTML = `${escapeHtml(name)} <span class="accent">Maintenance</span>`;
+  } else {
+    el.innerHTML = `Premium Car <span class="accent">Maintenance</span>`;
+  }
+}
+
+function taskCategoryLabel(cat) {
+  const base = { engine: 'Engine', tires: 'Tires', fluids: 'Fluids', brakes: 'Brakes', registration: 'Registration', other: 'Other' };
+  if (base[cat]) return base[cat];
+  const v = currentVehicle();
+  const custom = (v.customCategories || []).find(c => c.id === cat);
+  return custom ? custom.label : 'Other';
+}
+
+/* ---------- custom categories ---------- */
+function populateCustomCategoryOptions(selectEl, customList) {
+  Array.from(selectEl.querySelectorAll('option[data-custom="1"]')).forEach(o => o.remove());
+  const addOption = selectEl.querySelector('option[value="__add_custom__"]');
+  customList.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.label;
+    opt.setAttribute('data-custom', '1');
+    selectEl.insertBefore(opt, addOption);
+  });
+}
+let pendingCategorySelect = null;
+
+function handleCategorySelectChange(selectEl) {
+  if (selectEl.value !== '__add_custom__') return;
+  pendingCategorySelect = selectEl;
+  document.getElementById('customCategoryName').value = '';
+  document.getElementById('customCategorySheetBackdrop').classList.add('open');
+}
+function closeCustomCategorySheet() {
+  document.getElementById('customCategorySheetBackdrop').classList.remove('open');
+  if (pendingCategorySelect) pendingCategorySelect.value = 'other';
+  pendingCategorySelect = null;
+}
+function confirmCustomCategory() {
+  const label = document.getElementById('customCategoryName').value.trim();
+  if (!label) { showToast('Enter a category name first'); return; }
+  const selectEl = pendingCategorySelect;
+  const v = currentVehicle();
+  const id = 'custom_' + uid();
+  const entry = { id, label };
+  v.customCategories = v.customCategories || [];
+  v.customCategories.push(entry);
+  populateCustomCategoryOptions(selectEl, v.customCategories);
+  saveState();
+  selectEl.value = id;
+  showToast('Category added');
+  document.getElementById('customCategorySheetBackdrop').classList.remove('open');
+  pendingCategorySelect = null;
+}
+
+function renderDashboard() {
+  const v = currentVehicle();
+  const total = v.tasks.length;
+  const overdue = v.tasks.filter(t => taskStatus(t).overdue).length;
+  const onTrack = total - overdue;
+  const pct = total > 0 ? Math.round((onTrack / total) * 100) : 0;
+
+  const circumference = 264;
+  const offset = circumference - (circumference * pct / 100);
+  document.getElementById('onTrackRingFill').style.strokeDashoffset = offset;
+  document.getElementById('ringPct').textContent = total > 0 ? pct + '%' : '—';
+  document.getElementById('ringSubLabel').textContent = total > 0 ? 'on track' : 'no tasks yet';
+
+  document.getElementById('dashOverdueCard').innerHTML = `
+    <div class="val">${overdue}</div>
+    <div class="lbl">Overdue</div>
+  `;
+
+  const mileage = v.mileage ? Number(v.mileage).toLocaleString() + ' mi' : '—';
+  document.getElementById('dashMileageCard').innerHTML = `
+    <div class="val">${mileage}</div>
+    <div class="lbl">Current mileage</div>
+  `;
+}
+
+function renderOverdueAndDueSoon() {
+  const priorityRank = { high: 0, medium: 1, low: 2 };
+  const withStatus = currentVehicle().tasks.map(t => ({ ...t, status: taskStatus(t) }));
+  const overdue = withStatus.filter(t => t.status.overdue).sort((a, b) => {
+    const pDiff = priorityRank[a.priority || 'medium'] - priorityRank[b.priority || 'medium'];
+    return pDiff !== 0 ? pDiff : a.status.sortValue - b.status.sortValue;
+  });
+  // "Due soon" = not overdue, and (for date tasks) within 30 days, or (for mileage tasks) within 500 miles
+  const dueSoon = withStatus.filter(t => {
+    if (t.status.overdue) return false;
+    if (t.intervalType === 'mileage') return t.status.sortValue <= 500;
+    return t.status.sortValue <= 30;
+  }).sort((a, b) => a.status.sortValue - b.status.sortValue);
+
+  document.getElementById('overdueCount').textContent = overdue.length + ' total';
+  const overdueList = document.getElementById('overdueList');
+  if (overdue.length === 0) {
+    overdueList.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No overdue tasks.</div></div>`;
+  } else {
+    overdueList.innerHTML = overdue.map(t => `
+      <div class="item-card" onclick="openTaskSheet('${t.id}')">
+        <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+        <div class="body-text">
+          <div class="title-line"><span class="priority-flag ${t.priority || 'medium'}" title="${t.priority || 'medium'} priority"></span>${escapeHtml(t.name)}</div>
+          <div class="sub-line">${taskCategoryLabel(t.category)} &middot; <span style="color:var(--cranberry);">${t.status.dueLabel}</span></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('dueSoonCount').textContent = dueSoon.length + ' total';
+  const dueSoonList = document.getElementById('dueSoonList');
+  if (dueSoon.length === 0) {
+    dueSoonList.innerHTML = `<div class="empty-state"><div class="big-icon">&#128736;</div><div class="msg">No tasks due soon.<br>Tap + to add a task.</div></div>`;
+  } else {
+    dueSoonList.innerHTML = dueSoon.map(t => `
+      <div class="item-card" onclick="openTaskSheet('${t.id}')">
+        <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+        <div class="body-text">
+          <div class="title-line"><span class="priority-flag ${t.priority || 'medium'}" title="${t.priority || 'medium'} priority"></span>${escapeHtml(t.name)}</div>
+          <div class="sub-line">${taskCategoryLabel(t.category)} &middot; <span style="color:var(--cranberry);">${t.status.dueLabel}</span></div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+const TASK_FILTERS = [
+  { key: 'all', label: 'All' },
+  { key: 'engine', label: 'Engine' },
+  { key: 'tires', label: 'Tires' },
+  { key: 'fluids', label: 'Fluids' },
+  { key: 'brakes', label: 'Brakes' },
+  { key: 'registration', label: 'Registration' },
+  { key: 'other', label: 'Other' }
+];
+
+function renderTaskFilterRow() {
+  const row = document.getElementById('taskFilterRow');
+  row.innerHTML = `<div class="filter-scroll-wrap">
+    <div class="filter-scroll-row">
+      ${TASK_FILTERS.map(f => `
+        <button onclick="setTaskFilter('${f.key}')" class="filter-pill ${currentTaskFilter === f.key ? 'active' : ''}">${f.label}</button>
+      `).join('')}
+    </div>
+    <div class="filter-scroll-fade"></div>
+  </div>`;
+}
+
+function setTaskFilter(key) {
+  currentTaskFilter = key;
+  renderTasks();
+}
+
+function renderTasks() {
+  renderTaskFilterRow();
+  const list = document.getElementById('taskList');
+  let tasks = currentVehicle().tasks.map(t => ({ ...t, status: taskStatus(t) }));
+  if (currentTaskFilter !== 'all') {
+    tasks = tasks.filter(t => t.category === currentTaskFilter);
+  }
+  tasks.sort((a, b) => a.status.sortValue - b.status.sortValue);
+
+  document.getElementById('taskCount').textContent = tasks.length + ' total';
+  if (tasks.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="big-icon">&#128736;</div><div class="msg">No tasks added yet.<br>Tap + to add your first task.</div></div>
+      <div class="suggestion-chips">
+        <div class="suggestion-label">Try one of these to get started:</div>
+        <button class="suggestion-chip" onclick="quickStartTask('Oil change','engine','mileage',5000)">Oil change, every 5,000 mi</button>
+        <button class="suggestion-chip" onclick="quickStartTask('Rotate tires','tires','mileage',6000)">Rotate tires, every 6,000 mi</button>
+        <button class="suggestion-chip" onclick="quickStartTask('Renew registration','registration','date',365)">Registration, yearly</button>
+      </div>`;
+    return;
+  }
+  list.innerHTML = tasks.map(t => {
+    const priority = t.priority || 'medium';
+    return `
+    <div class="item-card" onclick="openTaskSheet('${t.id}')">
+      <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+      <div class="body-text">
+        <div class="title-line"><span class="priority-flag ${priority}" title="${priority} priority"></span>${escapeHtml(t.name)}</div>
+        <div class="sub-line">${taskCategoryLabel(t.category)} &middot; ${frequencyLabel(t)}</div>
+      </div>
+      <div class="amount" style="${(t.status.overdue || t.status.dueSoon) ? 'color:var(--cranberry);' : ''}">${t.status.dueLabel}</div>
+    </div>
+  `;
+  }).join('');
+}
+
+function frequencyLabel(task) {
+  if (task.intervalType === 'mileage') {
+    return `Every ${Number(task.mileageInterval).toLocaleString()} mi`;
+  }
+  const days = task.frequencyDays;
+  if (days === 0) return 'One-time';
+  if (days === 30) return 'Monthly';
+  if (days === 90) return 'Every 3 months';
+  if (days === 182) return 'Every 6 months';
+  if (days === 365) return 'Yearly';
+  return `Every ${days} days`;
+}
+
+/* ---------- calendar (month view) ---------- */
+let calViewYear = new Date().getFullYear();
+let calViewMonth = new Date().getMonth(); // 0-indexed
+let calSelectedDate = todayStr();
+
+function calNav(delta) {
+  calViewMonth += delta;
+  if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+  if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
+  renderCalendar();
+}
+
+function calSelectDay(dateStr) {
+  calSelectedDate = dateStr;
+  renderCalendar();
+}
+
+function tasksDueOn(dateStr) {
+  return currentVehicle().tasks.filter(t => t.intervalType !== 'mileage' && computeNextDue(t) === dateStr);
+}
+
+function renderCalendar() {
+  const header = document.getElementById('calendarHeader');
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  header.innerHTML = `<div class="cal-header">
+    <button class="cal-nav-btn" onclick="calNav(-1)">&#8249;</button>
+    <div class="cal-month-label">${monthNames[calViewMonth]} ${calViewYear}</div>
+    <button class="cal-nav-btn" onclick="calNav(1)">&#8250;</button>
+  </div>`;
+
+  const grid = document.getElementById('calendarGrid');
+  const firstOfMonth = new Date(calViewYear, calViewMonth, 1);
+  const startDow = firstOfMonth.getDay();
+  const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+  const today = todayStr();
+
+  const dowLabels = ['S','M','T','W','T','F','S'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+  let cells = '';
+  for (let i = 0; i < startDow; i++) cells += `<div class="cal-cell empty"></div>`;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${calViewYear}-${String(calViewMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dueTasks = tasksDueOn(dateStr);
+    const hasOverdue = dueTasks.length > 0 && daysUntil(dateStr) < 0;
+    const classes = ['cal-cell'];
+    if (dateStr === today) classes.push('today');
+    if (dateStr === calSelectedDate) classes.push('selected');
+    if (hasOverdue) classes.push('overdue-dot');
+    cells += `<div class="${classes.join(' ')}" onclick="calSelectDay('${dateStr}')">${day}${dueTasks.length ? '<div class="cal-dot"></div>' : ''}</div>`;
+  }
+  grid.innerHTML = dowLabels + cells;
+
+  const dayTasks = tasksDueOn(calSelectedDate);
+  document.getElementById('calendarDayCount').textContent = dayTasks.length + ' total';
+  const dayList = document.getElementById('calendarDayList');
+  if (dayTasks.length === 0) {
+    dayList.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No tasks due on this day.</div></div>`;
+  } else {
+    dayList.innerHTML = dayTasks.map(t => `
+      <div class="item-card" onclick="openTaskSheet('${t.id}')">
+        <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+        <div class="body-text">
+          <div class="title-line">${escapeHtml(t.name)}</div>
+          <div class="sub-line">${taskCategoryLabel(t.category)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+/* ---------- seasonal checklist ---------- */
+function renderVehicleProfile() {
+  const card = document.getElementById('vehicleProfileCard');
+  const v = currentVehicle();
+  const title = v.name ? v.name : [v.year, v.make, v.model].filter(Boolean).join(' ') || 'Add your vehicle';
+  const sub = v.name && (v.year || v.make || v.model) ? [v.year, v.make, v.model].filter(Boolean).join(' ') : (v.mileage ? `${Number(v.mileage).toLocaleString()} mi` : 'Tap to add details');
+  const recallBtn = v.vin
+    ? `<button class="btn-add-inline" onclick="checkForRecalls()">Check for recalls</button>`
+    : `<div class="empty-state" style="padding:14px 12px;"><div class="msg">Add a VIN to check for open safety recalls.</div></div>`;
+  card.innerHTML = `
+    <div class="item-card" onclick="openVehicleProfileSheet('edit')" style="cursor:pointer;">
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(title)}</div>
+        <div class="sub-line">${escapeHtml(sub)}</div>
+      </div>
+    </div>
+    ${recallBtn}
+    <div id="recallResults"></div>
+  `;
+}
+
+/* ---------- recall lookup (NHTSA free public APIs, no key required) ----------
+   Two steps: 1) decode VIN -> make/model/year via vpic.nhtsa.dot.gov
+              2) look up recalls for that make/model/year via api.nhtsa.gov */
+async function checkForRecalls() {
+  const v = currentVehicle();
+  const vin = (v.vin || '').trim().toUpperCase();
+  const resultsEl = document.getElementById('recallResults');
+  if (!vin || vin.length !== 17) {
+    if (resultsEl) resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">VIN must be exactly 17 characters.</div></div>`;
+    return;
+  }
+  if (resultsEl) resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">Decoding VIN…</div></div>`;
+  try {
+    const decodeRes = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${encodeURIComponent(vin)}?format=json`);
+    if (!decodeRes.ok) throw new Error('VIN decode failed');
+    const decodeData = await decodeRes.json();
+    const info = (decodeData.Results && decodeData.Results[0]) || {};
+    const make = info.Make, model = info.Model, modelYear = info.ModelYear;
+    if (!make || !model || !modelYear) {
+      resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">Couldn't decode that VIN. Double-check it and try again.</div></div>`;
+      return;
+    }
+    resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">Checking recalls for ${escapeHtml(modelYear)} ${escapeHtml(make)} ${escapeHtml(model)}…</div></div>`;
+    const recallRes = await fetch(`https://api.nhtsa.gov/recalls/recallsByVehicle?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&modelYear=${encodeURIComponent(modelYear)}`);
+    if (!recallRes.ok) throw new Error('Recall lookup failed');
+    const recallData = await recallRes.json();
+    const recalls = Array.isArray(recallData.results) ? recallData.results : [];
+    if (recalls.length === 0) {
+      resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">No open recalls found for ${escapeHtml(modelYear)} ${escapeHtml(make)} ${escapeHtml(model)}.</div></div>`;
+      return;
+    }
+    resultsEl.innerHTML = `
+      <div class="section-title" style="margin-top:14px;">Open recalls <span class="count">${recalls.length} total</span></div>
+      ${recalls.map(r => `
+        <div class="item-card" style="cursor:default;">
+          <div class="body-text">
+            <div class="title-line">${escapeHtml(r.Component || 'Recall')}</div>
+            <div class="sub-line">${escapeHtml(r.Summary || '')}</div>
+          </div>
+        </div>
+      `).join('')}
+      <div class="empty-state" style="padding:10px 12px; text-align:left;"><div class="msg">Recall matching is by make/model/year, not the exact VIN — confirm applicability at nhtsa.gov/recalls.</div></div>
+    `;
+  } catch (err) {
+    resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">Couldn't reach the NHTSA recall database. Check your connection and try again.</div></div>`;
+  }
+}
+
+/* ---------- mileage log ---------- */
+function renderMileageLog() {
+  const v = currentVehicle();
+  const logs = [...v.mileageLogs].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  document.getElementById('mileageLogCount').textContent = logs.length + ' total';
+  const list = document.getElementById('mileageLogList');
+  if (logs.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No mileage logged yet.</div></div>`;
+    return;
+  }
+  list.innerHTML = logs.map(l => `
+    <div class="item-card" onclick="openMileageLogSheet('${l.id}')">
+      <div class="body-text">
+        <div class="title-line">${Number(l.mileage).toLocaleString()} mi</div>
+        <div class="sub-line">${l.date || 'No date'}${l.note ? ' &middot; ' + escapeHtml(l.note) : ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+function openMileageLogSheet(id) {
+  editingMileageLogId = id;
+  const deleteRow = document.getElementById('mileageLogDeleteRow');
+  if (id) {
+    const l = currentVehicle().mileageLogs.find(x => x.id === id);
+    document.getElementById('mileageLogSheetTitle').textContent = 'Edit mileage entry';
+    document.getElementById('mileageLogDate').value = l.date || '';
+    document.getElementById('mileageLogMileage').value = l.mileage || '';
+    document.getElementById('mileageLogNote').value = l.note || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('mileageLogSheetTitle').textContent = 'Log mileage';
+    document.getElementById('mileageLogDate').value = todayStr();
+    document.getElementById('mileageLogMileage').value = '';
+    document.getElementById('mileageLogNote').value = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('mileageLogSheetBackdrop').classList.add('open');
+}
+function closeMileageLogSheet() {
+  document.getElementById('mileageLogSheetBackdrop').classList.remove('open');
+  editingMileageLogId = null;
+}
+function saveMileageLog() {
+  const date = document.getElementById('mileageLogDate').value;
+  const mileage = document.getElementById('mileageLogMileage').value;
+  const note = document.getElementById('mileageLogNote').value.trim();
+  if (!mileage || parseFloat(mileage) <= 0) { showToast('Enter a valid mileage reading'); return; }
+  const v = currentVehicle();
+  if (editingMileageLogId) {
+    const l = v.mileageLogs.find(x => x.id === editingMileageLogId);
+    l.date = date; l.mileage = mileage; l.note = note;
+  } else {
+    v.mileageLogs.push({ id: uid(), date, mileage, note });
+  }
+  // Keep the vehicle's current mileage in sync with the latest logged reading
+  const latest = [...v.mileageLogs].sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0];
+  if (latest && (!v.mileage || parseFloat(latest.mileage) > parseFloat(v.mileage))) {
+    v.mileage = latest.mileage;
+  }
+  saveState(); render(); closeMileageLogSheet(); showToast('Mileage logged');
+}
+function deleteMileageLog() {
+  currentVehicle().mileageLogs = currentVehicle().mileageLogs.filter(l => l.id !== editingMileageLogId);
+  saveState(); render(); closeMileageLogSheet(); showToast('Entry deleted');
+}
+
+/* ---------- fuel log ---------- */
+function renderFuelLog() {
+  const v = currentVehicle();
+  const logs = [...v.fuelLogs].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  document.getElementById('fuelLogCount').textContent = logs.length + ' total';
+  const list = document.getElementById('fuelLogList');
+  const summaryEl = document.getElementById('fuelMpgSummary');
+  if (logs.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No fill-ups logged yet.</div></div>`;
+    if (summaryEl) summaryEl.innerHTML = '';
+    return;
+  }
+  // Compute MPG for each entry relative to the previous (chronologically earlier) fill-up
+  const chronological = [...logs].reverse();
+  const mpgById = {};
+  const mpgValues = [];
+  for (let i = 1; i < chronological.length; i++) {
+    const prev = chronological[i - 1], curr = chronological[i];
+    const milesDriven = parseFloat(curr.mileage) - parseFloat(prev.mileage);
+    const gallons = parseFloat(curr.gallons);
+    if (milesDriven > 0 && gallons > 0) {
+      const mpg = milesDriven / gallons;
+      mpgById[curr.id] = mpg.toFixed(1);
+      mpgValues.push(mpg);
+    }
+  }
+  if (summaryEl) {
+    if (mpgValues.length > 0) {
+      const avg = (mpgValues.reduce((a, b) => a + b, 0) / mpgValues.length).toFixed(1);
+      const best = Math.max(...mpgValues).toFixed(1);
+      summaryEl.innerHTML = `
+        <div class="summary-row">
+          <div class="summary-card good"><div class="val">${avg}</div><div class="lbl">Avg MPG</div></div>
+          <div class="summary-card"><div class="val">${best}</div><div class="lbl">Best MPG</div></div>
+        </div>`;
+    } else {
+      summaryEl.innerHTML = `<div class="summary-card"><div class="lbl">Log at least 2 fill-ups to see average MPG</div></div>`;
+    }
+  }
+  list.innerHTML = logs.map(l => {
+    const mpg = mpgById[l.id] ? `${mpgById[l.id]} MPG` : '';
+    const cost = l.cost ? `$${parseFloat(l.cost).toFixed(2)}` : '';
+    return `
+    <div class="item-card" onclick="openFuelLogSheet('${l.id}')">
+      <div class="body-text">
+        <div class="title-line">${Number(l.mileage).toLocaleString()} mi &middot; ${l.gallons} gal</div>
+        <div class="sub-line">${l.date || 'No date'}${mpg ? ' &middot; ' + mpg : ''}</div>
+      </div>
+      ${cost ? `<div class="amount">${cost}</div>` : ''}
+    </div>
+  `;
+  }).join('');
+}
+function openFuelLogSheet(id) {
+  editingFuelLogId = id;
+  const deleteRow = document.getElementById('fuelLogDeleteRow');
+  if (id) {
+    const l = currentVehicle().fuelLogs.find(x => x.id === id);
+    document.getElementById('fuelLogSheetTitle').textContent = 'Edit fill-up';
+    document.getElementById('fuelLogDate').value = l.date || '';
+    document.getElementById('fuelLogMileage').value = l.mileage || '';
+    document.getElementById('fuelLogGallons').value = l.gallons || '';
+    document.getElementById('fuelLogCost').value = l.cost || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('fuelLogSheetTitle').textContent = 'Log fill-up';
+    document.getElementById('fuelLogDate').value = todayStr();
+    document.getElementById('fuelLogMileage').value = '';
+    document.getElementById('fuelLogGallons').value = '';
+    document.getElementById('fuelLogCost').value = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('fuelLogSheetBackdrop').classList.add('open');
+}
+function closeFuelLogSheet() {
+  document.getElementById('fuelLogSheetBackdrop').classList.remove('open');
+  editingFuelLogId = null;
+}
+function saveFuelLog() {
+  const date = document.getElementById('fuelLogDate').value;
+  const mileage = document.getElementById('fuelLogMileage').value;
+  const gallons = document.getElementById('fuelLogGallons').value;
+  const cost = document.getElementById('fuelLogCost').value;
+  if (!mileage || parseFloat(mileage) <= 0) { showToast('Enter a valid mileage reading'); return; }
+  if (!gallons || parseFloat(gallons) <= 0) { showToast('Enter a valid gallons amount'); return; }
+  const v = currentVehicle();
+  if (editingFuelLogId) {
+    const l = v.fuelLogs.find(x => x.id === editingFuelLogId);
+    l.date = date; l.mileage = mileage; l.gallons = gallons; l.cost = cost;
+  } else {
+    v.fuelLogs.push({ id: uid(), date, mileage, gallons, cost });
+  }
+  const latest = [...v.fuelLogs].sort((a, b) => (b.date || '').localeCompare(a.date || ''))[0];
+  if (latest && (!v.mileage || parseFloat(latest.mileage) > parseFloat(v.mileage))) {
+    v.mileage = latest.mileage;
+  }
+  saveState(); render(); closeFuelLogSheet(); showToast('Fill-up logged');
+}
+function deleteFuelLog() {
+  currentVehicle().fuelLogs = currentVehicle().fuelLogs.filter(l => l.id !== editingFuelLogId);
+  saveState(); render(); closeFuelLogSheet(); showToast('Entry deleted');
+}
+
+/* ---------- documents ---------- */
+let editingDocumentId = null;
+let pendingDocumentFile = null; // {name, mimeType, data} — base64, staged until save
+
+function renderDocumentPreview(mimeType, dataUrl, filename) {
+  const el = document.getElementById('documentPreview');
+  if (!dataUrl) {
+    el.innerHTML = '';
+    return;
+  }
+  const isImage = (mimeType || '').startsWith('image/');
+  if (isImage) {
+    el.innerHTML = `
+      <img src="${dataUrl}" class="doc-thumb" onclick="window.open('${dataUrl}', '_blank')" alt="Document preview">
+      <div class="doc-filename">${escapeHtml(filename || 'Attached image')}</div>
+    `;
+  } else {
+    el.innerHTML = `<a href="${dataUrl}" target="_blank" class="doc-pdf-link">&#128196; Open ${escapeHtml(filename || 'PDF')}</a>`;
+  }
+}
+
+function handleDocumentFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const MAX_BYTES = 1.5 * 1024 * 1024; // ~1.5MB per file — keeps total local storage usage reasonable
+  if (file.size > MAX_BYTES) {
+    showToast('File too large — please use a file under 1.5MB');
+    event.target.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    pendingDocumentFile = { name: file.name, mimeType: file.type, data: e.target.result };
+    renderDocumentPreview(file.type, e.target.result, file.name);
+  };
+  reader.onerror = () => {
+    showToast('Could not read that file');
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderDocuments() {
+  const v = currentVehicle();
+  document.getElementById('documentCount').textContent = v.documents.length + ' total';
+  const list = document.getElementById('documentList');
+  if (v.documents.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No documents added yet.</div></div>`;
+    return;
+  }
+  list.innerHTML = v.documents.map(d => `
+    <div class="item-card" onclick="openDocumentSheet('${d.id}')">
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(d.label || 'Document')}</div>
+        <div class="sub-line">${escapeHtml(d.fileName || '')}</div>
+      </div>
+      <div class="amount">&#128206;</div>
+    </div>
+  `).join('');
+}
+function openDocumentSheet(id) {
+  editingDocumentId = id;
+  pendingDocumentFile = null;
+  const deleteRow = document.getElementById('documentDeleteRow');
+  document.getElementById('documentFile').value = '';
+  if (id) {
+    const d = currentVehicle().documents.find(x => x.id === id);
+    document.getElementById('documentSheetTitle').textContent = 'Edit document';
+    document.getElementById('documentLabel').value = d.label || '';
+    renderDocumentPreview(d.mimeType, d.data, d.fileName);
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('documentSheetTitle').textContent = 'Add document';
+    document.getElementById('documentLabel').value = '';
+    document.getElementById('documentPreview').innerHTML = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('documentSheetBackdrop').classList.add('open');
+}
+function closeDocumentSheet() {
+  document.getElementById('documentSheetBackdrop').classList.remove('open');
+  editingDocumentId = null;
+}
+function saveDocument() {
+  const label = document.getElementById('documentLabel').value.trim();
+  if (!label) { showToast('Add a label first'); return; }
+  const v = currentVehicle();
+  if (editingDocumentId) {
+    const d = v.documents.find(x => x.id === editingDocumentId);
+    d.label = label;
+    if (pendingDocumentFile) {
+      d.fileName = pendingDocumentFile.name;
+      d.mimeType = pendingDocumentFile.mimeType;
+      d.data = pendingDocumentFile.data;
+    }
+  } else {
+    if (!pendingDocumentFile) { showToast('Choose a file first'); return; }
+    v.documents.push({
+      id: uid(),
+      label,
+      fileName: pendingDocumentFile.name,
+      mimeType: pendingDocumentFile.mimeType,
+      data: pendingDocumentFile.data
+    });
+  }
+  saveState(); render(); closeDocumentSheet(); showToast('Saved');
+}
+function deleteDocument() {
+  currentVehicle().documents = currentVehicle().documents.filter(d => d.id !== editingDocumentId);
+  saveState(); render(); closeDocumentSheet(); showToast('Document deleted');
+}
+
+/* ---------- expenses ---------- */
+let editingExpenseId = null;
+function expenseCategoryLabel(cat) {
+  const labels = { repairs: 'Repairs', insurance: 'Insurance', registration: 'Registration', parts: 'Parts', other: 'Other' };
+  return labels[cat] || 'Other';
+}
+function renderExpenses() {
+  const v = currentVehicle();
+  const now = new Date();
+  const thisMonth = now.getMonth(), thisYear = now.getFullYear();
+  let ytdTotal = 0, monthTotal = 0;
+  v.expenses.forEach(e => {
+    const amt = parseFloat(e.amount) || 0;
+    const d = e.date ? new Date(e.date + 'T00:00:00') : null;
+    if (d && d.getFullYear() === thisYear) {
+      ytdTotal += amt;
+      if (d.getMonth() === thisMonth) monthTotal += amt;
+    }
+  });
+  document.getElementById('expenseYtdVal').textContent = '$' + ytdTotal.toFixed(0);
+  document.getElementById('expenseMonthCard').innerHTML = `<div class="val">$${monthTotal.toFixed(0)}</div><div class="lbl">This month</div>`;
+  document.getElementById('expenseCountCard').innerHTML = `<div class="val">${v.expenses.length}</div><div class="lbl">Total logged</div>`;
+
+  const cpmEl = document.getElementById('costPerMileCard');
+  if (cpmEl) {
+    const ytdMileageLogs = v.mileageLogs.filter(l => {
+      const d = l.date ? new Date(l.date + 'T00:00:00') : null;
+      return d && d.getFullYear() === thisYear && !isNaN(parseFloat(l.mileage));
+    }).sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    if (ytdMileageLogs.length >= 2 && ytdTotal > 0) {
+      const milesYtd = parseFloat(ytdMileageLogs[ytdMileageLogs.length - 1].mileage) - parseFloat(ytdMileageLogs[0].mileage);
+      if (milesYtd > 0) {
+        const cpm = ytdTotal / milesYtd;
+        cpmEl.innerHTML = `<div class="summary-card good"><div class="val">$${cpm.toFixed(2)}</div><div class="lbl">Cost per mile (YTD, ${milesYtd.toLocaleString()} mi)</div></div>`;
+      } else {
+        cpmEl.innerHTML = '';
+      }
+    } else {
+      cpmEl.innerHTML = `<div class="summary-card"><div class="lbl">Log mileage at least twice this year to see cost per mile</div></div>`;
+    }
+  }
+
+  const list = document.getElementById('expenseList');
+  document.getElementById('expenseCount').textContent = v.expenses.length + ' total';
+  if (v.expenses.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No expenses logged yet.<br>Tap + to add one.</div></div>`;
+    return;
+  }
+  const sorted = [...v.expenses].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  list.innerHTML = sorted.map(e => `
+    <div class="item-card" onclick="openExpenseSheet('${e.id}')">
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(e.note || expenseCategoryLabel(e.category))}</div>
+        <div class="sub-line">${expenseCategoryLabel(e.category)} &middot; ${e.date || 'No date'}</div>
+      </div>
+      <div class="amount">$${(parseFloat(e.amount) || 0).toFixed(0)}</div>
+    </div>
+  `).join('');
+}
+function openExpenseSheet(id) {
+  editingExpenseId = id;
+  const deleteRow = document.getElementById('expenseDeleteRow');
+  if (id) {
+    const e = currentVehicle().expenses.find(x => x.id === id);
+    document.getElementById('expenseSheetTitle').textContent = 'Edit expense';
+    document.getElementById('expenseAmount').value = e.amount || '';
+    document.getElementById('expenseCategory').value = e.category || 'repairs';
+    document.getElementById('expenseDate').value = e.date || '';
+    document.getElementById('expenseNote').value = e.note || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('expenseSheetTitle').textContent = 'Add expense';
+    document.getElementById('expenseAmount').value = '';
+    document.getElementById('expenseCategory').value = 'repairs';
+    document.getElementById('expenseDate').value = todayStr();
+    document.getElementById('expenseNote').value = '';
+    deleteRow.style.display = 'none';
+  }
+  document.getElementById('expenseSheetBackdrop').classList.add('open');
+}
+function closeExpenseSheet() {
+  document.getElementById('expenseSheetBackdrop').classList.remove('open');
+  editingExpenseId = null;
+}
+function saveExpense() {
+  const amount = document.getElementById('expenseAmount').value;
+  const category = document.getElementById('expenseCategory').value;
+  const date = document.getElementById('expenseDate').value;
+  const note = document.getElementById('expenseNote').value.trim();
+  if (!amount || parseFloat(amount) <= 0) { showToast('Enter a valid amount first'); return; }
+  const v = currentVehicle();
+  if (editingExpenseId) {
+    const e = v.expenses.find(x => x.id === editingExpenseId);
+    e.amount = amount; e.category = category; e.date = date; e.note = note;
+  } else {
+    v.expenses.push({ id: uid(), amount, category, date, note });
+  }
+  saveState(); render(); closeExpenseSheet(); showToast('Expense saved');
+}
+function deleteExpense() {
+  currentVehicle().expenses = currentVehicle().expenses.filter(e => e.id !== editingExpenseId);
+  saveState(); render(); closeExpenseSheet(); showToast('Expense deleted');
+}
+
+let vehicleSheetMode = 'edit'; // 'edit' current vehicle, or 'add' a new one
+function openVehicleProfileSheet(mode) {
+  vehicleSheetMode = mode === 'add' ? 'add' : 'edit';
+  const deleteRow = document.getElementById('vehicleDeleteRow');
+  if (vehicleSheetMode === 'add') {
+    document.getElementById('vehicleName').value = '';
+    document.getElementById('vehicleYear').value = '';
+    document.getElementById('vehicleMake').value = '';
+    document.getElementById('vehicleModel').value = '';
+    document.getElementById('vehiclePlate').value = '';
+    document.getElementById('vehicleVin').value = '';
+    document.getElementById('vehicleMileage').value = '';
+    document.getElementById('vehicleNotes').value = '';
+    deleteRow.style.display = 'none';
+  } else {
+    const v = currentVehicle();
+    document.getElementById('vehicleName').value = v.name || '';
+    document.getElementById('vehicleYear').value = v.year || '';
+    document.getElementById('vehicleMake').value = v.make || '';
+    document.getElementById('vehicleModel').value = v.model || '';
+    document.getElementById('vehiclePlate').value = v.plate || '';
+    document.getElementById('vehicleVin').value = v.vin || '';
+    document.getElementById('vehicleMileage').value = v.mileage || '';
+    document.getElementById('vehicleNotes').value = v.notes || '';
+    deleteRow.style.display = state.vehicles.length > 1 ? 'flex' : 'none';
+  }
+  document.getElementById('vehicleProfileSheetBackdrop').classList.add('open');
+}
+function closeVehicleProfileSheet() {
+  document.getElementById('vehicleProfileSheetBackdrop').classList.remove('open');
+}
+function saveVehicleProfile() {
+  const name = document.getElementById('vehicleName').value.trim();
+  const year = document.getElementById('vehicleYear').value.trim();
+  const make = document.getElementById('vehicleMake').value.trim();
+  const model = document.getElementById('vehicleModel').value.trim();
+  const plate = document.getElementById('vehiclePlate').value.trim();
+  const vin = document.getElementById('vehicleVin').value.trim().toUpperCase();
+  const mileage = document.getElementById('vehicleMileage').value.trim();
+  const notes = document.getElementById('vehicleNotes').value.trim();
+
+  if (vehicleSheetMode === 'add') {
+    const v = newVehicle(name, year, make, model, plate);
+    v.vin = vin;
+    v.mileage = mileage;
+    v.notes = notes;
+    state.vehicles.push(v);
+    state.activeVehicleId = v.id;
+  } else {
+    const v = currentVehicle();
+    v.name = name; v.year = year; v.make = make; v.model = model;
+    v.plate = plate; v.vin = vin; v.mileage = mileage; v.notes = notes;
+  }
+  saveState(); render(); closeVehicleProfileSheet();
+  showToast('Saved');
+}
+function deleteVehicle() {
+  if (state.vehicles.length <= 1) { showToast('You need at least one vehicle'); return; }
+  state.vehicles = state.vehicles.filter(v => v.id !== state.activeVehicleId);
+  state.activeVehicleId = state.vehicles[0].id;
+  saveState(); render(); closeVehicleProfileSheet();
+  showToast('Vehicle deleted');
+}
+
+function renderVehicleSwitcher() {
+  const el = document.getElementById('vehicleSwitcher');
+  const pills = state.vehicles.map(v => {
+    const label = v.name || [v.year, v.make, v.model].filter(Boolean).join(' ') || 'Vehicle';
+    return `<button class="vehicle-pill ${v.id === state.activeVehicleId ? 'active' : ''}" onclick="switchVehicle('${v.id}')">${escapeHtml(label)}</button>`;
+  }).join('');
+  el.innerHTML = pills + `<button class="vehicle-pill-add" onclick="openVehicleProfileSheet('add')" title="Add vehicle">+</button>`;
+}
+function switchVehicle(id) {
+  state.activeVehicleId = id;
+  saveState();
+  render();
+}
+
+/* ---------- fleet-wide analytics ---------- */
+function taskStatusFor(task, vehicle) {
+  // Same logic as taskStatus(), but scoped to an explicit vehicle rather than currentVehicle(),
+  // so fleet-wide analytics can evaluate every vehicle's tasks without switching the active one.
+  if (task.intervalType === 'mileage') {
+    const currentMileage = parseFloat(vehicle.mileage) || 0;
+    const lastDoneMileage = parseFloat(task.lastDoneMileage) || 0;
+    const interval = parseFloat(task.mileageInterval) || 0;
+    const dueAtMileage = lastDoneMileage + interval;
+    const milesRemaining = dueAtMileage - currentMileage;
+    return { overdue: milesRemaining < 0, sortValue: milesRemaining };
+  }
+  const due = computeNextDue(task);
+  const diff = daysUntil(due);
+  return { overdue: diff < 0, sortValue: diff };
+}
+
+function computeFleetAnalytics() {
+  const vehicles = state.vehicles;
+  let totalOverdue = 0, totalDueSoon = 0, totalCompleted = 0, totalUpcoming = 0, totalTasks = 0;
+  let expenseMonthTotal = 0, expenseYtdTotal = 0;
+  let totalMileage = 0, vehiclesWithMileage = 0;
+
+  const now = new Date();
+  const thisMonth = now.getMonth(), thisYear = now.getFullYear();
+
+  const monthBuckets = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(thisYear, thisMonth - i, 1);
+    monthBuckets.push({ year: d.getFullYear(), month: d.getMonth(), label: d.toLocaleString('en-US', { month: 'short' }), total: 0 });
+  }
+
+  vehicles.forEach(v => {
+    (v.tasks || []).forEach(t => {
+      totalTasks++;
+      const status = taskStatusFor(t, v);
+      if (status.overdue) totalOverdue++;
+      else if (t.intervalType === 'mileage' ? status.sortValue <= 500 : status.sortValue <= 7) totalDueSoon++;
+      else totalUpcoming++;
+      if (t.lastDone) totalCompleted++;
+    });
+
+    (v.expenses || []).forEach(e => {
+      const amt = parseFloat(e.amount) || 0;
+      const d = e.date ? new Date(e.date + 'T00:00:00') : null;
+      if (d && d.getFullYear() === thisYear) {
+        expenseYtdTotal += amt;
+        if (d.getMonth() === thisMonth) expenseMonthTotal += amt;
+      }
+      if (d) {
+        const bucket = monthBuckets.find(b => b.year === d.getFullYear() && b.month === d.getMonth());
+        if (bucket) bucket.total += amt;
+      }
+    });
+
+    if (v.mileage) { totalMileage += parseFloat(v.mileage) || 0; vehiclesWithMileage++; }
+  });
+
+  const avgMileage = vehiclesWithMileage > 0 ? Math.round(totalMileage / vehiclesWithMileage) : 0;
+
+  // Health score: starts at 100, deducted for overdue tasks across the fleet
+  let health = 100;
+  health -= Math.min(50, totalOverdue * 6);
+  health = Math.max(0, Math.round(health));
+
+  return {
+    totalOverdue, totalDueSoon, totalCompleted, totalUpcoming, totalTasks,
+    expenseMonthTotal, expenseYtdTotal, monthBuckets, avgMileage, health
+  };
+}
+
+function vehicleReadiness(v) {
+  const overdue = (v.tasks || []).filter(t => taskStatusFor(t, v).overdue).length;
+  let score = 100;
+  score -= Math.min(60, overdue * 10);
+  return Math.max(0, Math.round(score));
+}
+
+function renderPortfolio() {
+  const section = document.getElementById('portfolioSection');
+  if (state.vehicles.length < 2) {
+    section.innerHTML = '';
+    return;
+  }
+  const a = computeFleetAnalytics();
+  const healthColor = a.health >= 70 ? '#D4AF37' : a.health >= 40 ? '#C9A227' : 'var(--cranberry)';
+
+  const vehicleRows = state.vehicles.map(v => {
+    const overdue = (v.tasks || []).filter(t => taskStatusFor(t, v).overdue).length;
+    const readiness = vehicleReadiness(v);
+    const label = v.name || [v.year, v.make, v.model].filter(Boolean).join(' ') || 'Vehicle';
+    return `<div class="portfolio-vehicle-row" onclick="switchVehicle('${v.id}')">
+      <div class="veh-name">${escapeHtml(label)}</div>
+      <div class="veh-metrics">${overdue} due &middot; ${readiness}% ready</div>
+    </div>`;
+  }).join('');
+
+  const maxMonthExpense = Math.max(1, ...a.monthBuckets.map(b => b.total));
+  const expenseBars = a.monthBuckets.map(b => {
+    const heightPct = Math.round((b.total / maxMonthExpense) * 100);
+    return `<div class="chart-bar-col">
+      <div class="chart-bar-track"><div class="chart-bar-fill" style="height:${Math.max(heightPct, b.total > 0 ? 6 : 0)}%;"></div></div>
+      <div class="chart-bar-label">${b.label}</div>
+    </div>`;
+  }).join('');
+
+  const taskTotal = Math.max(1, a.totalCompleted + a.totalOverdue + a.totalUpcoming);
+  const completedPct = Math.round((a.totalCompleted / taskTotal) * 100);
+  const overduePct = Math.round((a.totalOverdue / taskTotal) * 100);
+  const upcomingPct = Math.max(0, 100 - completedPct - overduePct);
+
+  section.innerHTML = `
+    <div class="portfolio-card">
+      <div class="portfolio-title">Fleet Overview</div>
+      <div class="portfolio-health-row">
+        <div class="portfolio-health-score" style="color:${healthColor};">${a.health}</div>
+        <div class="portfolio-health-label">fleet health score</div>
+      </div>
+      <div class="portfolio-stats-grid">
+        <div class="portfolio-stat"><div class="val">${a.totalOverdue}</div><div class="lbl">Overdue tasks</div></div>
+        <div class="portfolio-stat"><div class="val">${a.totalDueSoon}</div><div class="lbl">Due soon</div></div>
+        <div class="portfolio-stat"><div class="val">$${a.expenseYtdTotal.toFixed(0)}</div><div class="lbl">Expenses YTD</div></div>
+      </div>
+      <div class="chart-block">
+        <div class="chart-title">Monthly expenses</div>
+        <div class="chart-bars-row">${expenseBars}</div>
+      </div>
+      <div class="chart-block">
+        <div class="chart-title">Tasks: completed vs overdue</div>
+        <div class="split-bar">
+          <div class="split-bar-seg" style="width:${completedPct}%; background:#2E8B57;" title="Completed"></div>
+          <div class="split-bar-seg" style="width:${overduePct}%; background:#C1443D;" title="Overdue"></div>
+          <div class="split-bar-seg" style="width:${upcomingPct}%; background:var(--border);" title="Upcoming"></div>
+        </div>
+        <div class="split-bar-legend">
+          <span><span class="legend-dot" style="background:#2E8B57;"></span>Completed ${a.totalCompleted}</span>
+          <span><span class="legend-dot" style="background:#C1443D;"></span>Overdue ${a.totalOverdue}</span>
+          <span><span class="legend-dot" style="background:var(--border);"></span>Upcoming ${a.totalUpcoming}</span>
+        </div>
+      </div>
+      ${vehicleRows}
+    </div>
+  `;
+}
+
+/* ---------- toast ---------- */
+let toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ---------- appearance (accent color + light/dark mode) ---------- */
+const ACCENT_STORAGE_KEY = 'carmaint_premium_accent';
+const MODE_STORAGE_KEY = 'carmaint_premium_mode';
+const ACCENT_PALETTE = {
+  blue:    { label: 'Blue',    accent: '#0053BA', soft: 'rgba(0,83,186,0.12)' },
+  red:     { label: 'Red',     accent: '#E1261C', soft: 'rgba(225,38,28,0.12)' },
+  green:   { label: 'Green',   accent: '#00703C', soft: 'rgba(0,112,60,0.12)' },
+  gold:    { label: 'Gold',    accent: '#D4A017', soft: 'rgba(212,160,23,0.14)' },
+  navy:    { label: 'Navy',    accent: '#003D6B', soft: 'rgba(0,61,107,0.12)' },
+  maroon:  { label: 'Maroon',  accent: '#7A1F2B', soft: 'rgba(122,31,43,0.12)' },
+  teal:    { label: 'Teal',    accent: '#005F73', soft: 'rgba(0,95,115,0.12)' },
+  amber:   { label: 'Amber',   accent: '#D2601A', soft: 'rgba(210,96,26,0.13)' },
+  slate:   { label: 'Slate',   accent: '#4A4E69', soft: 'rgba(74,78,105,0.13)' },
+  forest:  { label: 'Forest',  accent: '#2E5C3E', soft: 'rgba(46,92,62,0.12)' }
+};
+const ACCENT_ORDER = ['blue', 'red', 'green', 'gold', 'navy', 'maroon', 'teal', 'amber', 'slate', 'forest'];
+
+function applyAccent(key) {
+  const a = ACCENT_PALETTE[key] || ACCENT_PALETTE.blue;
+  document.documentElement.style.setProperty('--gold', a.accent);
+  document.documentElement.style.setProperty('--gold-soft', a.soft);
+  // Red, Maroon, and Amber all sit too close to the fixed cranberry "overdue" warning color
+  // to stay readable side by side, so shift the warning color to a distinct gold tone whenever
+  // one of those three is the active accent. Every other accent keeps the normal cranberry.
+  const mode = document.documentElement.getAttribute('data-mode') === 'dark' ? 'dark' : 'light';
+  if (key === 'red' || key === 'maroon' || key === 'amber') {
+    const amber = mode === 'dark' ? '#E0A233' : '#B8791A';
+    const amberSoft = mode === 'dark' ? 'rgba(224,162,51,0.18)' : 'rgba(184,121,26,0.15)';
+    document.documentElement.style.setProperty('--cranberry', amber);
+    document.documentElement.style.setProperty('--cranberry-soft', amberSoft);
+  } else {
+    document.documentElement.style.removeProperty('--cranberry');
+    document.documentElement.style.removeProperty('--cranberry-soft');
+  }
+}
+function loadAccent() {
+  let saved = null;
+  try { saved = localStorage.getItem(ACCENT_STORAGE_KEY); } catch (e) {}
+  const key = ACCENT_PALETTE[saved] ? saved : 'blue';
+  applyAccent(key);
+  return key;
+}
+function cycleAccent() {
+  let current = 'blue';
+  try { current = localStorage.getItem(ACCENT_STORAGE_KEY) || 'blue'; } catch (e) {}
+  const idx = ACCENT_ORDER.indexOf(current);
+  const next = ACCENT_ORDER[(idx + 1) % ACCENT_ORDER.length];
+  applyAccent(next);
+  try { localStorage.setItem(ACCENT_STORAGE_KEY, next); } catch (e) {}
+  showToast(ACCENT_PALETTE[next].label);
+}
+
+function applyMode(mode) {
+  document.documentElement.setAttribute('data-mode', mode === 'dark' ? 'dark' : 'light');
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) metaTheme.setAttribute('content', mode === 'dark' ? '#14181F' : '#F7F7F8');
+}
+function loadMode() {
+  let saved = null;
+  try { saved = localStorage.getItem(MODE_STORAGE_KEY); } catch (e) {}
+  const mode = saved === 'dark' ? 'dark' : 'light';
+  applyMode(mode);
+  return mode;
+}
+function toggleMode() {
+  let current = 'light';
+  try { current = localStorage.getItem(MODE_STORAGE_KEY) || 'light'; } catch (e) {}
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyMode(next);
+  try { localStorage.setItem(MODE_STORAGE_KEY, next); } catch (e) {}
+  // Reapply the accent so the Red-accent amber warning color matches the new mode
+  let accentKey = 'blue';
+  try { accentKey = localStorage.getItem(ACCENT_STORAGE_KEY) || 'blue'; } catch (e) {}
+  applyAccent(ACCENT_PALETTE[accentKey] ? accentKey : 'blue');
+  showToast(next === 'dark' ? 'Dark mode' : 'Light mode');
+  if (navigator.vibrate) navigator.vibrate(15);
+}
+
+// Apply saved mode first, then accent, so applyAccent() reads the correct data-mode
+// (fixes the Red-accent warning color picking the wrong light/dark shade on first load)
+loadMode();
+loadAccent();
+
+/* ---------- tap vs long-press on the accent button ---------- */
+function initAccentButton() {
+  const btn = document.getElementById('accentBtn');
+  if (!btn) return;
+  let pressTimer = null;
+  let longPressFired = false;
+
+  const startPress = () => {
+    longPressFired = false;
+    pressTimer = setTimeout(() => {
+      longPressFired = true;
+      toggleMode();
+    }, 550);
+  };
+  const endPress = () => {
+    clearTimeout(pressTimer);
+    if (!longPressFired) cycleAccent();
+  };
+  const cancelPress = () => {
+    clearTimeout(pressTimer);
+  };
+
+  btn.addEventListener('pointerdown', startPress);
+  btn.addEventListener('pointerup', endPress);
+  btn.addEventListener('pointerleave', cancelPress);
+  btn.addEventListener('pointercancel', cancelPress);
+}
+
+
+/* ---------- settings sheet ---------- */
+function openSettings() {
+  document.getElementById('settingsSheetBackdrop').classList.add('open');
+}
+function closeSettings() {
+  document.getElementById('settingsSheetBackdrop').classList.remove('open');
+}
+
+/* =========================================================
+   GOOGLE DRIVE BACKUP — removed for the free trial demo.
+   The full version backs up every vehicle's tasks, mileage,
+   fuel logs, and expenses to the user's own Google Drive;
+   this trial is local-device-only, so all Drive OAuth/API
+   code and its Settings UI were removed rather than hidden.
+   ========================================================= */
+
+/* ---------- local export/import ---------- */
+function exportLocal() {
+  const payload = JSON.stringify({ vehicles: state.vehicles, activeVehicleId: state.activeVehicleId, exportedAt: new Date().toISOString() }, null, 2);
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `car-maintenance-backup-${todayStr()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Exported backup file');
+}
+
+function importLocal(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      let incomingVehicles = null;
+      let incomingActiveId = null;
+      if (Array.isArray(data.vehicles)) {
+        incomingVehicles = data.vehicles;
+        incomingActiveId = typeof data.activeVehicleId === 'string' ? data.activeVehicleId : (data.vehicles[0] ? data.vehicles[0].id : null);
+      } else if (Array.isArray(data.tasks) || data.vehicle) {
+        const v = data.vehicle || {};
+        const migrated = newVehicle(v.name || 'My Vehicle', v.year, v.make, v.model, v.plate);
+        migrated.mileage = v.mileage || '';
+        migrated.notes = v.notes || '';
+        migrated.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+        incomingVehicles = [migrated];
+        incomingActiveId = migrated.id;
+      }
+      if (incomingVehicles === null) {
+        showToast("That file doesn't look like a valid backup");
+        return;
+      }
+      const hasLocalData = state.vehicles.some(v => v.tasks.length > 0);
+      if (hasLocalData) {
+        const proceed = confirm('This will replace your current data with the imported file. Continue?');
+        if (!proceed) return;
+      }
+      state.vehicles = incomingVehicles;
+      state.activeVehicleId = incomingActiveId;
+      saveState(); render();
+      showToast('Data imported');
+    } catch (err) {
+      showToast('Could not read that file');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ---------- PDF report export (pdf-lib, client-side) ---------- */
+async function drawReportPage(pdfDoc, font, fontBold, title, subtitle) {
+  const page = pdfDoc.addPage([612, 792]); // US Letter
+  const { width, height } = page.getSize();
+  const margin = 50;
+  let y = height - margin;
+
+  page.drawText(title, { x: margin, y, size: 20, font: fontBold, color: PDFLib.rgb(0.1, 0.15, 0.25) });
+  y -= 22;
+  if (subtitle) {
+    page.drawText(subtitle, { x: margin, y, size: 11, font, color: PDFLib.rgb(0.4, 0.45, 0.5) });
+    y -= 20;
+  }
+  page.drawLine({ start: { x: margin, y }, end: { x: width - margin, y }, thickness: 1, color: PDFLib.rgb(0.85, 0.85, 0.85) });
+  y -= 20;
+
+  return { page, width, height, margin, y };
+}
+function pdfSectionHeader(page, font, x, y, text) {
+  page.drawText(text, { x, y, size: 13, font, color: PDFLib.rgb(0.1, 0.15, 0.25) });
+  return y - 18;
+}
+function pdfLine(page, font, x, y, text, size) {
+  page.drawText(text, { x, y, size: size || 10, font, color: PDFLib.rgb(0.2, 0.22, 0.25) });
+  return y - (size ? size + 6 : 16);
+}
+
+async function exportVehicleReportPdf() {
+  if (typeof PDFLib === 'undefined') { showToast('PDF library still loading — try again in a moment'); return; }
+  showToast('Generating PDF...');
+  try {
+    const v = currentVehicle();
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+
+    const label = v.name || [v.year, v.make, v.model].filter(Boolean).join(' ') || 'Vehicle';
+    let { page, width, height, margin, y } = await drawReportPage(pdfDoc, font, fontBold, `${label} — Maintenance Report`, `Generated ${todayStr()}${v.plate ? ' · Plate ' + v.plate : ''}`);
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Tasks');
+    if (v.tasks.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No tasks recorded.');
+    } else {
+      v.tasks.forEach(t => {
+        const status = taskStatus(t);
+        y = pdfLine(page, font, margin, y, `${t.name}  —  ${taskCategoryLabel(t.category)}  —  ${status.dueLabel}`);
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+      });
+    }
+    y -= 10;
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Mileage log');
+    if (v.mileageLogs.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No mileage logged.');
+    } else {
+      [...v.mileageLogs].sort((a, b) => (b.date || '').localeCompare(a.date || '')).forEach(l => {
+        y = pdfLine(page, font, margin, y, `${l.date || 'No date'}  —  ${Number(l.mileage).toLocaleString()} mi${l.note ? '  —  ' + l.note : ''}`);
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+      });
+    }
+    y -= 10;
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Expenses');
+    const totalExpense = v.expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+    y = pdfLine(page, fontBold, margin, y, `Total: $${totalExpense.toFixed(2)}`);
+    if (v.expenses.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No expenses recorded.');
+    } else {
+      v.expenses.forEach(e => {
+        y = pdfLine(page, font, margin, y, `${e.date || 'No date'}  —  $${(parseFloat(e.amount)||0).toFixed(2)}  —  ${expenseCategoryLabel(e.category)}${e.note ? '  —  ' + e.note : ''}`);
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+      });
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    downloadPdfBytes(pdfBytes, `${label.replace(/[^a-z0-9]/gi, '-')}-report-${todayStr()}.pdf`);
+    showToast('PDF exported');
+  } catch (e) {
+    console.error(e);
+    showToast('Could not generate PDF — try again');
+  }
+}
+
+async function exportFleetReportPdf() {
+  if (typeof PDFLib === 'undefined') { showToast('PDF library still loading — try again in a moment'); return; }
+  showToast('Generating PDF...');
+  try {
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    const a = computeFleetAnalytics();
+
+    let { page, width, height, margin, y } = await drawReportPage(pdfDoc, font, fontBold, 'Fleet Report', `Generated ${todayStr()} · ${state.vehicles.length} vehicles`);
+
+    y = pdfSectionHeader(page, fontBold, margin, y, `Fleet Health Score: ${a.health}/100`);
+    y = pdfLine(page, font, margin, y, `Overdue tasks: ${a.totalOverdue}   Due soon: ${a.totalDueSoon}`);
+    y = pdfLine(page, font, margin, y, `Expenses YTD: $${a.expenseYtdTotal.toFixed(2)}   This month: $${a.expenseMonthTotal.toFixed(2)}`);
+    y -= 10;
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Vehicles');
+    state.vehicles.forEach(v => {
+      const overdue = (v.tasks || []).filter(t => taskStatusFor(t, v).overdue).length;
+      const expenseTotal = (v.expenses || []).reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+      const label = v.name || [v.year, v.make, v.model].filter(Boolean).join(' ') || 'Vehicle';
+      y = pdfLine(page, fontBold, margin, y, label);
+      y = pdfLine(page, font, margin + 10, y, `${v.tasks.length} tasks (${overdue} overdue)  —  $${expenseTotal.toFixed(2)} in expenses`);
+      if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    downloadPdfBytes(pdfBytes, `fleet-report-${todayStr()}.pdf`);
+    showToast('PDF exported');
+  } catch (e) {
+    console.error(e);
+    showToast('Could not generate PDF — try again');
+  }
+}
+
+function downloadPdfBytes(pdfBytes, filename) {
+  const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ---------- digital glovebox export (maintenance report + attached documents) ---------- */
+async function exportGloveboxPdf() {
+  if (typeof PDFLib === 'undefined') { showToast('PDF library still loading — try again in a moment'); return; }
+  showToast('Generating glovebox PDF...');
+  try {
+    const v = currentVehicle();
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const fontBold = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+
+    const label = v.name || [v.year, v.make, v.model].filter(Boolean).join(' ') || 'Vehicle';
+    let { page, width, height, margin, y } = await drawReportPage(pdfDoc, font, fontBold, `${label} — Digital Glovebox`, `Generated ${todayStr()}${v.plate ? ' · Plate ' + v.plate : ''}${v.vin ? ' · VIN ' + v.vin : ''}`);
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Vehicle');
+    y = pdfLine(page, font, margin, y, [v.year, v.make, v.model].filter(Boolean).join(' ') || 'No details on file');
+    if (v.plate) y = pdfLine(page, font, margin, y, `Plate: ${v.plate}`);
+    if (v.vin) y = pdfLine(page, font, margin, y, `VIN: ${v.vin}`);
+    y -= 10;
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Tasks');
+    if (v.tasks.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No tasks recorded.');
+    } else {
+      v.tasks.forEach(t => {
+        const status = taskStatus(t);
+        y = pdfLine(page, font, margin, y, `${t.name}  —  ${taskCategoryLabel(t.category)}  —  ${status.dueLabel}`);
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+      });
+    }
+    y -= 10;
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Mileage log');
+    if (v.mileageLogs.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No mileage logged.');
+    } else {
+      [...v.mileageLogs].sort((a, b) => (b.date || '').localeCompare(a.date || '')).forEach(l => {
+        y = pdfLine(page, font, margin, y, `${l.date || 'No date'}  —  ${Number(l.mileage).toLocaleString()} mi${l.note ? '  —  ' + l.note : ''}`);
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+      });
+    }
+    y -= 10;
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Expenses');
+    const totalExpense = v.expenses.reduce((s, e) => s + (parseFloat(e.amount) || 0), 0);
+    y = pdfLine(page, fontBold, margin, y, `Total: $${totalExpense.toFixed(2)}`);
+    if (v.expenses.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No expenses recorded.');
+    } else {
+      v.expenses.forEach(e => {
+        y = pdfLine(page, font, margin, y, `${e.date || 'No date'}  —  $${(parseFloat(e.amount)||0).toFixed(2)}  —  ${expenseCategoryLabel(e.category)}${e.note ? '  —  ' + e.note : ''}`);
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+      });
+    }
+    y -= 10;
+
+    y = pdfSectionHeader(page, fontBold, margin, y, 'Documents on file');
+    if (v.documents.length === 0) {
+      y = pdfLine(page, font, margin, y, 'No documents attached.');
+    } else {
+      v.documents.forEach(d => {
+        const kind = (d.mimeType || '').startsWith('image/') ? 'photo attached below' : 'file on record, not embedded';
+        y = pdfLine(page, font, margin, y, `${d.label || d.fileName || 'Document'}  —  ${kind}`);
+        if (y < 60) { page = pdfDoc.addPage([612, 792]); y = height - margin; }
+      });
+    }
+
+    // Embed each image-type document as its own full page so the report doubles as a
+    // portable file of registration/insurance/receipt photos, not just a task summary.
+    for (const d of v.documents) {
+      const mime = (d.mimeType || '').toLowerCase();
+      if (!mime.startsWith('image/') || !d.data) continue;
+      try {
+        const base64 = d.data.split(',')[1] || '';
+        const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+        let img;
+        if (mime.includes('png')) {
+          img = await pdfDoc.embedPng(bytes);
+        } else if (mime.includes('jpg') || mime.includes('jpeg')) {
+          img = await pdfDoc.embedJpg(bytes);
+        } else {
+          continue; // unsupported image type for pdf-lib embedding
+        }
+        const imgPage = pdfDoc.addPage([612, 792]);
+        const pw = 612 - margin * 2;
+        const ph = 792 - margin * 2 - 30;
+        const scale = Math.min(pw / img.width, ph / img.height, 1);
+        const drawW = img.width * scale, drawH = img.height * scale;
+        pdfLine(imgPage, fontBold, margin, 792 - margin, d.label || d.fileName || 'Document', 13);
+        imgPage.drawImage(img, {
+          x: margin + (pw - drawW) / 2,
+          y: margin,
+          width: drawW,
+          height: drawH
+        });
+      } catch (imgErr) {
+        console.error('Could not embed document image', imgErr);
+      }
+    }
+
+    const pdfBytes = await pdfDoc.save();
+    downloadPdfBytes(pdfBytes, `${label.replace(/[^a-z0-9]/gi, '-')}-glovebox-${todayStr()}.pdf`);
+    showToast('Glovebox PDF exported');
+  } catch (e) {
+    console.error(e);
+    showToast('Could not generate PDF — try again');
+  }
+}
+
+
+
+/* ---------- init ---------- */
+function onFrequencyChange() {
+  const val = document.getElementById('taskFrequency').value;
+  document.getElementById('customDaysField').style.display = (val === 'custom') ? 'block' : 'none';
+}
+
+function onIntervalTypeChange() {
+  const type = document.getElementById('taskIntervalType').value;
+  const isMileage = type === 'mileage';
+  document.getElementById('dateFrequencyField').style.display = isMileage ? 'none' : 'block';
+  document.getElementById('mileageIntervalField').style.display = isMileage ? 'block' : 'none';
+  document.getElementById('lastDoneMileageField').style.display = isMileage ? 'block' : 'none';
+  if (!isMileage) {
+    document.getElementById('customDaysField').style.display =
+      (document.getElementById('taskFrequency').value === 'custom') ? 'block' : 'none';
+  }
+}
+
+function quickStartTask(name, category, intervalType, intervalValue) {
+  openTaskSheet(null);
+  document.getElementById('taskName').value = name;
+  document.getElementById('taskCategory').value = category;
+  document.getElementById('taskIntervalType').value = intervalType;
+  onIntervalTypeChange();
+  if (intervalType === 'mileage') {
+    document.getElementById('taskMileageInterval').value = intervalValue;
+  } else {
+    const standardValues = { 30: '30', 90: '90', 182: '182', 365: '365' };
+    document.getElementById('taskFrequency').value = standardValues[intervalValue] || 'custom';
+    if (!standardValues[intervalValue]) {
+      document.getElementById('taskCustomDays').value = intervalValue;
+      document.getElementById('customDaysField').style.display = 'block';
+    }
+  }
+}
+
+function openTaskSheet(id) {
+  editingTaskId = id;
+  const backdrop = document.getElementById('taskSheetBackdrop');
+  const deleteRow = document.getElementById('taskDeleteRow');
+  populateCustomCategoryOptions(document.getElementById('taskCategory'), currentVehicle().customCategories || []);
+  if (id) {
+    const t = currentVehicle().tasks.find(x => x.id === id);
+    document.getElementById('taskSheetTitle').textContent = 'Edit task';
+    document.getElementById('taskName').value = t.name || '';
+    document.getElementById('taskCategory').value = t.category || 'engine';
+    document.getElementById('taskPriority').value = t.priority || 'medium';
+    document.getElementById('taskIntervalType').value = t.intervalType || 'date';
+    onIntervalTypeChange();
+    if (t.intervalType === 'mileage') {
+      document.getElementById('taskMileageInterval').value = t.mileageInterval || '';
+      document.getElementById('taskLastDoneMileage').value = t.lastDoneMileage || '';
+      document.getElementById('taskLastDone').value = t.lastDone || '';
+    } else {
+      const standardValues = ['30', '90', '182', '365'];
+      if (t.frequencyDays === 0) {
+        document.getElementById('taskFrequency').value = 'once';
+        document.getElementById('customDaysField').style.display = 'none';
+      } else if (standardValues.includes(String(t.frequencyDays))) {
+        document.getElementById('taskFrequency').value = String(t.frequencyDays);
+        document.getElementById('customDaysField').style.display = 'none';
+      } else {
+        document.getElementById('taskFrequency').value = 'custom';
+        document.getElementById('taskCustomDays').value = t.frequencyDays;
+        document.getElementById('customDaysField').style.display = 'block';
+      }
+      document.getElementById('taskLastDone').value = t.lastDone || '';
+    }
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('taskSheetTitle').textContent = 'Add task';
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskCategory').value = 'engine';
+    document.getElementById('taskPriority').value = 'medium';
+    document.getElementById('taskIntervalType').value = 'date';
+    document.getElementById('taskFrequency').value = '90';
+    document.getElementById('customDaysField').style.display = 'none';
+    document.getElementById('taskCustomDays').value = '';
+    document.getElementById('taskMileageInterval').value = '';
+    document.getElementById('taskLastDone').value = '';
+    document.getElementById('taskLastDoneMileage').value = '';
+    onIntervalTypeChange();
+    deleteRow.style.display = 'none';
+  }
+  backdrop.classList.add('open');
+}
+function closeTaskSheet() {
+  document.getElementById('taskSheetBackdrop').classList.remove('open');
+  editingTaskId = null;
+}
+function saveTask() {
+  const name = document.getElementById('taskName').value.trim();
+  const category = document.getElementById('taskCategory').value;
+  const intervalType = document.getElementById('taskIntervalType').value;
+  const priority = document.getElementById('taskPriority').value;
+  if (!name) { showToast('Add a task name first'); return; }
+
+  let taskData = { name, category, intervalType, priority };
+
+  if (intervalType === 'mileage') {
+    const mileageInterval = parseInt(document.getElementById('taskMileageInterval').value, 10);
+    if (!mileageInterval || mileageInterval <= 0) { showToast('Enter a valid mileage interval'); return; }
+    taskData.mileageInterval = mileageInterval;
+    taskData.lastDoneMileage = document.getElementById('taskLastDoneMileage').value || '';
+    taskData.lastDone = document.getElementById('taskLastDone').value || '';
+    taskData.frequencyDays = 0;
+  } else {
+    const freqSelect = document.getElementById('taskFrequency').value;
+    let frequencyDays;
+    if (freqSelect === 'once') {
+      frequencyDays = 0;
+    } else if (freqSelect === 'custom') {
+      const customVal = parseInt(document.getElementById('taskCustomDays').value, 10);
+      if (!customVal || customVal <= 0) { showToast('Enter a valid number of days'); return; }
+      frequencyDays = customVal;
+    } else {
+      frequencyDays = parseInt(freqSelect, 10);
+    }
+    taskData.frequencyDays = frequencyDays;
+    taskData.lastDone = document.getElementById('taskLastDone').value;
+    taskData.mileageInterval = '';
+    taskData.lastDoneMileage = '';
+  }
+
+  if (editingTaskId) {
+    const t = currentVehicle().tasks.find(x => x.id === editingTaskId);
+    Object.assign(t, taskData);
+  } else {
+    currentVehicle().tasks.push({ id: uid(), ...taskData });
+  }
+  saveState(); render(); closeTaskSheet(); showToast('Task saved');
+}
+function deleteTask() {
+  currentVehicle().tasks = currentVehicle().tasks.filter(t => t.id !== editingTaskId);
+  saveState(); render(); closeTaskSheet(); showToast('Task deleted');
+}
+function markTaskDone(id) {
+  const t = currentVehicle().tasks.find(x => x.id === id);
+  if (!t) return;
+  t.lastDone = todayStr();
+  if (t.intervalType === 'mileage') {
+    t.lastDoneMileage = currentVehicle().mileage || t.lastDoneMileage;
+  }
+  saveState(); render();
+  showToast('Marked done');
+}
+
+function handleFab() {
+  if (currentTab === 'setup') openVehicleProfileSheet('edit');
+  else if (currentTab === 'expenses') openExpenseSheet(null);
+  else openTaskSheet(null);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+  currentTab = tab;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+/* ---------- free trial ---------- */
+const DEMO_TRIAL_DAYS = 14;
+const DEMO_SINCE_KEY = 'carmaint_premium_demo_since';
+function demoTrialDaysLeft() {
+  let since = localStorage.getItem(DEMO_SINCE_KEY);
+  if (!since) { since = String(Date.now()); localStorage.setItem(DEMO_SINCE_KEY, since); }
+  const elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
+  return DEMO_TRIAL_DAYS - elapsedDays;
+}
+function enforceDemoTrial() {
+  const daysLeft = demoTrialDaysLeft();
+  if (daysLeft <= 0) {
+    document.getElementById('trial-lock').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  } else {
+    const bannerText = document.getElementById('demo-banner-text');
+    if (bannerText) bannerText.textContent = `Free trial — ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`;
+  }
+}
+
+/* ---------- init ---------- */
+function init() {
+  loadState();
+  render();
+  initAccentButton();
+  enforceDemoTrial();
+
+  document.querySelectorAll('.sheet-backdrop').forEach(bd => {
+    bd.addEventListener('click', (e) => {
+      if (e.target !== bd) return;
+      if (bd.id === 'customCategorySheetBackdrop') {
+        closeCustomCategorySheet();
+      } else {
+        bd.classList.remove('open');
+      }
+    });
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
