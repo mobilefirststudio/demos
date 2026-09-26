@@ -1,0 +1,23 @@
+{
+  "name": "Premium Reading Log — Free Trial",
+  "short_name": "Reading Log Trial",
+  "description": "Track every book, streak, and stat. Free 14-day trial.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F3ECDC",
+  "theme_color": "#141F35",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

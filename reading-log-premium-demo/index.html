@@ -1,0 +1,2996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Premium Reading Log — Free Trial — Mobile First Studio</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" id="themeColorMeta" content="#141F35">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Reading Log">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="icon" href="./icons/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600;1,9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --accent:#141F35;
+    --accent-dark:#0B1322;
+    --accent-tint:#E4E7EE;
+    --gold:#C6A045;
+    --gold-dark:#9C7B26;
+    --gold-tint:#F1E6C4;
+    --oxblood:#6D2A32;
+    --oxblood-tint:#EFDBDA;
+    --paper:#F3ECDC;
+    --card:#FFFEFA;
+    --card-tint:#EEE5D2;
+    --ink:#211C17;
+    --ink-soft:#544B3E;
+    --muted:#8A8071;
+    --line:rgba(33,28,23,0.10);
+    --line-strong:rgba(33,28,23,0.17);
+    --line-gold:rgba(198,160,69,0.45);
+    --danger:#8E3327;
+    --heading:var(--accent-dark);
+    --engrave:rgba(255,255,255,.55);
+    --radius-lg:20px;
+    --radius-md:14px;
+    --radius-sm:10px;
+    --shadow-card:0 1px 1px rgba(33,28,23,0.05), 0 2px 5px rgba(33,28,23,0.05), 0 14px 28px rgba(33,28,23,0.09);
+    --shadow-soft:0 1px 2px rgba(33,28,23,0.05), 0 6px 16px rgba(33,28,23,0.06);
+    --font-serif:'Fraunces', serif;
+    --font-sans:'Inter', sans-serif;
+  }
+  :root[data-theme="dark"]{
+    --gold-tint:#3B301E;
+    --oxblood-tint:#3A2422;
+    --paper:#161310;
+    --card:#211D18;
+    --card-tint:#2A2520;
+    --ink:#EDE6DA;
+    --ink-soft:#C6BCAC;
+    --muted:#8C8272;
+    --line:rgba(237,230,218,0.08);
+    --line-strong:rgba(237,230,218,0.14);
+    --line-gold:rgba(198,160,69,0.4);
+    --heading:var(--gold-tint);
+    --engrave:rgba(0,0,0,.35);
+    --shadow-card:0 1px 1px rgba(0,0,0,0.3), 0 2px 5px rgba(0,0,0,0.25), 0 14px 28px rgba(0,0,0,0.35);
+    --shadow-soft:0 1px 2px rgba(0,0,0,0.25), 0 6px 16px rgba(0,0,0,0.3);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; height:100%;}
+  body{
+    font-family:var(--font-sans);
+    background:var(--paper);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:none;
+  }
+  h1,h2,h3,.serif{font-family:var(--font-serif);}
+  #app{
+    max-width:480px; margin:0 auto; min-height:100vh;
+    display:flex; flex-direction:column; position:relative; background:var(--paper);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(33,28,23,0.05) 1px, transparent 0);
+    background-size: 3px 3px;
+  }
+
+  .topbar{
+    position:sticky; top:0; z-index:20;
+    background:linear-gradient(180deg, var(--gold-tint) 0%, var(--paper) 88%);
+    padding:24px 20px 17px; border-bottom:1px solid var(--line); position:relative;
+  }
+  .topbar::after{
+    content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px;
+    background:linear-gradient(90deg, transparent, var(--line-gold) 18%, var(--line-gold) 82%, transparent);
+  }
+  .topbar-row{display:flex; align-items:flex-start; justify-content:space-between; gap:12px;}
+  .eyebrow{font-family:var(--font-sans); font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-dark); margin:0 0 3px;}
+  .wordmark{font-family:var(--font-serif); font-size:26px; font-weight:500; font-style:italic; letter-spacing:0; margin:0; line-height:1.15; color:var(--heading);}
+  .subline{font-size:12.5px; color:var(--muted); margin:5px 0 0; font-weight:500;}
+  .header-actions{display:flex; align-items:center; gap:8px;}
+  .icon-btn{
+    width:38px; height:38px; border-radius:50%; border:1px solid var(--line-strong);
+    background:var(--card); display:flex; align-items:center; justify-content:center; cursor:pointer;
+    box-shadow:var(--shadow-card); flex-shrink:0; position:relative; transition:transform .5s cubic-bezier(.2,.8,.2,1);
+  }
+  .icon-btn.holding{transform:scale(.86); transition:transform .55s cubic-bezier(.2,.8,.2,1);}
+  .palette-dot{width:16px; height:16px; border-radius:50%; background:conic-gradient(var(--accent),var(--gold),var(--accent));}
+  .mode-badge{
+    position:absolute; bottom:-3px; right:-3px; width:16px; height:16px; border-radius:50%;
+    background:var(--card); border:1px solid var(--line-strong); display:flex; align-items:center;
+    justify-content:center; color:var(--gold-dark); box-shadow:var(--shadow-soft);
+  }
+  .mode-badge svg{width:9px; height:9px;}
+
+  .color-popover{
+    position:absolute; top:64px; right:20px; z-index:30; background:var(--card);
+    border:1px solid var(--line); border-radius:var(--radius-md); box-shadow:0 10px 30px rgba(43,38,32,0.18);
+    padding:14px; display:none; width:210px;
+  }
+  .color-popover.open{display:block;}
+  .color-popover-title{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 10px;}
+  .swatch-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  .swatch{
+    width:100%; aspect-ratio:1; border-radius:50%; cursor:pointer; border:2px solid transparent;
+    display:flex; align-items:center; justify-content:center; position:relative;
+  }
+  .swatch.active{border-color:var(--gold);}
+  .swatch.active::after{content:'✓'; color:#fff; font-size:13px; font-weight:700;}
+  .swatch-label{font-size:9.5px; text-align:center; margin-top:4px; color:var(--muted); font-weight:600;}
+  .swatch-cell{display:flex; flex-direction:column; align-items:center;}
+
+  .goal-pill{
+    display:inline-flex; align-items:center; gap:7px; background:var(--card); border:1px solid var(--line-gold);
+    padding:7px 13px; border-radius:100px; font-size:11.5px; font-weight:600; color:var(--ink-soft);
+    letter-spacing:.02em; margin-top:14px; box-shadow:var(--shadow-soft);
+  }
+  .goal-pill .dot{width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 0 3px var(--gold-tint);}
+
+  .view{display:none; padding:18px 20px 100px;}
+  .view.active{display:flex; flex-direction:column; flex:1; animation:viewFadeIn .3s ease;}
+  @keyframes viewFadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  .empty-icon{
+    width:44px; height:44px; border-radius:50%; background:var(--card-tint); color:var(--muted);
+    display:flex; align-items:center; justify-content:center; margin:0 auto 12px;
+  }
+  .empty-icon svg{width:22px; height:22px;}
+
+  .section-label{
+    font-family:var(--font-serif); font-size:15px; font-weight:600; font-style:italic; color:var(--ink);
+    margin:26px 0 11px; display:flex; align-items:center; gap:8px;
+  }
+  .section-label::before{content:''; width:12px; height:2px; background:var(--gold); border-radius:2px; flex-shrink:0;}
+  .section-label:first-child{margin-top:2px;}
+  .section-sub{font-size:11.5px; color:var(--muted); margin:-6px 0 12px 20px; font-weight:500;}
+
+  .empty{
+    text-align:center; padding:36px 16px; color:var(--muted);
+    border:1px solid var(--line-strong); background:var(--card); border-radius:var(--radius-md); font-size:13px; line-height:1.5;
+    box-shadow:var(--shadow-soft);
+  }
+  .empty b{display:block; color:var(--ink); font-size:14.5px; margin-bottom:4px; font-family:var(--font-serif); font-style:italic; font-weight:600;}
+
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius-md);
+    padding:16px 17px; margin-bottom:10px; box-shadow:var(--shadow-card); position:relative;
+  }
+  .book-card{cursor:pointer;}
+  .row-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .book-title{font-family:var(--font-serif); font-size:16.5px; font-weight:600; margin:0; letter-spacing:-0.01em;}
+  .book-author{font-size:12px; color:var(--muted); margin:3px 0 0; font-weight:500;}
+  .genre-chip{font-size:9.5px; font-weight:700; padding:3.5px 10px; border-radius:100px; white-space:nowrap; text-transform:uppercase; letter-spacing:.06em; box-shadow:inset 0 1px 1px var(--engrave), 0 1px 2px rgba(33,28,23,0.08);}
+  .progress-row{display:flex; align-items:center; gap:10px; margin-top:13px;}
+  .progress-track{flex:1; height:6px; background:var(--card-tint); border-radius:100px; overflow:hidden; box-shadow:inset 0 1px 1px rgba(33,28,23,0.06);}
+  .progress-fill{height:100%; background:linear-gradient(90deg, var(--accent) 0%, var(--gold) 100%); border-radius:100px; transition:width .55s cubic-bezier(.22,1,.36,1);}
+  .progress-num{font-size:11px; color:var(--muted); font-weight:600; white-space:nowrap; font-variant-numeric:tabular-nums;}
+  .quick-add{margin-top:13px; display:flex; gap:8px;}
+  .quick-add button{
+    flex:1; padding:9px; border-radius:var(--radius-sm); border:1px solid var(--line-strong);
+    background:var(--card-tint); font-family:var(--font-sans); font-size:11.5px; font-weight:700; color:var(--ink-soft); cursor:pointer;
+    letter-spacing:.01em; transition:background .15s;
+  }
+  .quick-add button:active{transform:scale(.97);}
+  .quick-add button[data-act="update"]{background:var(--accent); color:#fff; border-color:var(--accent);}
+
+  .queue-row{display:flex; align-items:center; gap:12px; padding:11px 4px; border-bottom:1px solid var(--line);}
+  .queue-row:last-child{border-bottom:none;}
+  .queue-spine{width:5px; height:34px; border-radius:3px; flex-shrink:0;}
+  .queue-info{flex:1; min-width:0;}
+  .queue-title{font-family:var(--font-serif); font-size:14.5px; font-weight:600; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .queue-author{font-size:11px; color:var(--muted); margin:1px 0 0;}
+  .queue-start{font-size:11px; font-weight:700; color:var(--gold-dark); background:var(--gold-tint); border:none; padding:6px 10px; border-radius:var(--radius-sm); cursor:pointer;}
+
+  .shelf-wrap{padding:20px 18px 0; overflow:hidden;}
+  .shelf-title{font-family:var(--font-serif); font-size:15px; font-weight:600; margin:0 0 2px;}
+  .shelf-sub{font-size:11.5px; color:var(--muted); margin:0 0 16px;}
+  .shelf-scroll{display:flex; align-items:flex-end; gap:3px; overflow-x:auto; padding-bottom:14px; scrollbar-width:none; min-height:96px;}
+  .shelf-scroll::-webkit-scrollbar{display:none;}
+  .shelf-ledge{height:3px; background:linear-gradient(90deg, var(--accent), var(--gold)); border-radius:2px; margin:0 -18px 0;}
+  .spine{flex-shrink:0; border-radius:3px 3px 0 0; cursor:pointer; transition:transform .12s;}
+  .spine:active{transform:translateY(2px);}
+
+  .stars{display:flex; align-items:center; gap:2px; margin-top:4px;}
+  .stars svg{width:14px; height:14px;}
+  .stars .star-on{fill:var(--gold); stroke:none;}
+  .stars .star-off{fill:none; stroke:var(--line-strong); stroke-width:1.5;}
+  .log-meta{display:flex; justify-content:space-between; align-items:center; margin-top:8px;}
+  .log-date{font-size:11px; color:var(--muted); font-weight:600;}
+  .reflection-preview{
+    font-size:12.5px; color:var(--ink-soft); margin-top:9px; padding-top:9px; border-top:1px solid var(--line);
+    line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  }
+
+  .stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .stat-card{padding:16px 15px;}
+  .stat-num{font-family:var(--font-serif); font-size:27px; font-weight:600; letter-spacing:-0.01em; line-height:1; font-variant-numeric:tabular-nums; text-shadow:0 1px 0 var(--engrave);}
+  .stat-label{font-size:10.5px; color:var(--muted); font-weight:600; margin-top:7px; letter-spacing:.02em;}
+
+  .rings-row{display:flex; gap:12px;}
+  .ring-card{flex:1; display:flex; flex-direction:column; align-items:center; text-align:center; padding:20px 10px;}
+  .ring-num{font-family:var(--font-serif); font-size:15px; font-weight:600; margin-top:9px; text-shadow:0 1px 0 var(--engrave);}
+  .ring-sub{font-size:10px; color:var(--muted); margin-top:2px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;}
+
+  .bar-chart{display:flex; align-items:flex-end; gap:8px; height:120px; padding:10px 4px 0;}
+  .bar-col{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; height:100%;}
+  .bar{width:100%; max-width:24px; border-radius:4px 4px 1px 1px; background:linear-gradient(180deg, var(--gold), var(--accent)); min-height:3px; transition:height .5s cubic-bezier(.22,1,.36,1);}
+  .bar-day{font-size:10px; color:var(--muted); margin-top:7px; font-weight:700;}
+  .bar-val{font-size:9.5px; color:var(--ink-soft); margin-bottom:4px; font-weight:600; font-variant-numeric:tabular-nums;}
+  circle[id^="ring"]{transition:stroke-dashoffset .7s cubic-bezier(.22,1,.36,1);}
+
+  .streak-card{display:flex; align-items:center; gap:15px;}
+  .streak-flame{
+    width:46px; height:46px; border-radius:50%; flex-shrink:0;
+    background:radial-gradient(circle at 35% 30%, var(--gold-tint), var(--gold) 78%);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:inset 0 1px 2px var(--engrave), 0 2px 6px rgba(156,123,38,.35);
+  }
+  .streak-num{font-family:var(--font-serif); font-size:19px; font-weight:700; color:var(--heading); text-shadow:0 1px 0 var(--engrave);}
+  .streak-text b{display:block; font-size:14.5px; font-weight:600; font-family:var(--font-serif);}
+  .streak-text span{font-size:11.5px; color:var(--muted);}
+
+  .genre-bar-row{margin-bottom:13px;}
+  .genre-bar-label{display:flex; justify-content:space-between; font-size:12.5px; font-weight:600; margin-bottom:6px;}
+  .genre-bar-track{height:7px; background:var(--card-tint); border-radius:100px; overflow:hidden; box-shadow:inset 0 1px 1px rgba(33,28,23,0.06);}
+  .genre-bar-fill{height:100%; border-radius:100px;}
+
+  .quote-card{position:relative; padding-top:26px; border-left:2px solid var(--gold); border-radius:4px var(--radius-md) var(--radius-md) 4px;}
+  .quote-mark{position:absolute; top:0px; left:15px; font-family:var(--font-serif); font-size:38px; color:var(--gold); line-height:1; opacity:.6;}
+  .quote-text{font-family:var(--font-serif); font-style:italic; font-size:15.5px; line-height:1.6; margin:0 0 11px; color:var(--ink); font-weight:500;}
+  .quote-attr{font-size:11.5px; color:var(--muted); font-weight:600;}
+  .quote-attr b{color:var(--ink-soft); font-weight:700; font-style:italic; font-family:var(--font-serif);}
+
+  .log-form-row{display:flex; gap:10px;}
+  .log-form-row .field{flex:1;}
+
+  .fab-wrap{
+    position:fixed; left:0; right:0; z-index:25;
+    bottom:calc(var(--navh) + env(safe-area-inset-bottom) + 14px);
+    display:flex; justify-content:flex-end;
+    max-width:480px; margin:0 auto; padding:0 20px;
+    pointer-events:none;
+  }
+  .fab{
+    pointer-events:auto; flex-shrink:0;
+    width:56px; height:56px; border-radius:50%;
+    background:linear-gradient(155deg, var(--accent) 0%, var(--accent-dark) 100%);
+    color:var(--gold-tint); border:1px solid rgba(198,160,69,0.35);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 8px rgba(33,28,23,.18), 0 12px 26px rgba(33,28,23,.24); cursor:pointer;
+    transition:transform .12s;
+  }
+  .fab svg{width:22px; height:22px;}
+  .fab:active{transform:scale(.94);}
+
+  :root{ --navh:60px; }
+
+  .bottomnav{
+    position:fixed; left:0; right:0; bottom:0; z-index:20; background:var(--paper); border-top:1px solid var(--line);
+    display:flex; padding:7px 8px calc(7px + env(safe-area-inset-bottom));
+    max-width:480px; margin:0 auto; width:100%; min-height:var(--navh);
+  }
+  .bottomnav::before{
+    content:''; position:absolute; top:-1px; left:0; right:0; height:1px;
+    background:linear-gradient(90deg, transparent, var(--line-gold) 18%, var(--line-gold) 82%, transparent);
+  }
+  .nav-btn{position:relative;}
+  .nav-btn{flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; background:none; border:none; font-family:var(--font-sans); padding:6px 1px; cursor:pointer; color:var(--muted);}
+  .nav-btn.active{color:var(--heading);}
+  .nav-ico{line-height:1; display:flex; align-items:center; justify-content:center; padding:5px 15px; border-radius:100px; transition:background-color .25s ease;}
+  .nav-btn.active .nav-ico{background:var(--gold-tint);}
+  .nav-ico svg{width:19px; height:19px; stroke:currentColor; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round;}
+  .nav-btn.active .nav-ico svg{stroke-width:1.9;}
+  .nav-lbl{font-size:9px; font-weight:700; letter-spacing:.03em;}
+
+  .sheet-overlay{
+    position:fixed; inset:0; background:rgba(43,38,32,.4); z-index:40; display:flex; align-items:flex-end; justify-content:center;
+    opacity:0; pointer-events:none; -webkit-backdrop-filter:blur(0px); backdrop-filter:blur(0px);
+    transition:opacity .28s ease, backdrop-filter .28s ease, -webkit-backdrop-filter .28s ease;
+  }
+  .sheet-overlay.open{opacity:1; pointer-events:auto; -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px);}
+  .sheet{
+    background:var(--paper); width:100%; max-width:480px; border-radius:22px 22px 0 0; padding:10px 20px calc(24px + env(safe-area-inset-bottom));
+    max-height:88vh; overflow-y:auto; transform:translateY(100%); transition:transform .32s cubic-bezier(.22,1,.36,1);
+  }
+  .sheet-overlay.open .sheet{transform:translateY(0);}
+  .sheet-handle{width:36px; height:4px; background:var(--line-strong); border-radius:3px; margin:6px auto 14px;}
+  .sheet-title{font-family:var(--font-serif); font-size:18px; font-weight:600; margin:0 0 16px;}
+  .field{margin-bottom:13px;}
+  .field label{font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; display:block; margin-bottom:6px;}
+  .field input, .field textarea, .field select{
+    width:100%; font-family:var(--font-sans); font-size:14.5px; padding:11px 13px;
+    border:1px solid var(--line-strong); border-radius:var(--radius-sm); background:var(--card); color:var(--ink);
+  }
+  .field textarea{resize:vertical; min-height:70px; line-height:1.5;}
+  .field-row{display:flex; gap:10px;}
+  .field-row .field{flex:1;}
+  .star-picker{display:flex; gap:2px;}
+  .star-picker span{cursor:pointer; display:flex; padding:2px;}
+  .star-picker span svg{width:26px; height:26px; fill:none; stroke:var(--line-strong); stroke-width:1.5; transition:transform .1s;}
+  .star-picker span:active svg{transform:scale(1.15);}
+  .star-picker span.on svg{fill:var(--gold); stroke:none;}
+  .star-picker span.half svg{fill:url(#halfStarGrad); stroke:none;}
+
+  .dark-toggle-row{display:flex; align-items:center; justify-content:space-between; margin-top:12px; padding-top:10px; border-top:1px solid var(--line);}
+  .dark-toggle-label{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);}
+  .dark-toggle-btn{
+    width:36px; height:20px; border-radius:100px; position:relative; cursor:pointer;
+    background:var(--card-tint); border:1px solid var(--line-strong); transition:background .2s;
+  }
+  .dark-toggle-btn.on{background:var(--accent);}
+  .dark-toggle-btn::after{
+    content:''; position:absolute; top:2px; left:2px; width:14px; height:14px;
+    border-radius:50%; background:#fff; transition:transform .2s; box-shadow:0 1px 2px rgba(0,0,0,.2);
+  }
+  .dark-toggle-btn.on::after{transform:translateX(16px);}
+
+  .quote-delete{
+    position:absolute; top:10px; right:12px; width:26px; height:26px; border-radius:50%;
+    border:1px solid var(--line-strong); background:var(--card-tint); display:flex; align-items:center;
+    justify-content:center; cursor:pointer; color:var(--danger); opacity:0; transition:opacity .15s;
+  }
+  .quote-card:hover .quote-delete{opacity:1;}
+
+  .dnf-badge{
+    display:inline-flex; align-items:center; gap:4px; font-size:9.5px; font-weight:700;
+    padding:3px 8px; border-radius:100px; background:var(--oxblood-tint); color:var(--oxblood);
+    text-transform:uppercase; letter-spacing:.05em; white-space:nowrap;
+  }
+  .mood-chip{
+    display:inline-flex; align-items:center; font-size:9.5px; font-weight:700;
+    padding:3px 9px; border-radius:100px; background:var(--gold-tint); color:var(--gold-dark);
+    text-transform:uppercase; letter-spacing:.04em; margin-top:6px;
+  }
+  .format-chip{font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.05em;}
+
+  .year-wrap-card{background:linear-gradient(145deg, var(--accent) 0%, var(--accent-dark) 100%); color:var(--gold-tint); border-color:transparent;}
+  .year-wrap-heading{font-family:var(--font-serif); font-size:13px; font-weight:700; font-style:italic; opacity:.7; margin:0 0 12px; text-transform:uppercase; letter-spacing:.08em;}
+  .year-wrap-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px;}
+  .year-wrap-cell{text-align:center;}
+  .year-wrap-num{font-family:var(--font-serif); font-size:22px; font-weight:700; line-height:1; text-shadow:0 1px 0 rgba(0,0,0,.25);}
+  .year-wrap-lbl{font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; opacity:.65; margin-top:4px;}
+  .year-wrap-divider{height:1px; background:rgba(198,160,69,0.25); margin:12px 0;}
+  .year-wrap-row{display:flex; justify-content:space-between; align-items:center; font-size:12px;}
+  .year-wrap-row b{font-family:var(--font-serif); font-style:italic;}
+
+  /* ── Reading history timeline ── */
+  .timeline-entry{display:flex; gap:12px; padding:11px 0; border-bottom:1px solid var(--line);}
+  .timeline-entry:last-child{border-bottom:none;}
+  .timeline-dot{width:8px; height:8px; border-radius:50%; background:var(--gold); flex-shrink:0; margin-top:5px;}
+  .timeline-date{font-size:10.5px; font-weight:700; color:var(--muted); white-space:nowrap; min-width:42px; padding-top:2px;}
+  .timeline-body{flex:1; min-width:0;}
+  .timeline-book{font-size:13px; font-weight:700; color:var(--ink); font-family:var(--font-serif); font-style:italic; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .timeline-pages{font-size:11.5px; color:var(--gold-dark); font-weight:700; margin-top:1px;}
+  .timeline-note{font-size:11.5px; color:var(--ink-soft); margin-top:3px; font-style:italic; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+  .timeline-show-more{width:100%; background:none; border:none; font-family:var(--font-sans); font-size:12px; font-weight:700; color:var(--muted); padding:10px 0 2px; cursor:pointer; text-align:center;}
+
+  /* ── Activity heatmap ── */
+  .heatmap-wrap{overflow-x:auto; padding-bottom:6px; scrollbar-width:none;}
+  .heatmap-wrap::-webkit-scrollbar{display:none;}
+  .heatmap-grid{display:flex; gap:3px; align-items:flex-start;}
+  .heatmap-col{display:flex; flex-direction:column; gap:3px;}
+  .heatmap-cell{width:11px; height:11px; border-radius:2px; flex-shrink:0;}
+  .heatmap-month-labels{display:flex; gap:3px; margin-bottom:4px; padding-left:0;}
+  .heatmap-month-lbl{font-size:9px; font-weight:700; color:var(--muted); letter-spacing:.03em; text-transform:uppercase; white-space:nowrap; flex-shrink:0;}
+  .heatmap-legend{display:flex; align-items:center; gap:5px; margin-top:8px; justify-content:flex-end;}
+  .heatmap-legend-lbl{font-size:10px; color:var(--muted); font-weight:600;}
+  .heatmap-legend-cell{width:11px; height:11px; border-radius:2px;}
+
+  /* ── Book cover ── */
+  .cover-upload-btn{
+    width:64px; height:88px; border-radius:var(--radius-sm); border:1.5px dashed var(--line-strong);
+    background:var(--card-tint); display:flex; flex-direction:column; align-items:center;
+    justify-content:center; cursor:pointer; flex-shrink:0; gap:4px; color:var(--muted);
+    font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+  }
+  .cover-upload-btn svg{width:18px; height:18px; opacity:.5;}
+  .cover-thumb{
+    width:64px; height:88px; border-radius:var(--radius-sm); object-fit:cover;
+    border:1px solid var(--line-strong); flex-shrink:0; cursor:pointer;
+    box-shadow:var(--shadow-soft);
+  }
+  .cover-field-row{display:flex; align-items:flex-start; gap:14px; margin-bottom:13px;}
+  .cover-field-inputs{flex:1; min-width:0;}
+  .cover-clear{font-size:10px; font-weight:700; color:var(--danger); background:none; border:none; cursor:pointer; margin-top:4px; padding:0; font-family:var(--font-sans);}
+
+  .book-card-cover{width:46px; height:64px; border-radius:6px; object-fit:cover; flex-shrink:0; box-shadow:var(--shadow-soft); border:1px solid var(--line);}
+  .book-card-cover-placeholder{width:46px; height:64px; border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border:1px solid var(--line);}
+  .detail-cover{width:72px; height:100px; border-radius:var(--radius-sm); object-fit:cover; flex-shrink:0; box-shadow:var(--shadow-card); border:1px solid var(--line); margin-bottom:12px;}
+  .detail-cover-placeholder{width:72px; height:100px; border-radius:var(--radius-sm); flex-shrink:0; display:flex; align-items:center; justify-content:center; border:1px solid var(--line); margin-bottom:12px;}
+  .sheet-actions{display:flex; gap:10px; margin-top:18px;}
+  .btn{flex:1; padding:13px; border-radius:var(--radius-sm); border:none; font-family:var(--font-sans); font-size:13.5px; font-weight:700; letter-spacing:.01em; cursor:pointer;}
+  .btn-primary{background:linear-gradient(180deg, var(--accent) 0%, var(--accent-dark) 100%); color:var(--gold-tint); box-shadow:0 4px 12px rgba(11,19,34,0.25), 0 1px 10px rgba(198,160,69,0.18);}
+  .btn-ghost{background:var(--card-tint); color:var(--ink-soft); border:1px solid var(--line-strong);}
+  .btn-danger{background:transparent; color:var(--danger); border:1px solid var(--danger); opacity:.85;}
+
+  .settings-row{display:flex; justify-content:space-between; align-items:center; padding:15px 4px; border-bottom:1px solid var(--line);}
+  .settings-row:last-child{border-bottom:none;}
+  .settings-label{font-size:14px; font-weight:600;}
+  .settings-sub{font-size:11px; color:var(--muted); margin-top:2px;}
+
+  .dash-goal-card{display:flex; align-items:center; gap:16px;}
+  .dash-goal-text{flex:1; min-width:0;}
+  .dash-goal-num{font-family:var(--font-serif); font-size:19px; font-weight:600; text-shadow:0 1px 0 var(--engrave);}
+  .dash-goal-sub{font-size:11px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-top:2px;}
+
+  .dash-streak-row{display:flex; align-items:center; gap:14px;}
+  .dash-streak-num{font-family:var(--font-serif); font-size:19px; font-weight:700; color:var(--heading); text-shadow:0 1px 0 var(--engrave);}
+
+  .dash-book-row{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .dash-more-row{display:flex; justify-content:space-between; align-items:center; padding:9px 0; border-top:1px solid var(--line); margin-top:11px; font-size:12.5px;}
+  .dash-more-row:first-of-type{margin-top:13px;}
+  .dash-more-title{font-weight:600; color:var(--ink-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .dash-more-pct{color:var(--muted); font-weight:600; flex-shrink:0; margin-left:10px; font-variant-numeric:tabular-nums;}
+
+  .momentum-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:11px;}
+  .momentum-num{font-family:var(--font-serif); font-size:22px; font-weight:600; text-shadow:0 1px 0 var(--engrave);}
+  .momentum-goal{font-size:11.5px; color:var(--muted); font-weight:600;}
+  .trend-badge{display:inline-flex; align-items:center; gap:3px; font-size:10.5px; font-weight:700; padding:3px 8px; border-radius:100px;}
+  .trend-up{background:var(--gold-tint); color:var(--gold-dark);}
+  .trend-down{background:var(--oxblood-tint); color:var(--oxblood);}
+  .trend-flat{background:var(--card-tint); color:var(--muted);}
+
+  .dash-goal-pace{font-size:11px; color:var(--gold-dark); font-weight:600; margin-top:5px;}
+  .streak-alert{margin:9px 2px 0; font-size:11.5px; color:var(--gold-dark); font-weight:600;}
+
+  .sheet-title-row{display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:16px;}
+  .sheet-title-row .sheet-title{margin:0;}
+  .icon-btn-sm{
+    width:32px; height:32px; border-radius:50%; border:1px solid var(--line-strong); background:var(--card);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--danger); flex-shrink:0;
+  }
+
+  .chip-row{display:flex; gap:7px; overflow-x:auto; padding-bottom:2px; margin-bottom:11px; scrollbar-width:none;}
+  .chip-row::-webkit-scrollbar{display:none;}
+  .filter-chip{
+    flex-shrink:0; font-size:11.5px; font-weight:700; padding:6px 13px; border-radius:100px; cursor:pointer;
+    border:1px solid var(--line-strong); background:var(--card); color:var(--ink-soft); white-space:nowrap;
+  }
+  .filter-chip.active{background:var(--accent); color:var(--gold-tint); border-color:var(--accent);}
+
+  .shelf-search-row{display:flex; gap:8px; margin-bottom:11px; align-items:center;}
+  .shelf-search-wrap{flex:1; position:relative; display:flex; align-items:center;}
+  .shelf-search-wrap svg{position:absolute; left:11px; width:15px; height:15px; color:var(--muted); pointer-events:none; flex-shrink:0;}
+  .shelf-search-wrap input{
+    width:100%; padding:9px 12px 9px 32px; font-family:var(--font-sans); font-size:13.5px;
+    border:1px solid var(--line-strong); border-radius:var(--radius-sm); background:var(--card); color:var(--ink);
+  }
+  .shelf-search-wrap input::placeholder{color:var(--muted);}
+  .sort-select{
+    flex-shrink:0; font-family:var(--font-sans); font-size:12px; font-weight:700; color:var(--ink-soft);
+    padding:9px 10px; border:1px solid var(--line-strong); border-radius:var(--radius-sm);
+    background:var(--card); cursor:pointer; -webkit-appearance:none; appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238A8071' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 8px center; padding-right:24px;
+  }
+
+  .mood-bar-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .mood-bar-emoji{font-size:16px; width:22px; text-align:center; flex-shrink:0;}
+  .mood-bar-info{flex:1; min-width:0;}
+  .mood-bar-label{font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:4px; display:flex; justify-content:space-between;}
+  .mood-bar-track{height:6px; background:var(--card-tint); border-radius:100px; overflow:hidden;}
+  .mood-bar-fill{height:100%; border-radius:100px; background:linear-gradient(90deg, var(--gold-dark), var(--gold));}
+
+  .format-row{display:flex; align-items:center; justify-content:space-around; padding:8px 0;}
+  .format-cell{display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .format-ring-wrap{position:relative; width:64px; height:64px;}
+  .format-ring-wrap svg{width:64px; height:64px;}
+  .format-ring-pct{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-serif); font-size:14px; font-weight:700; color:var(--ink);}
+  .format-ring-label{font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.04em;}
+  .format-ring-count{font-size:11px; color:var(--ink-soft); font-weight:600;}
+
+  .session-note-preview{font-size:11.5px; color:var(--muted); font-style:italic; margin-top:5px; line-height:1.4;}
+  .note-count-badge{
+    display:inline-flex;align-items:center;gap:3px;font-size:9.5px;font-weight:700;
+    padding:2px 7px;border-radius:100px;background:var(--accent-tint);color:var(--accent);
+    margin-top:5px;letter-spacing:.03em;
+  }
+
+  /* Onboarding — centred sheet variant */
+  #onboardSheet{ align-items:center; }
+  #onboardSheet .sheet{
+    border-radius:22px; margin:0 16px; width:calc(100% - 32px);
+    max-width:448px; transform:translateY(40px) scale(.96);
+    opacity:0; transition:transform .35s cubic-bezier(.22,1,.36,1), opacity .3s ease;
+  }
+  #onboardSheet.open .sheet{ transform:translateY(0) scale(1); opacity:1; }
+  .backup-reminder-title{display:block; font-family:var(--font-serif); font-style:italic; font-weight:600; font-size:14.5px; margin-bottom:4px;}
+  .backup-reminder-text{font-size:12.5px; color:var(--ink-soft); line-height:1.5;}
+</style>
+</head>
+<body>
+<style>
+  .demo-banner {
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    background: linear-gradient(135deg, #3A4E76, #141F35);
+    color: #fff;
+    text-align: center;
+    padding: 8px 16px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    z-index: 30;
+  }
+  .demo-banner a { color: #fff; text-decoration: underline; }
+  #trial-lock {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(20,18,14,0.72);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .lock-card {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 26px 22px;
+    max-width: 340px;
+    text-align: center;
+  }
+  .lock-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+  .lock-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin-bottom: 18px;
+  }
+  .lock-cta {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+  .upsell-card {
+    background: var(--card-tint);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .upsell-title {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .upsell-text {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+  .upsell-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12.5px;
+    padding: 9px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+  }
+</style>
+<div id="app">
+  <div class="demo-banner" id="demo-banner"><span id="demo-banner-text">Free trial — 14 days left</span> &middot; <a href="https://www.etsy.com/listing/4546328902/reading-log-habit-tracker-book-notes" target="_blank" rel="noopener">Buy the full version</a></div>
+  <div id="trial-lock">
+    <div class="lock-card">
+      <div class="lock-title">Your free trial has ended</div>
+      <div class="lock-text">Your 14-day trial of Premium Reading Log has ended. Purchase the full version on Etsy to keep tracking every book, streak, and stat, with no interruptions and optional Google Drive backup.</div>
+      <a class="lock-cta" href="https://www.etsy.com/listing/4546328902/reading-log-habit-tracker-book-notes" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+    </div>
+  </div>
+
+  <div class="topbar">
+    <div class="topbar-row">
+      <div>
+        <p class="eyebrow">Personal Reading Log</p>
+        <p class="wordmark" id="appNameLabel">Premium Reading Log</p>
+        <p class="subline" id="termLabel">2026 Reading Goal</p>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" id="infoBtn" aria-label="What's included" onclick="openSheet('infoSheet')" style="font-family:var(--font-serif);font-style:italic;font-size:15px;font-weight:600;color:var(--gold-dark);">?</button>
+        <button class="icon-btn" id="paletteBtn" aria-label="Choose accent color. Long-press to toggle dark mode."><span class="palette-dot"></span><span class="mode-badge" id="modeBadge"></span></button>
+      </div>
+    </div>
+    <div class="goal-pill"><span class="dot"></span><span id="goalPillText">0 / 12 books</span></div>
+
+    <div class="color-popover" id="colorPopover">
+      <p class="color-popover-title">Accent color</p>
+      <div class="swatch-grid" id="swatchGrid"></div>
+      <div class="dark-toggle-row">
+        <span class="dark-toggle-label">Dark mode</span>
+        <button class="dark-toggle-btn" id="darkToggleBtn" onclick="toggleDarkMode()" aria-label="Toggle dark mode"></button>
+      </div>
+    </div>
+    <!-- Half-star gradient definition -->
+    <svg width="0" height="0" style="position:absolute;"><defs><linearGradient id="halfStarGrad" x1="0" x2="1" y1="0" y2="0"><stop offset="50%" stop-color="var(--gold)"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs></svg>
+  </div>
+
+  <div class="view active" id="view-dashboard">
+    <div class="section-label">Reading goal</div>
+    <div class="card dash-goal-card">
+      <svg width="52" height="52" viewBox="0 0 64 64" style="flex-shrink:0;">
+        <circle cx="32" cy="32" r="27" fill="none" stroke="var(--card-tint)" stroke-width="7"/>
+        <circle id="ringDashTerm" cx="32" cy="32" r="27" fill="none" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" transform="rotate(-90 32 32)"/>
+      </svg>
+      <div class="dash-goal-text">
+        <div class="dash-goal-num" id="dashGoalLabel">0 / 12 books</div>
+        <div class="dash-goal-sub">Reading goal</div>
+        <div class="dash-goal-pace" id="dashGoalPace"></div>
+      </div>
+    </div>
+
+    <div class="section-label">Reading streak</div>
+    <div class="card dash-streak-row">
+      <div class="streak-flame"><span class="dash-streak-num" id="dashStreakNum">0</span></div>
+      <div class="streak-text">
+        <b id="dashStreakHeadline">No active streak</b>
+        <span id="dashStreakSub">Longest streak: 0 days</span>
+      </div>
+    </div>
+    <div class="streak-alert" id="streakAlert" style="display:none;"></div>
+
+    <div class="section-label">Currently reading</div>
+    <div class="card" id="dashCurrentBook"></div>
+
+    <div class="section-label">Weekly momentum</div>
+    <div class="card" id="dashMomentum"></div>
+
+    <div class="section-label" id="dashChallengesLabel" style="display:none;">Challenges</div>
+    <div id="dashChallenges"></div>
+  </div>
+
+  <div class="view" id="view-log">
+    <div class="card" id="logContext" style="display:none; margin-top:2px;"></div>
+    <div class="section-label" id="todaySectionLabel">Today</div>
+    <div class="card" id="dailyLogCard"></div>
+
+    <div class="section-label">This week</div>
+    <div class="card" id="weeklySummaryCard"></div>
+
+    <div class="section-label">This month</div>
+    <div class="card" id="monthlySummaryCard"></div>
+
+    <div class="section-label">Reading history</div>
+    <div class="card" id="timelineCard" style="padding:6px 17px;"></div>
+  </div>
+
+  <div class="view" id="view-shelf">
+    <div class="section-label">Currently reading</div>
+    <div id="readingList"></div>
+    <div class="section-label">TBR</div>
+    <p class="section-sub">Books you plan to read next</p>
+    <div id="queueList"></div>
+    <div class="section-label">Finished shelf</div>
+    <div class="card shelf-wrap">
+      <p class="shelf-title">Your shelf</p>
+      <p class="shelf-sub" id="shelfSub">Finish a book to start filling it in</p>
+      <div class="shelf-scroll" id="shelfScroll"></div>
+      <div class="shelf-ledge"></div>
+    </div>
+    <div class="section-label">Finished books</div>
+    <div class="shelf-search-row">
+      <div class="shelf-search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="finishedSearch" placeholder="Search by title or author…" oninput="render()">
+      </div>
+      <select id="finishedSort" onchange="render()" class="sort-select">
+        <option value="recent">Recent</option>
+        <option value="rating">Rating</option>
+        <option value="title">Title A–Z</option>
+        <option value="pages">Pages</option>
+      </select>
+    </div>
+    <div class="chip-row" id="finishedFilterChips"></div>
+    <div id="finishedList"></div>
+    <div class="section-label" id="dnfSectionLabel" style="display:none;">Did Not Finish</div>
+    <div id="dnfList"></div>
+  </div>
+
+  <div class="view" id="view-stats">
+    <div class="section-label">Weekly pace</div>
+    <div class="rings-row">
+      <div class="card ring-card" style="flex:1;">
+        <svg width="64" height="64" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="27" fill="none" stroke="var(--card-tint)" stroke-width="7"/>
+          <circle id="ringWeek" cx="32" cy="32" r="27" fill="none" stroke="var(--gold)" stroke-width="7" stroke-linecap="round" transform="rotate(-90 32 32)"/>
+        </svg>
+        <div class="ring-num" id="ringWeekLabel">0 / 150</div>
+        <div class="ring-sub">Weekly pages</div>
+      </div>
+    </div>
+
+    <div class="section-label">Pages this week</div>
+    <div class="card"><div class="bar-chart" id="weekBarChart"></div></div>
+
+    <div class="section-label">Overview</div>
+    <div class="stat-grid">
+      <div class="card stat-card"><div class="stat-num" id="statPages">0</div><div class="stat-label">Total pages read</div></div>
+      <div class="card stat-card"><div class="stat-num" id="statAvg">–</div><div class="stat-label">Average rating</div></div>
+      <div class="card stat-card"><div class="stat-num" id="statBooks">0</div><div class="stat-label">Books finished</div></div>
+      <div class="card stat-card"><div class="stat-num" id="statQuotes">0</div><div class="stat-label">Quotes saved</div></div>
+    </div>
+
+    <div class="section-label">Activity heatmap</div>
+    <div class="card" id="heatmapCard"></div>
+
+    <div class="section-label">Genre breakdown</div>
+    <div class="card" id="genreBars"></div>
+
+    <div class="section-label">Reading mood</div>
+    <div class="card" id="moodBars"></div>
+
+    <div class="section-label">Format mix</div>
+    <div class="card" id="formatRings"></div>
+
+    <div class="section-label">This year</div>
+    <div class="card year-wrap-card" id="yearWrapCard"></div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:-2px;margin-bottom:8px;" onclick="openWrapExport()">✦ Share your year</button>
+  </div>
+
+  <div class="view" id="view-quotes">
+    <div class="section-label">Favorite quotes</div>
+    <p class="section-sub">Lines worth remembering</p>
+    <div id="quotesList"></div>
+  </div>
+
+  <div class="view" id="view-settings">
+    <div class="section-label">Appearance</div>
+    <div class="field"><label>App name</label><input type="text" id="settingAppName" placeholder="Premium Reading Log" maxlength="32"></div>
+    <div class="settings-row" style="cursor:pointer;" onclick="switchTab('dashboard'); setTimeout(()=>{ document.getElementById('colorPopover').classList.toggle('open'); },150);">
+      <div>
+        <div class="settings-label">Accent colour &amp; dark mode</div>
+        <div class="settings-sub">Choose a colour theme and toggle dark mode</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span class="palette-dot" style="width:20px;height:20px;flex-shrink:0;border-radius:50%;"></span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+      </div>
+    </div>
+
+    <div class="section-label">Reading goal</div>
+    <div class="field"><label>Goal name</label><input type="text" id="settingTermName" placeholder="e.g. 2026 Reading Goal, Summer Reads…"></div>
+    <div class="field-row">
+      <div class="field"><label>Book target</label><input type="number" id="settingGoalCount" min="1" value="12"></div>
+      <div class="field"><label>Weekly page goal</label><input type="number" id="settingWeeklyGoal" min="1" value="150"></div>
+    </div>
+    <div class="field"><label>Goal end date <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label><input type="date" id="settingTermEnd"></div>
+    <button class="btn btn-primary" style="width:100%; margin-bottom:8px;" onclick="saveSettings()">Save</button>
+
+
+    <div class="section-label">Backup</div>
+    <div id="gdriveSection" class="card" style="margin-bottom:12px;"></div>
+    <div class="card" style="margin-bottom:12px;">
+      <div class="settings-row" style="padding-top:0;">
+        <div><div class="settings-label">Download local backup</div><div class="settings-sub">Save a file to your device</div></div>
+        <button style="background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;" onclick="exportData()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3m0 12l-4-4m4 4l4-4"/><path d="M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17"/></svg>
+        </button>
+      </div>
+      <div class="settings-row">
+        <div><div class="settings-label">Restore from file</div><div class="settings-sub">Load a saved backup</div></div>
+        <button style="background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;" onclick="document.getElementById('importFileInput').click()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0-12l-4 4m4-4l4 4"/><path d="M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17"/></svg>
+        </button>
+        <input type="file" id="importFileInput" accept="application/json,.json" style="display:none;" onchange="importData(event)">
+      </div>
+      <div class="settings-row" style="border-bottom:none;padding-bottom:0;">
+        <div><div class="settings-label" style="color:var(--danger);">Undo last restore</div><div class="settings-sub" id="undoLocalSub">No restore to undo</div></div>
+        <button style="background:none;border:none;cursor:pointer;color:var(--danger);padding:4px;font-size:12px;font-weight:700;font-family:var(--font-sans);" onclick="undoRestore()">Undo</button>
+      </div>
+    </div>
+    <div class="settings-row">
+      <div><div class="settings-label">Clear all data</div><div class="settings-sub">Cannot be undone</div></div>
+      <button class="btn-danger btn" style="flex:none; padding:9px 14px; font-size:12.5px;" onclick="clearAll()">Clear</button>
+    </div>
+
+    <div class="section-label"></div>
+    <div id="challengesList" style="margin-bottom:8px;"></div>
+    <button class="btn btn-ghost" style="width:100%;" onclick="openSheet('challengeSheet')">+ Add challenge</button>
+
+  </div>
+
+  <div class="bottomnav">
+    <button class="nav-btn active" data-tab="dashboard"><span class="nav-ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7.5" height="7.5" rx="1.3"/><rect x="13" y="3.5" width="7.5" height="7.5" rx="1.3"/><rect x="3.5" y="13" width="7.5" height="7.5" rx="1.3"/><rect x="13" y="13" width="7.5" height="7.5" rx="1.3"/></svg></span><span class="nav-lbl">Dashboard</span></button>
+    <button class="nav-btn" data-tab="log"><span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M4 5.5c2-1 5-1 7 .3 2-1.3 5-1.3 7-.3v13c-2-1-5-1-7 .3-2-1.3-5-1.3-7-.3z"/><path d="M11 5.8v13"/></svg></span><span class="nav-lbl">Log</span></button>
+    <button class="nav-btn" data-tab="shelf"><span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M4 4v16M20 4v16M4 20h16"/><path d="M8 4v13M12 4v13M16 4v13"/></svg></span><span class="nav-lbl">Shelf</span></button>
+    <button class="nav-btn" data-tab="stats"><span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M4 20V10M11 20V4M18 20v-7"/></svg></span><span class="nav-lbl">Stats</span></button>
+    <button class="nav-btn" data-tab="quotes"><span class="nav-ico"><svg viewBox="0 0 24 24"><path d="M7 8.5c-1.8 0-3 1.3-3 3.2 0 1.7 1.1 2.8 2.6 2.8.2 1.7-.8 3-2.3 3.6M15 8.5c-1.8 0-3 1.3-3 3.2 0 1.7 1.1 2.8 2.6 2.8.2 1.7-.8 3-2.3 3.6"/></svg></span><span class="nav-lbl">Quotes</span></button>
+    <button class="nav-btn" data-tab="settings"><span class="nav-ico"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M4.2 7.5l2.2 1.2M17.6 15.3l2.2 1.2M4.2 16.5l2.2-1.2M17.6 8.7l2.2-1.2M3 12h2.5M18.5 12H21"/></svg></span><span class="nav-lbl">Settings</span></button>
+  </div>
+</div>
+
+<div class="fab-wrap"><button class="fab" id="fabAdd" aria-label="Add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div>
+
+<div class="sheet-overlay" id="addSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title">Add a book</p>
+    <div class="cover-field-row">
+      <div id="addCoverWrap">
+        <div class="cover-upload-btn" onclick="document.getElementById('addCoverInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Cover
+        </div>
+        <input type="file" id="addCoverInput" accept="image/*" style="display:none;" onchange="handleCoverUpload('add',event)">
+      </div>
+      <div class="cover-field-inputs">
+        <div class="field" style="margin-bottom:10px;"><label>Title</label><input type="text" id="f_title" placeholder="The book's title"></div>
+        <div class="field" style="margin-bottom:0;"><label>Author</label><input type="text" id="f_author" placeholder="Author name"></div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Genre</label>
+        <select id="f_genre">
+          <option>Fiction</option><option>Nonfiction</option><option>Fantasy</option>
+          <option>Biography</option><option>Poetry</option><option>Classic</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Total pages</label><input type="number" id="f_pages" placeholder="320" min="1"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Format</label>
+        <select id="f_format">
+          <option value="print">📖 Print</option>
+          <option value="ebook">📱 eBook</option>
+          <option value="audio">🎧 Audiobook</option>
+        </select>
+      </div>
+      <div class="field"><label>Shelf</label>
+        <select id="f_status"><option value="reading">Reading</option><option value="queue">TBR</option></select>
+      </div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet('addSheet')">Cancel</button>
+      <button class="btn btn-primary" onclick="addBook()">Add book</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="progressSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title-row">
+      <div style="min-width:0;">
+        <p class="sheet-title" id="progressBookTitle" style="margin:0 0 4px;">Update progress</p>
+        <p id="progressBookMeta" style="font-size:11px;color:var(--muted);font-weight:600;margin:0;"></p>
+      </div>
+      <button class="icon-btn-sm" onclick="deleteBook()" aria-label="Remove book"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5A1.5 1.5 0 0110.5 3h3A1.5 1.5 0 0115 4.5V7M6 7l1 13a1.5 1.5 0 001.5 1.5h7a1.5 1.5 0 001.5-1.5L18 7"/></svg></button>
+    </div>
+    <div class="field" id="progressPagesField"><label id="progressPagesLabel">Pages read (total so far)</label><input type="number" id="p_pages" min="0" inputmode="numeric"></div>
+    <div id="progressPaceHint" style="font-size:11.5px;color:var(--gold-dark);font-weight:600;margin:-6px 0 12px;"></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="saveProgress()">Save progress</button>
+    <button class="btn btn-ghost" style="width:100%; margin-top:10px;" onclick="markFinished()">Mark finished</button>
+    <button class="btn btn-ghost" style="width:100%; margin-top:10px;" onclick="openEditFromProgress()">Edit book details</button>
+    <button class="btn btn-ghost" style="width:100%; margin-top:10px; color:var(--muted);" onclick="closeSheet('progressSheet')">Cancel</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="finishSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title" id="finishBookTitle">Finish this book</p>
+    <div class="field"><label>Rating</label><div class="star-picker" id="finishStars"></div></div>
+    <div class="field">
+      <label>Reading mood</label>
+      <select id="f_mood">
+        <option value="">— none —</option>
+        <option value="adventurous">🗺 Adventurous</option>
+        <option value="challenging">🧠 Challenging</option>
+        <option value="dark">🌑 Dark</option>
+        <option value="emotional">💧 Emotional</option>
+        <option value="funny">😄 Funny</option>
+        <option value="hopeful">🌱 Hopeful</option>
+        <option value="informative">📚 Informative</option>
+        <option value="inspiring">✨ Inspiring</option>
+        <option value="lighthearted">☀️ Lighthearted</option>
+        <option value="mysterious">🔍 Mysterious</option>
+        <option value="reflective">🪞 Reflective</option>
+        <option value="relaxing">🌿 Relaxing</option>
+        <option value="tense">⚡ Tense</option>
+      </select>
+    </div>
+    <div class="field"><label>Reflection</label><textarea id="f_reflection" placeholder="What did you think? Key takeaways, favorite parts, what you'd tell someone else about it..."></textarea></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet('finishSheet')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveFinish()">Save to shelf</button>
+    </div>
+    <button class="btn btn-danger" style="width:100%; margin-top:10px;" onclick="saveDNF()">Did Not Finish</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="detailSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title-row">
+      <div id="detailCoverWrap" style="display:none;"></div>
+      <div style="flex:1; min-width:0;">
+        <p class="sheet-title" id="detailTitle" style="margin-bottom:4px;">Book</p>
+        <p style="font-size:12px; color:var(--muted); margin:0 0 8px;" id="detailAuthor"></p>
+        <div class="stars" id="detailStars" style="margin-bottom:8px;"></div>
+        <span id="detailMoodChip" class="mood-chip" style="display:none;margin-bottom:10px;"></span>
+        <p style="font-size:11px; color:var(--muted); font-weight:600; margin-bottom:14px;" id="detailMeta"></p>
+      </div>
+      <button class="icon-btn-sm" onclick="deleteFromDetail()" aria-label="Remove book" style="flex-shrink:0;align-self:flex-start;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5A1.5 1.5 0 0110.5 3h3A1.5 1.5 0 0115 4.5V7M6 7l1 13a1.5 1.5 0 001.5 1.5h7a1.5 1.5 0 001.5-1.5L18 7"/></svg></button>
+    </div>
+    <div class="field"><label>Reflection</label><textarea id="detailReflection"></textarea></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet('detailSheet')">Close</button>
+      <button class="btn btn-primary" onclick="saveDetailReflection()">Save</button>
+    </div>
+    <button class="btn btn-ghost" style="width:100%; margin-top:10px;" onclick="openEditFromDetail()">Edit book details</button>
+    <button class="btn btn-ghost" style="width:100%; margin-top:10px;" onclick="openAnnotations()">Book notes</button>
+    <button class="btn btn-ghost" style="width:100%; margin-top:10px;" onclick="rereadBook()">Read again</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="editSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title">Edit book</p>
+    <div class="cover-field-row">
+      <div id="editCoverWrap">
+        <div class="cover-upload-btn" id="editCoverBtn" onclick="document.getElementById('editCoverInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Cover
+        </div>
+        <input type="file" id="editCoverInput" accept="image/*" style="display:none;" onchange="handleCoverUpload('edit',event)">
+      </div>
+      <div class="cover-field-inputs">
+        <div class="field" style="margin-bottom:10px;"><label>Title</label><input type="text" id="e_title" placeholder="The book's title"></div>
+        <div class="field" style="margin-bottom:0;"><label>Author</label><input type="text" id="e_author" placeholder="Author name"></div>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Genre</label>
+        <select id="e_genre">
+          <option>Fiction</option><option>Nonfiction</option><option>Fantasy</option>
+          <option>Biography</option><option>Poetry</option><option>Classic</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Total pages</label><input type="number" id="e_pages" placeholder="320" min="1" inputmode="numeric"></div>
+    </div>
+    <div class="field"><label>Format</label>
+      <select id="e_format">
+        <option value="print">📖 Print</option>
+        <option value="ebook">📱 eBook</option>
+        <option value="audio">🎧 Audiobook</option>
+      </select>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet('editSheet')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="quoteSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title">Save a quote</p>
+    <div class="field"><label>Book</label><select id="q_book"></select></div>
+    <div class="field"><label>Quote</label><textarea id="q_text" placeholder="Type or paste the line here"></textarea></div>
+    <div class="field"><label>Page (optional)</label><input type="number" id="q_page" min="1"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet('quoteSheet')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveQuote()">Save quote</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="confirmClearSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title" style="color:var(--danger);">Clear all data?</p>
+    <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 20px;">This permanently removes every book, quote, and log entry. Local data cannot be recovered.</p>
+    <button class="btn btn-danger" style="width:100%;opacity:1;" onclick="confirmClearAll()">Yes, clear everything</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="closeSheet('confirmClearSheet')">Cancel</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="challengeSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title">New challenge</p>
+    <div class="field"><label>Challenge name</label><input type="text" id="ch_name" placeholder="e.g. Read 5 classics, 3 books by women…"></div>
+    <div class="field-row">
+      <div class="field"><label>Target books</label><input type="number" id="ch_target" min="1" placeholder="5" inputmode="numeric"></div>
+      <div class="field"><label>Filter by genre</label>
+        <select id="ch_genre">
+          <option value="">Any genre</option>
+          <option>Fiction</option><option>Nonfiction</option><option>Fantasy</option>
+          <option>Biography</option><option>Poetry</option><option>Classic</option><option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Filter by format</label>
+      <select id="ch_format">
+        <option value="">Any format</option>
+        <option value="print">📖 Print only</option>
+        <option value="ebook">📱 eBook only</option>
+        <option value="audio">🎧 Audiobook only</option>
+      </select>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet('challengeSheet')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveChallenge()">Add challenge</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="annotationSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title" id="annotationSheetTitle">Notes</p>
+    <div id="annotationList" style="margin-bottom:14px;"></div>
+    <div class="field"><label>New note</label><textarea id="annotationText" placeholder="Thoughts, questions, reactions — anything tied to this book…" style="min-height:90px;"></textarea></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="saveAnnotation()">Save note</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="closeSheet('annotationSheet')">Done</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="confirmRereadSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title" id="confirmRereadTitle">Read again?</p>
+    <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 20px;">This will add a fresh copy to your Currently Reading list. Your existing record and reflection stay on the shelf.</p>
+    <button class="btn btn-primary" style="width:100%;" onclick="confirmReread()">Yes, read again</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="closeSheet('confirmRereadSheet')">Cancel</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="wrapExportSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title">Share your year</p>
+    <div id="wrapCanvas" style="border-radius:var(--radius-md);overflow:hidden;margin-bottom:16px;"></div>
+    <button class="btn btn-primary" style="width:100%;" onclick="downloadWrap()">Save as image</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="closeSheet('wrapExportSheet')">Close</button>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="onboardSheet" style="align-items:center;">
+  <div class="sheet" style="border-radius:22px; max-height:92vh; margin:0 16px;">
+    <div class="sheet-handle"></div>
+    <!-- Step 1 -->
+    <div id="ob-step-1">
+      <p style="font-family:var(--font-serif);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-dark);margin:0 0 8px;">Welcome to</p>
+      <p style="font-family:var(--font-serif);font-size:36px;font-weight:500;font-style:italic;margin:0 0 6px;color:var(--heading);">Premium Reading Log</p>
+      <p style="font-size:14px;color:var(--ink-soft);line-height:1.6;margin:0 0 24px;">Your private reading log — no account, no ads, no algorithms. Just you and your books.</p>
+      <div class="field">
+        <label>What's your reading goal called?</label>
+        <input type="text" id="ob_goalName" placeholder="e.g. 2026 Reading Goal, Summer Reads…" value="2026 Reading Goal">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Books this year</label>
+          <input type="number" id="ob_goalCount" placeholder="12" value="12" min="1" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>Weekly page goal</label>
+          <input type="number" id="ob_weeklyGoal" placeholder="150" value="150" min="1" inputmode="numeric">
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="obNext(1)">Next →</button>
+    </div>
+    <!-- Step 2 -->
+    <div id="ob-step-2" style="display:none;">
+      <p style="font-family:var(--font-serif);font-size:22px;font-weight:600;font-style:italic;margin:0 0 6px;">What are you reading?</p>
+      <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 20px;">Add your first book — or skip and add it later.</p>
+      <div class="field"><label>Title</label><input type="text" id="ob_title" placeholder="The book's title"></div>
+      <div class="field"><label>Author</label><input type="text" id="ob_author" placeholder="Author name"></div>
+      <div class="field-row">
+        <div class="field"><label>Genre</label>
+          <select id="ob_genre">
+            <option>Fiction</option><option>Nonfiction</option><option>Fantasy</option>
+            <option>Biography</option><option>Poetry</option><option>Classic</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field"><label>Format</label>
+          <select id="ob_format">
+            <option value="print">📖 Print</option>
+            <option value="ebook">📱 eBook</option>
+            <option value="audio">🎧 Audio</option>
+          </select>
+        </div>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" onclick="obFinish(false)">Skip</button>
+        <button class="btn btn-primary" onclick="obFinish(true)">Start reading</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="infoSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title">What's included</p>
+    <p style="font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 16px;">Everything lives on your device — no account, no subscription, no ads.</p>
+
+    <div style="display:flex;flex-direction:column;gap:11px;">
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:18px;flex-shrink:0;width:26px;text-align:center;">📚</span>
+        <div><div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:2px;">Book tracking</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Currently reading, TBR queue, finished shelf, and Did Not Finish. Add a cover photo, genre, and format for every book.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:18px;flex-shrink:0;width:26px;text-align:center;">⭐</span>
+        <div><div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:2px;">Half-star ratings &amp; mood tags</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Rate in half-star increments (0.5–5★) and tag each book with a reading mood: dark, hopeful, tense, relaxing, and more.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:18px;flex-shrink:0;width:26px;text-align:center;">📖</span>
+        <div><div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:2px;">Daily reading log</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Log pages and session notes each day. See your full reading history timeline, weekly and monthly summaries.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:18px;flex-shrink:0;width:26px;text-align:center;">🔥</span>
+        <div><div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:2px;">Streaks &amp; pace</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Tracks your reading streak, longest streak, and estimates how many days until you finish each book based on your recent pace.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:18px;flex-shrink:0;width:26px;text-align:center;">📊</span>
+        <div><div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:2px;">Stats &amp; heatmap</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Activity heatmap, genre breakdown, mood breakdown, format mix, and a full year-in-review card you can export and share.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:18px;flex-shrink:0;width:26px;text-align:center;">🎯</span>
+        <div><div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:2px;">Reading challenges</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Set custom challenges — "read 5 classics," "finish 3 audiobooks" — with live progress bars on the dashboard.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:18px;flex-shrink:0;width:26px;text-align:center;">💬</span>
+        <div><div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:2px;">Quotes &amp; book notes</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Save favourite lines to a quotes collection. Write timestamped notes for any book — mid-read reactions, questions, takeaways.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:18px;flex-shrink:0;width:26px;text-align:center;">☁️</span>
+        <div><div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:2px;">Google Drive backup</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Optional backup to your own Google Drive. Your data goes directly to your account — we never see it.</div></div>
+      </div>
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        <span style="font-size:18px;flex-shrink:0;width:26px;text-align:center;">🎨</span>
+        <div><div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:2px;">6 colour themes + dark mode</div><div style="font-size:12px;color:var(--muted);line-height:1.5;">Deep navy, forest green, espresso, indigo, ruby, and amethyst. Tap the palette button in the header to switch.</div></div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;margin-top:20px;" onclick="closeSheet('infoSheet')">Got it</button>
+  </div>
+</div>
+
+
+<!-- Confirm: Import file restore -->
+<div class="sheet-overlay" id="confirmImportSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title" style="color:var(--danger);">Import backup?</p>
+    <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 20px;">This replaces all data on this device with the contents of this file. Your current data will be saved so you can undo.</p>
+    <button class="btn btn-primary" style="width:100%;background:var(--danger);" onclick="confirmImport()">Yes, import</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="closeSheet('confirmImportSheet')">Cancel</button>
+  </div>
+</div>
+
+<!-- Confirm: Remove cover -->
+<div class="sheet-overlay" id="confirmCoverSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title">Remove cover?</p>
+    <p style="font-size:13.5px;color:var(--ink-soft);line-height:1.6;margin:0 0 20px;">The cover photo will be removed from this book.</p>
+    <button class="btn btn-danger" style="width:100%;" onclick="confirmRemoveCover()">Remove cover</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="closeSheet('confirmCoverSheet')">Cancel</button>
+  </div>
+</div>
+
+<!-- Confirm: Delete quote -->
+<div class="sheet-overlay" id="confirmQuoteSheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <p class="sheet-title">Remove this quote?</p>
+    <button class="btn btn-danger" style="width:100%;margin-top:4px;" onclick="confirmDeleteQuote()">Remove quote</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px;" onclick="closeSheet('confirmQuoteSheet')">Cancel</button>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'readingLogData_premium_demo_v1';
+const GENRE_COLORS = {
+  Fiction:'#141F35', Nonfiction:'#6B7F5E', Fantasy:'#9C7B26', Biography:'#5B3468',
+  Poetry:'#6D2A32', Classic:'#3B2A20', Other:'#8A8071'
+};
+const STAR_D = 'M12 2.5l2.99 6.06 6.68.97-4.83 4.71 1.14 6.65L12 17.77l-5.98 3.12 1.14-6.65-4.83-4.71 6.68-.97z';
+function starSvg(cls){ return '<svg class="'+(cls||'')+'" viewBox="0 0 24 24"><path d="'+STAR_D+'"/></svg>'; }
+// Half-star display: rating stored as multiples of 0.5 (e.g. 3.5, 4, 4.5)
+function starsHtmlHalf(rating){
+  let out='';
+  for(let i=1;i<=5;i++){
+    if(rating >= i) out += starSvg('star-on');
+    else if(rating >= i-0.5) out += '<svg class="star-half" viewBox="0 0 24 24"><defs><linearGradient id="hsg'+i+'" x1="0" x2="1"><stop offset="50%" stop-color="var(--gold)"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs><path d="'+STAR_D+'" fill="url(#hsg'+i+')" stroke="var(--line-strong)" stroke-width="1.2"/></svg>';
+    else out += starSvg('star-off');
+  }
+  return out;
+}
+const EMPTY_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5c2-1 5-1 7 .3 2-1.3 5-1.3 7-.3v13c-2-1-5-1-7 .3-2-1.3-5-1.3-7-.3z"/><path d="M11 5.8v13"/></svg>';
+function emptyState(title, text){
+  return '<div class="empty"><div class="empty-icon">'+EMPTY_ICON+'</div><b>'+esc(title)+'</b>'+esc(text)+'</div>';
+}
+const ACCENTS = {
+  navy:{name:'Deep navy', base:'#141F35', dark:'#0B1322', tint:'#E4E7EE'},
+  forest:{name:'Forest green', base:'#1F3D2B', dark:'#152B1E', tint:'#E5EDE7'},
+  espresso:{name:'Espresso', base:'#3B2A20', dark:'#2A1D16', tint:'#EEE6DD'},
+  indigo:{name:'Indigo', base:'#3B3572', dark:'#2A2653', tint:'#EAE9F4'},
+  ruby:{name:'Ruby red', base:'#7A2331', dark:'#591923', tint:'#F4E4E7'},
+  amethyst:{name:'Amethyst purple', base:'#5B3468', dark:'#412450', tint:'#EEE5F2'}
+};
+
+function loadData(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { books:[], dailyLogs:[], quotes:[], challenges:[], annotations:{}, settings:{ appName:'Premium Reading Log', termName:'2026 Reading Goal', goalCount:12, weeklyGoal:150, termEnd:'', accent:'navy', darkMode:false } };
+}
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  scheduleGdriveAutoBackup();
+}
+
+let state = loadData();
+if(!state.dailyLogs) state.dailyLogs = [];
+if(!state.quotes) state.quotes = [];
+if(!state.challenges) state.challenges = [];
+if(!state.annotations) state.annotations = {};
+if(!state.settings.weeklyGoal) state.settings.weeklyGoal = 150;
+if(!state.settings.accent) state.settings.accent = 'navy';
+if(!state.settings.appName) state.settings.appName = 'Premium Reading Log';
+if(state.settings.termEnd === undefined) state.settings.termEnd = '';
+if(state.settings.darkMode === undefined || state.settings.darkMode === null) state.settings.darkMode = false;
+if(state.settings.onboarded === undefined) state.settings.onboarded = false;
+// Existing users who already have data shouldn't see onboarding
+if(!state.settings.onboarded && state.books.length > 0) state.settings.onboarded = true;
+
+let activeBookId = null;
+let pendingRating = 0;
+let pendingCoverAdd = null; // base64 for add sheet
+let pendingCoverEdit = null; // base64 for edit sheet
+
+function handleCoverUpload(mode, event){
+  const file = event.target.files && event.target.files[0];
+  event.target.value = '';
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    // Compress: resize to max 400px wide via canvas
+    const img = new Image();
+    img.onload = ()=>{
+      const MAX = 400;
+      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const b64 = canvas.toDataURL('image/jpeg', 0.82);
+      if(mode === 'add'){
+        pendingCoverAdd = b64;
+        renderCoverPreview('addCoverWrap', b64, ()=>{ pendingCoverAdd = null; renderCoverEmpty('addCoverWrap','addCoverInput'); });
+      } else {
+        pendingCoverEdit = b64;
+        renderCoverPreview('editCoverWrap', b64, ()=>{ pendingCoverEdit = null; renderCoverEmpty('editCoverWrap','editCoverInput'); });
+      }
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function renderCoverEmpty(wrapId, inputId){
+  const wrap = document.getElementById(wrapId);
+  if(!wrap) return;
+  wrap.innerHTML = `<div class="cover-upload-btn" onclick="document.getElementById('${inputId}').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>Cover</div>`;
+}
+function coverThumbHtml(cover, genre){
+  if(cover) return `<img src="${cover}" class="book-card-cover" alt="cover">`;
+  return `<div class="book-card-cover-placeholder" style="background:${GENRE_COLORS[genre]||'#8C8375'}22;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${GENRE_COLORS[genre]||'#8C8375'}" stroke-width="1.5" stroke-linecap="round"><path d="M4 5.5c2-1 5-1 7 .3 2-1.3 5-1.3 7-.3v13c-2-1-5-1-7 .3-2-1.3-5-1.3-7-.3z"/><path d="M11 5.8v13"/></svg></div>`;
+}
+let finishedGenreFilter = 'All';
+
+function uid(prefix){ return prefix + '_' + Date.now() + '_' + Math.floor(Math.random()*1000); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function esc(str){ return String(str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function formatDate(iso){ return new Date(iso).toLocaleDateString(undefined,{month:'short', day:'numeric'}); }
+
+const SUN_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>';
+const MOON_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20 14.5A8.5 8.5 0 119.5 4a7 7 0 1010.5 10.5z"/></svg>';
+
+function applyAccent(){
+  const a = ACCENTS[state.settings.accent] || ACCENTS.navy;
+  document.documentElement.style.setProperty('--accent', a.base);
+  document.documentElement.style.setProperty('--accent-dark', a.dark);
+  document.documentElement.style.setProperty('--accent-tint', a.tint);
+  const meta = document.getElementById('themeColorMeta');
+  if(meta) meta.setAttribute('content', a.base);
+}
+
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', state.settings.darkMode ? 'dark' : 'light');
+  renderModeBadge();
+  const btn = document.getElementById('darkToggleBtn');
+  if(btn) btn.classList.toggle('on', !!state.settings.darkMode);
+}
+function renderModeBadge(){
+  const el = document.getElementById('modeBadge');
+  if(!el) return;
+  el.innerHTML = state.settings.darkMode ? MOON_ICON : SUN_ICON;
+}
+function toggleDarkMode(){
+  state.settings.darkMode = !state.settings.darkMode;
+  saveData();
+  applyTheme();
+  showToast(state.settings.darkMode ? 'Dark mode on' : 'Light mode on');
+}
+
+function buildSwatches(){
+  const grid = document.getElementById('swatchGrid');
+  grid.innerHTML='';
+  Object.entries(ACCENTS).forEach(([key,val])=>{
+    const cell = document.createElement('div');
+    cell.className='swatch-cell';
+    const sw = document.createElement('div');
+    sw.className = 'swatch' + (state.settings.accent===key ? ' active':'');
+    sw.style.background = val.base;
+    sw.onclick = ()=>{ state.settings.accent = key; saveData(); applyAccent(); buildSwatches(); };
+    cell.appendChild(sw);
+    const lbl = document.createElement('div');
+    lbl.className='swatch-label';
+    lbl.textContent = val.name;
+    cell.appendChild(lbl);
+    grid.appendChild(cell);
+  });
+}
+const paletteBtnEl = document.getElementById('paletteBtn');
+let _paletteHoldTimer = null;
+let _paletteLongPressed = false;
+function _paletteHoldStart(){
+  _paletteLongPressed = false;
+  clearTimeout(_paletteHoldTimer);
+  paletteBtnEl.classList.add('holding');
+  _paletteHoldTimer = setTimeout(()=>{
+    _paletteLongPressed = true;
+    paletteBtnEl.classList.remove('holding');
+    if(navigator.vibrate) navigator.vibrate(12);
+    toggleDarkMode();
+  }, 550);
+}
+function _paletteHoldCancel(){
+  clearTimeout(_paletteHoldTimer);
+  paletteBtnEl.classList.remove('holding');
+}
+paletteBtnEl.addEventListener('pointerdown', _paletteHoldStart);
+paletteBtnEl.addEventListener('pointerup', _paletteHoldCancel);
+paletteBtnEl.addEventListener('pointerleave', _paletteHoldCancel);
+paletteBtnEl.addEventListener('pointercancel', _paletteHoldCancel);
+paletteBtnEl.addEventListener('click', (e)=>{
+  if(_paletteLongPressed){
+    e.preventDefault(); e.stopPropagation();
+    _paletteLongPressed = false;
+    return;
+  }
+  document.getElementById('colorPopover').classList.toggle('open');
+});
+document.addEventListener('click', (e)=>{
+  const pop = document.getElementById('colorPopover');
+  if(pop.classList.contains('open') && !pop.contains(e.target) && e.target.id!=='paletteBtn' && !e.target.closest('#paletteBtn')){
+    pop.classList.remove('open');
+  }
+});
+
+function switchTab(tab){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+tab).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.getElementById('fabAdd').style.display = (tab==='settings') ? 'none' : 'flex';
+  document.getElementById('fabAdd').dataset.mode = (tab==='quotes') ? 'quote' : 'book';
+}
+document.querySelectorAll('.nav-btn').forEach(b=>{ b.addEventListener('click', ()=>switchTab(b.dataset.tab)); });
+
+function openSheet(id){
+  const overlay = document.getElementById(id);
+  overlay.classList.add('open');
+}
+function closeSheet(id){ document.getElementById(id).classList.remove('open'); }
+
+function initSwipeToDismiss(sheet, overlay){
+  let startY = 0, currentY = 0, dragging = false;
+  function onStart(e){
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    startY = clientY; currentY = 0; dragging = true;
+    sheet.style.transition = 'none';
+  }
+  function onMove(e){
+    if(!dragging) return;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    currentY = Math.max(0, clientY - startY);
+    sheet.style.transform = `translateY(${currentY}px)`;
+    overlay.style.opacity = Math.max(0, 1 - currentY / 300);
+  }
+  function onEnd(){
+    if(!dragging) return;
+    dragging = false;
+    sheet.style.transition = '';
+    sheet.style.transform = '';
+    overlay.style.opacity = '';
+    if(currentY > 100) overlay.classList.remove('open');
+  }
+  // Remove old listeners by cloning handle
+  const handle = sheet.querySelector('.sheet-handle');
+  if(!handle) return;
+  const newHandle = handle.cloneNode(true);
+  handle.replaceWith(newHandle);
+const ac = new AbortController();
+  newHandle.addEventListener('touchstart', onStart, {passive:true});
+  newHandle.addEventListener('touchmove', onMove, {passive:true});
+  newHandle.addEventListener('touchend', ()=>{ onEnd(); ac.abort(); });
+  newHandle.addEventListener('mousedown', onStart);
+  window.addEventListener('mousemove', onMove, {signal:ac.signal});
+  window.addEventListener('mouseup', ()=>{ onEnd(); ac.abort(); }, {signal:ac.signal});
+}
+
+document.getElementById('fabAdd').addEventListener('click', ()=>{
+  if(document.getElementById('fabAdd').dataset.mode === 'quote'){
+    populateQuoteBookSelect();
+    document.getElementById('q_text').value='';
+    document.getElementById('q_page').value='';
+    openSheet('quoteSheet');
+    return;
+  }
+  document.getElementById('f_title').value='';
+  document.getElementById('f_author').value='';
+  document.getElementById('f_pages').value='';
+  document.getElementById('f_genre').value='Fiction';
+  document.getElementById('f_status').value='reading';
+  pendingCoverAdd = null;
+  renderCoverEmpty('addCoverWrap','addCoverInput');
+  openSheet('addSheet');
+});
+
+function addBook(){
+  const title = document.getElementById('f_title').value.trim();
+  const author = document.getElementById('f_author').value.trim();
+  const genre = document.getElementById('f_genre').value;
+  const pages = parseInt(document.getElementById('f_pages').value) || 0;
+  const status = document.getElementById('f_status').value;
+  const format = document.getElementById('f_format').value;
+  if(!title){ return; }
+  state.books.push({
+    id: uid('b'), title, author, genre, format, cover: pendingCoverAdd||null, totalPages: pages, pagesRead: 0,
+    status, rating:0, reflection:'', mood:'', dateStarted: new Date().toISOString(), dateFinished: null
+  });
+  pendingCoverAdd = null;
+  renderCoverEmpty('addCoverWrap','addCoverInput');
+  saveData();
+  closeSheet('addSheet');
+  render();
+}
+
+function openProgress(id){
+  activeBookId = id;
+  const b = state.books.find(x=>x.id===id);
+  document.getElementById('progressBookTitle').textContent = b.title;
+  // Meta line: genre · format
+  const fmtLabel = {print:'📖 Print', ebook:'📱 eBook', audio:'🎧 Audio'}[b.format]||'';
+  document.getElementById('progressBookMeta').textContent =
+    [b.genre, fmtLabel].filter(Boolean).join(' · ');
+  // Audiobook: swap to % completion, hide pages field if no page count
+  const isAudio = b.format === 'audio';
+  const pagesLabel = document.getElementById('progressPagesLabel');
+  const pInput = document.getElementById('p_pages');
+  if(isAudio && !b.totalPages){
+    pagesLabel.textContent = 'Progress (%)';
+    pInput.max = 100; pInput.placeholder = '0–100';
+    pInput.value = b.pagesRead;
+  } else {
+    pagesLabel.textContent = isAudio ? 'Pages / position' : 'Pages read (total so far)';
+    pInput.max = b.totalPages || '';
+    pInput.placeholder = '';
+    pInput.value = b.pagesRead;
+  }
+  // Pace estimate
+  const paceEl = document.getElementById('progressPaceHint');
+  paceEl.textContent = computePaceHint(b);
+  openSheet('progressSheet');
+}
+
+function computePaceHint(b){
+  if(!b.totalPages || b.pagesRead <= 0) return '';
+  const remaining = b.totalPages - b.pagesRead;
+  if(remaining <= 0) return '';
+  // avg pages/day over last 7 days for this book
+  const week = last7Dates();
+  const map = pagesByDate();
+  // daily avg for this specific book
+  const bookLogs = state.dailyLogs.filter(l=>l.bookId===b.id);
+  const recent = bookLogs.filter(l=>week.includes(l.date));
+  const recentPages = recent.reduce((s,l)=>s+(l.pages||0),0);
+  const activeDays = new Set(recent.filter(l=>l.pages>0).map(l=>l.date)).size;
+  if(activeDays === 0) return '';
+  const avgPerDay = recentPages / activeDays;
+  if(avgPerDay <= 0) return '';
+  const daysLeft = Math.ceil(remaining / avgPerDay);
+  if(daysLeft === 1) return '✦ At your pace, you\'ll finish tomorrow';
+  if(daysLeft <= 7) return `✦ At your pace, you'll finish in ${daysLeft} days`;
+  const weeksLeft = Math.round(daysLeft / 7);
+  return `✦ At your pace, about ${weeksLeft} week${weeksLeft===1?'':'s'} to finish`;
+}
+function saveProgress(){
+  const b = state.books.find(x=>x.id===activeBookId);
+  const val = parseInt(document.getElementById('p_pages').value) || 0;
+  const delta = val - b.pagesRead;
+  b.pagesRead = Math.min(val, b.totalPages || val);
+  if(delta > 0) logDailyPages(b.id, delta);
+  else if(delta < 0) rollBackTodayLog(b.id, -delta);
+  saveData();
+  closeSheet('progressSheet');
+  render();
+}
+function rollBackTodayLog(bookId, amount){
+  const today = todayStr();
+  let remaining = amount;
+  for(let i=state.dailyLogs.length-1; i>=0 && remaining>0; i--){
+    const l = state.dailyLogs[i];
+    if(l.date===today && l.bookId===bookId && l.pages>0){
+      const take = Math.min(l.pages, remaining);
+      l.pages -= take;
+      remaining -= take;
+    }
+  }
+  state.dailyLogs = state.dailyLogs.filter(l=>l.pages>0);
+}
+function quickAddPages(id, amount){
+  const b = state.books.find(x=>x.id===id);
+  b.pagesRead = Math.min(b.pagesRead + amount, b.totalPages || (b.pagesRead+amount));
+  logDailyPages(b.id, amount);
+  saveData();
+  render();
+}
+function logDailyPages(bookId, pages, note){
+  state.dailyLogs.push({ id: uid('d'), date: todayStr(), bookId, pages: pages||0, note: note||'' });
+}
+function deleteBook(){
+  state.books = state.books.filter(x=>x.id!==activeBookId);
+  state.quotes = state.quotes.filter(q=>q.bookId!==activeBookId);
+  saveData();
+  closeSheet('progressSheet');
+  render();
+}
+function startReading(id){
+  const b = state.books.find(x=>x.id===id);
+  b.status = 'reading';
+  b.dateStarted = new Date().toISOString();
+  saveData();
+  render();
+}
+
+function markFinished(){
+  const b = state.books.find(x=>x.id===activeBookId);
+  closeSheet('progressSheet');
+  document.getElementById('finishBookTitle').textContent = b.title;
+  document.getElementById('f_reflection').value = '';
+  document.getElementById('f_mood').value = '';
+  pendingRating = 0;
+  renderStarPicker();
+  openSheet('finishSheet');
+}
+function renderStarPicker(){
+  const el = document.getElementById('finishStars');
+  el.innerHTML='';
+  // 10 half-star slots rendered as 5 stars with left/right halves
+  for(let i=1;i<=5;i++){
+    const s = document.createElement('span');
+    s.style.position='relative';
+    s.style.display='inline-flex';
+    const filled = pendingRating >= i ? 'on' : (pendingRating >= i-0.5 ? 'half' : '');
+    s.innerHTML = starSvg(filled ? (filled==='half' ? '' : '') : '');
+    s.className = filled==='on' ? 'on' : '';
+    if(filled==='half') s.querySelector('svg').style.fill='url(#halfStarGrad)';
+    // Left half = i-0.5, right half = i
+    const leftZone = document.createElement('span');
+    leftZone.style.cssText='position:absolute;left:0;top:0;width:50%;height:100%;cursor:pointer;';
+    leftZone.onclick=(e)=>{e.stopPropagation(); pendingRating=i-0.5; renderStarPicker();};
+    const rightZone = document.createElement('span');
+    rightZone.style.cssText='position:absolute;right:0;top:0;width:50%;height:100%;cursor:pointer;';
+    rightZone.onclick=(e)=>{e.stopPropagation(); pendingRating=i; renderStarPicker();};
+    s.appendChild(leftZone);
+    s.appendChild(rightZone);
+    el.appendChild(s);
+  }
+  // label
+  const lbl = document.createElement('span');
+  lbl.style.cssText='font-size:12px;color:var(--muted);font-weight:600;align-self:center;margin-left:6px;min-width:24px;';
+  lbl.textContent = pendingRating ? pendingRating+'★' : '';
+  el.appendChild(lbl);
+}
+function saveFinish(){
+  const b = state.books.find(x=>x.id===activeBookId);
+  b.status = 'finished';
+  b.pagesRead = b.totalPages || b.pagesRead;
+  b.rating = pendingRating;
+  b.mood = document.getElementById('f_mood').value;
+  b.reflection = document.getElementById('f_reflection').value.trim();
+  b.dateFinished = new Date().toISOString();
+  saveData();
+  closeSheet('finishSheet');
+  switchTab('shelf');
+  render();
+}
+function saveDNF(){
+  const b = state.books.find(x=>x.id===activeBookId);
+  b.status = 'dnf';
+  b.mood = document.getElementById('f_mood').value;
+  b.reflection = document.getElementById('f_reflection').value.trim();
+  b.dateFinished = new Date().toISOString();
+  saveData();
+  closeSheet('finishSheet');
+  switchTab('shelf');
+  render();
+  showToast('Marked as Did Not Finish.');
+}
+
+function openDetail(id){
+  activeBookId = id;
+  const b = state.books.find(x=>x.id===id);
+  document.getElementById('detailTitle').textContent = b.title;
+  document.getElementById('detailAuthor').textContent = b.author || '';
+  document.getElementById('detailStars').innerHTML = starsHtml(b.rating);
+  const formatLabel = {print:'📖 Print',ebook:'📱 eBook',audio:'🎧 Audiobook'}[b.format]||'';
+  document.getElementById('detailMeta').textContent =
+    [formatLabel, b.totalPages? b.totalPages+' pages':'', b.dateFinished ? (b.status==='dnf'?'abandoned ':'finished ')+formatDate(b.dateFinished) : ''].filter(Boolean).join(' · ');
+  const moodEl = document.getElementById('detailMoodChip');
+  if(moodEl){ moodEl.style.display = b.mood ? 'inline-flex' : 'none'; moodEl.textContent = b.mood || ''; }
+  const coverWrap = document.getElementById('detailCoverWrap');
+  if(coverWrap){
+    if(b.cover){
+      coverWrap.style.display = 'block';
+      coverWrap.innerHTML = `<img src="${b.cover}" class="detail-cover" alt="cover">`;
+    } else {
+      coverWrap.style.display = 'none';
+      coverWrap.innerHTML = '';
+    }
+  }
+  document.getElementById('detailReflection').value = b.reflection || '';
+  openSheet('detailSheet');
+}
+function saveDetailReflection(){
+  const b = state.books.find(x=>x.id===activeBookId);
+  b.reflection = document.getElementById('detailReflection').value.trim();
+  saveData();
+  closeSheet('detailSheet');
+  render();
+}
+function deleteFromDetail(){
+  state.books = state.books.filter(x=>x.id!==activeBookId);
+  state.quotes = state.quotes.filter(q=>q.bookId!==activeBookId);
+  saveData();
+  closeSheet('detailSheet');
+  render();
+}
+function openEdit(id){
+  activeBookId = id;
+  const b = state.books.find(x=>x.id===id);
+  if(!b) return;
+  document.getElementById('e_title').value = b.title;
+  document.getElementById('e_author').value = b.author||'';
+  document.getElementById('e_genre').value = b.genre||'Fiction';
+  document.getElementById('e_pages').value = b.totalPages||'';
+  document.getElementById('e_format').value = b.format||'print';
+  pendingCoverEdit = null;
+  if(b.cover){
+    renderCoverPreview('editCoverWrap', b.cover, ()=>{
+      pendingCoverEdit = '';
+      renderCoverEmpty('editCoverWrap','editCoverInput');
+    });
+  } else {
+    renderCoverEmpty('editCoverWrap','editCoverInput');
+  }
+  openSheet('editSheet');
+}
+function openEditFromDetail(){
+  closeSheet('detailSheet');
+  openEdit(activeBookId);
+}
+function openEditFromProgress(){
+  closeSheet('progressSheet');
+  openEdit(activeBookId);
+}
+function saveEdit(){
+  const b = state.books.find(x=>x.id===activeBookId);
+  if(!b) return;
+  const newTitle = document.getElementById('e_title').value.trim();
+  if(!newTitle){ showToast('Title is required.', true); return; }
+  b.title = newTitle;
+  b.author = document.getElementById('e_author').value.trim();
+  b.genre = document.getElementById('e_genre').value;
+  b.totalPages = parseInt(document.getElementById('e_pages').value)||0;
+  b.format = document.getElementById('e_format').value;
+  if(pendingCoverEdit === '') b.cover = null;        // cleared
+  else if(pendingCoverEdit) b.cover = pendingCoverEdit; // new
+  pendingCoverEdit = null;
+  saveData();
+  closeSheet('editSheet');
+  render();
+  showToast('Book updated.');
+}
+function rereadBook(){
+  const b = state.books.find(x=>x.id===activeBookId);
+  if(!b) return;
+  // Show in-app confirm
+  const sheet = document.getElementById('confirmRereadSheet');
+  if(sheet){
+    document.getElementById('confirmRereadTitle').textContent = `Read "${b.title}" again?`;
+    openSheet('confirmRereadSheet');
+  }
+}
+function confirmReread(){
+  const b = state.books.find(x=>x.id===activeBookId);
+  if(!b) return;
+  state.books.push({
+    id: uid('b'), title: b.title, author: b.author, genre: b.genre, format: b.format||'print',
+    cover: b.cover||null, totalPages: b.totalPages,
+    pagesRead: 0, status:'reading', rating:0, reflection:'', mood:'',
+    dateStarted: new Date().toISOString(), dateFinished: null
+  });
+  saveData();
+  closeSheet('confirmRereadSheet');
+  closeSheet('detailSheet');
+  switchTab('shelf');
+  render();
+  showToast('Added to currently reading.');
+}
+
+function populateQuoteBookSelect(){
+  const sel = document.getElementById('q_book');
+  sel.innerHTML='';
+  if(!state.books.length){
+    const opt = document.createElement('option');
+    opt.textContent = 'Add a book first';
+    opt.value='';
+    sel.appendChild(opt);
+    return;
+  }
+  state.books.forEach(b=>{
+    const opt = document.createElement('option');
+    opt.value = b.id;
+    opt.textContent = b.title + (b.author ? ' — '+b.author : '');
+    sel.appendChild(opt);
+  });
+}
+function saveQuote(){
+  const bookId = document.getElementById('q_book').value;
+  const text = document.getElementById('q_text').value.trim();
+  const page = parseInt(document.getElementById('q_page').value) || null;
+  if(!bookId || !text) return;
+  state.quotes.push({ id: uid('q'), bookId, text, page, dateAdded: new Date().toISOString() });
+  saveData();
+  closeSheet('quoteSheet');
+  render();
+}
+function deleteQuote(id){
+  state.quotes = state.quotes.filter(q=>q.id!==id);
+  saveData();
+  render();
+}
+
+function starsHtml(rating){
+  return starsHtmlHalf(rating||0);
+}
+
+function saveSettings(){
+  state.settings.appName = document.getElementById('settingAppName').value.trim() || 'Premium Reading Log';
+  state.settings.termName = document.getElementById('settingTermName').value.trim() || '2026 Reading Goal';
+  state.settings.goalCount = parseInt(document.getElementById('settingGoalCount').value) || 12;
+  state.settings.weeklyGoal = parseInt(document.getElementById('settingWeeklyGoal').value) || 150;
+  state.settings.termEnd = document.getElementById('settingTermEnd').value || '';
+  saveData();
+  render();
+}
+function weeksLeftFromDate(){
+  if(!state.settings.termEnd) return state.settings.weeksLeft || 0;
+  const end = new Date(state.settings.termEnd + 'T23:59:59');
+  const now = new Date();
+  const diff = (end - now) / (7*24*60*60*1000);
+  return Math.max(0, Math.round(diff));
+}
+function exportData(){
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'reading-log-premium-backup.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  state.settings.lastExport = new Date().toISOString();
+  saveData();
+  render();
+}
+
+function clearAll(){
+  openSheet('confirmClearSheet');
+}
+function confirmClearAll(){
+  state.books = []; state.dailyLogs = []; state.quotes = [];
+  state.challenges = []; state.annotations = {};
+  saveData();
+  closeSheet('confirmClearSheet');
+  render();
+  showToast('All data cleared.');
+}
+/* ── free trial ── */
+const DEMO_TRIAL_DAYS = 14;
+const DEMO_SINCE_KEY = 'readinglog_premium_demo_since';
+function demoTrialDaysLeft(){
+  let since = localStorage.getItem(DEMO_SINCE_KEY);
+  if(!since){ since = String(Date.now()); localStorage.setItem(DEMO_SINCE_KEY, since); }
+  const elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
+  return DEMO_TRIAL_DAYS - elapsedDays;
+}
+function enforceDemoTrial(){
+  const daysLeft = demoTrialDaysLeft();
+  if(daysLeft <= 0){
+    document.getElementById('trial-lock').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  } else {
+    const bannerText = document.getElementById('demo-banner-text');
+    if(bannerText) bannerText.textContent = `Free trial — ${daysLeft} day${daysLeft === 1 ? '' : 's'} left`;
+  }
+}
+
+/* ── BACKUP ──
+   The real app's Google Drive OAuth/API integration has been removed for
+   this free-trial demo (no live Drive account should ever be linked from
+   an anonymous demo session). scheduleGdriveAutoBackup() stays as a no-op
+   stub because saveData() calls it unconditionally on every save. Local
+   export/import backup (a plain JSON file on your device) is untouched
+   and fully functional below. */
+function scheduleGdriveAutoBackup(){}
+
+function dataSummary(s){
+  var n = 0;
+  ['books','quotes','challenges','annotations'].forEach(function(k){
+    if(Array.isArray(s[k])) n += s[k].length;
+    else if(s[k] && typeof s[k] === 'object') n += Object.keys(s[k]).length;
+  });
+  return n;
+}
+
+function undoRestore(){
+  var raw = localStorage.getItem(STORAGE_KEY + '_prerestore');
+  if(!raw){ showToast('No restore to undo.', true); return; }
+  try{
+    state = JSON.parse(raw);
+    localStorage.removeItem(STORAGE_KEY + '_prerestore');
+    saveData(); applyAccent(); applyTheme(); render();
+    showToast('Restore undone.');
+  }catch(e){ showToast('Could not undo.', true); }
+}
+
+/* ── Local file import ── */
+var _pendingImportRestoreData = null;
+
+function importData(event){
+  var file = event.target.files && event.target.files[0];
+  event.target.value = '';
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      var data = JSON.parse(e.target.result);
+      if(!data.books){ showToast('Invalid backup file.', true); return; }
+      openRestoreConfirm(data);
+    }catch(x){ showToast('Could not read file.', true); }
+  };
+  reader.readAsText(file);
+}
+
+function openRestoreConfirm(data){
+  _pendingImportRestoreData = data;
+  openSheet('confirmImportSheet');
+}
+
+function confirmImport(){
+  confirmRestore();
+  closeSheet('confirmImportSheet');
+}
+
+function confirmRestore(){
+  if(!_pendingImportRestoreData){ showToast('No file ready to import.', true); return; }
+  var data = _pendingImportRestoreData;
+  _pendingImportRestoreData = null;
+  try{ localStorage.setItem(STORAGE_KEY+'_prerestore', JSON.stringify(state)); }catch(e){}
+  var inc = dataSummary(data);
+  state = data;
+  if(!state.settings) state.settings = {};
+  if(!state.settings.accent) state.settings.accent = 'navy';
+  if(state.settings.darkMode === undefined) state.settings.darkMode = false;
+  if(!state.quotes) state.quotes = [];
+  if(!state.challenges) state.challenges = [];
+  if(!state.annotations) state.annotations = {};
+  saveData(); applyAccent(); applyTheme(); render();
+  showToast('Restored ' + inc + ' items ✓');
+}
+
+/* ── Render Settings backup section (upsell — Drive is a paid-tier feature) ── */
+function renderGdriveSection(){
+  var el = document.getElementById('gdriveSection');
+  if(!el) return;
+  el.innerHTML =
+    '<div class="upsell-card" style="margin-bottom:0;">' +
+      '<div class="upsell-title">Google Drive backup</div>' +
+      '<div class="upsell-text">The full version backs up your reading log to your own Google Drive automatically, so you never lose your shelf. This trial saves locally on your device only.</div>' +
+      '<a class="upsell-btn" href="https://www.etsy.com/listing/4546328902/reading-log-habit-tracker-book-notes" target="_blank" rel="noopener">Unlock the full app &rarr;</a>' +
+    '</div>';
+}
+/* ── Toast ── */
+function showToast(msg, isError){
+  var el = document.getElementById('rlToast');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'rlToast';
+    el.style.cssText = 'position:fixed;left:50%;bottom:calc(var(--navh) + env(safe-area-inset-bottom) + 18px);transform:translateX(-50%);z-index:60;max-width:400px;width:calc(100% - 40px);text-align:center;padding:11px 16px;border-radius:100px;font-size:12.5px;font-weight:600;box-shadow:var(--shadow-card);transition:opacity .25s,transform .25s;opacity:0;';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.background = isError ? 'var(--danger)' : 'var(--accent-dark)';
+  el.style.color = '#fff';
+  el.style.opacity = '1';
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(el._t);
+  el._t = setTimeout(function(){ el.style.opacity = '0'; }, 2600);
+}
+
+function last7Dates(){
+  const arr=[];
+  for(let i=6;i>=0;i--){
+    const d = new Date();
+    d.setDate(d.getDate()-i);
+    arr.push(d.toISOString().slice(0,10));
+  }
+  return arr;
+}
+function weekDatesOffset(weeksAgo){
+  const arr=[];
+  for(let i=6;i>=0;i--){
+    const d = new Date();
+    d.setDate(d.getDate()-i-(weeksAgo*7));
+    arr.push(d.toISOString().slice(0,10));
+  }
+  return arr;
+}
+function pagesByDate(){
+  const map = {};
+  state.dailyLogs.forEach(l=>{ map[l.date] = (map[l.date]||0) + (l.pages||0); });
+  return map;
+}
+function computeStreaks(){
+  const map = pagesByDate();
+  const daysWithLog = Object.keys(map).filter(d=>map[d]>0).sort();
+  if(!daysWithLog.length) return {current:0, longest:0};
+  let longest=1, run=1;
+  for(let i=1;i<daysWithLog.length;i++){
+    const diff = Math.round((new Date(daysWithLog[i]) - new Date(daysWithLog[i-1]))/86400000);
+    if(diff===1){ run++; longest=Math.max(longest,run); } else { run=1; }
+  }
+  longest = Math.max(longest, run);
+  let current=0;
+  let cursor = new Date();
+  const set = new Set(daysWithLog);
+  if(!set.has(todayStr())) cursor.setDate(cursor.getDate()-1);
+  while(set.has(cursor.toISOString().slice(0,10))){
+    current++;
+    cursor.setDate(cursor.getDate()-1);
+  }
+  return {current, longest};
+}
+
+function renderBackupReminder(){
+  const el = document.getElementById('backupReminder');
+  if(!el) return;
+  const hasBackup = state.settings.lastBackup || state.settings.lastExport;
+  if(state.books.length >= 3 && !hasBackup){
+    el.style.display = 'block';
+    el.innerHTML = '<span class="backup-reminder-title">Back up your reading log</span><span class="backup-reminder-text">Your data only lives on this device right now. Export a backup below so you never lose it.</span>';
+  }else{
+    el.style.display = 'none';
+  }
+}
+
+function render(){
+  applyAccent();
+  applyTheme();
+  buildSwatches();
+
+  document.getElementById('termLabel').textContent = state.settings.termName;
+  const appNameEl = document.getElementById('appNameLabel');
+  if(appNameEl) appNameEl.textContent = state.settings.appName || 'Premium Reading Log';
+  const appNameInput = document.getElementById('settingAppName');
+  if(appNameInput) appNameInput.value = state.settings.appName || 'Premium Reading Log';
+  document.getElementById('settingTermName').value = state.settings.termName;
+  document.getElementById('settingGoalCount').value = state.settings.goalCount;
+  document.getElementById('settingWeeklyGoal').value = state.settings.weeklyGoal;
+  document.getElementById('settingTermEnd').value = state.settings.termEnd || '';
+  renderGdriveSection();
+  renderBackupReminder();
+
+  const finished = state.books.filter(b=>b.status==='finished');
+  const reading = state.books.filter(b=>b.status==='reading');
+  const queue = state.books.filter(b=>b.status==='queue');
+  // dnf rendered inside renderShelfTab via state.books directly
+
+  document.getElementById('goalPillText').textContent = finished.length + ' / ' + state.settings.goalCount + ' books';
+
+  renderDashboardTab(reading, finished);
+  renderLogTab(reading);
+  renderShelfTab(reading, queue, finished);
+  renderStatsTab(finished);
+  renderQuotesTab();
+  renderChallenges();
+}
+
+function renderDashboardTab(reading, finished){
+  const circumference = 2*Math.PI*27;
+  const goalPct = state.settings.goalCount ? Math.min(100, Math.round(finished.length/state.settings.goalCount*100)) : 0;
+  const ring = document.getElementById('ringDashTerm');
+  ring.style.strokeDasharray = circumference;
+  ring.style.strokeDashoffset = circumference - (circumference*goalPct/100);
+  document.getElementById('dashGoalLabel').textContent = finished.length + ' / ' + state.settings.goalCount + ' books';
+
+  const paceEl = document.getElementById('dashGoalPace');
+  const remainingBooks = Math.max(0, state.settings.goalCount - finished.length);
+  const weeksLeft = weeksLeftFromDate();
+  if(remainingBooks === 0 && state.settings.goalCount){
+    paceEl.textContent = 'Goal met — nice work!';
+  }else if(weeksLeft > 0){
+    const perWeek = remainingBooks / weeksLeft;
+    const perWeekStr = perWeek % 1 === 0 ? perWeek.toFixed(0) : perWeek.toFixed(1);
+    paceEl.textContent = perWeekStr + ' book' + (perWeek===1?'':'s') + '/week to reach your goal (' + weeksLeft + ' wk left)';
+  }else{
+    paceEl.textContent = '';
+  }
+
+  const streaks = computeStreaks();
+  document.getElementById('dashStreakNum').textContent = streaks.current;
+  document.getElementById('dashStreakHeadline').textContent = streaks.current
+    ? streaks.current + '-day reading streak'
+    : 'No active streak';
+  document.getElementById('dashStreakSub').textContent = 'Longest streak: ' + streaks.longest + ' day' + (streaks.longest===1?'':'s');
+
+  const loggedToday = (pagesByDate()[todayStr()]||0) > 0;
+  const alertEl = document.getElementById('streakAlert');
+  if(streaks.current >= 2 && !loggedToday){
+    alertEl.style.display = 'block';
+    alertEl.textContent = 'Log today to keep your ' + streaks.current + '-day streak going';
+  }else{
+    alertEl.style.display = 'none';
+  }
+
+  const currentEl = document.getElementById('dashCurrentBook');
+  if(!reading.length){
+    currentEl.innerHTML = emptyState('Nothing in progress', 'Tap + to add a book and start reading.');
+  }else{
+    const primary = reading[0];
+    const pct = primary.totalPages ? Math.min(100, Math.round(primary.pagesRead / primary.totalPages * 100)) : 0;
+    let html = `
+      <div class="dash-book-row">
+        <div><p class="book-title">${esc(primary.title)}</p><p class="book-author">${esc(primary.author||'')}</p></div>
+        <span class="genre-chip" style="background:${GENRE_COLORS[primary.genre]}22; color:${GENRE_COLORS[primary.genre]}; border:1px solid ${GENRE_COLORS[primary.genre]}55;">${esc(primary.genre)}</span>
+      </div>
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%;"></div></div>
+        <div class="progress-num">${primary.pagesRead}/${primary.totalPages||'?'}</div>
+      </div>`;
+    reading.slice(1).forEach(b=>{
+      const bpct = b.totalPages ? Math.min(100, Math.round(b.pagesRead / b.totalPages * 100)) : 0;
+      html += `<div class="dash-more-row"><span class="dash-more-title">${esc(b.title)}</span><span class="dash-more-pct">${bpct}%</span></div>`;
+    });
+    currentEl.innerHTML = html;
+  }
+
+  const thisWeek = weekDatesOffset(0);
+  const lastWeek = weekDatesOffset(1);
+  const map = pagesByDate();
+  const thisWeekTotal = thisWeek.reduce((s,d)=>s+(map[d]||0),0);
+  const lastWeekTotal = lastWeek.reduce((s,d)=>s+(map[d]||0),0);
+  let trendHtml;
+  if(lastWeekTotal===0 && thisWeekTotal===0){
+    trendHtml = `<span class="trend-badge trend-flat">— no data yet</span>`;
+  }else if(lastWeekTotal===0){
+    trendHtml = `<span class="trend-badge trend-up">▲ new momentum</span>`;
+  }else{
+    const change = Math.round(((thisWeekTotal-lastWeekTotal)/lastWeekTotal)*100);
+    if(change > 0) trendHtml = `<span class="trend-badge trend-up">▲ ${change}% vs last week</span>`;
+    else if(change < 0) trendHtml = `<span class="trend-badge trend-down">▼ ${Math.abs(change)}% vs last week</span>`;
+    else trendHtml = `<span class="trend-badge trend-flat">— even with last week</span>`;
+  }
+  const weeklyPct = state.settings.weeklyGoal ? Math.min(100, Math.round(thisWeekTotal/state.settings.weeklyGoal*100)) : 0;
+  document.getElementById('dashMomentum').innerHTML = `
+    <div class="momentum-top">
+      <div class="momentum-num">${thisWeekTotal} <span style="font-size:13px; color:var(--muted); font-weight:500;">pages</span></div>
+      <div class="momentum-goal">Goal: ${state.settings.weeklyGoal}</div>
+    </div>
+    <div class="progress-row" style="margin-top:0;">
+      <div class="progress-track"><div class="progress-fill" style="width:${weeklyPct}%;"></div></div>
+    </div>
+    <div style="margin-top:12px;">${trendHtml}</div>
+  `;
+}
+
+function renderLogTab(reading){
+  // Mini currently-reading card above the log form
+  const logCtxEl = document.getElementById('logContext');
+  if(logCtxEl){
+    if(reading.length){
+      const b = reading[0];
+      const pct = b.totalPages ? Math.min(100, Math.round(b.pagesRead/b.totalPages*100)) : 0;
+      const pace = computePaceHint(b);
+      logCtxEl.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+          <div style="min-width:0;">
+            <p class="book-title" style="font-size:15px;">${esc(b.title)}</p>
+            <p class="book-author">${esc(b.author||'')}</p>
+          </div>
+          <span class="genre-chip" style="background:${GENRE_COLORS[b.genre]}22;color:${GENRE_COLORS[b.genre]};border:1px solid ${GENRE_COLORS[b.genre]}55;flex-shrink:0;">${esc(b.genre)}</span>
+        </div>
+        <div class="progress-row" style="margin-top:10px;">
+          <div class="progress-track"><div class="progress-fill" style="width:${pct}%;"></div></div>
+          <span class="progress-num">${b.pagesRead}${b.totalPages?'/'+b.totalPages:''}</span>
+        </div>
+        ${pace ? `<p style="font-size:11px;color:var(--gold-dark);font-weight:600;margin-top:6px;">${esc(pace)}</p>` : ''}
+      `;
+      logCtxEl.style.display = 'block';
+    } else {
+      logCtxEl.style.display = 'none';
+    }
+  }
+
+  const map = pagesByDate();
+  const todayPages = map[todayStr()]||0;
+  const todayLogged = todayPages > 0;
+  const todayLbl = document.getElementById('todaySectionLabel');
+  if(todayLbl) todayLbl.textContent = todayLogged ? `Today ✓ ${todayPages} pages` : 'Today';
+
+  const dailyCard = document.getElementById('dailyLogCard');
+  if(!reading.length){
+    dailyCard.innerHTML = emptyState('Nothing to log yet', "Start a book from your shelf, then come back here to log today's reading.");
+  }else{
+    const options = reading.map(b=>'<option value="'+b.id+'">'+esc(b.title)+'</option>').join('');
+    dailyCard.innerHTML = `
+      ${todayLogged ? `<div style="font-size:12px;color:var(--gold-dark);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><span style="font-size:16px;">✓</span> ${todayPages} pages logged today — log more?</div>` : ''}
+      <div class="field"><label>Book</label><select id="log_book">${options}</select></div>
+      <div class="field"><label>Pages read today</label><input type="number" id="log_pages" min="0" placeholder="20" inputmode="numeric"></div>
+      <div class="field"><label>Session note <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label><input type="text" id="log_note" placeholder="Got to the plot twist…"></div>
+      <button class="btn btn-primary" style="width:100%;" onclick="submitDailyLog()">${todayLogged ? 'Log more pages' : "Save today's reading"}</button>
+    `;
+  }
+
+  const week = last7Dates();
+  const weekTotal = week.reduce((s,d)=>s+(map[d]||0),0);
+  const daysLogged = week.filter(d=>(map[d]||0)>0).length;
+  document.getElementById('weeklySummaryCard').innerHTML = `
+    <div class="stat-grid">
+      <div><div class="stat-num" style="font-size:22px;">${weekTotal}</div><div class="stat-label">Pages this week</div></div>
+      <div><div class="stat-num" style="font-size:22px;">${daysLogged} / 7</div><div class="stat-label">Days logged</div></div>
+    </div>`;
+
+  const now = new Date();
+  const monthPrefix = now.toISOString().slice(0,7);
+  const monthPages = Object.entries(map).filter(([d])=>d.startsWith(monthPrefix)).reduce((s,[,v])=>s+v,0);
+  const monthBooksFinished = state.books.filter(b=>b.dateFinished && b.dateFinished.slice(0,7)===monthPrefix).length;
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+  const activeDays = Object.keys(map).filter(d=>d.startsWith(monthPrefix) && map[d]>0).length;
+  document.getElementById('monthlySummaryCard').innerHTML = `
+    <div class="stat-grid">
+      <div><div class="stat-num" style="font-size:22px;">${monthPages}</div><div class="stat-label">Pages this month</div></div>
+      <div><div class="stat-num" style="font-size:22px;">${monthBooksFinished}</div><div class="stat-label">Books finished</div></div>
+    </div>
+    <div style="margin-top:12px; font-size:11.5px; color:var(--muted); font-weight:600;">${activeDays} of ${daysInMonth} days active</div>
+  `;
+  // Reading history timeline
+  const timelineEl = document.getElementById('timelineCard');
+  if(timelineEl){
+    const allLogs = [...state.dailyLogs].filter(l=>l.pages>0).reverse();
+    if(!allLogs.length){
+      timelineEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:6px 0;">Your session history will appear here as you log reading.</div>';
+    } else {
+      const SHOW_INITIAL = 10;
+      let showing = parseInt(timelineEl.dataset.showing||SHOW_INITIAL);
+      const renderTimeline = (count)=>{
+        timelineEl.dataset.showing = count;
+        const slice = allLogs.slice(0, count);
+        timelineEl.innerHTML = '';
+        // Group consecutive same-date entries
+        let lastDate = '';
+        slice.forEach(log=>{
+          const b = state.books.find(x=>x.id===log.bookId);
+          const dateLabel = log.date === todayStr() ? 'Today' :
+            log.date === (() => { const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); })() ? 'Yesterday' :
+            new Date(log.date+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
+          const row = document.createElement('div');
+          row.className = 'timeline-entry';
+          row.innerHTML = `
+            <div class="timeline-date">${log.date !== lastDate ? esc(dateLabel) : ''}</div>
+            <div class="timeline-dot"></div>
+            <div class="timeline-body">
+              <div class="timeline-book">${esc(b?b.title:'Unknown book')}</div>
+              <div class="timeline-pages">${log.pages} page${log.pages===1?'':'s'}</div>
+              ${log.note ? `<div class="timeline-note">${esc(log.note)}</div>` : ''}
+            </div>`;
+          lastDate = log.date;
+          timelineEl.appendChild(row);
+        });
+        if(allLogs.length > count){
+          const more = document.createElement('button');
+          more.className = 'timeline-show-more';
+          more.textContent = `Show ${Math.min(10, allLogs.length-count)} more sessions`;
+          more.onclick = ()=> renderTimeline(count+10);
+          timelineEl.appendChild(more);
+        }
+      };
+      renderTimeline(SHOW_INITIAL);
+    }
+  }
+}
+function submitDailyLog(){
+  const bookId = document.getElementById('log_book').value;
+  const pages = parseInt(document.getElementById('log_pages').value) || 0;
+  const note = document.getElementById('log_note').value.trim();
+  if(!bookId || pages<=0) return;
+  const b = state.books.find(x=>x.id===bookId);
+  if(!b) return;
+  b.pagesRead = Math.min(b.pagesRead + pages, b.totalPages || (b.pagesRead+pages));
+  logDailyPages(bookId, pages, note);
+  saveData();
+  document.getElementById('log_pages').value='';
+  document.getElementById('log_note').value='';
+  render();
+  showToast(pages + ' pages logged!');
+}
+const FORMAT_LABELS = {print:'📖 Print', ebook:'📱 eBook', audio:'🎧 Audio'};
+function renderShelfTab(reading, queue, finished){
+  const dnf = state.books.filter(b=>b.status==='dnf');
+
+  // — Currently reading —
+  const readingListEl = document.getElementById('readingList');
+  readingListEl.innerHTML = reading.length ? '' : emptyState('Nothing in progress', 'Tap + to add your first book.');
+  reading.forEach(b=>{
+    const pct = b.totalPages ? Math.min(100, Math.round(b.pagesRead / b.totalPages * 100)) : 0;
+    // Most recent session note for this book
+    const lastNote = [...state.dailyLogs].reverse().find(l=>l.bookId===b.id && l.note);
+    const fmtLabel = FORMAT_LABELS[b.format]||'';
+    const card = document.createElement('div');
+    card.className = 'card book-card';
+    const isAudio = b.format === 'audio';
+    const noPageCount = isAudio && !b.totalPages;
+    const qa1Label = isAudio ? '+15 min' : '+10 pages';
+    const qa2Label = isAudio ? '+30 min' : '+25 pages';
+    const qa1Val  = isAudio ? 15 : 10;
+    const qa2Val  = isAudio ? 30 : 25;
+    card.innerHTML = `
+      <div class="row-top">
+        <div>
+          <p class="book-title">${esc(b.title)}</p>
+          <p class="book-author">${esc(b.author||'')}${fmtLabel ? '<span class="format-chip" style="margin-left:6px;">'+esc(fmtLabel)+'</span>' : ''}</p>
+        </div>
+        <span class="genre-chip" style="background:${GENRE_COLORS[b.genre]}22; color:${GENRE_COLORS[b.genre]}; border:1px solid ${GENRE_COLORS[b.genre]}55;">${esc(b.genre)}</span>
+      </div>
+      <div class="progress-row">
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%;"></div></div>
+        <span class="progress-num">${b.pagesRead}${b.totalPages? '/'+b.totalPages:''}</span>
+      </div>
+      ${lastNote ? `<p class="session-note-preview">"${esc(lastNote.note)}"</p>` : ''}
+      <div class="quick-add">
+        ${noPageCount ? '' : `<button data-act="qa1">${qa1Label}</button><button data-act="qa2">${qa2Label}</button>`}
+        <button data-act="update" style="${noPageCount?'flex:1;':''}">Update</button>
+      </div>`;
+    if(!noPageCount){
+      card.querySelector('[data-act="qa1"]').onclick = (e)=>{e.stopPropagation(); quickAddPages(b.id, qa1Val); render();};
+      card.querySelector('[data-act="qa2"]').onclick = (e)=>{e.stopPropagation(); quickAddPages(b.id, qa2Val); render();};
+    }
+    card.querySelector('[data-act="update"]').onclick = (e)=>{e.stopPropagation(); openProgress(b.id);};
+    readingListEl.appendChild(card);
+  });
+
+  // — TBR queue —
+  const queueEl = document.getElementById('queueList');
+  queueEl.innerHTML = queue.length ? '<div class="card" style="padding:4px 12px;"></div>' : emptyState('Queue is empty', 'Add books you plan to read next.');
+  if(queue.length){
+    const wrap = queueEl.querySelector('.card');
+    queue.forEach(b=>{
+      const row = document.createElement('div');
+      row.className = 'queue-row';
+      row.innerHTML = `
+        <div class="queue-spine" style="background:${GENRE_COLORS[b.genre]||'#8C8375'};"></div>
+        <div class="queue-info"><p class="queue-title">${esc(b.title)}</p><p class="queue-author">${esc(b.author||'')}</p></div>
+        <button class="queue-start">Start</button>`;
+      row.querySelector('.queue-start').onclick = (e)=>{e.stopPropagation(); startReading(b.id);};
+      wrap.appendChild(row);
+    });
+  }
+
+  // — Finished shelf visual —
+  const shelfScroll = document.getElementById('shelfScroll');
+  shelfScroll.innerHTML='';
+  document.getElementById('shelfSub').textContent = finished.length
+    ? finished.length + ' book' + (finished.length===1?'':'s') + ' on the shelf'
+    : 'Finish a book to start filling it in';
+  finished.forEach(b=>{
+    const width = Math.max(10, Math.min(26, Math.round((b.totalPages||150)/22)));
+    const height = 64 + Math.round((b.rating||3)*6);
+    const spine = document.createElement('div');
+    spine.className='spine';
+    spine.style.width = width+'px';
+    spine.style.height = height+'px';
+    spine.style.background = GENRE_COLORS[b.genre]||'#8C8375';
+    spine.title = b.title;
+    spine.onclick = ()=>openDetail(b.id);
+    shelfScroll.appendChild(spine);
+  });
+
+  // — Finished filter chips —
+  const chipsEl = document.getElementById('finishedFilterChips');
+  const genresPresent = [...new Set(finished.map(b=>b.genre))];
+  if(!genresPresent.length){
+    chipsEl.innerHTML = '';
+  }else{
+    if(finishedGenreFilter !== 'All' && !genresPresent.includes(finishedGenreFilter)) finishedGenreFilter = 'All';
+    chipsEl.innerHTML = '';
+    ['All', ...genresPresent].forEach(g=>{
+      const chip = document.createElement('div');
+      chip.className = 'filter-chip' + (finishedGenreFilter===g ? ' active' : '');
+      chip.textContent = g;
+      chip.onclick = ()=>{ finishedGenreFilter = g; render(); };
+      chipsEl.appendChild(chip);
+    });
+  }
+  const filteredFinished = finishedGenreFilter==='All' ? finished : finished.filter(b=>b.genre===finishedGenreFilter);
+
+  // Search + sort
+  const searchEl = document.getElementById('finishedSearch');
+  const sortEl = document.getElementById('finishedSort');
+  const query = (searchEl ? searchEl.value : '').toLowerCase().trim();
+  const sortBy = sortEl ? sortEl.value : 'recent';
+
+  let displayFinished = query
+    ? filteredFinished.filter(b=>
+        b.title.toLowerCase().includes(query) ||
+        (b.author||'').toLowerCase().includes(query))
+    : [...filteredFinished];
+
+  if(sortBy==='rating') displayFinished.sort((a,b)=>(b.rating||0)-(a.rating||0));
+  else if(sortBy==='title') displayFinished.sort((a,b)=>a.title.localeCompare(b.title));
+  else if(sortBy==='pages') displayFinished.sort((a,b)=>(b.totalPages||0)-(a.totalPages||0));
+  else displayFinished.reverse(); // recent = reverse add order
+
+  // — Finished list —
+  const finishedListEl = document.getElementById('finishedList');
+  if(!displayFinished.length){
+    finishedListEl.innerHTML = query
+      ? emptyState('No results', 'Try a different title or author.')
+      : emptyState('No finished books yet', 'Books you complete will show up here with your reflections.');
+  } else {
+    finishedListEl.innerHTML = '';
+  }
+  displayFinished.forEach(b=>{
+    const item = document.createElement('div');
+    item.className='card';
+    item.style.cursor='pointer';
+    const moodEmoji = b.mood ? b.mood.split(' ')[0] : '';
+    item.innerHTML = `
+      <div style="display:flex;gap:12px;align-items:flex-start;">
+        ${coverThumbHtml(b.cover, b.genre)}
+        <div style="flex:1;min-width:0;">
+          <p class="book-title">${esc(b.title)}</p>
+          <p class="book-author">${esc(b.author||'')}</p>
+          <div class="stars">${starsHtml(b.rating)}</div>
+          <div class="log-meta">
+            <span class="log-date">${b.dateFinished? formatDate(b.dateFinished):''}</span>
+            <span class="genre-chip" style="background:${GENRE_COLORS[b.genre]}22; color:${GENRE_COLORS[b.genre]}; border:1px solid ${GENRE_COLORS[b.genre]}55;">${esc(b.genre)}</span>
+          </div>
+          ${b.mood ? `<span class="mood-chip">${esc(b.mood)}</span>` : ''}
+          ${(state.annotations&&state.annotations[b.id]&&state.annotations[b.id].length) ? `<span class="note-count-badge">📝 ${state.annotations[b.id].length} note${state.annotations[b.id].length===1?'':'s'}</span>` : ''}
+          ${b.reflection ? `<p class="reflection-preview">${esc(b.reflection)}</p>` : ''}
+        </div>
+      </div>
+    `;
+    item.onclick = ()=>openDetail(b.id);
+    finishedListEl.appendChild(item);
+  });
+
+  // — DNF section —
+  const dnfLabel = document.getElementById('dnfSectionLabel');
+  const dnfListEl = document.getElementById('dnfList');
+  if(!dnf.length){
+    dnfLabel.style.display='none';
+    dnfListEl.innerHTML='';
+  }else{
+    dnfLabel.style.display='flex';
+    dnfListEl.innerHTML='';
+    [...dnf].reverse().forEach(b=>{
+      const item = document.createElement('div');
+      item.className='card';
+      item.style.cursor='pointer';
+      item.innerHTML = `
+        <div class="row-top">
+          <div><p class="book-title">${esc(b.title)}</p><p class="book-author">${esc(b.author||'')}</p></div>
+          <span class="dnf-badge">DNF</span>
+        </div>
+        ${b.reflection ? `<p class="reflection-preview" style="margin-top:8px;">${esc(b.reflection)}</p>` : ''}
+      `;
+      item.onclick = ()=>openDetail(b.id);
+      dnfListEl.appendChild(item);
+    });
+  }
+}
+function renderStatsTab(finished){
+  const circumference = 2*Math.PI*27;
+  const allBooks = state.books;
+
+  const week = last7Dates();
+  const map = pagesByDate();
+  const weekTotal = week.reduce((s,d)=>s+(map[d]||0),0);
+  const weekPct = state.settings.weeklyGoal ? Math.min(100, Math.round(weekTotal/state.settings.weeklyGoal*100)) : 0;
+  const ringWeek = document.getElementById('ringWeek');
+  ringWeek.style.strokeDasharray = circumference;
+  ringWeek.style.strokeDashoffset = circumference - (circumference*weekPct/100);
+  document.getElementById('ringWeekLabel').textContent = weekTotal + ' / ' + state.settings.weeklyGoal;
+
+  const barChart = document.getElementById('weekBarChart');
+  barChart.innerHTML='';
+  const maxDay = Math.max(1, ...week.map(d=>map[d]||0));
+  week.forEach(d=>{
+    const val = map[d]||0;
+    const pct = Math.round(val/maxDay*100);
+    const dayLabel = new Date(d+'T12:00:00').toLocaleDateString(undefined,{weekday:'narrow'});
+    const col = document.createElement('div');
+    col.className='bar-col';
+    col.innerHTML = `<div class="bar-val">${val||''}</div><div class="bar" style="height:${Math.max(pct,val>0?6:2)}%;"></div><div class="bar-day">${dayLabel}</div>`;
+    barChart.appendChild(col);
+  });
+
+  const totalPages = finished.reduce((s,b)=>s + (b.totalPages||0), 0);
+  const avgRating = finished.length ? (finished.reduce((s,b)=>s+(b.rating||0),0)/finished.length) : 0;
+  document.getElementById('statPages').textContent = totalPages.toLocaleString();
+  document.getElementById('statAvg').textContent = avgRating ? avgRating.toFixed(1)+'★' : '–';
+  document.getElementById('statBooks').textContent = finished.length;
+  document.getElementById('statQuotes').textContent = state.quotes.length;
+
+  const genreBarsEl = document.getElementById('genreBars');
+  if(!finished.length){
+    genreBarsEl.innerHTML = '<div class="empty">No finished books yet</div>';
+  }else{
+    const counts = {};
+    finished.forEach(b=>{ counts[b.genre] = (counts[b.genre]||0)+1; });
+    const max = Math.max(...Object.values(counts));
+    genreBarsEl.innerHTML='';
+    Object.entries(counts).sort((a,b)=>b[1]-a[1]).forEach(([genre,count])=>{
+      const row = document.createElement('div');
+      row.className='genre-bar-row';
+      row.innerHTML = `
+        <div class="genre-bar-label"><span>${esc(genre)}</span><span>${count}</span></div>
+        <div class="genre-bar-track"><div class="genre-bar-fill" style="width:${Math.round(count/max*100)}%; background:${GENRE_COLORS[genre]};"></div></div>`;
+      genreBarsEl.appendChild(row);
+    });
+  }
+
+  // — Mood breakdown —
+  const moodBarsEl = document.getElementById('moodBars');
+  const moodsWithEmoji = {
+    adventurous:'🗺', challenging:'🧠', dark:'🌑', emotional:'💧', funny:'😄',
+    hopeful:'🌱', informative:'📚', inspiring:'✨', lighthearted:'☀️',
+    mysterious:'🔍', reflective:'🪞', relaxing:'🌿', tense:'⚡'
+  };
+  const moodCounts = {};
+  finished.forEach(b=>{ if(b.mood) moodCounts[b.mood]=(moodCounts[b.mood]||0)+1; });
+  const moodEntries = Object.entries(moodCounts).sort((a,b)=>b[1]-a[1]);
+  if(!moodEntries.length){
+    moodBarsEl.innerHTML = '<div style="font-size:12.5px;color:var(--muted);padding:4px 0;">Tag a mood when finishing books to see your reading personality.</div>';
+  } else {
+    const moodMax = moodEntries[0][1];
+    moodBarsEl.innerHTML = '';
+    moodEntries.forEach(([mood,count])=>{
+      const row = document.createElement('div');
+      row.className = 'mood-bar-row';
+      row.innerHTML = `
+        <span class="mood-bar-emoji">${moodsWithEmoji[mood]||'📖'}</span>
+        <div class="mood-bar-info">
+          <div class="mood-bar-label"><span>${mood.charAt(0).toUpperCase()+mood.slice(1)}</span><span>${count}</span></div>
+          <div class="mood-bar-track"><div class="mood-bar-fill" style="width:${Math.round(count/moodMax*100)}%"></div></div>
+        </div>`;
+      moodBarsEl.appendChild(row);
+    });
+  }
+
+  // — Format mix —
+  const formatRingsEl = document.getElementById('formatRings');
+  const fmtData = [
+    {key:'print',  label:'Print',     emoji:'📖', color:'var(--accent)'},
+    {key:'ebook',  label:'eBook',     emoji:'📱', color:'var(--gold)'},
+    {key:'audio',  label:'Audio',     emoji:'🎧', color:'var(--oxblood)'},
+  ];
+  const fmtTotal = finished.length || 1;
+  const fmtCounts = {print:0, ebook:0, audio:0};
+  finished.forEach(b=>{ if(b.format && fmtCounts[b.format]!==undefined) fmtCounts[b.format]++; });
+  const anyFormat = fmtCounts.print+fmtCounts.ebook+fmtCounts.audio > 0;
+  if(!anyFormat){
+    formatRingsEl.innerHTML = '<div style="font-size:12.5px;color:var(--muted);padding:4px 0;">Choose a format when adding books to see your mix here.</div>';
+  } else {
+    const circ = 2*Math.PI*22;
+    formatRingsEl.innerHTML = `<div class="format-row">${fmtData.map(f=>{
+      const pct = Math.round(fmtCounts[f.key]/fmtTotal*100);
+      const offset = circ - (circ*pct/100);
+      return `<div class="format-cell">
+        <div class="format-ring-wrap">
+          <svg viewBox="0 0 48 48">
+            <circle cx="24" cy="24" r="22" fill="none" stroke="var(--card-tint)" stroke-width="4"/>
+            <circle cx="24" cy="24" r="22" fill="none" stroke="${f.color}" stroke-width="4"
+              stroke-linecap="round" transform="rotate(-90 24 24)"
+              stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/>
+          </svg>
+          <div class="format-ring-pct">${pct ? pct+'%' : '—'}</div>
+        </div>
+        <div class="format-ring-label">${f.label}</div>
+        <div class="format-ring-count">${fmtCounts[f.key]} book${fmtCounts[f.key]===1?'':'s'}</div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  // — Activity heatmap (52 weeks) —
+  const heatmapEl = document.getElementById('heatmapCard');
+  if(heatmapEl){
+    const map = pagesByDate();
+    const totalDaysWithData = Object.keys(map).filter(d=>map[d]>0).length;
+    if(totalDaysWithData < 3){
+      heatmapEl.innerHTML = '<div style="font-size:12.5px;color:var(--muted);padding:4px 0;">Your reading activity will fill in here as you log sessions — each cell is one day.</div>';
+    } else {
+    // Build 52 weeks ending today
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0=Sun
+    // Start from Sunday 52 weeks ago
+    const startDate = new Date(today);
+    startDate.setDate(today.getDate() - dayOfWeek - 51*7);
+    // Find max for color scaling
+    let maxPages = 1;
+    const cells = [];
+    for(let w=0; w<52; w++){
+      const col = [];
+      for(let d=0; d<7; d++){
+        const dt = new Date(startDate);
+        dt.setDate(startDate.getDate() + w*7 + d);
+        const key = dt.toISOString().slice(0,10);
+        const pages = map[key]||0;
+        if(pages > maxPages) maxPages = pages;
+        col.push({key, pages, month: dt.getMonth(), day: dt.getDate(), dt});
+      }
+      cells.push(col);
+    }
+    // Color levels: 0=empty, 1-4=intensity
+    function cellColor(pages){
+      if(!pages) return 'var(--card-tint)';
+      const pct = pages/maxPages;
+      if(pct < 0.25) return 'rgba(198,160,69,0.25)';
+      if(pct < 0.5)  return 'rgba(198,160,69,0.5)';
+      if(pct < 0.75) return 'rgba(198,160,69,0.75)';
+      return 'var(--gold)';
+    }
+    // Month labels (show label at first col of each new month)
+    const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    let lastMonth = -1;
+    const monthLabelSpans = cells.map(col=>{
+      const m = col[0].month;
+      if(m !== lastMonth){ lastMonth = m; return monthNames[m]; }
+      return '';
+    });
+    heatmapEl.innerHTML = '';
+    // Month labels row
+    const lblRow = document.createElement('div');
+    lblRow.className = 'heatmap-month-labels';
+    monthLabelSpans.forEach(lbl=>{
+      const sp = document.createElement('div');
+      sp.className = 'heatmap-month-lbl';
+      sp.style.width = '11px';
+      sp.textContent = lbl;
+      lblRow.appendChild(sp);
+    });
+    // Grid
+    const wrap = document.createElement('div');
+    wrap.className = 'heatmap-wrap';
+    const grid = document.createElement('div');
+    grid.className = 'heatmap-grid';
+    cells.forEach(col=>{
+      const colEl = document.createElement('div');
+      colEl.className = 'heatmap-col';
+      col.forEach(({pages, key, dt})=>{
+        const cell = document.createElement('div');
+        cell.className = 'heatmap-cell';
+        cell.style.background = cellColor(pages);
+        const label = `${dt.toLocaleDateString(undefined,{month:'short',day:'numeric'})}: ${pages} page${pages===1?'':'s'}`;
+        cell.title = label;
+        colEl.appendChild(cell);
+      });
+      grid.appendChild(colEl);
+    });
+    wrap.appendChild(lblRow);
+    wrap.appendChild(grid);
+    heatmapEl.appendChild(wrap);
+    // Legend
+    const legend = document.createElement('div');
+    legend.className = 'heatmap-legend';
+    legend.innerHTML = `<span class="heatmap-legend-lbl">Less</span>
+      <div class="heatmap-legend-cell" style="background:var(--card-tint)"></div>
+      <div class="heatmap-legend-cell" style="background:rgba(198,160,69,0.25)"></div>
+      <div class="heatmap-legend-cell" style="background:rgba(198,160,69,0.5)"></div>
+      <div class="heatmap-legend-cell" style="background:rgba(198,160,69,0.75)"></div>
+      <div class="heatmap-legend-cell" style="background:var(--gold)"></div>
+      <span class="heatmap-legend-lbl">More</span>`;
+    heatmapEl.appendChild(legend);
+    } // end else (has data)
+  } // end if(heatmapEl)
+
+  // — Year in review —
+  const yearEl = document.getElementById('yearWrapCard');
+  const thisYear = new Date().getFullYear().toString();
+  const yearFinished = finished.filter(b=>b.dateFinished && b.dateFinished.startsWith(thisYear));
+  const yearPages = Object.entries(map).filter(([d])=>d.startsWith(thisYear)).reduce((s,[,v])=>s+v,0);
+  const yearStreaks = computeStreaks();
+  const yearAvg = yearFinished.length ? (yearFinished.reduce((s,b)=>s+(b.rating||0),0)/yearFinished.length) : 0;
+  const topGenreCounts = {};
+  yearFinished.forEach(b=>{ topGenreCounts[b.genre]=(topGenreCounts[b.genre]||0)+1; });
+  const topGenre = Object.entries(topGenreCounts).sort((a,b)=>b[1]-a[1])[0];
+  const formatCounts = {print:0,ebook:0,audio:0};
+  yearFinished.forEach(b=>{ if(b.format && formatCounts[b.format]!==undefined) formatCounts[b.format]++; });
+  const fmtParts = [formatCounts.print&&`${formatCounts.print} print`,formatCounts.ebook&&`${formatCounts.ebook} ebook`,formatCounts.audio&&`${formatCounts.audio} audio`].filter(Boolean).join(', ');
+
+  if(!yearFinished.length){
+    yearEl.innerHTML = `<p class="year-wrap-heading">${thisYear} reading</p><div style="text-align:center;padding:10px 0;font-size:13px;opacity:.65;">Finish your first book to see your year take shape.</div>`;
+  }else{
+    yearEl.innerHTML = `
+      <p class="year-wrap-heading">✦ ${thisYear} reading wrap</p>
+      <div class="year-wrap-grid">
+        <div class="year-wrap-cell"><div class="year-wrap-num">${yearFinished.length}</div><div class="year-wrap-lbl">Books</div></div>
+        <div class="year-wrap-cell"><div class="year-wrap-num">${yearPages.toLocaleString()}</div><div class="year-wrap-lbl">Pages</div></div>
+        <div class="year-wrap-cell"><div class="year-wrap-num">${yearAvg?yearAvg.toFixed(1):'–'}</div><div class="year-wrap-lbl">Avg ★</div></div>
+      </div>
+      <div class="year-wrap-divider"></div>
+      ${topGenre ? `<div class="year-wrap-row"><span>Top genre</span><b>${esc(topGenre[0])}</b></div>` : ''}
+      ${fmtParts ? `<div class="year-wrap-row"><span>Format mix</span><b>${esc(fmtParts)}</b></div>` : ''}
+      <div class="year-wrap-row"><span>Longest streak</span><b>${yearStreaks.longest} day${yearStreaks.longest===1?'':'s'}</b></div>
+    `;
+  }
+}
+
+function renderQuotesTab(){
+  const listEl = document.getElementById('quotesList');
+  if(!state.quotes.length){
+    listEl.innerHTML = emptyState('No quotes saved yet', 'Tap the + button to save a favourite line from any book.');
+    return;
+  }
+  listEl.innerHTML='';
+  [...state.quotes].reverse().forEach(q=>{
+    const b = state.books.find(x=>x.id===q.bookId);
+    const card = document.createElement('div');
+    card.className='card quote-card';
+    card.style.position='relative';
+    card.innerHTML = `
+      <div class="quote-mark">&#8220;</div>
+      <p class="quote-text">${esc(q.text)}</p>
+      <div class="quote-attr"><b>${esc(b? b.title : 'Unknown book')}</b>${b && b.author ? ' — '+esc(b.author) : ''}${q.page ? ' · p.'+q.page : ''}</div>
+      <button class="quote-delete" aria-label="Delete quote" title="Delete quote">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5A1.5 1.5 0 0110.5 3h3A1.5 1.5 0 0115 4.5V7M6 7l1 13a1.5 1.5 0 001.5 1.5h7a1.5 1.5 0 001.5-1.5L18 7"/></svg>
+      </button>
+    `;
+    card.querySelector('.quote-delete').onclick = (e)=>{ e.stopPropagation(); deleteQuote(q.id); };
+    listEl.appendChild(card);
+  });
+}
+
+/* ── READING CHALLENGES ── */
+function saveChallenge(){
+  const name = document.getElementById('ch_name').value.trim();
+  const target = parseInt(document.getElementById('ch_target').value)||0;
+  if(!name || target < 1){ showToast('Name and target required.', true); return; }
+  if(!state.challenges) state.challenges = [];
+  state.challenges.push({
+    id: uid('c'), name, target,
+    genre: document.getElementById('ch_genre').value||'',
+    format: document.getElementById('ch_format').value||''
+  });
+  saveData();
+  closeSheet('challengeSheet');
+  document.getElementById('ch_name').value='';
+  document.getElementById('ch_target').value='';
+  document.getElementById('ch_genre').value='';
+  document.getElementById('ch_format').value='';
+  render();
+  showToast('Challenge added!');
+}
+function deleteChallenge(id){
+  state.challenges = (state.challenges||[]).filter(c=>c.id!==id);
+  saveData(); render();
+}
+function challengeProgress(c){
+  return state.books.filter(b=>{
+    if(b.status!=='finished') return false;
+    if(c.genre && b.genre!==c.genre) return false;
+    if(c.format && b.format!==c.format) return false;
+    return true;
+  }).length;
+}
+function renderChallenges(){
+  const listEl = document.getElementById('challengesList');
+  const dashEl = document.getElementById('dashChallenges');
+  const dashLbl = document.getElementById('dashChallengesLabel');
+  const challenges = state.challenges||[];
+  if(listEl){
+    listEl.innerHTML = '';
+    challenges.forEach(c=>{
+      const prog = challengeProgress(c);
+      const pct = Math.min(100, Math.round(prog/c.target*100));
+      const row = document.createElement('div');
+      row.className = 'card'; row.style.marginBottom='8px';
+      row.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;">
+          <div>
+            <div style="font-family:var(--font-serif);font-size:14px;font-weight:600;font-style:italic;">${esc(c.name)}</div>
+            <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;">${[c.genre,c.format?({print:'Print',ebook:'eBook',audio:'Audio'}[c.format]||''):''].filter(Boolean).join(' · ')||'All books'}</div>
+          </div>
+          <button onclick="deleteChallenge('${c.id}')" style="background:none;border:none;color:var(--danger);font-size:12px;font-weight:700;cursor:pointer;padding:0;flex-shrink:0;">Remove</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div class="progress-track" style="flex:1;"><div class="progress-fill" style="width:${pct}%;"></div></div>
+          <span style="font-size:11px;font-weight:700;color:var(--muted);white-space:nowrap;">${prog} / ${c.target}</span>
+        </div>`;
+      listEl.appendChild(row);
+    });
+  }
+  if(dashEl&&dashLbl){
+    if(!challenges.length){ dashLbl.style.display='none'; dashEl.innerHTML=''; }
+    else{
+      dashLbl.style.display='flex'; dashEl.innerHTML='';
+      challenges.forEach(c=>{
+        const prog=challengeProgress(c); const pct=Math.min(100,Math.round(prog/c.target*100)); const done=prog>=c.target;
+        const card=document.createElement('div'); card.className='card'; card.style.marginBottom='10px';
+        card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+          <span style="font-family:var(--font-serif);font-size:14.5px;font-weight:600;font-style:italic;">${esc(c.name)}</span>
+          <span style="font-size:12px;font-weight:700;color:${done?'var(--gold-dark)':'var(--muted)'};">${done?'✓ Done!':prog+' / '+c.target}</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:${pct}%;${done?'background:var(--gold);':''}"></div></div>`;
+        dashEl.appendChild(card);
+      });
+    }
+  }
+}
+
+/* ── BOOK ANNOTATIONS ── */
+let activeAnnotationBookId = null;
+function openAnnotations(){
+  activeAnnotationBookId = activeBookId;
+  const b = state.books.find(x=>x.id===activeBookId);
+  if(!b) return;
+  document.getElementById('annotationSheetTitle').textContent = `Notes — ${b.title}`;
+  document.getElementById('annotationText').value='';
+  renderAnnotationList();
+  closeSheet('detailSheet');
+  openSheet('annotationSheet');
+}
+function renderAnnotationList(){
+  const listEl=document.getElementById('annotationList');
+  if(!listEl) return;
+  const notes=((state.annotations||{})[activeAnnotationBookId])||[];
+  if(!notes.length){ listEl.innerHTML='<div style="font-size:12.5px;color:var(--muted);padding:4px 0 8px;">No notes yet for this book.</div>'; return; }
+  listEl.innerHTML='';
+  [...notes].reverse().forEach((n,i)=>{
+    const realIdx=notes.length-1-i;
+    const row=document.createElement('div');
+    row.style.cssText='border-bottom:1px solid var(--line);padding:9px 0;position:relative;';
+    row.innerHTML=`<div style="font-size:10.5px;color:var(--muted);font-weight:700;margin-bottom:4px;">${new Date(n.date+'T12:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}</div>
+      <div style="font-size:13px;color:var(--ink);line-height:1.55;padding-right:48px;">${esc(n.text)}</div>
+      <button onclick="deleteAnnotation(${realIdx})" style="position:absolute;top:8px;right:0;background:none;border:none;color:var(--danger);font-size:11px;font-weight:700;cursor:pointer;">Delete</button>`;
+    listEl.appendChild(row);
+  });
+}
+function saveAnnotation(){
+  const text=document.getElementById('annotationText').value.trim();
+  if(!text) return;
+  if(!state.annotations) state.annotations={};
+  if(!state.annotations[activeAnnotationBookId]) state.annotations[activeAnnotationBookId]=[];
+  state.annotations[activeAnnotationBookId].push({text, date:todayStr()});
+  document.getElementById('annotationText').value='';
+  saveData(); renderAnnotationList();
+  showToast('Note saved.');
+}
+function deleteAnnotation(idx){
+  if(!state.annotations||!state.annotations[activeAnnotationBookId]) return;
+  state.annotations[activeAnnotationBookId].splice(idx,1);
+  saveData(); renderAnnotationList();
+}
+/* ── YEAR WRAP EXPORT ── */
+async function openWrapExport(){
+  const finished=state.books.filter(b=>b.status==='finished');
+  const thisYear=new Date().getFullYear().toString();
+  const map=pagesByDate();
+  const yearFinished=finished.filter(b=>b.dateFinished&&b.dateFinished.startsWith(thisYear));
+  const yearPages=Object.entries(map).filter(([d])=>d.startsWith(thisYear)).reduce((s,[,v])=>s+v,0);
+  const yearAvg=yearFinished.length?(yearFinished.reduce((s,b)=>s+(b.rating||0),0)/yearFinished.length):0;
+  const topGenreCounts={};
+  yearFinished.forEach(b=>{ topGenreCounts[b.genre]=(topGenreCounts[b.genre]||0)+1; });
+  const topGenre=Object.entries(topGenreCounts).sort((a,b)=>b[1]-a[1])[0];
+  const streaks=computeStreaks();
+  const appDisplayName = state.settings.appName || 'Premium Reading Log';
+  const accentColor = (document.documentElement.style.getPropertyValue('--accent')||'').trim() ||
+    (getComputedStyle(document.documentElement).getPropertyValue('--accent')||'').trim() || '#141F35';
+
+  // Load web fonts into the canvas context
+  try {
+    const fraunces = new FontFace('Fraunces', "url('https://fonts.gstatic.com/s/fraunces/v31/6NUt8FyLNQOQZAnv9ZwNjucMHVn85Ni7emAe9lKqZTnDSg.woff2') format('woff2')", {style:'italic', weight:'600'});
+    const inter = new FontFace('Inter', "url('https://fonts.gstatic.com/s/inter/v18/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw.woff2') format('woff2')", {weight:'700'});
+    await Promise.all([fraunces.load(), inter.load()].map(p=>p.catch(()=>null)));
+    document.fonts.add(fraunces);
+    document.fonts.add(inter);
+  } catch(e){ /* silently fall back to system fonts */ }
+
+  const canvas=document.createElement('canvas');
+  canvas.width=640; canvas.height=820;
+  const ctx=canvas.getContext('2d');
+  const gold='#C6A045';
+
+  // Background
+  const grad=ctx.createLinearGradient(0,0,640,820);
+  grad.addColorStop(0,accentColor); grad.addColorStop(1,'#0B1322');
+  ctx.fillStyle=grad; ctx.fillRect(0,0,640,820);
+
+  // Dot grid texture
+  ctx.fillStyle='rgba(255,255,255,0.035)';
+  for(let x=0;x<640;x+=12) for(let y=0;y<820;y+=12){ ctx.beginPath(); ctx.arc(x,y,1,0,Math.PI*2); ctx.fill(); }
+
+  // Gold top rule
+  ctx.fillStyle=gold; ctx.fillRect(48,60,544,2);
+
+  // Eyebrow
+  ctx.fillStyle='rgba(198,160,69,0.65)';
+  ctx.font='700 12px Inter, sans-serif';
+  ctx.fillText(`✦  ${thisYear} READING WRAP  ✦`,48,94);
+
+  // Title
+  ctx.fillStyle='#F1E6C4';
+  ctx.font='italic 600 56px Fraunces, serif';
+  ctx.fillText(appDisplayName,48,162);
+
+  // Subtitle rule
+  ctx.fillStyle=gold; ctx.fillRect(48,184,544,1.5);
+
+  // Big stats
+  const stats=[
+    {val:String(yearFinished.length),lbl:'BOOKS'},
+    {val:yearPages.toLocaleString(),lbl:'PAGES'},
+    {val:yearAvg?yearAvg.toFixed(1)+'★':'—',lbl:'AVG RATING'},
+    {val:streaks.longest+'d',lbl:'BEST STREAK'},
+  ];
+  stats.forEach((s,i)=>{
+    const x=48+i*(544/4)+(544/8);
+    ctx.fillStyle='#F1E6C4'; ctx.font='bold 40px Fraunces, serif'; ctx.textAlign='center';
+    ctx.fillText(s.val,x,276);
+    ctx.fillStyle='rgba(198,160,69,0.6)'; ctx.font='700 10px Inter, sans-serif';
+    ctx.fillText(s.lbl,x,298);
+  });
+  ctx.textAlign='left';
+
+  // Divider
+  ctx.fillStyle=gold; ctx.fillRect(48,322,544,1.5);
+
+  // Top genre
+  if(topGenre){
+    ctx.fillStyle='rgba(198,160,69,0.6)'; ctx.font='700 10px Inter, sans-serif';
+    ctx.fillText('TOP GENRE',48,356);
+    ctx.fillStyle='#F1E6C4'; ctx.font='italic 600 26px Fraunces, serif';
+    ctx.fillText(topGenre[0],48,388);
+  }
+
+  // Book list
+  const listBooks=[...yearFinished].reverse().slice(0,9);
+  ctx.fillStyle='rgba(198,160,69,0.6)'; ctx.font='700 10px Inter, sans-serif';
+  ctx.fillText('BOOKS READ',340,356);
+  listBooks.forEach((b,i)=>{
+    const y=374+i*38;
+    ctx.fillStyle=gold; ctx.fillRect(340,y,3,20);
+    ctx.fillStyle='#EDE6DA'; ctx.font='600 12px Inter, sans-serif';
+    const title=b.title.length>28?b.title.slice(0,26)+'…':b.title;
+    ctx.fillText(title,350,y+14);
+  });
+  if(yearFinished.length>9){
+    ctx.fillStyle='rgba(237,230,218,0.4)'; ctx.font='600 11px Inter, sans-serif';
+    ctx.fillText(`+${yearFinished.length-9} more`,350,374+9*38+14);
+  }
+
+  // Bottom
+  ctx.fillStyle=gold; ctx.fillRect(48,734,544,1.5);
+  ctx.fillStyle='rgba(198,160,69,0.4)'; ctx.font='600 11px Inter, sans-serif';
+  ctx.fillText(appDisplayName + ' — Mobile First Studio',48,764);
+
+  const wrapDiv=document.getElementById('wrapCanvas');
+  if(wrapDiv){ wrapDiv.innerHTML=''; wrapDiv.appendChild(canvas); canvas.style.cssText='width:100%;height:auto;border-radius:12px;'; }
+  window._wrapCanvas=canvas;
+  openSheet('wrapExportSheet');
+}
+function downloadWrap(){
+  const canvas=window._wrapCanvas;
+  if(!canvas) return;
+  const a=document.createElement('a');
+  a.download=`reading-wrap-${new Date().getFullYear()}.png`;
+  a.href=canvas.toDataURL('image/png');
+  a.click();
+  showToast('Image saved!');
+}
+
+/* ── ONBOARDING ── */
+function obNext(step){
+  if(step === 1){
+    // Save goal settings from step 1
+    const name = document.getElementById('ob_goalName').value.trim() || '2026 Reading Goal';
+    const count = parseInt(document.getElementById('ob_goalCount').value)||12;
+    const weekly = parseInt(document.getElementById('ob_weeklyGoal').value)||150;
+    state.settings.termName = name;
+    state.settings.goalCount = count;
+    state.settings.weeklyGoal = weekly;
+    saveData();
+    document.getElementById('ob-step-1').style.display = 'none';
+    document.getElementById('ob-step-2').style.display = 'block';
+  }
+}
+function obFinish(addBook){
+  if(addBook){
+    const title = document.getElementById('ob_title').value.trim();
+    if(title){
+      state.books.push({
+        id: uid('b'),
+        title,
+        author: document.getElementById('ob_author').value.trim(),
+        genre: document.getElementById('ob_genre').value,
+        format: document.getElementById('ob_format').value,
+        cover: null, totalPages: 0, pagesRead: 0,
+        status:'reading', rating:0, reflection:'', mood:'',
+        dateStarted: new Date().toISOString(), dateFinished: null
+      });
+      saveData();
+    }
+  }
+  state.settings.onboarded = true;
+  saveData();
+  closeSheet('onboardSheet');
+  render();
+}
+
+render();
+enforceDemoTrial();
+
+// Show onboarding on first run (no books, no previous data, not yet onboarded)
+if(!state.settings.onboarded && !state.books.length){
+  // Small delay so the app renders first
+  setTimeout(()=>{ openSheet('onboardSheet'); }, 300);
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
