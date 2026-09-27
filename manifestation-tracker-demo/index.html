@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Manifestation Tracker — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#0d0a1f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-void: #0d0a1f;
+    --bg-deep: #150f2e;
+    --bg-card: #1c1440;
+    --bg-card-hi: #221a4d;
+    --gold: #f5b96a;
+    --gold-bright: #ffd39a;
+    --rose: #ff6b9d;
+    --violet: #8b7cf6;
+    --violet-soft: rgba(139, 124, 246, 0.14);
+    --text: #f3f1fb;
+    --text-muted: #a79fc4;
+    --text-faint: #6b628f;
+    --border-soft: rgba(255, 180, 140, 0.14);
+    --border-violet: rgba(139, 124, 246, 0.22);
+    --danger: #e2777f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at 15% -10%, rgba(255, 180, 140, 0.09), transparent 42%),
+      radial-gradient(circle at 90% 0%, rgba(139, 124, 246, 0.14), transparent 48%),
+      var(--bg-void);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+  }
+  .app { width: 100%; max-width: 480px; min-height: 100vh; padding: 1.1rem 1rem calc(6rem + env(safe-area-inset-bottom)); }
+  .display { font-family: "Newsreader", Georgia, serif; }
+  header { display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 1.1rem; }
+  .eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-faint); }
+  .app-name { font-family: "Newsreader", Georgia, serif; font-style: italic; font-weight: 500; font-size: 1.55rem; color: var(--gold-bright); }
+  .app-subtitle { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.1rem; }
+  main { width: 100%; }
+  .screen { display: none; width: 100%; }
+  .screen.active-screen { display: block; }
+  .card {
+    background: linear-gradient(160deg, var(--bg-card-hi), var(--bg-card) 60%);
+    border: 1px solid var(--border-soft);
+    border-radius: 1.1rem;
+    padding: 1.1rem 1.05rem;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+    margin-bottom: 0.85rem;
+  }
+  .card-header { margin-bottom: 0.7rem; }
+  .card-title { font-family: "Newsreader", Georgia, serif; font-size: 1.1rem; font-weight: 600; color: var(--text); }
+  .card-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+  .note { margin-top: 0.7rem; font-size: 0.72rem; color: var(--text-faint); line-height: 1.55; }
+  .orb-row { display: flex; align-items: center; gap: 0.9rem; }
+  .orb {
+    position: relative; width: 62px; height: 62px; flex-shrink: 0; border-radius: 50%;
+    background: radial-gradient(circle at 50% 55%, var(--bg-card), var(--bg-void) 80%);
+    box-shadow: inset 0 0 0 1px var(--border-violet);
+  }
+  .orb .glow {
+    position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle at 45% 40%, var(--gold-bright), var(--rose) 55%, transparent 78%);
+    opacity: var(--orb-intensity, 0.2);
+    filter: blur(1px);
+    animation: orbPulse 4.2s ease-in-out infinite;
+  }
+  @keyframes orbPulse {
+    0%, 100% { transform: scale(1); opacity: var(--orb-intensity, 0.2); }
+    50% { transform: scale(1.05); opacity: calc(var(--orb-intensity, 0.2) * 1.2); }
+  }
+  .orb-info { flex: 1; min-width: 0; }
+  .orb-label { font-family: "Newsreader", Georgia, serif; font-size: 1.05rem; font-weight: 600; color: var(--gold-bright); }
+  .orb-sub { font-size: 0.74rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+  .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .heatmap-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.3rem; margin-top: 0.5rem; }
+  .heatmap-cell { aspect-ratio: 1; border-radius: 4px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-soft); }
+  .heatmap-cell.active { background: linear-gradient(135deg, var(--gold-bright), var(--rose)); border-color: transparent; }
+  .stat { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-soft); border-radius: 0.75rem; padding: 0.6rem 0.5rem; text-align: center; }
+  .stat-value { font-family: "Newsreader", Georgia, serif; font-size: 1.25rem; font-weight: 600; color: var(--gold-bright); }
+  .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+  .field { margin-bottom: 0.75rem; }
+  .field label { display: block; font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+  .field textarea, .field input {
+    width: 100%; padding: 0.65rem 0.75rem; border-radius: 0.75rem;
+    border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.02);
+    color: var(--text); font-family: "Inter", sans-serif; font-size: 0.82rem; line-height: 1.5;
+  }
+  .field textarea { min-height: 64px; resize: vertical; }
+  .field textarea:focus-visible, .field input:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+  .energy-row { display: flex; gap: 0.4rem; margin-top: 0.35rem; }
+  .energy-dot {
+    flex: 1; padding: 0.55rem; text-align: center; border-radius: 0.6rem;
+    border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.02);
+    color: var(--text-muted); font-size: 0.85rem; cursor: pointer;
+  }
+  .energy-dot.selected { border-color: transparent; background: linear-gradient(135deg, var(--gold-bright), var(--rose)); color: #1a0d1a; font-weight: 600; }
+  .btn-primary {
+    width: 100%; padding: 0.65rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--gold-bright), var(--rose) 75%);
+    color: #1a0d1a; font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
+  }
+  .btn-primary:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+  .btn-secondary {
+    width: 100%; padding: 0.6rem; border-radius: 999px; margin-top: 0.5rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted);
+    font-size: 0.76rem; cursor: pointer;
+  }
+  .today-summary-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-soft); }
+  .today-summary-row:last-child { border-bottom: none; }
+  .today-summary-label { font-size: 0.68rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .today-summary-value { font-size: 0.82rem; color: var(--text); text-align: right; line-height: 1.5; }
+  .subtab-row { display: flex; gap: 0.4rem; margin-bottom: 0.85rem; overflow-x: auto; }
+  .subtab {
+    flex-shrink: 0; padding: 0.4rem 0.75rem; border-radius: 999px; font-size: 0.7rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); cursor: pointer;
+  }
+  .subtab.active { background: linear-gradient(135deg, var(--gold-bright), var(--rose)); color: #1a0d1a; font-weight: 600; border-color: transparent; }
+  .list-item {
+    background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-soft); border-radius: 0.85rem;
+    padding: 0.7rem 0.8rem; margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 0.6rem;
+  }
+  .list-item.achieved { border-color: var(--border-violet); background: var(--violet-soft); }
+  .list-item-toggle {
+    flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border-soft);
+    display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-faint); cursor: pointer;
+  }
+  .list-item-toggle.done { border-color: var(--violet); color: var(--violet); background: var(--violet-soft); }
+  .list-item-body { flex: 1; min-width: 0; }
+  .list-item-text { font-size: 0.82rem; color: var(--text); line-height: 1.5; white-space: pre-wrap; }
+  .list-item-date { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.25rem; }
+  .list-item-delete { flex-shrink: 0; background: none; border: none; color: var(--text-faint); font-size: 0.9rem; cursor: pointer; padding: 0 0.15rem; }
+  .list-item-delete:hover { color: var(--danger); }
+  .empty-state {
+    margin-top: 0.7rem; padding: 1.1rem 0.9rem; border: 1px dashed var(--border-soft); border-radius: 0.85rem;
+    text-align: center; font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;
+  }
+  .backup-status-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.02); }
+  .backup-status-text { font-size: 0.75rem; color: var(--text-muted); }
+  .backup-status-sub { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.1rem; }
+  .backup-badge { font-size: 0.62rem; padding: 0.2rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .backup-badge.connected { color: #16210f; background: linear-gradient(135deg, #b7d99a, #8ab86a); }
+  .backup-badge.disconnected { color: var(--text-faint); background: rgba(255, 255, 255, 0.06); }
+  .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
+  .backup-btn { padding: 0.6rem 0.5rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: transparent; color: var(--text); font-size: 0.74rem; font-weight: 500; cursor: pointer; font-family: "Inter", sans-serif; }
+  .backup-btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--gold-bright), var(--rose)); color: #1a0d1a; font-weight: 600; }
+  .backup-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
+  .backup-section-label { font-size: 0.68rem; color: var(--violet); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+
+  .drive-backup-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 0.6rem;
+    padding: 0.65rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.02); margin-top: 0.5rem; cursor: pointer;
+  }
+  .drive-backup-row:hover { border-color: var(--border-violet); }
+  .drive-backup-row-label { font-size: 0.8rem; color: var(--text); font-weight: 600; }
+  .drive-backup-row-sub { font-size: 0.68rem; color: var(--text-faint); margin-top: 0.1rem; }
+
+  .tabbar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px; display: flex; justify-content: space-between; gap: 0.2rem;
+    padding: 0.6rem 0.6rem calc(0.6rem + env(safe-area-inset-bottom));
+    border-radius: 0; background: var(--bg-card-hi);
+    border: none; border-top: 1px solid var(--border-soft);
+    backdrop-filter: blur(10px); box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.35); z-index: 50;
+  }
+  .tab { flex: 1; text-align: center; font-size: 0.66rem; padding: 0.5rem 0.2rem; border-radius: 999px; color: var(--text-faint); cursor: pointer; border: none; background: transparent; font-family: "Inter", sans-serif; transition: background 0.2s ease, color 0.2s ease; }
+  .tab:focus-visible { outline: 2px solid var(--violet); outline-offset: 2px; }
+  .tab-active { background: linear-gradient(135deg, var(--gold-bright), var(--rose)); color: #1a0d1a; font-weight: 600; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(3, 2, 10, 0.78); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: linear-gradient(160deg, var(--bg-card-hi), var(--bg-deep) 70%); border: 1px solid var(--border-soft);
+    border-top-left-radius: 1.4rem; border-top-right-radius: 1.4rem;
+    padding: 1.3rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom)); width: 100%; max-width: 480px;
+    max-height: 82vh; overflow-y: auto; box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.6); animation: modalUp 0.28s ease-out;
+  }
+  @keyframes modalUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .modal-title { font-family: "Newsreader", Georgia, serif; font-size: 1.3rem; font-weight: 600; color: var(--text); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--gold); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .modal-body-text { margin-top: 0.7rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+  .modal-cta { margin-top: 1.1rem; width: 100%; padding: 0.7rem; border-radius: 999px; border: none; background: linear-gradient(135deg, var(--gold-bright), var(--rose)); color: #1a0d1a; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .modal-cta.danger { background: linear-gradient(135deg, #f09aa0, var(--danger)); color: #2a0a0c; }
+  .modal-cta-secondary { margin-top: 0.6rem; width: 100%; padding: 0.65rem; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; }
+  .toast {
+    position: fixed; bottom: 5.6rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--bg-card-hi); border: 1px solid var(--border-soft); color: var(--text);
+    font-size: 0.78rem; padding: 0.6rem 1rem; border-radius: 1.1rem; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000;
+    white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-action { color: var(--gold-bright); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; }
+
+  /* ---------- Demo trial banner / lock / upsell ---------- */
+  .demo-banner {
+    margin: -1.1rem -1rem 1.1rem;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(135deg, var(--gold-bright), var(--rose));
+    color: #1a0d1a;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .demo-banner a { color: #1a0d1a; text-decoration: underline; font-weight: 700; }
+
+  #trial-lock {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(3, 2, 10, 0.92);
+    backdrop-filter: blur(6px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  #trial-lock.show { display: flex; }
+  .trial-lock-card {
+    background: linear-gradient(160deg, var(--bg-card-hi), var(--bg-card) 60%);
+    border: 1px solid var(--border-violet);
+    border-radius: 1.1rem;
+    padding: 1.6rem 1.4rem;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+  }
+  .trial-lock-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--gold-bright);
+    margin-bottom: 0.6rem;
+  }
+  .trial-lock-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.2rem; }
+  .trial-lock-cta {
+    display: inline-block;
+    padding: 0.75rem 1.6rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--gold-bright), var(--rose));
+    color: #1a0d1a;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+
+  .upsell-card {
+    border-radius: 0.85rem;
+    border: 1px solid var(--border-violet);
+    background: var(--violet-soft);
+    padding: 0.9rem 0.95rem;
+  }
+  .upsell-title { font-family: "Newsreader", Georgia, serif; font-size: 1rem; font-weight: 600; color: var(--gold-bright); margin-bottom: 0.4rem; }
+  .upsell-text { font-size: 0.78rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.8rem; }
+  .upsell-link {
+    display: block;
+    text-align: center;
+    padding: 0.65rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--gold-bright), var(--rose));
+    color: #1a0d1a;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="demo-banner" id="demo-banner">
+    <span id="demo-banner-text">Free trial</span> &middot; <a href="https://www.etsy.com/listing/4535865678/manifestation-tracker-app-daily-ritual" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+  <header>
+    <div class="eyebrow">Mobile First Studio</div>
+    <div class="app-name">Manifestation Tracker</div>
+    <div class="app-subtitle">Align your intention, action, and energy.</div>
+  </header>
+  <main>
+    <section id="screen-today" class="screen active-screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Alignment</div>
+          <div class="card-subtitle" id="today-date-label"></div>
+        </div>
+        <div class="orb-row">
+          <div class="orb" id="alignment-orb"><div class="glow"></div></div>
+          <div class="orb-info">
+            <div class="orb-label" id="alignment-label">Not yet logged today</div>
+            <div class="orb-sub" id="alignment-sub">Log today's ritual to see where you stand.</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-value" id="today-stat-streak">0</div><div class="stat-label">Streak</div></div>
+          <div class="stat"><div class="stat-value" id="today-stat-goals">0</div><div class="stat-label">Goals live</div></div>
+          <div class="stat"><div class="stat-value" id="today-stat-manifested">0</div><div class="stat-label">Manifested</div></div>
+        </div>
+        <button class="btn-secondary" id="view-history-btn" style="margin-top:0.85rem;">View past entries</button>
+      </section>
+      <section class="card" id="daily-form-card">
+        <div class="card-header">
+          <div class="card-title">Today's Ritual</div>
+          <div class="card-subtitle">Set your intention, affirmation, and energy for today.</div>
+        </div>
+        <div class="subtab-row" id="daily-mode-row">
+          <button class="subtab active" data-mode="quick">Quick log</button>
+          <button class="subtab" data-mode="full">Full ritual</button>
+        </div>
+        <div class="field"><label>Intention</label><textarea id="f-intention" placeholder="What do I want to call in today?"></textarea></div>
+        <div class="field">
+          <label>Energy today</label>
+          <div class="energy-row" id="energy-row">
+            <div class="energy-dot" data-value="1">1</div>
+            <div class="energy-dot" data-value="2">2</div>
+            <div class="energy-dot" data-value="3">3</div>
+            <div class="energy-dot" data-value="4">4</div>
+            <div class="energy-dot" data-value="5">5</div>
+          </div>
+        </div>
+        <div class="field full-only-field"><label>Affirmation</label><textarea id="f-affirmation" placeholder="I am..."></textarea></div>
+        <div class="field full-only-field"><label>Gratitude</label><textarea id="f-gratitude" placeholder="What am I already grateful for?"></textarea></div>
+        <div class="field full-only-field"><label>Action step</label><textarea id="f-action" placeholder="One small step toward it today"></textarea></div>
+        <button class="btn-primary" id="save-daily-btn">Save today's ritual</button>
+      </section>
+      <section class="card" id="today-summary-card" style="display:none;">
+        <div class="card-header">
+          <div class="card-title">Today, so far</div>
+        </div>
+        <div id="today-summary-body"></div>
+        <button class="btn-secondary" id="edit-today-btn">Edit today's ritual</button>
+      </section>
+    </section>
+    <section id="screen-manifest" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Manifest</div>
+          <div class="card-subtitle">Goals, vision, signs, and milestones.</div>
+        </div>
+        <div class="subtab-row">
+          <button class="subtab active" data-subtab="goals">Goals</button>
+          <button class="subtab" data-subtab="vision">Vision</button>
+          <button class="subtab" data-subtab="signs">Signs</button>
+          <button class="subtab" data-subtab="timeline">Timeline</button>
+        </div>
+        <div class="field" id="manifest-add-row">
+          <textarea id="manifest-add-input" placeholder="Add a new goal…"></textarea>
+          <button class="btn-primary" id="manifest-add-btn" style="margin-top:0.5rem;">Add</button>
+        </div>
+        <div id="manifest-list"></div>
+      </section>
+    </section>
+    <section id="screen-journal" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Progress Journal</div>
+          <div class="card-subtitle">Longer reflections, separate from your daily ritual.</div>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <textarea id="journal-input" placeholder="Reflect on how things are unfolding…" style="min-height:110px;"></textarea>
+        </div>
+        <button class="btn-primary" id="journal-save-btn" style="margin-top:0.6rem;">Save entry</button>
+        <button class="btn-secondary" id="journal-cancel-edit-btn" style="display:none;">Cancel edit</button>
+        <div id="journal-list" style="margin-top:0.85rem;"></div>
+      </section>
+    </section>
+    <section id="screen-progress" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Progress</div>
+          <div class="card-subtitle">Your consistency across the whole practice.</div>
+        </div>
+        <div class="stat-row" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+          <div class="stat"><div class="stat-value" id="progress-streak">0</div><div class="stat-label">Current streak</div></div>
+          <div class="stat"><div class="stat-value" id="progress-longest">0</div><div class="stat-label">Longest streak</div></div>
+          <div class="stat"><div class="stat-value" id="progress-rituals">0</div><div class="stat-label">Rituals logged</div></div>
+          <div class="stat"><div class="stat-value" id="progress-journal">0</div><div class="stat-label">Journal entries</div></div>
+          <div class="stat"><div class="stat-value" id="progress-goals">0</div><div class="stat-label">Goals achieved</div></div>
+          <div class="stat"><div class="stat-value" id="progress-visions">0</div><div class="stat-label">Visions manifested</div></div>
+        </div>
+        <div class="backup-section-label" style="margin-top:0.9rem;">Last 5 weeks</div>
+        <div class="heatmap-grid" id="streak-heatmap"></div>
+        <div class="note">Consistency compounds. Small daily entries matter more than any single big leap.</div>
+      </section>
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Backup &amp; Sync</div>
+          <div class="card-subtitle">Keep your intentions and history safe.</div>
+        </div>
+        <div class="upsell-card">
+          <div class="upsell-title">Google Drive Backup</div>
+          <div class="upsell-text">Automatic Google Drive backup is a feature of the full version. Unlock it to keep your rituals, goals, and journal safely backed up to your own Google account.</div>
+          <a class="upsell-link" href="https://www.etsy.com/listing/4535865678/manifestation-tracker-app-daily-ritual" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+        </div>
+        <div class="backup-divider">
+          <div class="backup-section-label">Local backup file</div>
+          <div class="backup-actions">
+            <button class="backup-btn" id="export-btn">Export backup file</button>
+            <button class="backup-btn" id="import-btn">Import backup file</button>
+          </div>
+          <div id="local-restore-undo-slot"></div>
+        </div>
+        <div class="note">Exporting or backing up saves everything in this app. It never includes anything else from your device.</div>
+      </section>
+    </section>
+  </main>
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+  <div class="tabbar">
+    <button class="tab tab-active" data-target="screen-today">Today</button>
+    <button class="tab" data-target="screen-manifest">Manifest</button>
+    <button class="tab" data-target="screen-journal">Journal</button>
+    <button class="tab" data-target="screen-progress">Progress</button>
+  </div>
+</div>
+<div id="trial-lock">
+  <div class="trial-lock-card">
+    <div class="trial-lock-title">Your free trial has ended</div>
+    <div class="trial-lock-text">Thanks for trying Manifestation Tracker! Unlock the full version to keep logging your daily ritual, tracking your goals, and journaling your progress.</div>
+    <a class="trial-lock-cta" href="https://www.etsy.com/listing/4535865678/manifestation-tracker-app-daily-ritual" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+</div>
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body-text" id="modal-body-text"></div>
+    <div id="modal-extra-body"></div>
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta-secondary" id="modal-secondary-btn"></button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+  const STORE_KEY = "mt_data_demo_v1";
+  function defaultDB() {
+    return { dailyEntries: {}, monthlyGoals: [], visionBoard: [], synchronicities: [], journalEntries: [], timeline: [] };
+  }
+  let DB = defaultDB();
+  function ld() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) DB = Object.assign(defaultDB(), JSON.parse(raw));
+    } catch (e) { DB = defaultDB(); }
+  }
+  function sv() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+    scheduleAutoBackup();
+  }
+  function todayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  function uid() { return Date.now() + Math.floor(Math.random() * 1000); }
+  function computeStreakInfo() {
+    const activeDays = new Set(Object.keys(DB.dailyEntries));
+    let current = 0;
+    const cursor = new Date();
+    while (activeDays.has(todayKey(cursor))) {
+      current += 1;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    const sortedDays = Array.from(activeDays).sort();
+    let longest = 0, run = 0, prevDate = null;
+    sortedDays.forEach((dayStr) => {
+      const d = new Date(dayStr + "T00:00:00");
+      if (prevDate && (d - prevDate) / 86400000 === 1) run += 1;
+      else run = 1;
+      longest = Math.max(longest, run);
+      prevDate = d;
+    });
+    return { current, longest };
+  }
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => { onAction(); el.classList.remove("show"); });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+  function openModal({ title, bodyText, extraHtml, ctaLabel, onCta, ctaDanger, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+    document.getElementById("modal-extra-body").innerHTML = extraHtml || "";
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    if (ctaLabel) {
+      ctaBtn.style.display = "block";
+      ctaBtn.textContent = ctaLabel;
+      ctaBtn.classList.toggle("danger", !!ctaDanger);
+      ctaBtn.onclick = onCta || null;
+    } else { ctaBtn.style.display = "none"; ctaBtn.onclick = null; }
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    if (secondaryLabel) {
+      secondaryBtn.style.display = "block";
+      secondaryBtn.textContent = secondaryLabel;
+      secondaryBtn.onclick = onSecondary || closeModal;
+    } else { secondaryBtn.style.display = "none"; secondaryBtn.onclick = null; }
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function closeModal() { document.getElementById("app-modal").classList.remove("open"); }
+  function switchToTab(targetId) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
+    document.getElementById(targetId).classList.add("active-screen");
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("tab-active", t.dataset.target === targetId));
+  }
+  let selectedEnergy = null;
+  function renderToday() {
+    const now = new Date();
+    document.getElementById("today-date-label").textContent = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+    const key = todayKey(now);
+    const entry = DB.dailyEntries[key];
+    const { current } = computeStreakInfo();
+    const liveGoals = DB.monthlyGoals.filter((g) => !g.achieved).length;
+    const manifestedVisions = DB.visionBoard.filter((v) => v.achieved).length;
+    document.getElementById("today-stat-streak").textContent = current;
+    document.getElementById("today-stat-goals").textContent = liveGoals;
+    document.getElementById("today-stat-manifested").textContent = manifestedVisions;
+    const orb = document.getElementById("alignment-orb");
+    let score = 0;
+    if (entry) {
+      score += 40;
+      score += ((entry.energy || 3) / 5) * 30;
+    }
+    score += Math.min(current, 10) * 3;
+    score = Math.min(100, Math.round(score));
+    orb.style.setProperty("--orb-intensity", (0.12 + (score / 100) * 0.55).toFixed(2));
+    const labelEl = document.getElementById("alignment-label");
+    const subEl = document.getElementById("alignment-sub");
+    if (!entry) {
+      labelEl.textContent = "Not yet logged today";
+      subEl.textContent = "Log today's ritual to see where you stand.";
+    } else if (score >= 80) {
+      labelEl.textContent = "Strongly aligned";
+      subEl.textContent = "Today's ritual, energy, and consistency are all working together.";
+    } else if (score >= 55) {
+      labelEl.textContent = "Building momentum";
+      subEl.textContent = "You're showing up. Keep the thread going.";
+    } else {
+      labelEl.textContent = "Reconnecting";
+      subEl.textContent = "Today is logged — that's what matters most right now.";
+    }
+    const formCard = document.getElementById("daily-form-card");
+    const summaryCard = document.getElementById("today-summary-card");
+    if (entry) {
+      formCard.style.display = "none";
+      summaryCard.style.display = "block";
+      renderTodaySummary(entry);
+    } else {
+      formCard.style.display = "block";
+      summaryCard.style.display = "none";
+      clearDailyForm();
+    }
+  }
+  function renderTodaySummary(entry) {
+    const rows = [
+      ["Intention", entry.intention],
+      ["Affirmation", entry.affirmation],
+      ["Gratitude", entry.gratitude],
+      ["Energy", `${entry.energy} / 5`],
+      ["Action step", entry.actionStep]
+    ];
+    document.getElementById("today-summary-body").innerHTML = rows.map(([label]) => `
+      <div class="today-summary-row">
+        <div class="today-summary-label">${label}</div>
+        <div class="today-summary-value" data-field="${label}"></div>
+      </div>
+    `).join("");
+    document.querySelectorAll("#today-summary-body [data-field]").forEach((el) => {
+      const match = rows.find(([label]) => label === el.dataset.field);
+      el.textContent = match && match[1] ? match[1] : "—";
+    });
+  }
+  let dailyFormMode = "quick";
+  function setDailyFormMode(mode) {
+    dailyFormMode = mode;
+    document.querySelectorAll("#daily-mode-row .subtab").forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+    document.querySelectorAll(".full-only-field").forEach((f) => { f.style.display = mode === "full" ? "block" : "none"; });
+  }
+  function clearDailyForm() {
+    document.getElementById("f-intention").value = "";
+    document.getElementById("f-affirmation").value = "";
+    document.getElementById("f-gratitude").value = "";
+    document.getElementById("f-action").value = "";
+    selectedEnergy = null;
+    renderEnergyRow();
+    setDailyFormMode("quick");
+  }
+  function renderEnergyRow() {
+    document.querySelectorAll("#energy-row .energy-dot").forEach((dot) => {
+      dot.classList.toggle("selected", Number(dot.dataset.value) === selectedEnergy);
+    });
+  }
+  function loadTodayIntoForm() {
+    const entry = DB.dailyEntries[todayKey(new Date())];
+    if (!entry) { clearDailyForm(); return; }
+    document.getElementById("f-intention").value = entry.intention || "";
+    document.getElementById("f-affirmation").value = entry.affirmation || "";
+    document.getElementById("f-gratitude").value = entry.gratitude || "";
+    document.getElementById("f-action").value = entry.actionStep || "";
+    selectedEnergy = entry.energy || null;
+    renderEnergyRow();
+    const hasFullFields = !!(entry.affirmation || entry.gratitude || entry.actionStep);
+    setDailyFormMode(hasFullFields ? "full" : "quick");
+  }
+  function saveDailyRitual() {
+    const intention = document.getElementById("f-intention").value.trim();
+    const affirmation = document.getElementById("f-affirmation").value.trim();
+    const gratitude = document.getElementById("f-gratitude").value.trim();
+    const actionStep = document.getElementById("f-action").value.trim();
+    if (!intention && !affirmation && !gratitude && !actionStep) {
+      showToast("Fill in at least one field before saving.");
+      return;
+    }
+    const key = todayKey(new Date());
+    DB.dailyEntries[key] = {
+      intention, affirmation, gratitude, actionStep,
+      energy: selectedEnergy || 3,
+      loggedAt: new Date().toISOString()
+    };
+    sv();
+    showToast("Today's ritual saved.");
+    renderToday();
+    renderProgress();
+  }
+  function editToday() {
+    document.getElementById("daily-form-card").style.display = "block";
+    document.getElementById("today-summary-card").style.display = "none";
+    loadTodayIntoForm();
+  }
+  function openHistoryModal() {
+    const keys = Object.keys(DB.dailyEntries).sort().reverse();
+    document.getElementById("modal-title").textContent = "Past Rituals";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.style.display = "block";
+    bodyEl.innerHTML = "";
+    if (!keys.length) {
+      const empty = document.createElement("div");
+      empty.style.cssText = "color:var(--text-muted);font-size:0.82rem;";
+      empty.textContent = "No past rituals logged yet.";
+      bodyEl.appendChild(empty);
+    } else {
+      keys.forEach((key) => {
+        const entry = DB.dailyEntries[key];
+        const d = new Date(key + "T12:00:00");
+        const row = document.createElement("div");
+        row.style.cssText = "padding:0.6rem 0;border-bottom:1px solid var(--border-soft);cursor:pointer;";
+        const dateLabel = document.createElement("div");
+        dateLabel.style.cssText = "font-size:0.68rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.05em;";
+        dateLabel.textContent = d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+        const preview = document.createElement("div");
+        preview.style.cssText = "font-size:0.82rem;color:var(--text);margin-top:0.2rem;";
+        preview.textContent = entry.intention || entry.affirmation || entry.actionStep || "Logged, no notes";
+        row.appendChild(dateLabel);
+        row.appendChild(preview);
+        row.addEventListener("click", () => openHistoryDetail(key));
+        bodyEl.appendChild(row);
+      });
+    }
+    document.getElementById("modal-cta-btn").style.display = "none";
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    secondaryBtn.style.display = "block";
+    secondaryBtn.textContent = "Close";
+    secondaryBtn.onclick = closeModal;
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function openHistoryDetail(key) {
+    const entry = DB.dailyEntries[key];
+    if (!entry) return;
+    const d = new Date(key + "T12:00:00");
+    document.getElementById("modal-title").textContent = d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.style.display = "block";
+    bodyEl.innerHTML = "";
+    const rows = [
+      ["Intention", entry.intention],
+      ["Affirmation", entry.affirmation],
+      ["Gratitude", entry.gratitude],
+      ["Energy", entry.energy ? `${entry.energy} / 5` : null],
+      ["Action step", entry.actionStep]
+    ];
+    rows.forEach(([label, value]) => {
+      const row = document.createElement("div");
+      row.className = "today-summary-row";
+      const labelEl = document.createElement("div");
+      labelEl.className = "today-summary-label";
+      labelEl.textContent = label;
+      const valueEl = document.createElement("div");
+      valueEl.className = "today-summary-value";
+      valueEl.textContent = value || "—";
+      row.appendChild(labelEl);
+      row.appendChild(valueEl);
+      bodyEl.appendChild(row);
+    });
+    document.getElementById("modal-cta-btn").style.display = "none";
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    secondaryBtn.style.display = "block";
+    secondaryBtn.textContent = "Back to history";
+    secondaryBtn.onclick = openHistoryModal;
+  }
+  const MANIFEST_CONFIG = {
+    goals: { arrayKey: "monthlyGoals", placeholder: "Add a new goal…", achievable: true, achieveVerb: "achieved", emptyText: "No goals yet. Add your first monthly goal above." },
+    vision: { arrayKey: "visionBoard", placeholder: "Add to your vision board…", achievable: true, achieveVerb: "manifested", emptyText: "Your vision board is empty. Add what you're calling in." },
+    signs: { arrayKey: "synchronicities", placeholder: "Add a sign or symbol you noticed…", achievable: false, emptyText: "No synchronicities logged yet." },
+    timeline: { arrayKey: "timeline", placeholder: "Add a milestone…", achievable: false, emptyText: "No milestones yet. Log the moments that mattered." }
+  };
+  let activeManifestTab = "goals";
+  function renderManifest() {
+    const config = MANIFEST_CONFIG[activeManifestTab];
+    document.getElementById("manifest-add-input").placeholder = config.placeholder;
+    const items = DB[config.arrayKey].slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    const listEl = document.getElementById("manifest-list");
+    if (!items.length) {
+      listEl.innerHTML = `<div class="empty-state">${config.emptyText}</div>`;
+      return;
+    }
+    listEl.innerHTML = items.map((item) => {
+      const dateLabel = new Date(item.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      const doneClass = item.achieved ? "achieved" : "";
+      const toggleHtml = config.achievable
+        ? `<div class="list-item-toggle ${item.achieved ? "done" : ""}" data-toggle-id="${item.id}" title="${item.achieved ? `Mark not ${config.achieveVerb}` : `Mark ${config.achieveVerb}`}">${item.achieved ? "✓" : ""}</div>`
+        : "";
+      return `
+        <div class="list-item ${doneClass}">
+          ${toggleHtml}
+          <div class="list-item-body">
+            <div class="list-item-text" data-text-id="${item.id}"></div>
+            <div class="list-item-date">${dateLabel}${item.achieved ? ` · ${config.achieveVerb}` : ""}</div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.35rem; flex-shrink:0;">
+            <button class="list-item-delete" data-delete-id="${item.id}" title="Delete">×</button>
+            <button data-edit-id="${item.id}" title="Edit" style="background:none;border:none;color:var(--text-faint);font-size:0.66rem;cursor:pointer;padding:0;text-decoration:underline;">Edit</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+    listEl.querySelectorAll("[data-text-id]").forEach((el) => {
+      const item = items.find((i) => i.id === Number(el.dataset.textId));
+      el.textContent = item.text;
+    });
+  }
+  function addManifestItem() {
+    const input = document.getElementById("manifest-add-input");
+    const text = input.value.trim();
+    if (!text) { showToast("Write something first."); return; }
+    const config = MANIFEST_CONFIG[activeManifestTab];
+    DB[config.arrayKey].push({ id: uid(), text, achieved: false, createdAt: new Date().toISOString() });
+    sv();
+    input.value = "";
+    renderManifest();
+    renderToday();
+    renderProgress();
+    showToast("Added.");
+  }
+  function toggleManifestItem(id) {
+    const config = MANIFEST_CONFIG[activeManifestTab];
+    const item = DB[config.arrayKey].find((i) => i.id === id);
+    if (!item) return;
+    item.achieved = !item.achieved;
+    sv();
+    renderManifest();
+    renderToday();
+    renderProgress();
+    showToast(item.achieved ? `Marked ${config.achieveVerb}.` : "Unmarked.");
+  }
+  function confirmDeleteManifestItem(id) {
+    const config = MANIFEST_CONFIG[activeManifestTab];
+    openModal({
+      title: "Delete this?",
+      bodyText: "This can't be undone once confirmed.",
+      ctaLabel: "Delete",
+      ctaDanger: true,
+      onCta: () => {
+        DB[config.arrayKey] = DB[config.arrayKey].filter((i) => i.id !== id);
+        sv();
+        closeModal();
+        renderManifest();
+        renderToday();
+        renderProgress();
+        showToast("Deleted.");
+      },
+      secondaryLabel: "Keep it",
+      onSecondary: closeModal
+    });
+  }
+  function openManifestEditModal(id) {
+    const config = MANIFEST_CONFIG[activeManifestTab];
+    const item = DB[config.arrayKey].find((i) => i.id === id);
+    if (!item) return;
+    document.getElementById("modal-title").textContent = "Edit";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.style.display = "block";
+    bodyEl.innerHTML = "";
+    const textarea = document.createElement("textarea");
+    textarea.id = "manifest-edit-input";
+    textarea.className = "journal-input";
+    textarea.style.cssText = "width:100%;min-height:100px;padding:0.65rem 0.75rem;border-radius:0.75rem;border:1px solid var(--border-soft);background:rgba(255,255,255,0.02);color:var(--text);font-family:'Inter',sans-serif;font-size:0.82rem;line-height:1.5;resize:vertical;";
+    textarea.value = item.text;
+    bodyEl.appendChild(textarea);
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    ctaBtn.style.display = "block";
+    ctaBtn.textContent = "Save changes";
+    ctaBtn.classList.remove("danger");
+    ctaBtn.onclick = () => {
+      const newText = document.getElementById("manifest-edit-input").value.trim();
+      if (!newText) { showToast("Write something first."); return; }
+      item.text = newText;
+      sv();
+      closeModal();
+      renderManifest();
+      showToast("Updated.");
+    };
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    secondaryBtn.style.display = "block";
+    secondaryBtn.textContent = "Cancel";
+    secondaryBtn.onclick = closeModal;
+    document.getElementById("app-modal").classList.add("open");
+  }
+  let editingJournalId = null;
+  function renderJournal() {
+    const entries = DB.journalEntries.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    const listEl = document.getElementById("journal-list");
+    if (!entries.length) {
+      listEl.innerHTML = `<div class="empty-state">Your reflections will appear here as you write.</div>`;
+      return;
+    }
+    listEl.innerHTML = entries.map((entry) => {
+      const dateLabel = new Date(entry.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+      return `
+        <div class="list-item">
+          <div class="list-item-body">
+            <div class="list-item-date" style="margin-bottom:0.25rem;">${dateLabel}</div>
+            <div class="list-item-text" data-text-id="${entry.id}"></div>
+            <div style="margin-top:0.4rem;display:flex;gap:0.6rem;">
+              <button class="journal-edit-btn" data-edit-id="${entry.id}" style="background:none;border:none;color:var(--text-muted);font-size:0.68rem;cursor:pointer;padding:0;">Edit</button>
+              <button class="journal-delete-btn" data-delete-id="${entry.id}" style="background:none;border:none;color:var(--text-muted);font-size:0.68rem;cursor:pointer;padding:0;">Delete</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    listEl.querySelectorAll("[data-text-id]").forEach((el) => {
+      const entry = entries.find((e) => e.id === Number(el.dataset.textId));
+      el.textContent = entry.text;
+    });
+  }
+  function saveJournalEntry() {
+    const input = document.getElementById("journal-input");
+    const text = input.value.trim();
+    if (!text) { showToast("Write something first."); return; }
+    if (editingJournalId) {
+      const entry = DB.journalEntries.find((e) => e.id === editingJournalId);
+      if (entry) entry.text = text;
+      editingJournalId = null;
+      document.getElementById("journal-cancel-edit-btn").style.display = "none";
+      showToast("Entry updated.");
+    } else {
+      DB.journalEntries.push({ id: uid(), text, createdAt: new Date().toISOString() });
+      showToast("Entry saved.");
+    }
+    sv();
+    input.value = "";
+    renderJournal();
+    renderProgress();
+  }
+  function startEditingJournal(id) {
+    const entry = DB.journalEntries.find((e) => e.id === id);
+    if (!entry) return;
+    editingJournalId = id;
+    document.getElementById("journal-input").value = entry.text;
+    document.getElementById("journal-cancel-edit-btn").style.display = "inline-block";
+    document.getElementById("journal-input").focus();
+  }
+  function cancelJournalEdit() {
+    editingJournalId = null;
+    document.getElementById("journal-input").value = "";
+    document.getElementById("journal-cancel-edit-btn").style.display = "none";
+  }
+  function confirmDeleteJournalEntry(id) {
+    openModal({
+      title: "Delete this entry?",
+      bodyText: "This can't be undone once confirmed.",
+      ctaLabel: "Delete entry",
+      ctaDanger: true,
+      onCta: () => {
+        DB.journalEntries = DB.journalEntries.filter((e) => e.id !== id);
+        sv();
+        if (editingJournalId === id) cancelJournalEdit();
+        closeModal();
+        renderJournal();
+        renderProgress();
+        showToast("Entry deleted.");
+      },
+      secondaryLabel: "Keep entry",
+      onSecondary: closeModal
+    });
+  }
+  function renderProgress() {
+    const { current, longest } = computeStreakInfo();
+    document.getElementById("progress-streak").textContent = current;
+    document.getElementById("progress-longest").textContent = longest;
+    document.getElementById("progress-rituals").textContent = Object.keys(DB.dailyEntries).length;
+    document.getElementById("progress-journal").textContent = DB.journalEntries.length;
+    document.getElementById("progress-goals").textContent = DB.monthlyGoals.filter((g) => g.achieved).length;
+    document.getElementById("progress-visions").textContent = DB.visionBoard.filter((v) => v.achieved).length;
+    renderStreakHeatmap();
+  }
+  function renderStreakHeatmap() {
+    const el = document.getElementById("streak-heatmap");
+    if (!el) return;
+    const days = [];
+    const cursor = new Date();
+    for (let i = 34; i >= 0; i--) {
+      const d = new Date(cursor);
+      d.setDate(d.getDate() - i);
+      days.push(d);
+    }
+    el.innerHTML = "";
+    days.forEach((d) => {
+      const key = todayKey(d);
+      const cell = document.createElement("div");
+      cell.className = "heatmap-cell" + (DB.dailyEntries[key] ? " active" : "");
+      cell.title = d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      el.appendChild(cell);
+    });
+  }
+
+  /* =========================================================
+     RESTORE — shared confirmation flow using the existing
+     shared modal.
+     ========================================================= */
+  function dataSummary(db) {
+    db = db || DB;
+    let n = Object.keys(db.dailyEntries || {}).length;
+    ["monthlyGoals", "visionBoard", "synchronicities", "journalEntries", "timeline"].forEach((k) => {
+      if (Array.isArray(db[k])) n += db[k].length;
+    });
+    return n;
+  }
+  let _pendingRestoreData = null;
+  function openRestoreConfirm(data, sourceLabel) {
+    _pendingRestoreData = data;
+    const incoming = dataSummary(data);
+    const current = dataSummary(DB);
+    let body = `This backup has ${incoming} items across rituals, goals, vision board, signs, journal, and timeline. Your current data has ${current}. Restoring replaces what you have now — you can undo it right after if needed.`;
+    if (incoming < current) {
+      body = `⚠ This backup has FEWER items (${incoming}) than your current data (${current}). Double-check this is the right one before continuing.`;
+    }
+    openModal({
+      title: `Restore from ${sourceLabel}?`,
+      bodyText: body,
+      ctaLabel: "Yes, restore",
+      onCta: confirmRestoreNow,
+      secondaryLabel: "Cancel",
+      onSecondary: () => { _pendingRestoreData = null; closeModal(); }
+    });
+  }
+  function confirmRestoreNow() {
+    if (!_pendingRestoreData) { closeModal(); return; }
+    try {
+      localStorage.setItem("mt_pre_restore_snapshot", JSON.stringify({ data: DB, ts: Date.now() }));
+    } catch (e) {}
+    DB = Object.assign(defaultDB(), _pendingRestoreData);
+    _pendingRestoreData = null;
+    sv();
+    closeModal();
+    renderToday(); renderManifest(); renderJournal(); renderProgress();
+    renderLocalRestoreUndo();
+    showToast("Restored!");
+  }
+  function undoLastRestore() {
+    try {
+      const raw = localStorage.getItem("mt_pre_restore_snapshot");
+      if (!raw) { showToast("Nothing to undo."); return; }
+      const snap = JSON.parse(raw);
+      DB = Object.assign(defaultDB(), snap.data);
+      localStorage.removeItem("mt_pre_restore_snapshot");
+      sv();
+      renderToday(); renderManifest(); renderJournal(); renderProgress();
+      renderLocalRestoreUndo();
+      showToast("Restore undone.");
+    } catch (e) { showToast("Could not undo."); }
+  }
+  function renderLocalRestoreUndo() {
+    const el = document.getElementById("local-restore-undo-slot");
+    if (!el) return;
+    const hasUndo = !!localStorage.getItem("mt_pre_restore_snapshot");
+    el.innerHTML = hasUndo
+      ? '<button class="backup-btn" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger);" onclick="undoLastRestore()">Undo Last Restore</button>'
+      : '';
+  }
+
+  /* =========================================================
+     LOCAL FILE BACKUP — real export + real import
+     ========================================================= */
+  function buildBackupPayload() {
+    return JSON.stringify({ ...DB, exportedAt: new Date().toISOString(), source: "Manifestation Tracker" }, null, 2);
+  }
+  function localDateStr(d) {
+    d = d || new Date();
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+  function exportBackupFile() {
+    try {
+      const content = buildBackupPayload();
+      const blob = new Blob([content], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `manifestation-tracker-backup-${localDateStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast("Backup file downloaded.");
+    } catch (e) {
+      showToast("Export failed — try a different browser.");
+    }
+  }
+  function triggerImportPicker() {
+    document.getElementById("import-file-input").click();
+  }
+  function handleImportFileSelected(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const data = JSON.parse(evt.target.result);
+        if (!data || typeof data.dailyEntries !== "object") {
+          showToast("That file doesn't look like a valid backup.");
+          return;
+        }
+        openRestoreConfirm(data, `the file "${file.name}"`);
+      } catch (err) {
+        showToast("Could not read that file.");
+      }
+    };
+    reader.onerror = () => showToast("Error reading file.");
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
+  /* =========================================================
+     FREE TRIAL — Google Drive backup removed for the demo;
+     replaced with a 14-day trial lock.
+     ========================================================= */
+  const DEMO_SINCE_KEY = "mt_demo_since";
+  const DEMO_ETSY_URL = "https://www.etsy.com/listing/4535865678/manifestation-tracker-app-daily-ritual";
+
+  function demoTrialDaysLeft() {
+    let since = localStorage.getItem(DEMO_SINCE_KEY);
+    if (!since) {
+      since = Date.now().toString();
+      localStorage.setItem(DEMO_SINCE_KEY, since);
+    }
+    const elapsedDays = (Date.now() - Number(since)) / 86400000;
+    return Math.max(0, Math.ceil(14 - elapsedDays));
+  }
+
+  function enforceDemoTrial() {
+    const daysLeft = demoTrialDaysLeft();
+    const bannerText = document.getElementById("demo-banner-text");
+    if (bannerText) {
+      bannerText.textContent = daysLeft > 0
+        ? `Free trial — ${daysLeft} day${daysLeft === 1 ? "" : "s"} left`
+        : "Your free trial has ended";
+    }
+    const lock = document.getElementById("trial-lock");
+    if (lock) {
+      if (daysLeft <= 0) {
+        lock.classList.add("show");
+        document.body.style.overflow = "hidden";
+      } else {
+        lock.classList.remove("show");
+        document.body.style.overflow = "";
+      }
+    }
+  }
+
+  function scheduleAutoBackup() {}
+
+  document.addEventListener("DOMContentLoaded", () => {
+    ld();
+    renderToday();
+    renderManifest();
+    renderJournal();
+    renderProgress();
+    renderLocalRestoreUndo();
+    enforceDemoTrial();
+    setInterval(enforceDemoTrial, 60000);
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => switchToTab(tab.dataset.target));
+    });
+    document.getElementById("energy-row").addEventListener("click", (e) => {
+      const dot = e.target.closest(".energy-dot");
+      if (!dot) return;
+      selectedEnergy = Number(dot.dataset.value);
+      renderEnergyRow();
+    });
+    document.getElementById("save-daily-btn").addEventListener("click", saveDailyRitual);
+    document.getElementById("edit-today-btn").addEventListener("click", editToday);
+    document.getElementById("view-history-btn").addEventListener("click", openHistoryModal);
+    document.getElementById("daily-mode-row").addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-mode]");
+      if (!btn) return;
+      setDailyFormMode(btn.dataset.mode);
+    });
+    document.querySelectorAll("#screen-manifest .subtab").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        activeManifestTab = btn.dataset.subtab;
+        document.querySelectorAll("#screen-manifest .subtab").forEach((b) => b.classList.toggle("active", b === btn));
+        document.getElementById("manifest-add-input").value = "";
+        renderManifest();
+      });
+    });
+    document.getElementById("manifest-add-btn").addEventListener("click", addManifestItem);
+    document.getElementById("manifest-list").addEventListener("click", (e) => {
+      const toggle = e.target.closest("[data-toggle-id]");
+      if (toggle) { toggleManifestItem(Number(toggle.dataset.toggleId)); return; }
+      const editBtn = e.target.closest("[data-edit-id]");
+      if (editBtn) { openManifestEditModal(Number(editBtn.dataset.editId)); return; }
+      const del = e.target.closest("[data-delete-id]");
+      if (del) confirmDeleteManifestItem(Number(del.dataset.deleteId));
+    });
+    document.getElementById("journal-save-btn").addEventListener("click", saveJournalEntry);
+    document.getElementById("journal-cancel-edit-btn").addEventListener("click", cancelJournalEdit);
+    document.getElementById("journal-list").addEventListener("click", (e) => {
+      const editBtn = e.target.closest("[data-edit-id]");
+      if (editBtn) { startEditingJournal(Number(editBtn.dataset.editId)); return; }
+      const delBtn = e.target.closest("[data-delete-id]");
+      if (delBtn) confirmDeleteJournalEntry(Number(delBtn.dataset.deleteId));
+    });
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => { if (e.target.id === "app-modal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileSelected);
+  });
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
