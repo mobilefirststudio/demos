@@ -1,0 +1,15 @@
+{
+  "name": "Standard Study Tracker",
+  "short_name": "Study Tracker",
+  "description": "Track study subjects, sessions, exams, and confidence with a focus timer and streaks.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F5F1E8",
+  "theme_color": "#2B2B44",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
