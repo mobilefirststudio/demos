@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Shadow Work Journal — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#0a0806" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg-void: #0a0806;
+    --bg-deep: #120d0b;
+    --bg-card: #1a130f;
+    --bg-card-hi: #211712;
+    --ember: #c1543a;
+    --ember-bright: #e07a54;
+    --blood: #6b1f24;
+    --blood-bright: #9a3038;
+    --ash: #cfc6ba;
+    --ash-muted: #8f8577;
+    --ash-faint: #5a5348;
+    --border-soft: rgba(224, 122, 84, 0.14);
+    --border-ember: rgba(224, 122, 84, 0.24);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background:
+      radial-gradient(circle at 15% -10%, rgba(224, 122, 84, 0.08), transparent 42%),
+      radial-gradient(circle at 90% 0%, rgba(107, 31, 36, 0.14), transparent 48%),
+      var(--bg-void);
+    color: var(--ash);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+    min-height: 100vh;
+    padding: 1.1rem 1rem calc(6rem + env(safe-area-inset-bottom));
+  }
+
+  .display { font-family: "Fraunces", Georgia, serif; }
+
+  header { display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 1.1rem; }
+
+  .eyebrow {
+    font-size: 0.66rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ash-faint);
+  }
+
+  .app-name {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.55rem;
+    color: var(--ember-bright);
+  }
+
+  .app-subtitle { font-size: 0.78rem; color: var(--ash-muted); line-height: 1.5; margin-top: 0.1rem; }
+
+  main { width: 100%; }
+  .screen { display: none; width: 100%; }
+  .screen.active-screen { display: block; }
+
+  .card {
+    background: linear-gradient(160deg, var(--bg-card-hi), var(--bg-card) 60%);
+    border: 1px solid var(--border-soft);
+    border-radius: 1.1rem;
+    padding: 1.1rem 1.05rem;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55);
+    margin-bottom: 0.85rem;
+  }
+
+  .card-header { margin-bottom: 0.7rem; }
+  .card-title { font-family: "Fraunces", Georgia, serif; font-size: 1.1rem; font-weight: 600; color: var(--ash); }
+  .card-subtitle { font-size: 0.78rem; color: var(--ash-muted); margin-top: 0.15rem; line-height: 1.5; }
+  .note { margin-top: 0.7rem; font-size: 0.72rem; color: var(--ash-faint); line-height: 1.55; }
+
+  /* ---------- Ember meter (signature element) ---------- */
+  .ember-row { display: flex; align-items: center; gap: 0.9rem; }
+
+  .ember-meter {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 55%, var(--bg-card), var(--bg-void) 80%);
+    box-shadow: inset 0 0 0 1px var(--border-ember);
+  }
+
+  .ember-meter .glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 55%, var(--ember-bright), var(--ember) 45%, transparent 75%);
+    opacity: var(--ember-intensity, 0.15);
+    filter: blur(1px);
+    animation: emberFlicker 3.4s ease-in-out infinite;
+  }
+
+  @keyframes emberFlicker {
+    0%, 100% { transform: scale(1); opacity: var(--ember-intensity, 0.15); }
+    50% { transform: scale(1.06); opacity: calc(var(--ember-intensity, 0.15) * 1.25); }
+  }
+
+  .ember-info { flex: 1; min-width: 0; }
+  .ember-label { font-family: "Fraunces", Georgia, serif; font-size: 1.05rem; font-weight: 600; color: var(--ember-bright); }
+  .ember-sub { font-size: 0.74rem; color: var(--ash-muted); margin-top: 0.15rem; line-height: 1.5; }
+
+  /* ---------- Stats ---------- */
+  .stat-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .heatmap-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.3rem; margin-top: 0.5rem; }
+  .heatmap-cell { aspect-ratio: 1; border-radius: 4px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-soft); }
+  .heatmap-cell.active { background: linear-gradient(135deg, var(--ember-bright), var(--ember)); border-color: transparent; }
+  .stat {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-soft);
+    border-radius: 0.75rem;
+    padding: 0.65rem 0.6rem;
+    text-align: center;
+  }
+  .stat-value { font-family: "Fraunces", Georgia, serif; font-size: 1.25rem; font-weight: 600; color: var(--ember-bright); }
+  .stat-label { font-size: 0.62rem; color: var(--ash-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 0.15rem; }
+
+  /* ---------- Prompt library ---------- */
+  .prompt-list { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.6rem; }
+  .prompt-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-soft);
+    border-radius: 0.85rem;
+    padding: 0.75rem 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .prompt-card:hover, .prompt-card:focus-visible {
+    background: rgba(224, 122, 84, 0.06);
+    border-color: var(--border-ember);
+    outline: none;
+  }
+  .prompt-title { font-family: "Fraunces", Georgia, serif; font-size: 1.02rem; font-weight: 600; color: var(--ash); }
+  .prompt-tag { font-size: 0.68rem; color: var(--ash-muted); margin-top: 0.25rem; }
+
+  /* ---------- Journal ---------- */
+  .journal-current-prompt-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .journal-cancel-edit {
+    background: none;
+    border: none;
+    color: var(--ash-faint);
+    font-size: 0.68rem;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+  }
+
+  .journal-input {
+    width: 100%;
+    min-height: 130px;
+    border-radius: 0.85rem;
+    border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--ash);
+    padding: 0.7rem 0.8rem;
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    resize: vertical;
+  }
+  .journal-input:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+
+  .journal-save {
+    margin-top: 0.6rem;
+    width: 100%;
+    padding: 0.65rem;
+    border-radius: 999px;
+    border: none;
+    background: linear-gradient(135deg, var(--ember-bright), var(--ember) 70%);
+    color: #1a0d06;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+  }
+  .journal-save:focus-visible { outline: 2px solid var(--ember-bright); outline-offset: 2px; }
+
+  .journal-list { margin-top: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .journal-entry {
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-soft);
+    padding: 0.6rem 0.7rem;
+    background: rgba(255, 255, 255, 0.015);
+  }
+  .journal-entry-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.65rem;
+    color: var(--ash-faint);
+  }
+  .journal-entry-prompt { color: var(--ember); }
+  .journal-actions { display: flex; gap: 0.6rem; flex-shrink: 0; }
+  .journal-action-btn { background: none; border: none; color: var(--ash-muted); font-size: 0.68rem; cursor: pointer; padding: 0; }
+  .journal-action-btn:hover { color: var(--ember-bright); }
+  .journal-action-btn.danger:hover { color: var(--blood-bright); }
+  .journal-entry-text { font-size: 0.8rem; color: var(--ash); margin-top: 0.35rem; line-height: 1.55; white-space: pre-wrap; }
+
+  .empty-state {
+    margin-top: 0.7rem;
+    padding: 1.1rem 0.9rem;
+    border: 1px dashed var(--border-soft);
+    border-radius: 0.85rem;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--ash-muted);
+    line-height: 1.5;
+  }
+
+  /* ---------- Backup & Sync ---------- */
+  .backup-status-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+    padding: 0.6rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .backup-status-text { font-size: 0.75rem; color: var(--ash-muted); }
+  .backup-status-sub { font-size: 0.65rem; color: var(--ash-faint); margin-top: 0.1rem; }
+  .backup-badge { font-size: 0.62rem; padding: 0.2rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .backup-badge.connected { color: #16210f; background: linear-gradient(135deg, #b7d99a, #8ab86a); }
+  .backup-badge.disconnected { color: var(--ash-faint); background: rgba(255, 255, 255, 0.06); }
+  .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
+  .backup-btn {
+    padding: 0.6rem 0.5rem; border-radius: 0.7rem; border: 1px solid var(--border-soft);
+    background: transparent; color: var(--ash); font-size: 0.74rem; font-weight: 500; cursor: pointer;
+    font-family: "Inter", sans-serif;
+  }
+  .backup-btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--ember-bright), var(--ember)); color: #1a0d06; font-weight: 600; }
+  .backup-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
+  .backup-section-label { font-size: 0.68rem; color: var(--ember); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+
+  /* Drive backup list rows inside the shared modal */
+  .drive-backup-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 0.6rem;
+    padding: 0.65rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.02); margin-top: 0.5rem; cursor: pointer;
+  }
+  .drive-backup-row:hover { border-color: var(--border-ember); }
+  .drive-backup-row-label { font-size: 0.8rem; color: var(--ash); font-weight: 600; }
+  .drive-backup-row-sub { font-size: 0.68rem; color: var(--ash-faint); margin-top: 0.1rem; }
+
+  /* ---------- Tabbar ---------- */
+  .tabbar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px;
+    display: flex; justify-content: space-between; gap: 0.2rem;
+    padding: 0.6rem 0.6rem calc(0.6rem + env(safe-area-inset-bottom));
+    border-radius: 0; background: var(--bg-card-hi);
+    border: none; border-top: 1px solid var(--border-soft);
+    backdrop-filter: blur(10px); box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.45); z-index: 50;
+  }
+  .tab {
+    flex: 1; text-align: center; font-size: 0.66rem; padding: 0.5rem 0.2rem;
+    border-radius: 999px; color: var(--ash-faint); cursor: pointer; border: none;
+    background: transparent; font-family: "Inter", sans-serif;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .tab:focus-visible { outline: 2px solid var(--ember); outline-offset: 2px; }
+  .tab-active { background: linear-gradient(135deg, var(--ember-bright), var(--ember)); color: #1a0d06; font-weight: 600; }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(4, 2, 1, 0.78); backdrop-filter: blur(6px);
+    display: none; align-items: flex-end; justify-content: center; z-index: 999;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: linear-gradient(160deg, var(--bg-card-hi), var(--bg-deep) 70%);
+    border: 1px solid var(--border-soft);
+    border-top-left-radius: 1.4rem; border-top-right-radius: 1.4rem;
+    padding: 1.3rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom));
+    width: 100%; max-width: 480px; max-height: 82vh; overflow-y: auto;
+    box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.6);
+    animation: modalUp 0.28s ease-out;
+  }
+  @keyframes modalUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .modal-title { font-family: "Fraunces", Georgia, serif; font-size: 1.3rem; font-weight: 600; color: var(--ash); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--ember); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .modal-body-text { margin-top: 0.7rem; font-size: 0.82rem; color: var(--ash-muted); line-height: 1.6; }
+  .modal-section { margin-top: 1rem; }
+  .modal-section-title { font-size: 0.72rem; color: var(--ember); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+  .modal-cta { margin-top: 1.1rem; width: 100%; padding: 0.7rem; border-radius: 999px; border: none; background: linear-gradient(135deg, var(--ember-bright), var(--ember)); color: #1a0d06; font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .modal-cta.danger { background: linear-gradient(135deg, var(--blood-bright), var(--blood)); color: #fbeceb; }
+  .modal-cta-secondary { margin-top: 0.6rem; width: 100%; padding: 0.65rem; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--ash-muted); font-size: 0.78rem; cursor: pointer; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; bottom: 5.6rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--bg-card-hi); border: 1px solid var(--border-soft); color: var(--ash);
+    font-size: 0.78rem; padding: 0.6rem 1rem; border-radius: 1.1rem;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5); opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000;
+    white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-action { color: var(--ember-bright); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; }
+
+  /* ---------- Demo trial banner / lock / upsell ---------- */
+  .demo-banner {
+    margin: -1.1rem -1rem 1.1rem;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(135deg, var(--ember-bright), var(--ember));
+    color: #1a0d06;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .demo-banner a { color: #1a0d06; text-decoration: underline; font-weight: 700; }
+
+  #trial-lock {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 2, 1, 0.92);
+    backdrop-filter: blur(6px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  #trial-lock.show { display: flex; }
+  .trial-lock-card {
+    background: linear-gradient(160deg, var(--bg-card-hi), var(--bg-card) 60%);
+    border: 1px solid var(--border-ember);
+    border-radius: 1.1rem;
+    padding: 1.6rem 1.4rem;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+  }
+  .trial-lock-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--ember-bright);
+    margin-bottom: 0.6rem;
+  }
+  .trial-lock-text { font-size: 0.85rem; color: var(--ash-muted); line-height: 1.6; margin-bottom: 1.2rem; }
+  .trial-lock-cta {
+    display: inline-block;
+    padding: 0.75rem 1.6rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ember-bright), var(--ember));
+    color: #1a0d06;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+
+  .upsell-card {
+    border-radius: 0.85rem;
+    border: 1px solid var(--border-ember);
+    background: rgba(224, 122, 84, 0.06);
+    padding: 0.9rem 0.95rem;
+  }
+  .upsell-title { font-family: "Fraunces", Georgia, serif; font-size: 1rem; font-weight: 600; color: var(--ember-bright); margin-bottom: 0.4rem; }
+  .upsell-text { font-size: 0.78rem; color: var(--ash-muted); line-height: 1.55; margin-bottom: 0.8rem; }
+  .upsell-link {
+    display: block;
+    text-align: center;
+    padding: 0.65rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ember-bright), var(--ember));
+    color: #1a0d06;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="demo-banner" id="demo-banner">
+    <span id="demo-banner-text">Free trial</span> &middot; <a href="https://www.etsy.com/listing/4535860746/shadow-work-journal-app-guided-prompt" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+  <header>
+    <div class="eyebrow">Mobile First Studio</div>
+    <div class="app-name">Shadow Work Journal</div>
+    <div class="app-subtitle">Guided prompts for inner work, healing, and self-honesty.</div>
+  </header>
+
+  <main>
+
+    <!-- TODAY -->
+    <section id="screen-home" class="screen active-screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Today's Focus</div>
+          <div class="card-subtitle">Explore one uncomfortable truth with compassion.</div>
+        </div>
+
+        <div class="ember-row">
+          <div class="ember-meter" id="ember-meter"><div class="glow"></div></div>
+          <div class="ember-info">
+            <div class="ember-label" id="ember-label">No streak yet</div>
+            <div class="ember-sub" id="ember-sub">Every entry keeps the ember alive.</div>
+          </div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat"><div class="stat-value" id="home-stat-entries">0</div><div class="stat-label">Entries</div></div>
+          <div class="stat"><div class="stat-value" id="home-stat-longest">0</div><div class="stat-label">Longest streak</div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Suggested Prompt</div>
+          <div class="card-subtitle" id="suggested-prompt-name"></div>
+        </div>
+        <div class="note" id="suggested-prompt-desc"></div>
+        <button class="journal-save" id="use-suggested-btn" style="margin-top:0.85rem;">Use this tonight</button>
+      </section>
+    </section>
+
+    <!-- PROMPTS -->
+    <section id="screen-prompts" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Prompt Library</div>
+          <div class="card-subtitle">Fear · Control · Relationships · Self-worth · Childhood</div>
+        </div>
+        <div class="prompt-list" id="prompt-list"></div>
+        <div class="note">Tap any prompt to see a deeper description and use it in your journal.</div>
+      </section>
+    </section>
+
+    <!-- JOURNAL -->
+    <section id="screen-journal" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Shadow Journal</div>
+        </div>
+
+        <div class="journal-current-prompt-row">
+          <div class="card-subtitle" id="journal-current-prompt" style="margin-top:0;">No prompt selected — choose one from the library or write freely.</div>
+          <button class="journal-cancel-edit" id="cancel-edit-btn" style="display:none;">Cancel edit</button>
+        </div>
+
+        <textarea id="journal-input" class="journal-input" placeholder="Write honestly about what feels uncomfortable, heavy, or hidden…"></textarea>
+        <button class="journal-save" id="journal-save-btn">Save entry</button>
+
+        <div class="journal-list" id="journal-list"></div>
+      </section>
+    </section>
+
+    <!-- PROGRESS -->
+    <section id="screen-progress" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Progress</div>
+          <div class="card-subtitle">Track your consistency and the themes you revisit most.</div>
+        </div>
+
+        <div class="stat-row" style="grid-template-columns:repeat(2,minmax(0,1fr));">
+          <div class="stat"><div class="stat-value" id="progress-entries">0</div><div class="stat-label">Entries logged</div></div>
+          <div class="stat"><div class="stat-value" id="progress-prompts">0</div><div class="stat-label">Prompts explored</div></div>
+          <div class="stat"><div class="stat-value" id="progress-streak">0</div><div class="stat-label">Current streak</div></div>
+          <div class="stat"><div class="stat-value" id="progress-longest">0</div><div class="stat-label">Longest streak</div></div>
+        </div>
+
+        <div class="backup-section-label" style="margin-top:0.9rem;">Last 5 weeks</div>
+        <div class="heatmap-grid" id="streak-heatmap"></div>
+
+        <div class="note">Shadow work is a long-term practice. Small, honest entries over time matter more than perfection.</div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Backup &amp; Sync</div>
+          <div class="card-subtitle">Keep your journal safe — it's the most personal thing in this app.</div>
+        </div>
+
+        <div class="upsell-card">
+          <div class="upsell-title">Google Drive Backup</div>
+          <div class="upsell-text">Automatic Google Drive backup is a feature of the full version. Unlock it to keep your journal safely backed up to your own Google account.</div>
+          <a class="upsell-link" href="https://www.etsy.com/listing/4535860746/shadow-work-journal-app-guided-prompt" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+        </div>
+
+        <div class="backup-divider">
+          <div class="backup-section-label">Local backup file</div>
+          <div class="backup-actions">
+            <button class="backup-btn" id="export-btn">Export backup file</button>
+            <button class="backup-btn" id="import-btn">Import backup file</button>
+          </div>
+          <div id="local-restore-undo-slot"></div>
+        </div>
+
+        <div class="note">Exporting or backing up saves your journal entries only. It never includes anything else from your device.</div>
+      </section>
+    </section>
+
+  </main>
+
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+
+  <div class="tabbar">
+    <button class="tab tab-active" data-target="screen-home">Today</button>
+    <button class="tab" data-target="screen-prompts">Prompts</button>
+    <button class="tab" data-target="screen-journal">Journal</button>
+    <button class="tab" data-target="screen-progress">Progress</button>
+  </div>
+</div>
+
+<div id="trial-lock">
+  <div class="trial-lock-card">
+    <div class="trial-lock-title">Your free trial has ended</div>
+    <div class="trial-lock-text">Thanks for trying Shadow Work Journal! Unlock the full version to keep writing, save new entries, and back up your journal for good.</div>
+    <a class="trial-lock-cta" href="https://www.etsy.com/listing/4535860746/shadow-work-journal-app-guided-prompt" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+</div>
+
+<!-- SHARED MODAL -->
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body-text" id="modal-body-text"></div>
+    <div id="modal-extra-body"></div>
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta-secondary" id="modal-secondary-btn"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const prompts = {
+    "Fear of Rejection": {
+      tag: "Self-worth · Relationships",
+      description: "Notice where you change yourself to avoid rejection — in relationships, work, or family. What parts of you feel unsafe to show? Shadow work here is about seeing the cost of hiding and gently exploring what it would mean to be more honest."
+    },
+    "Control and Safety": {
+      tag: "Control · Anxiety",
+      description: "Control often shows up when we don't feel safe. Where do you tighten, micromanage, or over-plan because you're afraid something will fall apart? Shadow work here is about naming the fear underneath the control."
+    },
+    "Inner Critic Voice": {
+      tag: "Self-talk · Perfectionism",
+      description: "Your inner critic often repeats old voices — parents, teachers, culture. What does your critic say most often? Whose voice does it sound like? Shadow work here is about separating your true self from inherited judgment."
+    },
+    "Childhood Wounds": {
+      tag: "Family · Attachment",
+      description: "Think about a moment from childhood where you felt unseen, shamed, or abandoned. How does that moment still shape your reactions today? Shadow work here is about connecting past pain to present patterns."
+    },
+    "Fear of Being Seen": {
+      tag: "Visibility · Authenticity",
+      description: "Where do you dim yourself, stay small, or avoid attention because being seen feels dangerous? Shadow work here is about exploring what you're afraid people will notice — and what it would mean to be seen and still safe."
+    }
+  };
+  const promptKeys = Object.keys(prompts);
+
+  function getTodaysSuggestedPrompt() {
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((now - startOfYear) / 86400000);
+    return promptKeys[dayOfYear % promptKeys.length];
+  }
+
+  const STORE_KEYS = { journal: "swj_journal_demo_v1" };
+
+  function loadJournal() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEYS.journal)) || []; }
+    catch (e) { return []; }
+  }
+  function saveJournal(entries) {
+    try { localStorage.setItem(STORE_KEYS.journal, JSON.stringify(entries)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+    scheduleAutoBackup();
+  }
+
+  function todayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
+  function computeStreakInfo(entries) {
+    const activeDays = new Set(entries.map((e) => todayKey(new Date(e.date))));
+
+    let current = 0;
+    const cursor = new Date();
+    while (activeDays.has(todayKey(cursor))) {
+      current += 1;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+
+    const sortedDays = Array.from(activeDays).sort();
+    let longest = 0, run = 0, prevDate = null;
+    sortedDays.forEach((dayStr) => {
+      const d = new Date(dayStr + "T00:00:00");
+      if (prevDate && (d - prevDate) / 86400000 === 1) run += 1;
+      else run = 1;
+      longest = Math.max(longest, run);
+      prevDate = d;
+    });
+
+    return { current, longest };
+  }
+
+  function distinctPromptsUsed(entries) {
+    return new Set(entries.filter((e) => e.prompt).map((e) => e.prompt)).size;
+  }
+
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => { onAction(); el.classList.remove("show"); });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+
+  function openModal({ title, bodyText, extraHtml, ctaLabel, onCta, ctaDanger, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+    document.getElementById("modal-extra-body").innerHTML = extraHtml || "";
+
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    if (ctaLabel) {
+      ctaBtn.style.display = "block";
+      ctaBtn.textContent = ctaLabel;
+      ctaBtn.classList.toggle("danger", !!ctaDanger);
+      ctaBtn.onclick = onCta || null;
+    } else {
+      ctaBtn.style.display = "none";
+      ctaBtn.onclick = null;
+    }
+
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    if (secondaryLabel) {
+      secondaryBtn.style.display = "block";
+      secondaryBtn.textContent = secondaryLabel;
+      secondaryBtn.onclick = onSecondary || closeModal;
+    } else {
+      secondaryBtn.style.display = "none";
+      secondaryBtn.onclick = null;
+    }
+
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function closeModal() { document.getElementById("app-modal").classList.remove("open"); }
+
+  let currentPrompt = null;
+
+  function openPromptModal(name) {
+    const data = prompts[name];
+    if (!data) return;
+    openModal({
+      title: name,
+      bodyText: data.description,
+      ctaLabel: "Use in journal",
+      onCta: () => {
+        currentPrompt = name;
+        document.getElementById("journal-current-prompt").textContent = `Current prompt: ${name}`;
+        closeModal();
+        switchToTab("screen-journal");
+        document.getElementById("journal-input").focus();
+      }
+    });
+  }
+
+  function switchToTab(targetId) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
+    document.getElementById(targetId).classList.add("active-screen");
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("tab-active", t.dataset.target === targetId));
+  }
+
+  function renderHome() {
+    const entries = loadJournal();
+    const { current, longest } = computeStreakInfo(entries);
+
+    const meterEl = document.getElementById("ember-meter");
+    const intensity = Math.min(1, 0.12 + current * 0.09);
+    meterEl.style.setProperty("--ember-intensity", intensity.toFixed(2));
+
+    document.getElementById("ember-label").textContent =
+      current > 0 ? `${current}-day streak` : "No streak yet";
+    document.getElementById("ember-sub").textContent =
+      current > 0 ? "The ember stays lit while you keep showing up." : "Write one honest entry to light it.";
+
+    document.getElementById("home-stat-entries").textContent = entries.length;
+    document.getElementById("home-stat-longest").textContent = longest;
+
+    const suggestedName = getTodaysSuggestedPrompt();
+    const suggestedData = prompts[suggestedName];
+    document.getElementById("suggested-prompt-name").textContent = suggestedName;
+    document.getElementById("suggested-prompt-desc").textContent = suggestedData.description;
+    document.getElementById("use-suggested-btn").onclick = () => openPromptModal(suggestedName);
+  }
+
+  function getLastExploredDate(promptName) {
+    const entries = loadJournal().filter((e) => e.prompt === promptName);
+    if (!entries.length) return null;
+    const latest = entries.reduce((a, b) => (a.date > b.date ? a : b));
+    return new Date(latest.date);
+  }
+
+  function renderPromptList() {
+    const listEl = document.getElementById("prompt-list");
+    listEl.innerHTML = promptKeys.map((name) => {
+      const lastDate = getLastExploredDate(name);
+      const lastLabel = lastDate
+        ? `Last explored ${lastDate.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`
+        : "Not yet explored";
+      return `
+      <div class="prompt-card" data-prompt="${name}" tabindex="0" role="button">
+        <div class="prompt-title">${name}</div>
+        <div class="prompt-tag">${prompts[name].tag}</div>
+        <div class="prompt-tag" style="margin-top:0.15rem; color:var(--ash-faint);">${lastLabel}</div>
+      </div>
+    `;
+    }).join("");
+  }
+
+  let editingEntryId = null;
+
+  function renderJournal() {
+    const entries = loadJournal();
+    const listEl = document.getElementById("journal-list");
+
+    if (!entries.length) {
+      listEl.innerHTML = `<div class="empty-state">Your entries will appear here as you write. Start with one honest paragraph.</div>`;
+      return;
+    }
+
+    listEl.innerHTML = entries.map((entry) => {
+      const date = new Date(entry.date);
+      const dateLabel = date.toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+      return `
+        <div class="journal-entry" data-id="${entry.id}">
+          <div class="journal-entry-meta">
+            <span>${dateLabel}${entry.prompt ? ` · <span class="journal-entry-prompt">${entry.prompt}</span>` : ""}</span>
+            <span class="journal-actions">
+              <button class="journal-action-btn" data-action="edit">Edit</button>
+              <button class="journal-action-btn danger" data-action="delete">Delete</button>
+            </span>
+          </div>
+          <div class="journal-entry-text"></div>
+        </div>
+      `;
+    }).join("");
+
+    listEl.querySelectorAll(".journal-entry").forEach((el, i) => {
+      el.querySelector(".journal-entry-text").textContent = entries[i].text;
+    });
+  }
+
+  function startEditingEntry(id) {
+    const entries = loadJournal();
+    const entry = entries.find((e) => e.id === id);
+    if (!entry) return;
+
+    editingEntryId = id;
+    currentPrompt = entry.prompt || null;
+    document.getElementById("journal-input").value = entry.text;
+    document.getElementById("journal-current-prompt").textContent = entry.prompt
+      ? `Current prompt: ${entry.prompt}`
+      : "No prompt selected — choose one from the library or write freely.";
+    document.getElementById("cancel-edit-btn").style.display = "inline";
+
+    switchToTab("screen-journal");
+    document.getElementById("journal-input").focus();
+  }
+
+  function cancelEditing() {
+    editingEntryId = null;
+    currentPrompt = null;
+    document.getElementById("journal-input").value = "";
+    document.getElementById("journal-current-prompt").textContent = "No prompt selected — choose one from the library or write freely.";
+    document.getElementById("cancel-edit-btn").style.display = "none";
+  }
+
+  function confirmDeleteEntry(id) {
+    openModal({
+      title: "Delete this entry?",
+      bodyText: "This can't be undone once confirmed.",
+      ctaLabel: "Delete entry",
+      ctaDanger: true,
+      onCta: () => {
+        const entries = loadJournal().filter((e) => e.id !== id);
+        saveJournal(entries);
+        if (editingEntryId === id) cancelEditing();
+        renderJournal();
+        renderHome();
+        renderProgress();
+        renderPromptList();
+        closeModal();
+        showToast("Entry deleted.");
+      },
+      secondaryLabel: "Keep entry",
+      onSecondary: closeModal
+    });
+  }
+
+  function saveJournalEntry() {
+    const input = document.getElementById("journal-input");
+    const text = input.value.trim();
+    if (!text) { showToast("Write something first."); return; }
+
+    const entries = loadJournal();
+
+    if (editingEntryId) {
+      const idx = entries.findIndex((e) => e.id === editingEntryId);
+      if (idx > -1) {
+        entries[idx] = { ...entries[idx], text, prompt: currentPrompt };
+      }
+      editingEntryId = null;
+      document.getElementById("cancel-edit-btn").style.display = "none";
+      showToast("Entry updated.");
+    } else {
+      entries.unshift({ id: Date.now(), text, prompt: currentPrompt, date: new Date().toISOString() });
+      showToast("Entry saved.");
+    }
+
+    saveJournal(entries);
+    input.value = "";
+    currentPrompt = null;
+    document.getElementById("journal-current-prompt").textContent = "No prompt selected — choose one from the library or write freely.";
+
+    renderJournal();
+    renderHome();
+    renderProgress();
+    renderPromptList();
+  }
+
+  function renderProgress() {
+    const entries = loadJournal();
+    const { current, longest } = computeStreakInfo(entries);
+    document.getElementById("progress-entries").textContent = entries.length;
+    document.getElementById("progress-prompts").textContent = distinctPromptsUsed(entries);
+    document.getElementById("progress-streak").textContent = current;
+    document.getElementById("progress-longest").textContent = longest;
+    renderStreakHeatmap(entries);
+  }
+
+  function renderStreakHeatmap(entries) {
+    const el = document.getElementById("streak-heatmap");
+    if (!el) return;
+    const activeDays = new Set(entries.map((e) => todayKey(new Date(e.date))));
+    const days = [];
+    const cursor = new Date();
+    for (let i = 34; i >= 0; i--) {
+      const d = new Date(cursor);
+      d.setDate(d.getDate() - i);
+      days.push(d);
+    }
+    el.innerHTML = "";
+    days.forEach((d) => {
+      const cell = document.createElement("div");
+      cell.className = "heatmap-cell" + (activeDays.has(todayKey(d)) ? " active" : "");
+      cell.title = d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      el.appendChild(cell);
+    });
+  }
+
+  /* =========================================================
+     RESTORE — shared confirmation flow, using the existing
+     shared modal (no new markup needed).
+     ========================================================= */
+  function dataSummary(entries) {
+    return Array.isArray(entries) ? entries.length : 0;
+  }
+
+  let _pendingRestoreData = null;
+  function openRestoreConfirm(data, sourceLabel) {
+    _pendingRestoreData = data;
+    const incoming = dataSummary(data);
+    const current = dataSummary(loadJournal());
+    let body = `This backup has ${incoming} journal ${incoming === 1 ? "entry" : "entries"}. Your current data has ${current}. Restoring replaces what you have now — you can undo it right after if needed.`;
+    if (incoming < current) {
+      body = `⚠ This backup has FEWER entries (${incoming}) than your current data (${current}). Double-check this is the right one before continuing.`;
+    }
+    openModal({
+      title: `Restore from ${sourceLabel}?`,
+      bodyText: body,
+      ctaLabel: "Yes, restore",
+      onCta: confirmRestoreNow,
+      secondaryLabel: "Cancel",
+      onSecondary: () => { _pendingRestoreData = null; closeModal(); }
+    });
+  }
+
+  function confirmRestoreNow() {
+    if (!_pendingRestoreData) { closeModal(); return; }
+    try {
+      localStorage.setItem("swj_pre_restore_snapshot", JSON.stringify({ data: loadJournal(), ts: Date.now() }));
+    } catch (e) {}
+    saveJournal(Array.isArray(_pendingRestoreData) ? _pendingRestoreData : []);
+    _pendingRestoreData = null;
+    closeModal();
+    renderJournal(); renderHome(); renderProgress(); renderPromptList();
+    renderLocalRestoreUndo();
+    showToast("Restored!");
+  }
+
+  function undoLastRestore() {
+    try {
+      const raw = localStorage.getItem("swj_pre_restore_snapshot");
+      if (!raw) { showToast("Nothing to undo."); return; }
+      const snap = JSON.parse(raw);
+      saveJournal(snap.data || []);
+      localStorage.removeItem("swj_pre_restore_snapshot");
+      renderJournal(); renderHome(); renderProgress(); renderPromptList();
+      renderLocalRestoreUndo();
+      showToast("Restore undone.");
+    } catch (e) { showToast("Could not undo."); }
+  }
+
+  function renderLocalRestoreUndo() {
+    const el = document.getElementById("local-restore-undo-slot");
+    if (!el) return;
+    const hasUndo = !!localStorage.getItem("swj_pre_restore_snapshot");
+    el.innerHTML = hasUndo
+      ? '<button class="backup-btn" style="width:100%;margin-top:8px;color:var(--blood-bright);border-color:var(--blood-bright);" onclick="undoLastRestore()">Undo Last Restore</button>'
+      : '';
+  }
+
+  /* =========================================================
+     LOCAL FILE BACKUP — real export + real import
+     ========================================================= */
+  function buildBackupPayload() {
+    return JSON.stringify({ entries: loadJournal(), exportedAt: new Date().toISOString(), source: "Shadow Work Journal" }, null, 2);
+  }
+
+  function localDateStr(d) {
+    d = d || new Date();
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function exportBackupFile() {
+    try {
+      const content = buildBackupPayload();
+      const blob = new Blob([content], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `shadow-work-journal-backup-${localDateStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast("Backup file downloaded.");
+    } catch (e) {
+      showToast("Export failed — try a different browser.");
+    }
+  }
+
+  function triggerImportPicker() {
+    document.getElementById("import-file-input").click();
+  }
+
+  function handleImportFileSelected(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const parsed = JSON.parse(evt.target.result);
+        const entries = Array.isArray(parsed) ? parsed : parsed.entries;
+        if (!Array.isArray(entries)) {
+          showToast("That file doesn't look like a valid backup.");
+          return;
+        }
+        openRestoreConfirm(entries, `the file "${file.name}"`);
+      } catch (err) {
+        showToast("Could not read that file.");
+      }
+    };
+    reader.onerror = () => showToast("Error reading file.");
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
+  /* =========================================================
+     FREE TRIAL — Google Drive backup removed for the demo;
+     replaced with a 14-day trial lock.
+     ========================================================= */
+  const DEMO_SINCE_KEY = "swj_demo_since";
+  const DEMO_ETSY_URL = "https://www.etsy.com/listing/4535860746/shadow-work-journal-app-guided-prompt";
+
+  function demoTrialDaysLeft() {
+    let since = localStorage.getItem(DEMO_SINCE_KEY);
+    if (!since) {
+      since = Date.now().toString();
+      localStorage.setItem(DEMO_SINCE_KEY, since);
+    }
+    const elapsedDays = (Date.now() - Number(since)) / 86400000;
+    return Math.max(0, Math.ceil(14 - elapsedDays));
+  }
+
+  function enforceDemoTrial() {
+    const daysLeft = demoTrialDaysLeft();
+    const bannerText = document.getElementById("demo-banner-text");
+    if (bannerText) {
+      bannerText.textContent = daysLeft > 0
+        ? `Free trial — ${daysLeft} day${daysLeft === 1 ? "" : "s"} left`
+        : "Your free trial has ended";
+    }
+    const lock = document.getElementById("trial-lock");
+    if (lock) {
+      if (daysLeft <= 0) {
+        lock.classList.add("show");
+        document.body.style.overflow = "hidden";
+      } else {
+        lock.classList.remove("show");
+        document.body.style.overflow = "";
+      }
+    }
+  }
+
+  function scheduleAutoBackup() {}
+
+  document.addEventListener("DOMContentLoaded", () => {
+    renderHome();
+    renderPromptList();
+    renderJournal();
+    renderProgress();
+    renderLocalRestoreUndo();
+    enforceDemoTrial();
+    setInterval(enforceDemoTrial, 60000);
+
+    document.querySelectorAll(".tab").forEach((tab) => {
+      tab.addEventListener("click", () => switchToTab(tab.dataset.target));
+    });
+
+    document.getElementById("prompt-list").addEventListener("click", (e) => {
+      const card = e.target.closest(".prompt-card");
+      if (!card) return;
+      openPromptModal(card.dataset.prompt);
+    });
+
+    document.getElementById("journal-save-btn").addEventListener("click", saveJournalEntry);
+    document.getElementById("cancel-edit-btn").addEventListener("click", cancelEditing);
+
+    document.getElementById("journal-list").addEventListener("click", (e) => {
+      const entryEl = e.target.closest(".journal-entry");
+      if (!entryEl) return;
+      const id = Number(entryEl.dataset.id);
+      const action = e.target.closest("[data-action]");
+      if (!action) return;
+      if (action.dataset.action === "edit") startEditingEntry(id);
+      if (action.dataset.action === "delete") confirmDeleteEntry(id);
+    });
+
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => {
+      if (e.target.id === "app-modal") closeModal();
+    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileSelected);
+  });
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+</script>
+
+</body>
+</html>
