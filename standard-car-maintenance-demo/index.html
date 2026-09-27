@@ -959,10 +959,6 @@ nav.tabbar button.active { color: var(--gold); }
       <input type="text" id="vehiclePlate" placeholder="e.g. ABC1234">
     </div>
     <div class="field">
-      <label>VIN (optional)</label>
-      <input type="text" id="vehicleVin" placeholder="17-character VIN" maxlength="17" style="text-transform:uppercase;">
-    </div>
-    <div class="field">
       <label>Current mileage</label>
       <input type="number" id="vehicleMileage" placeholder="e.g. 42000" inputmode="numeric">
     </div>
@@ -1151,7 +1147,6 @@ function newVehicle(name, year, make, model, plate) {
     make: make || '',
     model: model || '',
     plate: plate || '',
-    vin: '',
     mileage: '',
     notes: '',
     tasks: [],       // {id, name, category, intervalType:'date'|'mileage', frequencyDays, lastDone, mileageInterval, lastDoneMileage}
@@ -1534,15 +1529,11 @@ function renderCalendar() {
   }
 }
 
-/* ---------- seasonal checklist ---------- */
 function renderVehicleProfile() {
   const card = document.getElementById('vehicleProfileCard');
   const v = currentVehicle();
   const title = v.name ? v.name : [v.year, v.make, v.model].filter(Boolean).join(' ') || 'Add your vehicle';
   const sub = v.name && (v.year || v.make || v.model) ? [v.year, v.make, v.model].filter(Boolean).join(' ') : (v.mileage ? `${Number(v.mileage).toLocaleString()} mi` : 'Tap to add details');
-  const recallBtn = v.vin
-    ? `<button class="btn-add-inline" onclick="checkForRecalls()">Check for recalls</button>`
-    : `<div class="empty-state" style="padding:14px 12px;"><div class="msg">Add a VIN to check for open safety recalls.</div></div>`;
   card.innerHTML = `
     <div class="item-card" onclick="openVehicleProfileSheet('edit')" style="cursor:pointer;">
       <div class="body-text">
@@ -1550,57 +1541,7 @@ function renderVehicleProfile() {
         <div class="sub-line">${escapeHtml(sub)}</div>
       </div>
     </div>
-    ${recallBtn}
-    <div id="recallResults"></div>
   `;
-}
-
-/* ---------- recall lookup (NHTSA free public APIs, no key required) ----------
-   Two steps: 1) decode VIN -> make/model/year via vpic.nhtsa.dot.gov
-              2) look up recalls for that make/model/year via api.nhtsa.gov */
-async function checkForRecalls() {
-  const v = currentVehicle();
-  const vin = (v.vin || '').trim().toUpperCase();
-  const resultsEl = document.getElementById('recallResults');
-  if (!vin || vin.length !== 17) {
-    if (resultsEl) resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">VIN must be exactly 17 characters.</div></div>`;
-    return;
-  }
-  if (resultsEl) resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">Decoding VIN…</div></div>`;
-  try {
-    const decodeRes = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${encodeURIComponent(vin)}?format=json`);
-    if (!decodeRes.ok) throw new Error('VIN decode failed');
-    const decodeData = await decodeRes.json();
-    const info = (decodeData.Results && decodeData.Results[0]) || {};
-    const make = info.Make, model = info.Model, modelYear = info.ModelYear;
-    if (!make || !model || !modelYear) {
-      resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">Couldn't decode that VIN. Double-check it and try again.</div></div>`;
-      return;
-    }
-    resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">Checking recalls for ${escapeHtml(modelYear)} ${escapeHtml(make)} ${escapeHtml(model)}…</div></div>`;
-    const recallRes = await fetch(`https://api.nhtsa.gov/recalls/recallsByVehicle?make=${encodeURIComponent(make)}&model=${encodeURIComponent(model)}&modelYear=${encodeURIComponent(modelYear)}`);
-    if (!recallRes.ok) throw new Error('Recall lookup failed');
-    const recallData = await recallRes.json();
-    const recalls = Array.isArray(recallData.results) ? recallData.results : [];
-    if (recalls.length === 0) {
-      resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">No open recalls found for ${escapeHtml(modelYear)} ${escapeHtml(make)} ${escapeHtml(model)}.</div></div>`;
-      return;
-    }
-    resultsEl.innerHTML = `
-      <div class="section-title" style="margin-top:14px;">Open recalls <span class="count">${recalls.length} total</span></div>
-      ${recalls.map(r => `
-        <div class="item-card" style="cursor:default;">
-          <div class="body-text">
-            <div class="title-line">${escapeHtml(r.Component || 'Recall')}</div>
-            <div class="sub-line">${escapeHtml(r.Summary || '')}</div>
-          </div>
-        </div>
-      `).join('')}
-      <div class="empty-state" style="padding:10px 12px; text-align:left;"><div class="msg">Recall matching is by make/model/year, not the exact VIN — confirm applicability at nhtsa.gov/recalls.</div></div>
-    `;
-  } catch (err) {
-    resultsEl.innerHTML = `<div class="empty-state" style="padding:14px 12px;"><div class="msg">Couldn't reach the NHTSA recall database. Check your connection and try again.</div></div>`;
-  }
 }
 
 /* ---------- mileage log ---------- */
@@ -1893,7 +1834,6 @@ function openVehicleProfileSheet(mode) {
     document.getElementById('vehicleMake').value = '';
     document.getElementById('vehicleModel').value = '';
     document.getElementById('vehiclePlate').value = '';
-    document.getElementById('vehicleVin').value = '';
     document.getElementById('vehicleMileage').value = '';
     document.getElementById('vehicleNotes').value = '';
     deleteRow.style.display = 'none';
@@ -1904,7 +1844,6 @@ function openVehicleProfileSheet(mode) {
     document.getElementById('vehicleMake').value = v.make || '';
     document.getElementById('vehicleModel').value = v.model || '';
     document.getElementById('vehiclePlate').value = v.plate || '';
-    document.getElementById('vehicleVin').value = v.vin || '';
     document.getElementById('vehicleMileage').value = v.mileage || '';
     document.getElementById('vehicleNotes').value = v.notes || '';
     deleteRow.style.display = state.vehicles.length > 1 ? 'flex' : 'none';
@@ -1920,13 +1859,11 @@ function saveVehicleProfile() {
   const make = document.getElementById('vehicleMake').value.trim();
   const model = document.getElementById('vehicleModel').value.trim();
   const plate = document.getElementById('vehiclePlate').value.trim();
-  const vin = document.getElementById('vehicleVin').value.trim().toUpperCase();
   const mileage = document.getElementById('vehicleMileage').value.trim();
   const notes = document.getElementById('vehicleNotes').value.trim();
 
   if (vehicleSheetMode === 'add') {
     const v = newVehicle(name, year, make, model, plate);
-    v.vin = vin;
     v.mileage = mileage;
     v.notes = notes;
     state.vehicles.push(v);
@@ -1934,7 +1871,7 @@ function saveVehicleProfile() {
   } else {
     const v = currentVehicle();
     v.name = name; v.year = year; v.make = make; v.model = model;
-    v.plate = plate; v.vin = vin; v.mileage = mileage; v.notes = notes;
+    v.plate = plate; v.mileage = mileage; v.notes = notes;
   }
   saveState(); render(); closeVehicleProfileSheet();
   showToast('Saved');
