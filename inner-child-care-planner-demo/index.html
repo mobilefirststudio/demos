@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Inner Child Care Planner — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#fbeee3" id="theme-color-meta" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ---------- Dark themes ---------- */
+  :root, [data-theme="deep"] {
+    --bg-a: #251c40; --bg-b: #150f28;
+    --card: rgba(43, 33, 68, 0.8); --card-hi: rgba(52, 41, 80, 0.88);
+    --accent-a: #d9c8ff; --accent-b: #c9b6ff;
+    --text: #f5f0ff; --text-muted: #b8abd9; --text-faint: #7d709e;
+    --border-soft: rgba(201, 182, 255, 0.24); --on-accent: #1f1633;
+    --glow: rgba(201, 182, 255, 0.3);
+  }
+  [data-theme="nebula"] {
+    --bg-a: #16203f; --bg-b: #0b1226;
+    --card: rgba(20, 30, 58, 0.8); --card-hi: rgba(26, 38, 72, 0.88);
+    --accent-a: #a8c8ff; --accent-b: #7ba3ff;
+    --text: #eef4ff; --text-muted: #aac0e0; --text-faint: #62759e;
+    --border-soft: rgba(123, 163, 255, 0.26); --on-accent: #0c1730;
+    --glow: rgba(123, 163, 255, 0.3);
+  }
+  [data-theme="rose"] {
+    --bg-a: #2c1a28; --bg-b: #1a0e18;
+    --card: rgba(42, 26, 40, 0.8); --card-hi: rgba(52, 32, 50, 0.88);
+    --accent-a: #f0b8d4; --accent-b: #d97fae;
+    --text: #fceef6; --text-muted: #d9a8c4; --text-faint: #8f5c78;
+    --border-soft: rgba(217, 127, 174, 0.26); --on-accent: #2f1220;
+    --glow: rgba(217, 127, 174, 0.3);
+  }
+  [data-theme="onyx"] {
+    --bg-a: #1c1c22; --bg-b: #0e0e12;
+    --card: rgba(26, 26, 32, 0.8); --card-hi: rgba(32, 33, 40, 0.88);
+    --accent-a: #c8ccd9; --accent-b: #9aa3ba;
+    --text: #f2f3f6; --text-muted: #b8bdc9; --text-faint: #6e7482;
+    --border-soft: rgba(154, 163, 186, 0.24); --on-accent: #14151a;
+    --glow: rgba(154, 163, 186, 0.28);
+  }
+
+  /* ---------- Light themes ---------- */
+  [data-theme="soft"] {
+    --bg-a: #f3effc; --bg-b: #e1dbf4;
+    --card: rgba(255, 255, 255, 0.7); --card-hi: rgba(255, 255, 255, 0.85);
+    --accent-a: #c3aee8; --accent-b: #9b7bd6;
+    --text: #322a4d; --text-muted: #5f5580; --text-faint: #9188ad;
+    --border-soft: rgba(155, 123, 214, 0.26); --on-accent: #ffffff;
+    --glow: rgba(155, 123, 214, 0.3);
+  }
+  [data-theme="warm"] {
+    --bg-a: #fbeee3; --bg-b: #f3dcc9;
+    --card: rgba(255, 255, 255, 0.62); --card-hi: rgba(255, 255, 255, 0.78);
+    --accent-a: #f0bd94; --accent-b: #d98f5c;
+    --text: #402b1c; --text-muted: #74553d; --text-faint: #a3846a;
+    --border-soft: rgba(217, 143, 92, 0.28); --on-accent: #2f1c0f;
+    --glow: rgba(217, 143, 92, 0.3);
+  }
+  [data-theme="blush"] {
+    --bg-a: #fbe7ef; --bg-b: #f3d0dd;
+    --card: rgba(255, 255, 255, 0.62); --card-hi: rgba(255, 255, 255, 0.78);
+    --accent-a: #f0a8c4; --accent-b: #d9689f;
+    --text: #3a1626; --text-muted: #6e3d52; --text-faint: #a17690;
+    --border-soft: rgba(217, 104, 159, 0.28); --on-accent: #2f0e1c;
+    --glow: rgba(217, 104, 159, 0.3);
+  }
+  [data-theme="mist"] {
+    --bg-a: #eaf0f6; --bg-b: #d4e0ec;
+    --card: rgba(255, 255, 255, 0.64); --card-hi: rgba(255, 255, 255, 0.8);
+    --accent-a: #a8c4dd; --accent-b: #6f96bd;
+    --text: #16242f; --text-muted: #405464; --text-faint: #708494;
+    --border-soft: rgba(111, 150, 189, 0.28); --on-accent: #ffffff;
+    --glow: rgba(111, 150, 189, 0.3);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, var(--bg-a), var(--bg-b));
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  .app { width: 100%; max-width: 480px; min-height: 100vh; padding: 1.1rem 1rem calc(6rem + env(safe-area-inset-bottom)); position: relative; }
+
+  header { position: relative; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; margin-bottom: 1.1rem; }
+  header::before {
+    content: ""; position: absolute; top: -30px; left: -20px; width: 240px; height: 130px;
+    background: radial-gradient(circle, var(--glow), transparent 70%);
+    filter: blur(20px); z-index: -1; pointer-events: none;
+  }
+  .header-text { display: flex; flex-direction: column; gap: 0.15rem; }
+  .eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-faint); }
+  .app-name { font-family: "EB Garamond", Georgia, serif; font-style: italic; font-weight: 500; font-size: 1.5rem; color: var(--accent-b); }
+  .app-subtitle { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.15rem; }
+
+  .theme-btn {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-soft);
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 20px var(--glow);
+  }
+
+  main { width: 100%; }
+  .screen { display: none; width: 100%; animation: screenIn 0.25s ease; }
+  .screen.active-screen { display: block; }
+  @keyframes screenIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border-soft); border-radius: 1.15rem;
+    padding: 1.15rem 1.05rem;
+    box-shadow: 0 22px 48px rgba(0, 0, 0, 0.16), 0 4px 18px var(--glow);
+    margin-bottom: 0.85rem;
+    backdrop-filter: blur(8px);
+  }
+  .card-header { margin-bottom: 0.7rem; }
+  .card-title { font-family: "EB Garamond", Georgia, serif; font-style: italic; font-size: 1.15rem; color: var(--text); }
+  .card-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+  .note { margin-top: 0.7rem; font-size: 0.72rem; color: var(--text-faint); line-height: 1.55; }
+
+  /* ---------- Comfort Star (signature element) ---------- */
+  .star-row { display: flex; align-items: center; gap: 1rem; }
+  .star-wrap { position: relative; width: 76px; height: 76px; flex-shrink: 0; }
+  .star-wrap svg { width: 100%; height: 100%; filter: drop-shadow(0 4px 10px var(--glow)); }
+  .star-point { transition: opacity 0.6s ease; }
+  .star-center { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--card-hi); border: 1px solid var(--border-soft); }
+  .star-info { flex: 1; min-width: 0; }
+  .star-label { font-family: "EB Garamond", Georgia, serif; font-style: italic; font-size: 1.05rem; color: var(--text); }
+  .star-sub { font-size: 0.74rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .stat { background: rgba(255, 255, 255, 0.12); border: 1px solid var(--border-soft); border-radius: 0.75rem; padding: 0.6rem 0.5rem; text-align: center; }
+  .stat-value { font-family: "EB Garamond", Georgia, serif; font-size: 1.2rem; color: var(--text); }
+  .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+
+  .progress-container { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-soft); border-radius: 999px; height: 16px; width: 100%; overflow: hidden; margin-top: 0.5rem; }
+  .progress-fill { background: linear-gradient(90deg, var(--accent-a), var(--accent-b)); height: 100%; width: 0%; border-radius: 999px; transition: width 0.5s ease; }
+  .progress-score-text { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+  .btn-primary {
+    width: 100%; padding: 0.68rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
+    box-shadow: 0 10px 26px var(--glow);
+  }
+  .btn-primary:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+
+  .subtab-row { display: flex; gap: 0.35rem; margin-bottom: 0.85rem; overflow-x: auto; }
+  .subtab {
+    flex-shrink: 0; padding: 0.4rem 0.7rem; border-radius: 999px; font-size: 0.68rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); cursor: pointer;
+    display: flex; align-items: center; gap: 0.3rem;
+  }
+  .subtab.active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; border-color: transparent; }
+  .subtab .step-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.5; }
+  .subtab.done .step-dot { opacity: 1; }
+
+  .prompt-hints { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: -0.35rem 0 0.75rem; }
+  .prompt-hint {
+    font-size: 0.68rem; padding: 0.3rem 0.6rem; border-radius: 999px;
+    border: 1px dashed var(--border-soft); background: transparent; color: var(--text-muted); cursor: pointer;
+    text-align: left;
+  }
+  .prompt-hint:hover { background: rgba(255, 255, 255, 0.1); color: var(--text); }
+
+  .field { margin-bottom: 0.75rem; }
+  .field label { display: block; font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+  .field textarea {
+    width: 100%; min-height: 62px; padding: 0.65rem 0.75rem; border-radius: 0.75rem; resize: vertical;
+    border: 1px solid var(--border-soft); background: var(--card-hi);
+    color: var(--text); font-family: "Inter", sans-serif; font-size: 0.82rem; line-height: 1.5;
+  }
+  .field textarea::placeholder { color: var(--text-faint); opacity: 1; }
+  .field textarea:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+
+  .list-item { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-soft); border-radius: 0.85rem; padding: 0.7rem 0.8rem; margin-bottom: 0.5rem; cursor: pointer; }
+  .list-item-top { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .pin-btn { background: none; border: none; font-size: 1rem; cursor: pointer; opacity: 0.35; padding: 0.1rem 0.3rem; flex-shrink: 0; }
+  .pin-btn.pinned { opacity: 1; }
+  .list-item-state { font-size: 0.82rem; color: var(--text); font-weight: 500; }
+  .list-item-date { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.2rem; }
+  .detail-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-soft); }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-label { font-size: 0.68rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .detail-value { font-size: 0.8rem; color: var(--text); text-align: right; line-height: 1.5; }
+  .empty-state { margin-top: 0.7rem; padding: 1.1rem 0.9rem; border: 1px dashed var(--border-soft); border-radius: 0.85rem; text-align: center; font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+  .backup-status-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.1); }
+  .backup-status-text { font-size: 0.75rem; color: var(--text-muted); }
+  .backup-status-sub { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.1rem; }
+  .backup-badge { font-size: 0.62rem; padding: 0.2rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .backup-badge.connected { color: #16210f; background: linear-gradient(135deg, #b7d99a, #8ab86a); }
+  .backup-badge.disconnected { color: var(--text-faint); background: rgba(255, 255, 255, 0.1); }
+  .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
+  .backup-btn { padding: 0.6rem 0.5rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: transparent; color: var(--text); font-size: 0.74rem; font-weight: 500; cursor: pointer; font-family: "Inter", sans-serif; }
+  .backup-btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+  .backup-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
+  .backup-section-label { font-size: 0.68rem; color: var(--accent-b); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+
+  .tabbar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px; display: flex; justify-content: space-between; gap: 0.2rem;
+    padding: 0.6rem 0.6rem calc(0.6rem + env(safe-area-inset-bottom));
+    border-radius: 0; background: var(--card-hi); border: none; border-top: 1px solid var(--border-soft);
+    backdrop-filter: blur(12px); box-shadow: 0 -4px 20px var(--glow);
+    transition: background 0.3s ease, border-color 0.3s ease; z-index: 50;
+  }
+  .tab { flex: 1; text-align: center; font-size: 0.68rem; padding: 0.5rem 0.2rem; border-radius: 999px; color: var(--text-faint); cursor: pointer; border: none; background: transparent; font-family: "Inter", sans-serif; transition: background 0.2s ease, color 0.2s ease; }
+  .tab:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .tab-active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(10, 6, 20, 0.5); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft);
+    border-top-left-radius: 1.4rem; border-top-right-radius: 1.4rem;
+    padding: 1.3rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom)); width: 100%; max-width: 480px;
+    max-height: 82vh; overflow-y: auto; box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.3); animation: modalUp 0.28s ease-out;
+    backdrop-filter: blur(10px);
+  }
+  @keyframes modalUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .modal-title { font-family: "EB Garamond", Georgia, serif; font-style: italic; font-size: 1.25rem; color: var(--text); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--accent-b); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .modal-body-text { margin-top: 0.7rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+  .modal-cta { margin-top: 1.1rem; width: 100%; padding: 0.7rem; border-radius: 999px; border: none; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .modal-cta.danger { background: linear-gradient(135deg, #eba3ac, #cf5a68); color: #2a0a0c; }
+  .modal-cta-secondary { margin-top: 0.6rem; width: 100%; padding: 0.65rem; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; }
+
+  .toast {
+    position: fixed; bottom: 5.6rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--card-hi); border: 1px solid var(--border-soft); color: var(--text);
+    font-size: 0.78rem; padding: 0.6rem 1rem; border-radius: 999px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000;
+    white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+    backdrop-filter: blur(8px);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-action { color: var(--accent-b); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; }
+
+  /* ---------- Demo trial ---------- */
+  .demo-banner {
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent);
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.55rem 1rem;
+    margin: -1.1rem -1rem 1rem;
+  }
+  .demo-banner a { color: var(--on-accent); text-decoration: underline; font-weight: 700; }
+
+  .upsell-card {
+    border: 1px solid var(--border-soft); border-radius: 0.9rem; padding: 0.9rem 1rem;
+    background: rgba(255, 255, 255, 0.1); text-align: center;
+  }
+  .upsell-card .upsell-title { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem; }
+  .upsell-card .upsell-text { font-size: 0.74rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.7rem; }
+  .upsell-card .upsell-link {
+    display: inline-block; padding: 0.5rem 1.1rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 0.76rem; font-weight: 700; text-decoration: none;
+  }
+
+  #trial-lock {
+    display: none;
+    position: fixed; inset: 0; z-index: 2000;
+    background: radial-gradient(circle at top, var(--bg-a), var(--bg-b));
+    align-items: center; justify-content: center;
+    padding: 2rem 1.4rem;
+  }
+  #trial-lock.show { display: flex; }
+  .trial-lock-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft); border-radius: 1.2rem;
+    padding: 1.6rem 1.4rem; max-width: 380px; width: 100%; text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  }
+  .trial-lock-card .trial-lock-title {
+    font-family: "EB Garamond", Georgia, serif; font-style: italic; font-size: 1.3rem; color: var(--text); margin-bottom: 0.6rem;
+  }
+  .trial-lock-card .trial-lock-text {
+    font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.2rem;
+  }
+  .trial-lock-card .trial-lock-link {
+    display: inline-block; width: 100%; padding: 0.75rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 0.85rem; font-weight: 700; text-decoration: none;
+  }
+</style>
+</head>
+<body data-theme="warm">
+
+<div class="app">
+  <div class="demo-banner"><span id="demo-banner-text">Free trial</span> &middot; <a href="https://www.etsy.com/listing/4536153290/inner-child-healing-app-guided-comfort" target="_blank" rel="noopener">Unlock the full app &rarr;</a></div>
+  <header>
+    <div class="header-text">
+      <div class="eyebrow">Mobile First Studio</div>
+      <div class="app-name">Inner Child Care Planner</div>
+      <div class="app-subtitle">Deep celestial healing &amp; emotional safety.</div>
+    </div>
+    <button class="theme-btn" id="theme-btn" title="Change theme">✨</button>
+  </header>
+
+  <main>
+
+    <!-- HOME -->
+    <section id="screen-home" class="screen active-screen">
+      <section class="card">
+        <div class="card-header"><div class="card-title">Right Now</div></div>
+        <div class="star-row">
+          <div class="star-wrap">
+            <svg viewBox="0 0 80 80">
+              <path class="star-point" id="star-message" d="M40,40 L30.1,30.1 L40,6 L49.9,30.1 Z" fill="var(--accent-b)" />
+              <path class="star-point" id="star-comfort" d="M40,40 L49.9,30.1 L74,40 L49.9,49.9 Z" fill="var(--accent-a)" />
+              <path class="star-point" id="star-play" d="M40,40 L49.9,49.9 L40,74 L30.1,49.9 Z" fill="var(--accent-b)" />
+              <path class="star-point" id="star-safety" d="M40,40 L30.1,49.9 L6,40 L30.1,30.1 Z" fill="var(--accent-a)" />
+            </svg>
+            <div class="star-center"></div>
+          </div>
+          <div class="star-info">
+            <div class="star-label" id="star-label">Not yet begun</div>
+            <div class="star-sub" id="star-sub">Each point lights up as you care for a part of yourself.</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-value" id="stat-streak">0</div><div class="stat-label">Day streak</div></div>
+          <div class="stat"><div class="stat-value" id="stat-sessions">0</div><div class="stat-label">Sessions logged</div></div>
+          <div class="stat"><div class="stat-value" id="stat-week">0</div><div class="stat-label">This week</div></div>
+        </div>
+      </section>
+
+      <section class="card" id="affirmation-card" style="display:none;">
+        <div class="note" id="affirmation-text" style="margin-top:0; font-size: 0.85rem; color: var(--text);"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><div class="card-title">Inner Child Connection Score</div></div>
+        <div class="progress-container"><div class="progress-fill" id="connection-bar"></div></div>
+        <div class="progress-score-text" id="connection-score-text"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><div class="card-title">Today's Comfort Message</div></div>
+        <div class="note" id="comfort-text" style="margin-top:0;">No message yet.</div>
+      </section>
+
+      <button class="btn-primary" id="home-action-btn">Start Inner Child Flow</button>
+    </section>
+
+    <!-- PRACTICE -->
+    <section id="screen-practice" class="screen">
+      <section class="card">
+        <div class="subtab-row">
+          <button class="subtab active" data-subtab="message"><span class="step-dot"></span>Message</button>
+          <button class="subtab" data-subtab="comfort"><span class="step-dot"></span>Comfort</button>
+          <button class="subtab" data-subtab="play"><span class="step-dot"></span>Play</button>
+          <button class="subtab" data-subtab="safety"><span class="step-dot"></span>Safety</button>
+        </div>
+
+        <div class="practice-panel" data-panel="message">
+          <div class="card-header"><div class="card-title">Inner Child Message</div></div>
+          <div class="field"><label>Message to your inner child</label><textarea id="p-message" placeholder="What does your inner child need to hear today?"></textarea></div>
+          <div class="prompt-hints" id="hints-message"></div>
+          <div class="field"><label>Why this matters</label><textarea id="p-why" placeholder="Why does this message feel important?"></textarea></div>
+          <button class="btn-primary" id="save-message-btn">Save message</button>
+        </div>
+
+        <div class="practice-panel" data-panel="comfort" style="display:none;">
+          <div class="card-header"><div class="card-title">Comforting Action</div></div>
+          <div class="field"><label>Comforting action</label><textarea id="p-action" placeholder="A gentle action that comforts your inner child…"></textarea></div>
+          <div class="prompt-hints" id="hints-comfort"></div>
+          <div class="field"><label>How it helped</label><textarea id="p-helped" placeholder="Describe the soothing effect…"></textarea></div>
+          <button class="btn-primary" id="save-comfort-btn">Save comforting action</button>
+        </div>
+
+        <div class="practice-panel" data-panel="play" style="display:none;">
+          <div class="card-header"><div class="card-title">Playful Activity</div></div>
+          <div class="field"><label>Playful moment</label><textarea id="p-moment" placeholder="A small playful moment you gave yourself…"></textarea></div>
+          <div class="prompt-hints" id="hints-play"></div>
+          <div class="field"><label>How it felt</label><textarea id="p-felt" placeholder="Describe the emotional shift…"></textarea></div>
+          <button class="btn-primary" id="save-play-btn">Save playful activity</button>
+        </div>
+
+        <div class="practice-panel" data-panel="safety" style="display:none;">
+          <div class="card-header"><div class="card-title">Safety &amp; Reassurance</div></div>
+          <div class="field"><label>Reassuring truth</label><textarea id="p-truth" placeholder="A truth your inner child needs to feel safe…"></textarea></div>
+          <div class="prompt-hints" id="hints-safety"></div>
+          <div class="field"><label>Supportive reminder</label><textarea id="p-reminder" placeholder="A reminder that brings emotional safety…"></textarea></div>
+          <button class="btn-primary" id="save-safety-btn">Save safety notes</button>
+          <button class="btn-primary" id="finish-session-btn" style="margin-top:0.6rem;">Finish &amp; log this care session</button>
+          <div class="note">Finishing archives everything from this session and clears these forms for next time.</div>
+        </div>
+      </section>
+    </section>
+
+    <!-- PROGRESS -->
+    <section id="screen-progress" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Inner Child Progress</div>
+          <div class="card-subtitle">Each score reflects your last 5 sessions.</div>
+        </div>
+        <div id="progress-scores"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Session History</div>
+          <div class="card-subtitle">Every completed session, most recent first.</div>
+        </div>
+        <div id="history-list"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Backup &amp; Sync</div>
+          <div class="card-subtitle">Keep your inner child care history safe.</div>
+        </div>
+
+        <div class="upsell-card">
+          <div class="upsell-title">Google Drive backup is a full-version feature</div>
+          <div class="upsell-text">In the full app, back up your inner child care history to your own Google Drive and restore it any time. Unlock the full app to turn it on.</div>
+          <a class="upsell-link" href="https://www.etsy.com/listing/4536153290/inner-child-healing-app-guided-comfort" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+        </div>
+
+        <div class="backup-divider">
+          <div class="backup-section-label">Local backup file</div>
+          <div class="backup-actions">
+            <button class="backup-btn" id="export-btn">Export backup file</button>
+            <button class="backup-btn" id="import-btn">Import backup file</button>
+          </div>
+        </div>
+
+        <div class="note">Exporting or backing up saves everything in this app. It never includes anything else from your device.</div>
+      </section>
+    </section>
+
+  </main>
+
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+
+  <div class="tabbar">
+    <button class="tab tab-active" data-target="screen-home">Home</button>
+    <button class="tab" data-target="screen-practice">Practice</button>
+    <button class="tab" data-target="screen-progress">Progress</button>
+  </div>
+</div>
+
+<div id="trial-lock">
+  <div class="trial-lock-card">
+    <div class="trial-lock-title">Your free trial has ended</div>
+    <div class="trial-lock-text">Thanks for spending time with the Inner Child Care Planner! To keep using it and hold onto everything you've logged, grab the full version on Etsy, it's yours to keep, with no subscription.</div>
+    <a class="trial-lock-link" href="https://www.etsy.com/listing/4536153290/inner-child-healing-app-guided-comfort" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+</div>
+
+<!-- SHARED MODAL -->
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body-text" id="modal-body-text"></div>
+    <div id="modal-detail-body"></div>
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta-secondary" id="modal-secondary-btn"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* =========================================================
+     STORAGE — one shared session draft across all four
+     sections (Message/Comfort/Play/Safety), archived to
+     history and cleared when a session finishes. Fixes the
+     four separate stale singletons plus the redundant
+     separate "comfortMessage" key from the original.
+     ========================================================= */
+  const STORE_KEY = "icc_data_demo_v1";
+  const SECTION_FIELDS = {
+    message: ["message", "why"],
+    comfort: ["action", "helped"],
+    play: ["moment", "felt"],
+    safety: ["truth", "reminder"]
+  };
+  const ALL_FIELDS = Object.values(SECTION_FIELDS).flat();
+
+  function defaultDraft() {
+    const d = {};
+    ALL_FIELDS.forEach((f) => { d[f] = ""; });
+    return d;
+  }
+  function defaultDB() { return { theme: "warm", resetDraft: defaultDraft(), resetHistory: [] }; }
+
+  let DB = defaultDB();
+
+  function ld() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        DB = Object.assign(defaultDB(), parsed);
+        DB.resetDraft = Object.assign(defaultDraft(), DB.resetDraft || {});
+      }
+    } catch (e) { DB = defaultDB(); }
+  }
+  function sv() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+  }
+
+  function todayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  function uid() { return Date.now() + Math.floor(Math.random() * 1000); }
+
+  function computeStreakInfo() {
+    const activeDays = new Set(DB.resetHistory.map((h) => todayKey(new Date(h.completedAt))));
+    let current = 0;
+    const cursor = new Date();
+    while (activeDays.has(todayKey(cursor))) { current += 1; cursor.setDate(cursor.getDate() - 1); }
+    return { current };
+  }
+
+  /* =========================================================
+     THEME — 4 dark, 4 light
+     ========================================================= */
+  const THEME_COLORS = {
+    deep: "#150f28", nebula: "#0b1226", rose: "#1a0e18", onyx: "#0e0e12",
+    soft: "#f3effc", warm: "#fbeee3", blush: "#fbe7ef", mist: "#eaf0f6"
+  };
+  const THEMES = ["deep", "nebula", "rose", "onyx", "soft", "warm", "blush", "mist"];
+  function applyTheme() {
+    document.body.setAttribute("data-theme", DB.theme);
+    const meta = document.getElementById("theme-color-meta");
+    if (meta) meta.setAttribute("content", THEME_COLORS[DB.theme]);
+  }
+  function cycleTheme() {
+    const idx = THEMES.indexOf(DB.theme);
+    DB.theme = THEMES[(idx + 1) % THEMES.length];
+    sv(); applyTheme();
+    showToast(`Theme: ${DB.theme[0].toUpperCase() + DB.theme.slice(1)}`);
+  }
+
+  /* =========================================================
+     TOAST
+     ========================================================= */
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => { onAction(); el.classList.remove("show"); });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+
+  /* =========================================================
+     SHARED MODAL
+     ========================================================= */
+  function openModal({ title, bodyText, detailHtml, ctaLabel, onCta, ctaDanger, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+    document.getElementById("modal-detail-body").innerHTML = detailHtml || "";
+
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    if (ctaLabel) {
+      ctaBtn.style.display = "block";
+      ctaBtn.textContent = ctaLabel;
+      ctaBtn.classList.toggle("danger", !!ctaDanger);
+      ctaBtn.onclick = onCta || null;
+    } else { ctaBtn.style.display = "none"; ctaBtn.onclick = null; }
+
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    if (secondaryLabel) { secondaryBtn.style.display = "block"; secondaryBtn.textContent = secondaryLabel; secondaryBtn.onclick = onSecondary || closeModal; }
+    else { secondaryBtn.style.display = "none"; secondaryBtn.onclick = null; }
+
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function closeModal() { document.getElementById("app-modal").classList.remove("open"); }
+
+  function buildDetailRows(pairs) {
+    const html = pairs.map(([label]) => `
+      <div class="detail-row"><div class="detail-label">${label}</div><div class="detail-value" data-field="${label}"></div></div>
+    `).join("");
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = html;
+    wrapper.querySelectorAll("[data-field]").forEach((el) => {
+      const match = pairs.find(([label]) => label === el.dataset.field);
+      el.textContent = match && match[1] ? match[1] : "—";
+    });
+    return wrapper.innerHTML;
+  }
+
+  /* =========================================================
+     TAB / SUB-TAB NAVIGATION
+     ========================================================= */
+  function switchToTab(targetId) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
+    document.getElementById(targetId).classList.add("active-screen");
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("tab-active", t.dataset.target === targetId));
+    if (targetId === "screen-home") renderHome();
+    if (targetId === "screen-progress") { renderProgress(); renderHistory(); }
+  }
+
+  let activePanel = "message";
+  function switchPanel(panel) {
+    activePanel = panel;
+    justFinishedSession = false;
+    document.querySelectorAll(".practice-panel").forEach((el) => { el.style.display = el.dataset.panel === panel ? "block" : "none"; });
+    renderSubtabs();
+    loadPanelIntoForm(panel);
+    renderPromptHints(panel);
+  }
+
+  function sectionDone(section) {
+    return SECTION_FIELDS[section].some((f) => DB.resetDraft[f]);
+  }
+  function renderSubtabs() {
+    document.querySelectorAll(".subtab").forEach((btn) => {
+      const key = btn.dataset.subtab;
+      btn.classList.toggle("active", key === activePanel);
+      btn.classList.toggle("done", sectionDone(key));
+    });
+  }
+
+  /* =========================================================
+     GENTLE STARTER PROMPTS — tappable inspiration, not a full
+     library. Fills the section's primary field if it's empty,
+     so tapping never overwrites something already written.
+     ========================================================= */
+  const PROMPT_HINTS = {
+    message: {
+      field: "p-message",
+      prompts: [
+        "You are safe here.",
+        "It's okay that you felt that way.",
+        "I'm proud of you for getting through today."
+      ]
+    },
+    comfort: {
+      field: "p-action",
+      prompts: [
+        "Wrapped myself in a soft blanket",
+        "Made a warm drink and sat quietly",
+        "Held my own hand for a minute"
+      ]
+    },
+    play: {
+      field: "p-moment",
+      prompts: [
+        "Danced to one song",
+        "Doodled for five minutes",
+        "Watched something that made me laugh"
+      ]
+    },
+    safety: {
+      field: "p-truth",
+      prompts: [
+        "This feeling will pass.",
+        "I don't have to have it figured out right now.",
+        "I'm allowed to ask for help."
+      ]
+    }
+  };
+
+  function renderPromptHints(section) {
+    const config = PROMPT_HINTS[section];
+    const container = document.getElementById(`hints-${section}`);
+    if (!config || !container) return;
+    container.innerHTML = `<span style="font-size:0.66rem;color:var(--text-faint);width:100%;">Need a starting point? Tap one:</span>` +
+      config.prompts.map((p) => `<button type="button" class="prompt-hint" data-prompt="${p.replace(/"/g, "&quot;")}">${p}</button>`).join("");
+    container.querySelectorAll(".prompt-hint").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const input = document.getElementById(config.field);
+        if (!input.value.trim()) input.value = btn.dataset.prompt;
+        else input.value += (input.value.endsWith(" ") ? "" : " ") + btn.dataset.prompt;
+        input.focus();
+      });
+    });
+  }
+
+  /* =========================================================
+     COMFORT STAR (signature element)
+     ========================================================= */
+  function renderStar() {
+    const sections = Object.keys(SECTION_FIELDS);
+    sections.forEach((s) => {
+      const el = document.getElementById(`star-${s}`);
+      el.style.opacity = sectionDone(s) ? "1" : "0.22";
+    });
+    const doneCount = sections.filter((s) => sectionDone(s)).length;
+
+    const labelEl = document.getElementById("star-label");
+    const subEl = document.getElementById("star-sub");
+    if (doneCount === 0) { labelEl.textContent = "Not yet begun"; subEl.textContent = "Each point lights up as you care for a part of yourself."; }
+    else if (doneCount < 4) { labelEl.textContent = `${doneCount}/4 points lit`; subEl.textContent = "Keep going — you're partway through."; }
+    else { labelEl.textContent = "Fully lit"; subEl.textContent = "Ready to log and start fresh next time."; }
+    return doneCount;
+  }
+
+  /* =========================================================
+     HOME
+     ========================================================= */
+  let justFinishedSession = false;
+  const CLOSING_AFFIRMATIONS = [
+    "You showed up for yourself today.",
+    "That took care — well done.",
+    "Your inner child was heard today.",
+    "A small act of care, and it mattered."
+  ];
+
+  function renderHome() {
+    const doneCount = renderStar();
+    const totalSections = Object.keys(SECTION_FIELDS).length;
+    const connectionScore = Math.round((doneCount / totalSections) * 100);
+    document.getElementById("connection-bar").style.width = `${connectionScore}%`;
+    document.getElementById("connection-score-text").textContent = `${connectionScore}/100`;
+
+    const { current } = computeStreakInfo();
+    document.getElementById("stat-streak").textContent = current;
+    document.getElementById("stat-sessions").textContent = DB.resetHistory.length;
+    const weekAgo = Date.now() - 7 * 86400000;
+    document.getElementById("stat-week").textContent = DB.resetHistory.filter((h) => new Date(h.completedAt).getTime() >= weekAgo).length;
+
+    const pinnedEntry = DB.resetHistory.find((h) => h.pinned);
+    const comfortMessage = (pinnedEntry && pinnedEntry.message) || DB.resetDraft.message || (DB.resetHistory[0] && DB.resetHistory[0].message);
+    document.getElementById("comfort-text").textContent = comfortMessage || "No message yet.";
+    if (pinnedEntry && pinnedEntry.message) {
+      document.getElementById("comfort-text").textContent = `📌 ${comfortMessage}`;
+    }
+
+    const affirmationCard = document.getElementById("affirmation-card");
+    if (justFinishedSession) {
+      affirmationCard.style.display = "block";
+      document.getElementById("affirmation-text").textContent =
+        CLOSING_AFFIRMATIONS[Math.floor(Math.random() * CLOSING_AFFIRMATIONS.length)];
+    } else {
+      affirmationCard.style.display = "none";
+    }
+
+    const actionBtn = document.getElementById("home-action-btn");
+    if (doneCount === 0) {
+      actionBtn.textContent = "Start Inner Child Flow";
+      actionBtn.onclick = () => { switchToTab("screen-practice"); switchPanel("message"); };
+    } else if (doneCount < totalSections) {
+      actionBtn.textContent = "Continue This Session";
+      actionBtn.onclick = () => {
+        switchToTab("screen-practice");
+        const nextSection = Object.keys(SECTION_FIELDS).find((s) => !sectionDone(s)) || "safety";
+        switchPanel(nextSection);
+      };
+    } else {
+      actionBtn.textContent = "Finish This Session";
+      actionBtn.onclick = () => { switchToTab("screen-practice"); switchPanel("safety"); };
+    }
+  }
+
+  /* =========================================================
+     PRACTICE PANELS
+     ========================================================= */
+  const PANEL_INPUT_IDS = {
+    message: { message: "p-message", why: "p-why" },
+    comfort: { action: "p-action", helped: "p-helped" },
+    play: { moment: "p-moment", felt: "p-felt" },
+    safety: { truth: "p-truth", reminder: "p-reminder" }
+  };
+
+  function loadPanelIntoForm(panel) {
+    const map = PANEL_INPUT_IDS[panel];
+    Object.keys(map).forEach((field) => { document.getElementById(map[field]).value = DB.resetDraft[field] || ""; });
+  }
+
+  function saveSection(panel, message) {
+    const map = PANEL_INPUT_IDS[panel];
+    const values = {};
+    Object.keys(map).forEach((field) => { values[field] = document.getElementById(map[field]).value.trim(); });
+    if (!Object.values(values).some(Boolean)) { showToast("Fill in at least one field before saving."); return; }
+    Object.assign(DB.resetDraft, values);
+    sv();
+    showToast(message);
+    renderSubtabs();
+    renderHome();
+  }
+
+  function finishSession() {
+    ["truth", "reminder"].forEach((f) => {
+      const v = document.getElementById(PANEL_INPUT_IDS.safety[f]).value.trim();
+      if (v) DB.resetDraft[f] = v;
+    });
+
+    if (!ALL_FIELDS.some((f) => DB.resetDraft[f])) { showToast("Fill in at least one field before finishing."); return; }
+
+    DB.resetHistory.unshift({ ...DB.resetDraft, id: uid(), completedAt: new Date().toISOString() });
+    DB.resetDraft = defaultDraft();
+    sv();
+
+    Object.values(PANEL_INPUT_IDS).forEach((map) => Object.values(map).forEach((id) => { document.getElementById(id).value = ""; }));
+    justFinishedSession = true;
+    showToast("Session logged.");
+    switchToTab("screen-home");
+  }
+
+  /* =========================================================
+     PROGRESS + HISTORY
+     ========================================================= */
+  function computeSectionRecentScore(section) {
+    const fields = SECTION_FIELDS[section];
+    const recent = DB.resetHistory.slice(0, 5);
+    if (!recent.length) return 0;
+    let filled = 0, total = 0;
+    recent.forEach((h) => { fields.forEach((f) => { total += 1; if (h[f]) filled += 1; }); });
+    return total ? Math.round((filled / total) * 100) : 0;
+  }
+
+  function renderProgress() {
+    const rows = [
+      ["Message Score", "message"],
+      ["Comfort Score", "comfort"],
+      ["Play Score", "play"],
+      ["Safety Score", "safety"]
+    ];
+    document.getElementById("progress-scores").innerHTML = rows.map(([label, section]) => {
+      const value = computeSectionRecentScore(section);
+      return `
+        <div style="margin-bottom:1rem;">
+          <div class="card-subtitle" style="margin-bottom:0.35rem;">${label}</div>
+          <div class="progress-container"><div class="progress-fill" style="width:${value}%;"></div></div>
+          <div class="progress-score-text">${value}/100 over your last 5 sessions</div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function renderHistory() {
+    const listEl = document.getElementById("history-list");
+    if (!DB.resetHistory.length) {
+      listEl.innerHTML = `<div class="empty-state">No sessions logged yet. Complete one from the Practice tab.</div>`;
+      return;
+    }
+    listEl.innerHTML = DB.resetHistory.map((h) => {
+      const dateLabel = new Date(h.completedAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+      return `
+        <div class="list-item" data-id="${h.id}">
+          <div class="list-item-top">
+            <div>
+              <div class="list-item-state" data-text-id="${h.id}"></div>
+              <div class="list-item-date">${dateLabel}${h.pinned ? " · Pinned anchor" : ""}</div>
+            </div>
+            <button class="pin-btn ${h.pinned ? "pinned" : ""}" data-pin-id="${h.id}" title="${h.pinned ? "Unpin" : "Pin as anchor"}">📌</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+    listEl.querySelectorAll("[data-text-id]").forEach((el) => {
+      const h = DB.resetHistory.find((r) => r.id === Number(el.dataset.textId));
+      el.textContent = h.message || h.truth || "(no summary text logged)";
+    });
+  }
+
+  function togglePin(id) {
+    const target = DB.resetHistory.find((h) => h.id === id);
+    if (!target) return;
+    const wasPinned = !!target.pinned;
+    DB.resetHistory.forEach((h) => { h.pinned = false; });
+    target.pinned = !wasPinned;
+    sv();
+    renderHistory();
+    renderHome();
+    showToast(target.pinned ? "Pinned as your anchor." : "Unpinned.");
+  }
+
+  function openHistoryDetail(id) {
+    const h = DB.resetHistory.find((r) => r.id === id);
+    if (!h) return;
+    const dateLabel = new Date(h.completedAt).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+    const detailHtml = buildDetailRows([
+      ["Message", h.message], ["Why it matters", h.why],
+      ["Comforting action", h.action], ["How it helped", h.helped],
+      ["Playful moment", h.moment], ["How it felt", h.felt],
+      ["Reassuring truth", h.truth], ["Supportive reminder", h.reminder]
+    ]);
+    openModal({
+      title: dateLabel,
+      detailHtml,
+      ctaLabel: "Delete this session",
+      ctaDanger: true,
+      onCta: () => confirmDeleteHistory(id),
+      secondaryLabel: "Close",
+      onSecondary: closeModal
+    });
+  }
+
+  function confirmDeleteHistory(id) {
+    openModal({
+      title: "Delete this session?",
+      bodyText: "This removes it from your history permanently.",
+      ctaLabel: "Delete",
+      ctaDanger: true,
+      onCta: () => {
+        DB.resetHistory = DB.resetHistory.filter((h) => h.id !== id);
+        sv(); closeModal(); renderHistory(); renderHome();
+        showToast("Deleted.");
+      },
+      secondaryLabel: "Keep it",
+      onSecondary: closeModal
+    });
+  }
+
+  /* =========================================================
+     GOOGLE DRIVE BACKUP + LOCAL EXPORT/IMPORT
+     ========================================================= */
+  const PRE_RESTORE_KEY = "icc_pre_restore_snapshot";
+
+  /* =========================================================
+     DEMO TRIAL
+     ========================================================= */
+  const DEMO_SINCE_KEY = "icc_demo_since";
+  const DEMO_TRIAL_DAYS = 14;
+
+  function demoTrialDaysLeft() {
+    let since = localStorage.getItem(DEMO_SINCE_KEY);
+    if (!since) {
+      since = Date.now().toString();
+      localStorage.setItem(DEMO_SINCE_KEY, since);
+    }
+    const elapsedDays = (Date.now() - Number(since)) / (1000 * 60 * 60 * 24);
+    return Math.max(0, Math.ceil(DEMO_TRIAL_DAYS - elapsedDays));
+  }
+
+  function enforceDemoTrial() {
+    const daysLeft = demoTrialDaysLeft();
+    const bannerText = document.getElementById("demo-banner-text");
+    if (bannerText) {
+      bannerText.textContent = daysLeft > 0
+        ? `${daysLeft} day${daysLeft === 1 ? "" : "s"} left in your free trial`
+        : "Your free trial has ended";
+    }
+    const lock = document.getElementById("trial-lock");
+    if (daysLeft <= 0) {
+      lock.classList.add("show");
+      document.body.style.overflow = "hidden";
+    } else {
+      lock.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+  }
+
+  function buildBackupPayload() {
+    return JSON.stringify({ ...DB, exportedAt: new Date().toISOString(), source: "Inner Child Care Planner" }, null, 2);
+  }
+
+  function confirmAndApplyRestore(parsed, sourceDate, sourceLabel) {
+    const incomingSessions = Array.isArray(parsed.resetHistory) ? parsed.resetHistory.length : 0;
+    const currentSessions = DB.resetHistory.length;
+    const dateLabel = sourceDate ? new Date(sourceDate).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "an earlier backup";
+
+    openModal({
+      title: `Restore from ${sourceLabel}`,
+      bodyText: `This replaces ${currentSessions} logged ${currentSessions === 1 ? "session" : "sessions"} on this device with ${incomingSessions} ${incomingSessions === 1 ? "session" : "sessions"} from a backup made ${dateLabel}. Your current in-progress draft will be replaced too. You'll be able to undo this immediately after.`,
+      ctaLabel: "Restore backup",
+      onCta: () => { applyRestoredData(parsed); closeModal(); },
+      secondaryLabel: "Cancel", onSecondary: closeModal
+    });
+  }
+
+  function applyRestoredData(parsed) {
+    localStorage.setItem(PRE_RESTORE_KEY, JSON.stringify({ data: DB, savedAt: new Date().toISOString() }));
+    DB = Object.assign(defaultDB(), parsed);
+    DB.resetDraft = Object.assign(defaultDraft(), DB.resetDraft || {});
+    sv();
+    applyTheme();
+    loadPanelIntoForm(activePanel);
+    renderHome(); renderProgress(); renderHistory(); renderSubtabs();
+    showToast("Backup restored.", "Undo", undoRestore);
+  }
+
+  function undoRestore() {
+    const raw = localStorage.getItem(PRE_RESTORE_KEY);
+    if (!raw) { showToast("Nothing to undo."); return; }
+    try {
+      const snap = JSON.parse(raw);
+      DB = Object.assign(defaultDB(), snap.data);
+      DB.resetDraft = Object.assign(defaultDraft(), DB.resetDraft || {});
+      sv();
+      localStorage.removeItem(PRE_RESTORE_KEY);
+      applyTheme();
+      loadPanelIntoForm(activePanel);
+      renderHome(); renderProgress(); renderHistory(); renderSubtabs();
+      showToast("Restore undone.");
+    } catch (e) {
+      showToast("Could not undo — the previous snapshot was unreadable.");
+    }
+  }
+
+  function exportBackupFile() {
+    const payload = buildBackupPayload();
+    const blob = new Blob([payload], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `inner-child-care-planner-backup-${todayKey(new Date())}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Backup file downloaded.");
+  }
+  function triggerImportPicker() { document.getElementById("import-file-input").click(); }
+  function handleImportFileChange(event) {
+    const file = event.target.files[0];
+    event.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let parsed;
+      try { parsed = JSON.parse(reader.result); }
+      catch (e) { showToast("This file is not a valid backup."); return; }
+      if (!parsed || typeof parsed !== "object") { showToast("This file is not a valid backup."); return; }
+      confirmAndApplyRestore(parsed, parsed.exportedAt, "file");
+    };
+    reader.onerror = () => showToast("Could not read that file.");
+    reader.readAsText(file);
+  }
+
+  /* =========================================================
+     INIT + EVENT WIRING
+     ========================================================= */
+  document.addEventListener("DOMContentLoaded", () => {
+    ld();
+    enforceDemoTrial();
+    setInterval(enforceDemoTrial, 60000);
+    applyTheme();
+    switchPanel("message");
+    renderHome();
+    renderProgress();
+    renderHistory();
+
+    document.getElementById("theme-btn").addEventListener("click", cycleTheme);
+
+    document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => switchToTab(tab.dataset.target)));
+
+    document.querySelectorAll(".subtab").forEach((btn) => btn.addEventListener("click", () => switchPanel(btn.dataset.subtab)));
+
+    document.getElementById("save-message-btn").addEventListener("click", () => saveSection("message", "Message saved."));
+    document.getElementById("save-comfort-btn").addEventListener("click", () => saveSection("comfort", "Comforting action saved."));
+    document.getElementById("save-play-btn").addEventListener("click", () => saveSection("play", "Playful activity saved."));
+    document.getElementById("save-safety-btn").addEventListener("click", () => saveSection("safety", "Safety notes saved."));
+    document.getElementById("finish-session-btn").addEventListener("click", finishSession);
+
+    document.getElementById("history-list").addEventListener("click", (e) => {
+      const pinBtn = e.target.closest("[data-pin-id]");
+      if (pinBtn) { togglePin(Number(pinBtn.dataset.pinId)); return; }
+      const item = e.target.closest(".list-item");
+      if (!item) return;
+      openHistoryDetail(Number(item.dataset.id));
+    });
+
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => { if (e.target.id === "app-modal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileChange);
+  });
+</script>
+
+</body>
+</html>
