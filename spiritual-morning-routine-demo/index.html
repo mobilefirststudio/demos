@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Spiritual Morning Routine — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#eaf6f8" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg-a: #eaf6f8; --bg-b: #d3edf0;
+    --card: rgba(255, 255, 255, 0.68); --card-hi: rgba(255, 255, 255, 0.82);
+    --accent-a: #9fe3e0; --accent-b: #5cb8c4;
+    --text: #1f3a3d; --text-muted: #4a6b6e; --text-faint: #7fa0a3;
+    --border-soft: rgba(92, 184, 196, 0.28); --on-accent: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, var(--bg-a), var(--bg-b));
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app { width: 100%; max-width: 480px; min-height: 100vh; padding: 1.1rem 1rem 2.5rem; }
+
+  header { display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 1.1rem; }
+  .eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-faint); }
+  .app-name { font-family: "Crimson Pro", Georgia, serif; font-style: italic; font-weight: 500; font-size: 1.5rem; color: var(--accent-b); }
+  .app-subtitle { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-top: 0.1rem; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border-soft); border-radius: 1.1rem;
+    padding: 1.1rem 1.05rem; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08); margin-bottom: 0.85rem;
+    backdrop-filter: blur(6px);
+  }
+  .card-header { margin-bottom: 0.7rem; }
+  .card-title { font-family: "Crimson Pro", Georgia, serif; font-style: italic; font-size: 1.1rem; color: var(--text); }
+  .card-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+  .note { margin-top: 0.7rem; font-size: 0.72rem; color: var(--text-faint); line-height: 1.55; }
+
+  /* ---------- Sunrise Arc (signature element) ---------- */
+  .sunrise-row { display: flex; align-items: center; gap: 1rem; }
+  .sunrise-wrap { position: relative; width: 96px; height: 58px; flex-shrink: 0; }
+  .sunrise-wrap svg { width: 100%; height: 100%; overflow: visible; }
+  .sunrise-arc { fill: none; stroke: var(--border-soft); stroke-width: 3; stroke-linecap: round; }
+  .sunrise-sun {
+    filter: drop-shadow(0 0 8px var(--accent-b));
+    transition: cx 0.6s ease, cy 0.6s ease;
+  }
+  .sunrise-info { flex: 1; min-width: 0; }
+  .sunrise-label { font-family: "Crimson Pro", Georgia, serif; font-style: italic; font-size: 1.05rem; color: var(--text); }
+  .sunrise-sub { font-size: 0.74rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .stat { background: rgba(255, 255, 255, 0.5); border: 1px solid var(--border-soft); border-radius: 0.75rem; padding: 0.6rem 0.5rem; text-align: center; }
+  .stat-value { font-family: "Crimson Pro", Georgia, serif; font-size: 1.25rem; color: var(--text); }
+  .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+
+  .progress-container { background: rgba(255, 255, 255, 0.5); border: 1px solid var(--border-soft); border-radius: 999px; height: 16px; width: 100%; overflow: hidden; margin-top: 0.5rem; }
+  .progress-fill { background: linear-gradient(90deg, var(--accent-a), var(--accent-b)); height: 100%; width: 0%; border-radius: 999px; transition: width 0.5s ease; }
+  .progress-score-text { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+  .field { margin-bottom: 0.75rem; }
+  .field label { display: block; font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+  .field textarea {
+    width: 100%; min-height: 62px; padding: 0.65rem 0.75rem; border-radius: 0.75rem; resize: vertical;
+    border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.5);
+    color: var(--text); font-family: "Inter", sans-serif; font-size: 0.82rem; line-height: 1.5;
+  }
+  .field textarea:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+
+  .btn-primary {
+    width: 100%; padding: 0.68rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
+    box-shadow: 0 10px 24px rgba(92, 184, 196, 0.3);
+  }
+  .btn-primary:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .btn-secondary {
+    width: 100%; padding: 0.6rem; border-radius: 999px; margin-top: 0.5rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.76rem; cursor: pointer;
+  }
+
+  .today-summary-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-soft); }
+  .today-summary-row:last-child { border-bottom: none; }
+  .today-summary-label { font-size: 0.68rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .today-summary-value { font-size: 0.82rem; color: var(--text); text-align: right; line-height: 1.5; }
+
+  /* ---------- Backup & Sync ---------- */
+  .backup-status-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.5); }
+  .backup-status-text { font-size: 0.75rem; color: var(--text-muted); }
+  .backup-status-sub { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.1rem; }
+  .backup-badge { font-size: 0.62rem; padding: 0.2rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .backup-badge.connected { color: #16210f; background: linear-gradient(135deg, #b7d99a, #8ab86a); }
+  .backup-badge.disconnected { color: var(--text-faint); background: rgba(255, 255, 255, 0.5); }
+  .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
+  .backup-btn { padding: 0.6rem 0.5rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: transparent; color: var(--text); font-size: 0.74rem; font-weight: 500; cursor: pointer; font-family: "Inter", sans-serif; }
+  .backup-btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+  .backup-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
+  .backup-section-label { font-size: 0.68rem; color: var(--accent-b); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+
+  .footer-line { text-align: center; font-size: 0.75rem; color: var(--text-faint); font-family: "Crimson Pro", Georgia, serif; font-style: italic; margin-top: 0.6rem; }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20, 40, 42, 0.35); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft);
+    border-top-left-radius: 1.4rem; border-top-right-radius: 1.4rem;
+    padding: 1.3rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom)); width: 100%; max-width: 480px;
+    max-height: 82vh; overflow-y: auto; box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.15); animation: modalUp 0.28s ease-out;
+    backdrop-filter: blur(10px);
+  }
+  @keyframes modalUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .modal-title { font-family: "Crimson Pro", Georgia, serif; font-style: italic; font-size: 1.25rem; color: var(--text); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--accent-b); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .modal-body-text { margin-top: 0.7rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+  .modal-cta { margin-top: 1.1rem; width: 100%; padding: 0.7rem; border-radius: 999px; border: none; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .modal-cta-secondary { margin-top: 0.6rem; width: 100%; padding: 0.65rem; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--card-hi); border: 1px solid var(--border-soft); color: var(--text);
+    font-size: 0.78rem; padding: 0.6rem 1rem; border-radius: 999px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000;
+    white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+    backdrop-filter: blur(8px);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-action { color: var(--accent-b); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; }
+
+  /* ---------- Demo trial ---------- */
+  .demo-banner {
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent);
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.55rem 1rem;
+    margin: -1.1rem -1rem 1rem;
+  }
+  .demo-banner a { color: var(--on-accent); text-decoration: underline; font-weight: 700; }
+
+  .upsell-card {
+    border: 1px solid var(--border-soft); border-radius: 0.9rem; padding: 0.9rem 1rem;
+    background: rgba(255, 255, 255, 0.5); text-align: center;
+  }
+  .upsell-card .upsell-title { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 0.35rem; }
+  .upsell-card .upsell-text { font-size: 0.74rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.7rem; }
+  .upsell-card .upsell-link {
+    display: inline-block; padding: 0.5rem 1.1rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 0.76rem; font-weight: 700; text-decoration: none;
+  }
+
+  #trial-lock {
+    display: none;
+    position: fixed; inset: 0; z-index: 2000;
+    background: radial-gradient(circle at top, var(--bg-a), var(--bg-b));
+    align-items: center; justify-content: center;
+    padding: 2rem 1.4rem;
+  }
+  #trial-lock.show { display: flex; }
+  .trial-lock-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft); border-radius: 1.2rem;
+    padding: 1.6rem 1.4rem; max-width: 380px; width: 100%; text-align: center;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.16);
+  }
+  .trial-lock-card .trial-lock-title {
+    font-family: "Crimson Pro", Georgia, serif; font-style: italic; font-size: 1.3rem; color: var(--text); margin-bottom: 0.6rem;
+  }
+  .trial-lock-card .trial-lock-text {
+    font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.2rem;
+  }
+  .trial-lock-card .trial-lock-link {
+    display: inline-block; width: 100%; padding: 0.75rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 0.85rem; font-weight: 700; text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="demo-banner"><span id="demo-banner-text">Free trial</span> &middot; <a href="https://www.etsy.com/listing/4536075479/simple-spiritual-morning-routine-tracker" target="_blank" rel="noopener">Unlock the full app &rarr;</a></div>
+  <header>
+    <div class="eyebrow">Mobile First Studio</div>
+    <div class="app-name">Spiritual Morning Routine</div>
+    <div class="app-subtitle">A gentle morning flow to align your energy.</div>
+  </header>
+
+  <section class="card">
+    <div class="card-header"><div class="card-title">This Morning</div></div>
+    <div class="sunrise-row">
+      <div class="sunrise-wrap">
+        <svg viewBox="0 0 96 58">
+          <path class="sunrise-arc" d="M6,52 A42,42 0 0,1 90,52" />
+          <circle class="sunrise-sun" id="sunrise-sun" cx="6" cy="52" r="6" fill="var(--accent-b)" />
+        </svg>
+      </div>
+      <div class="sunrise-info">
+        <div class="sunrise-label" id="sunrise-label">Not yet begun</div>
+        <div class="sunrise-sub" id="sunrise-sub">Fill in today's routine to watch it rise.</div>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="stat-value" id="stat-streak">0</div><div class="stat-label">Day streak</div></div>
+      <div class="stat"><div class="stat-value" id="stat-days">0</div><div class="stat-label">Mornings logged</div></div>
+      <div class="stat"><div class="stat-value" id="stat-today">—</div><div class="stat-label">Today's score</div></div>
+    </div>
+  </section>
+
+  <section class="card" id="form-card">
+    <div class="card-header"><div class="card-title">Morning Routine</div></div>
+    <div class="field"><label>Daily intention</label><textarea id="f-intention" placeholder="What energy do you want to carry today?"></textarea></div>
+    <div class="field"><label>Gratitude</label><textarea id="f-gratitude" placeholder="Something small you're grateful for…"></textarea></div>
+    <div class="field"><label>Emotional check-in</label><textarea id="f-emotion" placeholder="What emotion is present right now?"></textarea></div>
+    <div class="field"><label>Morning ritual</label><textarea id="f-ritual" placeholder="A gentle ritual to begin your day…"></textarea></div>
+    <div class="field"><label>Affirmation</label><textarea id="f-affirmation" placeholder="A truth you want to carry today…"></textarea></div>
+    <div class="field"><label>Breathwork</label><textarea id="f-breath" placeholder="Your breath pattern or calming practice…"></textarea></div>
+    <button class="btn-primary" id="save-btn">Save morning routine</button>
+  </section>
+
+  <section class="card" id="summary-card" style="display:none;">
+    <div class="card-header">
+      <div class="card-title">Morning Alignment Score</div>
+      <div class="progress-container"><div class="progress-fill" id="score-bar"></div></div>
+      <div class="progress-score-text" id="score-text"></div>
+    </div>
+    <div id="today-summary-body"></div>
+    <button class="btn-secondary" id="edit-today-btn">Edit this morning's routine</button>
+  </section>
+
+  <section class="card">
+    <div class="card-header">
+      <div class="card-title">Backup &amp; Sync</div>
+      <div class="card-subtitle">Keep your morning routine history safe.</div>
+    </div>
+
+    <div class="upsell-card">
+      <div class="upsell-title">Google Drive backup is a full-version feature</div>
+      <div class="upsell-text">In the full app, back up your morning routine history to your own Google Drive and restore it any time. Unlock the full app to turn it on.</div>
+      <a class="upsell-link" href="https://www.etsy.com/listing/4536075479/simple-spiritual-morning-routine-tracker" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+    </div>
+
+    <div class="backup-divider">
+      <div class="backup-section-label">Local backup file</div>
+      <div class="backup-actions">
+        <button class="backup-btn" id="export-btn">Export backup file</button>
+        <button class="backup-btn" id="import-btn">Import backup file</button>
+      </div>
+    </div>
+
+    <div class="note">Exporting or backing up saves your morning routine history. It never includes anything else from your device.</div>
+  </section>
+
+  <div class="footer-line">Your morning is sacred ✨</div>
+
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+</div>
+
+<div id="trial-lock">
+  <div class="trial-lock-card">
+    <div class="trial-lock-title">Your free trial has ended</div>
+    <div class="trial-lock-text">Thanks for spending time with Spiritual Morning Routine! To keep using it and hold onto everything you've logged, grab the full version on Etsy, it's yours to keep, with no subscription.</div>
+    <a class="trial-lock-link" href="https://www.etsy.com/listing/4536075479/simple-spiritual-morning-routine-tracker" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+</div>
+
+<!-- SHARED MODAL -->
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body-text" id="modal-body-text"></div>
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta-secondary" id="modal-secondary-btn"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* =========================================================
+     STORAGE
+     ========================================================= */
+  const STORE_KEY = "smr_data_demo_v1";
+  const FIELDS = ["intention", "gratitude", "emotion", "ritual", "affirmation", "breath"];
+
+  function defaultDB() {
+    return { dailyEntries: {} };
+  }
+
+  let DB = defaultDB();
+
+  function ld() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) DB = Object.assign(defaultDB(), JSON.parse(raw));
+    } catch (e) { DB = defaultDB(); }
+  }
+  function sv() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+  }
+
+  function todayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
+  function computeStreakInfo() {
+    const activeDays = new Set(Object.keys(DB.dailyEntries));
+    let current = 0;
+    const cursor = new Date();
+    while (activeDays.has(todayKey(cursor))) { current += 1; cursor.setDate(cursor.getDate() - 1); }
+    return { current };
+  }
+
+  /* =========================================================
+     TOAST
+     ========================================================= */
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => { onAction(); el.classList.remove("show"); });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+
+  /* =========================================================
+     SHARED MODAL
+     ========================================================= */
+  function openModal({ title, bodyText, ctaLabel, onCta, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    if (ctaLabel) { ctaBtn.style.display = "block"; ctaBtn.textContent = ctaLabel; ctaBtn.onclick = onCta || null; }
+    else { ctaBtn.style.display = "none"; ctaBtn.onclick = null; }
+
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    if (secondaryLabel) { secondaryBtn.style.display = "block"; secondaryBtn.textContent = secondaryLabel; secondaryBtn.onclick = onSecondary || closeModal; }
+    else { secondaryBtn.style.display = "none"; secondaryBtn.onclick = null; }
+
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function closeModal() { document.getElementById("app-modal").classList.remove("open"); }
+
+  /* =========================================================
+     SUNRISE ARC (signature element)
+     ========================================================= */
+  function renderSunrise(score) {
+    // Arc runs from (6,52) to (90,52) via a semicircle centered at (48,52) r=42.
+    // Map score 0-100 to an angle from 180deg (left) to 0deg (right), sweeping over the top.
+    const angleDeg = 180 - (score / 100) * 180;
+    const angleRad = (angleDeg * Math.PI) / 180;
+    const cx = 48, cy = 52, r = 42;
+    const x = cx + r * Math.cos(angleRad);
+    const y = cy - r * Math.sin(angleRad);
+    const sun = document.getElementById("sunrise-sun");
+    sun.setAttribute("cx", x.toFixed(1));
+    sun.setAttribute("cy", y.toFixed(1));
+
+    const labelEl = document.getElementById("sunrise-label");
+    const subEl = document.getElementById("sunrise-sub");
+    if (score === 0) { labelEl.textContent = "Not yet begun"; subEl.textContent = "Fill in today's routine to watch it rise."; }
+    else if (score < 40) { labelEl.textContent = "Just stirring"; subEl.textContent = "A gentle start to the day."; }
+    else if (score < 80) { labelEl.textContent = "Rising steadily"; subEl.textContent = "Your morning is taking shape."; }
+    else { labelEl.textContent = "Fully risen"; subEl.textContent = "A complete, aligned start to the day."; }
+  }
+
+  /* =========================================================
+     TODAY / FORM
+     ========================================================= */
+  function computeTodayScore(entry) {
+    if (!entry) return 0;
+    return Math.round((FIELDS.filter((f) => entry[f]).length / FIELDS.length) * 100);
+  }
+
+  function render() {
+    const key = todayKey(new Date());
+    const entry = DB.dailyEntries[key];
+    const score = computeTodayScore(entry);
+
+    renderSunrise(score);
+
+    const { current } = computeStreakInfo();
+    document.getElementById("stat-streak").textContent = current;
+    document.getElementById("stat-days").textContent = Object.keys(DB.dailyEntries).length;
+    document.getElementById("stat-today").textContent = entry ? score : "—";
+
+    const formCard = document.getElementById("form-card");
+    const summaryCard = document.getElementById("summary-card");
+    if (entry) {
+      formCard.style.display = "none";
+      summaryCard.style.display = "block";
+      document.getElementById("score-bar").style.width = `${score}%`;
+      document.getElementById("score-text").textContent = `${score}/100`;
+      renderTodaySummary(entry);
+    } else {
+      formCard.style.display = "block";
+      summaryCard.style.display = "none";
+      clearForm();
+    }
+  }
+
+  function renderTodaySummary(entry) {
+    const rows = [
+      ["Intention", entry.intention], ["Gratitude", entry.gratitude], ["Emotion", entry.emotion],
+      ["Ritual", entry.ritual], ["Affirmation", entry.affirmation], ["Breathwork", entry.breath]
+    ];
+    const bodyEl = document.getElementById("today-summary-body");
+    bodyEl.innerHTML = rows.map(([label]) => `
+      <div class="today-summary-row"><div class="today-summary-label">${label}</div><div class="today-summary-value" data-field="${label}"></div></div>
+    `).join("");
+    bodyEl.querySelectorAll("[data-field]").forEach((el) => {
+      const match = rows.find(([label]) => label === el.dataset.field);
+      el.textContent = match && match[1] ? match[1] : "—";
+    });
+  }
+
+  function clearForm() {
+    ["f-intention", "f-gratitude", "f-emotion", "f-ritual", "f-affirmation", "f-breath"].forEach((id) => { document.getElementById(id).value = ""; });
+  }
+
+  function loadTodayIntoForm() {
+    const entry = DB.dailyEntries[todayKey(new Date())];
+    if (!entry) { clearForm(); return; }
+    document.getElementById("f-intention").value = entry.intention || "";
+    document.getElementById("f-gratitude").value = entry.gratitude || "";
+    document.getElementById("f-emotion").value = entry.emotion || "";
+    document.getElementById("f-ritual").value = entry.ritual || "";
+    document.getElementById("f-affirmation").value = entry.affirmation || "";
+    document.getElementById("f-breath").value = entry.breath || "";
+  }
+
+  function saveRoutine() {
+    const entry = {
+      intention: document.getElementById("f-intention").value.trim(),
+      gratitude: document.getElementById("f-gratitude").value.trim(),
+      emotion: document.getElementById("f-emotion").value.trim(),
+      ritual: document.getElementById("f-ritual").value.trim(),
+      affirmation: document.getElementById("f-affirmation").value.trim(),
+      breath: document.getElementById("f-breath").value.trim()
+    };
+    if (!Object.values(entry).some(Boolean)) { showToast("Fill in at least one field before saving."); return; }
+    DB.dailyEntries[todayKey(new Date())] = { ...entry, loggedAt: new Date().toISOString() };
+    sv();
+    showToast("Morning routine saved.");
+    render();
+  }
+
+  function editToday() {
+    document.getElementById("form-card").style.display = "block";
+    document.getElementById("summary-card").style.display = "none";
+    loadTodayIntoForm();
+  }
+
+  /* =========================================================
+     GOOGLE DRIVE BACKUP + LOCAL EXPORT/IMPORT
+     ========================================================= */
+  const PRE_RESTORE_KEY = "smr_pre_restore_snapshot";
+
+  /* =========================================================
+     DEMO TRIAL
+     ========================================================= */
+  const DEMO_SINCE_KEY = "smr_demo_since";
+  const DEMO_TRIAL_DAYS = 14;
+
+  function demoTrialDaysLeft() {
+    let since = localStorage.getItem(DEMO_SINCE_KEY);
+    if (!since) {
+      since = Date.now().toString();
+      localStorage.setItem(DEMO_SINCE_KEY, since);
+    }
+    const elapsedDays = (Date.now() - Number(since)) / (1000 * 60 * 60 * 24);
+    return Math.max(0, Math.ceil(DEMO_TRIAL_DAYS - elapsedDays));
+  }
+
+  function enforceDemoTrial() {
+    const daysLeft = demoTrialDaysLeft();
+    const bannerText = document.getElementById("demo-banner-text");
+    if (bannerText) {
+      bannerText.textContent = daysLeft > 0
+        ? `${daysLeft} day${daysLeft === 1 ? "" : "s"} left in your free trial`
+        : "Your free trial has ended";
+    }
+    const lock = document.getElementById("trial-lock");
+    if (daysLeft <= 0) {
+      lock.classList.add("show");
+      document.body.style.overflow = "hidden";
+    } else {
+      lock.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+  }
+
+  function buildBackupPayload() {
+    return JSON.stringify({ ...DB, exportedAt: new Date().toISOString(), source: "Spiritual Morning Routine (Simple)" }, null, 2);
+  }
+
+  function confirmAndApplyRestore(parsed, sourceDate, sourceLabel, extraNote) {
+    const incomingDays = parsed.dailyEntries && typeof parsed.dailyEntries === "object" ? Object.keys(parsed.dailyEntries).length : 0;
+    const currentDays = Object.keys(DB.dailyEntries).length;
+    const dateLabel = sourceDate ? new Date(sourceDate).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "an earlier backup";
+
+    openModal({
+      title: `Restore from ${sourceLabel}`,
+      bodyText: `This replaces ${currentDays} logged ${currentDays === 1 ? "morning" : "mornings"} on this device with ${incomingDays} ${incomingDays === 1 ? "morning" : "mornings"} from a backup made ${dateLabel}. You'll be able to undo this immediately after.${extraNote ? " " + extraNote : ""}`,
+      ctaLabel: "Restore backup",
+      onCta: () => { applyRestoredData(parsed); closeModal(); },
+      secondaryLabel: "Cancel", onSecondary: closeModal
+    });
+  }
+
+  function applyRestoredData(parsed) {
+    localStorage.setItem(PRE_RESTORE_KEY, JSON.stringify({ data: DB, savedAt: new Date().toISOString() }));
+    DB = Object.assign(defaultDB(), parsed);
+    sv();
+    render();
+    showToast("Backup restored.", "Undo", undoRestore);
+  }
+
+  function undoRestore() {
+    const raw = localStorage.getItem(PRE_RESTORE_KEY);
+    if (!raw) { showToast("Nothing to undo."); return; }
+    try {
+      const snap = JSON.parse(raw);
+      DB = Object.assign(defaultDB(), snap.data);
+      sv();
+      localStorage.removeItem(PRE_RESTORE_KEY);
+      render();
+      showToast("Restore undone.");
+    } catch (e) {
+      showToast("Could not undo — the previous snapshot was unreadable.");
+    }
+  }
+
+  function exportBackupFile() {
+    const payload = buildBackupPayload();
+    const blob = new Blob([payload], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `spiritual-morning-routine-backup-${todayKey(new Date())}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Backup file downloaded.");
+  }
+  function triggerImportPicker() { document.getElementById("import-file-input").click(); }
+  function handleImportFileChange(event) {
+    const file = event.target.files[0];
+    event.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let parsed;
+      try { parsed = JSON.parse(reader.result); }
+      catch (e) { showToast("This file is not a valid backup."); return; }
+      if (!parsed || typeof parsed !== "object") { showToast("This file is not a valid backup."); return; }
+      confirmAndApplyRestore(parsed, parsed.exportedAt, "file");
+    };
+    reader.onerror = () => showToast("Could not read that file.");
+    reader.readAsText(file);
+  }
+
+  /* =========================================================
+     INIT + EVENT WIRING
+     ========================================================= */
+  document.addEventListener("DOMContentLoaded", () => {
+    ld();
+    enforceDemoTrial();
+    setInterval(enforceDemoTrial, 60000);
+    render();
+
+    document.getElementById("save-btn").addEventListener("click", saveRoutine);
+    document.getElementById("edit-today-btn").addEventListener("click", editToday);
+
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => { if (e.target.id === "app-modal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileChange);
+  });
+</script>
+
+</body>
+</html>
