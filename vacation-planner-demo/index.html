@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Vacation Planner — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#ffffff" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  :root, [data-mode="light"] {
+    --bg: #ffffff; --bg-soft: #f7f7f8;
+    --ink: #1a1a1e; --ink-muted: #6b6b74; --ink-faint: #a3a3ac;
+    --accent: #ff6b57; --accent-dark: #e8503c; --accent-soft: #ffe4de; --accent-icon: #e8503c;
+    --accent-shadow: rgba(255, 107, 87, 0.32); --accent-toast-link: #ffb3a8;
+    --border: #ececee; --border-strong: #dcdce0;
+    --card-shadow: 0 1px 3px rgba(20,20,30,0.06), 0 8px 24px rgba(20,20,30,0.06);
+    --on-accent: #ffffff;
+  }
+  [data-mode="dark"] {
+    --bg: #131316; --bg-soft: #1e1e22;
+    --ink: #f3f3f5; --ink-muted: #b4b4bd; --ink-faint: #7c7c86;
+    --border: #2c2c32; --border-strong: #3c3c44;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.35), 0 8px 24px rgba(0,0,0,0.35);
+    --on-accent: #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--bg-soft);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.3s ease, color 0.3s ease;
+    overflow-x: hidden;
+  }
+
+  .app { width: 100%; max-width: 480px; min-height: 100vh; padding: 0 1rem 6rem; }
+
+  header { padding: 1.3rem 0 1rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .eyebrow { font-size: 0.72rem; letter-spacing: 0.02em; color: var(--ink-faint); font-weight: 500; }
+  .app-name { font-size: 1.5rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; margin-top: 0.1rem; }
+  .app-subtitle { font-size: 0.86rem; color: var(--ink-muted); margin-top: 0.15rem; }
+  .header-icon-btn {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
+    background: var(--accent); display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px var(--accent-shadow); margin-top: 0.2rem;
+  }
+  .header-icon-btn:focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 2px; }
+
+  main { width: 100%; }
+  .screen { display: none; width: 100%; }
+  .screen.active-screen { display: block; animation: screenIn 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+  @keyframes screenIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ---------- Card ---------- */
+  .card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 1.1rem;
+    padding: 1.15rem; box-shadow: var(--card-shadow); margin-bottom: 0.85rem;
+  }
+  .card-header { margin-bottom: 0.7rem; }
+  .card-title { font-size: 1.02rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .card-subtitle { font-size: 0.82rem; color: var(--ink-muted); margin-top: 0.15rem; }
+  .note { margin-top: 0.7rem; font-size: 0.76rem; color: var(--ink-faint); line-height: 1.55; }
+
+  .icon { width: 20px; height: 20px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .icon-sm { width: 16px; height: 16px; }
+
+  /* ---------- Circular Countdown Ring ---------- */
+  .ring-wrap { display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .ring-svg-wrap { position: relative; width: 138px; height: 138px; }
+  .ring-svg-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring-track { fill: none; stroke: var(--border); stroke-width: 9; }
+  .ring-progress { fill: none; stroke: var(--accent); stroke-width: 9; stroke-linecap: round; transition: stroke-dashoffset 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+  .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-days { font-size: 2rem; font-weight: 800; color: var(--ink); line-height: 1; letter-spacing: -0.02em; }
+  .ring-days-label { font-size: 0.68rem; color: var(--ink-muted); margin-top: 0.2rem; font-weight: 500; }
+
+  .status-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.9rem; }
+  .status-icon { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-icon); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .status-info { text-align: left; }
+  .status-label { font-size: 0.9rem; font-weight: 700; color: var(--ink); }
+  .status-sub { font-size: 0.78rem; color: var(--ink-muted); margin-top: 0.05rem; }
+
+  .weather-chip {
+    display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.65rem;
+    background: var(--bg-soft); border-radius: 999px;
+    padding: 0.32rem 0.7rem; font-size: 0.78rem; color: var(--ink-muted); font-weight: 500;
+  }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .stat { background: var(--bg-soft); border-radius: 0.85rem; padding: 0.7rem 0.5rem; text-align: center; }
+  .stat-icon { color: var(--accent-icon); margin-bottom: 0.3rem; display: flex; align-items: center; justify-content: center; }
+  .stat-value { font-size: 1.15rem; font-weight: 800; color: var(--ink); letter-spacing: -0.01em; }
+  .stat-label { font-size: 0.66rem; color: var(--ink-muted); margin-top: 0.15rem; font-weight: 500; }
+
+  .progress-container { background: var(--bg-soft); border-radius: 999px; height: 8px; width: 100%; overflow: hidden; margin-top: 0.4rem; }
+  .progress-fill { background: var(--accent); height: 100%; width: 0%; border-radius: 999px; transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+  .progress-score-text { font-size: 0.78rem; color: var(--ink-muted); margin-top: 0.35rem; }
+
+  .btn-primary {
+    width: 100%; padding: 0.8rem; border-radius: 0.85rem; border: none;
+    background: var(--accent); color: var(--on-accent);
+    font-size: 0.92rem; font-weight: 700; cursor: pointer;
+    box-shadow: 0 6px 16px var(--accent-shadow);
+  }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:focus-visible { outline: 2px solid var(--accent-dark); outline-offset: 2px; }
+  .btn-secondary {
+    width: 100%; padding: 0.72rem; border-radius: 0.85rem; margin-top: 0.5rem;
+    border: 1.5px solid var(--border-strong); background: transparent; color: var(--ink-muted);
+    font-size: 0.85rem; font-weight: 600; cursor: pointer;
+  }
+  .btn-danger {
+    padding: 0.55rem 0.8rem; border-radius: 0.85rem; border: 1.5px solid #f3c4bd;
+    background: #fff5f3; color: #c94a37; font-size: 0.82rem; cursor: pointer; font-weight: 600;
+  }
+
+  /* ---------- Trip cards with real cover photo ---------- */
+  .trip-card {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 1.1rem;
+    margin-bottom: 0.85rem; cursor: pointer; overflow: hidden; box-shadow: var(--card-shadow);
+    transition: transform 0.15s ease;
+  }
+  .trip-card:active { transform: scale(0.98); }
+  .trip-photo { height: 128px; position: relative; overflow: hidden; background: var(--bg-soft); }
+  .trip-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .trip-photo-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--ink-faint); background: var(--accent-soft); }
+  .trip-photo-badge {
+    position: absolute; top: 0.6rem; right: 0.6rem; background: rgba(26,26,30,0.62); backdrop-filter: blur(4px);
+    color: #fff; font-size: 0.72rem; font-weight: 700; padding: 0.28rem 0.6rem; border-radius: 999px;
+  }
+  .trip-body { padding: 0.85rem 1rem 1rem; }
+  .trip-destination { font-size: 1.02rem; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .trip-dates { font-size: 0.82rem; color: var(--ink-muted); margin-top: 0.2rem; }
+  .trip-prep-row { display: flex; align-items: center; gap: 0.6rem; margin-top: 0.7rem; }
+  .trip-prep-row .progress-container { margin-top: 0; flex: 1; }
+  .trip-prep-pct { font-size: 0.76rem; color: var(--ink-muted); flex-shrink: 0; width: 32px; text-align: right; font-weight: 600; }
+
+  .empty-state { margin-top: 0.7rem; padding: 1.3rem 1rem; border: 1.5px dashed var(--border-strong); border-radius: 0.85rem; text-align: center; font-size: 0.82rem; color: var(--ink-muted); line-height: 1.5; }
+
+  /* ---------- Cover photo upload ---------- */
+  .cover-upload {
+    width: 100%; height: 130px; border-radius: 0.85rem; border: 1.5px dashed var(--border-strong);
+    background: var(--bg-soft); display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 0.4rem; cursor: pointer; color: var(--ink-muted); margin-bottom: 0.9rem; overflow: hidden; position: relative;
+  }
+  .cover-upload img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .cover-upload-text { font-size: 0.8rem; font-weight: 600; }
+  .cover-upload-remove {
+    position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(26,26,30,0.62); color: #fff; border: none;
+    border-radius: 999px; width: 26px; height: 26px; font-size: 0.9rem; cursor: pointer; display: none; align-items: center; justify-content: center;
+  }
+
+  /* ---------- Trip editor ---------- */
+  .field { margin-bottom: 0.75rem; }
+  .field label { display: block; font-size: 0.78rem; color: var(--ink-muted); font-weight: 600; margin-bottom: 0.35rem; }
+  .field input, .field textarea {
+    width: 100%; padding: 0.65rem 0.75rem; border-radius: 0.7rem;
+    border: 1.5px solid var(--border-strong); background: var(--bg);
+    color: var(--ink); font-family: "Plus Jakarta Sans", sans-serif; font-size: 0.86rem; line-height: 1.5;
+  }
+  .field textarea { min-height: 62px; resize: vertical; }
+  .field input::placeholder, .field textarea::placeholder { color: var(--ink-faint); opacity: 1; }
+  .field input:focus-visible, .field textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+
+  .subtab-row { display: flex; gap: 0.4rem; margin-bottom: 0.9rem; overflow-x: auto; }
+  .subtab {
+    flex-shrink: 0; padding: 0.42rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+    border: none; background: var(--bg-soft); color: var(--ink-muted); cursor: pointer;
+  }
+  .subtab.active { background: #1a1a1e; color: #fff; }
+
+  /* ---------- Packing template pills — action buttons, never go active/dark ---------- */
+  .template-pill {
+    flex-shrink: 0; padding: 0.42rem 0.75rem; border-radius: 999px;
+    font-size: 0.78rem; font-weight: 600; cursor: pointer;
+    border: 1.5px solid var(--border-strong);
+    background: transparent; color: var(--ink-muted);
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+  .template-pill:active { background: var(--bg-soft); }
+
+  .checklist-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item input[type="checkbox"] { width: 19px; height: 19px; accent-color: var(--accent); flex-shrink: 0; }
+  .checklist-item .item-text { flex: 1; font-size: 0.86rem; color: var(--ink); }
+  .checklist-item.checked .item-text { text-decoration: line-through; color: var(--ink-faint); }
+  .item-remove { background: none; border: none; color: var(--ink-faint); font-size: 1.1rem; cursor: pointer; flex-shrink: 0; padding: 0.1rem 0.3rem; }
+
+  .add-item-row { display: flex; gap: 0.5rem; margin-top: 0.7rem; }
+  .add-item-row input { flex: 1; min-width: 0; padding: 0.6rem 0.75rem; border-radius: 0.7rem; border: 1.5px solid var(--border-strong); background: var(--bg); color: var(--ink); font-family: "Plus Jakarta Sans", sans-serif; font-size: 0.84rem; }
+
+  /* ---------- Add button — accent color so it's always visible in light and dark ---------- */
+  .add-item-btn {
+    flex-shrink: 0; padding: 0.6rem 1rem; border-radius: 0.7rem; border: none;
+    background: var(--accent); color: var(--on-accent);
+    font-size: 0.82rem; font-weight: 700; cursor: pointer; min-width: 60px; text-align: center;
+    font-family: "Plus Jakarta Sans", sans-serif;
+  }
+  .add-item-btn:active { opacity: 0.88; }
+
+  /* ---------- Packing add row: stacked layout so button is never clipped ---------- */
+  .packing-add-wrap { margin-top: 0.7rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .packing-add-wrap input {
+    width: 100%; padding: 0.6rem 0.75rem; border-radius: 0.7rem;
+    border: 1.5px solid var(--border-strong); background: var(--bg);
+    color: var(--ink); font-family: "Plus Jakarta Sans", sans-serif; font-size: 0.84rem;
+  }
+  .packing-add-controls { display: flex; gap: 0.5rem; align-items: center; }
+  .packing-add-controls select {
+    flex: 1; min-width: 0; padding: 0.6rem 0.4rem; border-radius: 0.7rem;
+    border: 1.5px solid var(--border-strong); background: var(--bg);
+    color: var(--ink); font-family: "Plus Jakarta Sans", sans-serif; font-size: 0.78rem;
+  }
+  .packing-add-controls .add-item-btn { flex-shrink: 0; }
+
+  .day-block { background: var(--bg-soft); border-radius: 0.85rem; padding: 0.75rem 0.9rem 0.85rem; margin-bottom: 0.7rem; }
+  .day-block-label { font-size: 0.78rem; font-weight: 700; color: var(--accent-icon); margin-bottom: 0.5rem; letter-spacing: 0.01em; }
+  .day-block-textarea { width: 100%; min-height: 80px; padding: 0.6rem 0.75rem; border-radius: 0.6rem; border: 1.5px solid var(--border-strong); background: var(--bg); color: var(--ink); font-family: "Plus Jakarta Sans", sans-serif; font-size: 0.86rem; line-height: 1.5; resize: vertical; }
+  .day-block-textarea::placeholder { color: var(--ink-faint); opacity: 1; }
+  .day-block-textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  /* ---------- Backup & Sync ---------- */
+  .backup-status-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.7rem 0.8rem; border-radius: 0.7rem; background: var(--bg-soft); }
+  .backup-status-text { font-size: 0.82rem; color: var(--ink); font-weight: 600; }
+  .backup-status-sub { font-size: 0.72rem; color: var(--ink-faint); margin-top: 0.1rem; }
+  .backup-badge { font-size: 0.68rem; padding: 0.22rem 0.6rem; border-radius: 999px; flex-shrink: 0; font-weight: 700; }
+  .backup-badge.connected { color: #1a7a3e; background: #dcf5e4; }
+  .backup-badge.disconnected { color: var(--ink-faint); background: var(--border); }
+  .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
+  .backup-btn { padding: 0.65rem 0.5rem; border-radius: 0.7rem; border: 1.5px solid var(--border-strong); background: transparent; color: var(--ink); font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: "Plus Jakarta Sans", sans-serif; }
+  .backup-btn.primary { border-color: transparent; background: var(--accent); color: #fff; font-weight: 700; }
+  .backup-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border); padding-top: 0.7rem; }
+  .backup-section-label { font-size: 0.72rem; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; font-weight: 700; }
+
+  /* ---------- Tabbar ---------- */
+  .tabbar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px; display: flex; justify-content: space-around;
+    padding: 0.6rem 0.4rem calc(0.6rem + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--border);
+    z-index: 50; box-shadow: 0 -2px 12px rgba(20,20,30,0.04);
+  }
+  .tab {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.2rem;
+    font-size: 0.68rem; font-weight: 600; padding: 0.3rem; border-radius: 0.6rem;
+    color: var(--ink-faint); cursor: pointer; border: none; background: transparent;
+    font-family: "Plus Jakarta Sans", sans-serif; transition: color 0.2s ease;
+  }
+  .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .tab-active { color: var(--accent-icon); }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20,20,30,0.4); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: var(--bg);
+    border-top-left-radius: 1.3rem; border-top-right-radius: 1.3rem;
+    padding: 1.4rem 1.2rem calc(1.5rem + env(safe-area-inset-bottom)); width: 100%; max-width: 480px;
+    max-height: 82vh; overflow-y: auto; box-shadow: 0 -8px 40px rgba(20,20,30,0.16); animation: modalUp 0.28s ease-out;
+  }
+  @keyframes modalUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .modal-title { font-size: 1.12rem; font-weight: 700; color: var(--ink); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--ink-faint); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .modal-body-text { margin-top: 0.7rem; font-size: 0.86rem; color: var(--ink-muted); line-height: 1.6; }
+  .modal-cta { margin-top: 1.1rem; width: 100%; padding: 0.75rem; border-radius: 0.85rem; border: none; background: var(--accent); color: #fff; font-size: 0.86rem; font-weight: 700; cursor: pointer; }
+  .modal-cta.danger { background: #c94a37; }
+  .modal-cta-secondary { margin-top: 0.6rem; width: 100%; padding: 0.68rem; border-radius: 0.85rem; border: 1.5px solid var(--border-strong); background: transparent; color: var(--ink-muted); font-size: 0.82rem; cursor: pointer; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; bottom: 5.2rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: #1a1a1e; color: #fff;
+    font-size: 0.84rem; padding: 0.65rem 1.1rem; border-radius: 0.85rem; box-shadow: 0 8px 24px rgba(20,20,30,0.24);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000;
+    white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-action { color: var(--accent-toast-link); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; }
+
+  /* ---------- Accent color picker ---------- */
+  .swatch-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.6rem; margin-top: 0.3rem; }
+  .swatch-btn {
+    width: 100%; aspect-ratio: 1; border-radius: 50%; border: 2px solid transparent; cursor: pointer;
+    position: relative; transition: transform 0.15s ease;
+  }
+  .swatch-btn:active { transform: scale(0.92); }
+  .swatch-btn.selected { border-color: var(--ink); }
+  .swatch-btn.selected::after {
+    content: "✓"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 0.85rem; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  }
+
+  .mode-toggle-row { display: flex; gap: 0.5rem; }
+  .mode-toggle-btn {
+    flex: 1; display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+    padding: 0.6rem; border-radius: 0.7rem; border: 1.5px solid var(--border-strong); background: transparent;
+    color: var(--ink-muted); font-family: "Plus Jakarta Sans", sans-serif; font-size: 0.84rem; font-weight: 600; cursor: pointer;
+  }
+  .mode-toggle-btn.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  /* ---------- Free trial demo ---------- */
+  .demo-banner {
+    background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+    color: #fff; text-align: center; font-size: 0.78rem; font-weight: 600;
+    padding: 0.55rem 1rem; margin: 0 -1rem 1.1rem; line-height: 1.4;
+    position: sticky; top: 0; z-index: 40;
+  }
+  .demo-banner a { color: #fff; text-decoration: underline; font-weight: 700; }
+
+  .trial-lock-overlay {
+    position: fixed; inset: 0; background: rgba(20,20,30,0.72); backdrop-filter: blur(2px);
+    display: none; align-items: center; justify-content: center; z-index: 2000; padding: 1.2rem;
+  }
+  .trial-lock-overlay.show { display: flex; }
+  .trial-lock-card {
+    background: var(--bg); border-radius: 1.3rem; padding: 1.8rem 1.5rem; max-width: 360px;
+    width: 100%; text-align: center; box-shadow: 0 -8px 40px rgba(20,20,30,0.24);
+  }
+  .trial-lock-title { font-size: 1.2rem; font-weight: 800; color: var(--ink); margin-bottom: 0.6rem; letter-spacing: -0.01em; }
+  .trial-lock-text { font-size: 0.88rem; color: var(--ink-muted); line-height: 1.55; margin-bottom: 1.2rem; }
+  .trial-lock-cta {
+    display: inline-block; width: 100%; padding: 0.8rem; border-radius: 0.85rem; border: none;
+    background: var(--accent); color: #fff; font-size: 0.92rem; font-weight: 700; text-decoration: none;
+    box-shadow: 0 6px 16px var(--accent-shadow);
+  }
+
+  .upsell-card {
+    border: 1.5px solid var(--border-strong); border-radius: 0.85rem; padding: 0.9rem 1rem;
+    background: var(--bg-soft); text-align: center;
+  }
+  .upsell-card-title { font-size: 0.92rem; font-weight: 700; color: var(--ink); margin-bottom: 0.35rem; }
+  .upsell-card-text { font-size: 0.8rem; color: var(--ink-muted); line-height: 1.5; margin-bottom: 0.8rem; }
+  .upsell-link {
+    display: inline-block; padding: 0.65rem 1.2rem; border-radius: 0.7rem; background: var(--accent);
+    color: #fff; font-size: 0.84rem; font-weight: 700; text-decoration: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="demo-banner">Free 14-day trial &middot; <a href="https://www.etsy.com/listing/4536307474/vacation-planner-travel-budget-tracker" target="_blank" rel="noopener">Unlock the full app on Etsy &rarr;</a></div>
+  <header>
+    <div>
+      <div class="eyebrow">Mobile First Studio</div>
+      <div class="app-name">Vacation Planner</div>
+      <div class="app-subtitle">Every trip, mapped out.</div>
+    </div>
+    <button class="header-icon-btn" id="accent-open-btn" title="Choose accent color" aria-label="Choose accent color">
+      <svg class="icon" viewBox="0 0 24 24" style="width:20px;height:20px;stroke:#fff;">
+        <circle cx="12" cy="12" r="9"/>
+        <polygon points="15,9 13,13 9,15 11,11" fill="#fff" stroke="none"/>
+      </svg>
+    </button>
+  </header>
+
+  <main>
+
+    <!-- HOME -->
+    <section id="screen-home" class="screen active-screen">
+      <section class="card">
+        <div class="card-header"><div class="card-title">Next up</div></div>
+        <div id="next-trip-body"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header"><div class="card-title">Your travel stats</div></div>
+        <div class="stat-row">
+          <div class="stat">
+            <div class="stat-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M6 8V6a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v2"/><rect x="3" y="8" width="18" height="12" rx="2"/></svg></div>
+            <div class="stat-value" id="stat-trips">0</div><div class="stat-label">Trips planned</div>
+          </div>
+          <div class="stat">
+            <div class="stat-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
+            <div class="stat-value" id="stat-days">—</div><div class="stat-label">Days to go</div>
+          </div>
+          <div class="stat">
+            <div class="stat-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+            <div class="stat-value" id="stat-destinations">0</div><div class="stat-label">Destinations</div>
+          </div>
+        </div>
+      </section>
+
+      <button class="btn-primary" id="new-trip-home-btn">Plan a new trip</button>
+    </section>
+
+    <!-- TRIPS -->
+    <section id="screen-trips" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">All trips</div>
+        </div>
+        <div id="trips-list"></div>
+        <button class="btn-primary" id="new-trip-btn" style="margin-top:0.6rem;">+ New trip</button>
+      </section>
+    </section>
+
+    <!-- TRIP EDITOR -->
+    <section id="screen-editor" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title" id="editor-title">New trip</div>
+        </div>
+
+        <div class="cover-upload" id="cover-upload">
+          <img id="cover-upload-img" style="display:none;" />
+          <button class="cover-upload-remove" id="cover-remove-btn" title="Remove photo">×</button>
+          <svg class="icon" viewBox="0 0 24 24" id="cover-upload-icon"><path d="M4 17V7a2 2 0 0 1 2-2h2l1.5-2h5L16 5h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12" r="3.5"/></svg>
+          <div class="cover-upload-text" id="cover-upload-text">Add a cover photo</div>
+          <input type="file" id="cover-file-input" accept="image/*" style="display:none" />
+        </div>
+
+        <div class="subtab-row">
+          <button class="subtab active" data-editor-tab="overview">Overview</button>
+          <button class="subtab" data-editor-tab="travel">Travel &amp; stay</button>
+          <button class="subtab" data-editor-tab="budget">Budget</button>
+          <button class="subtab" data-editor-tab="packing">Packing</button>
+          <button class="subtab" data-editor-tab="mustdo">Must-do</button>
+          <button class="subtab" data-editor-tab="itinerary">Itinerary</button>
+          <button class="subtab" data-editor-tab="journal">Journal</button>
+          <button class="subtab" data-editor-tab="important">Important info</button>
+          <button class="subtab" data-editor-tab="notes">Notes</button>
+        </div>
+
+        <div class="editor-panel" data-editor-panel="overview">
+          <div class="field"><label>Destination</label><input type="text" id="e-destination" placeholder="Where are you headed?" /></div>
+          <div class="field-row">
+            <div class="field"><label>Start date</label><input type="date" id="e-start" /></div>
+            <div class="field"><label>End date</label><input type="date" id="e-end" /></div>
+          </div>
+        </div>
+
+        <div class="editor-panel" data-editor-panel="travel" style="display:none;">
+          <div class="field"><label>Outbound flight or transportation</label><input type="text" id="e-outbound" placeholder="Airline, flight number, confirmation…" /></div>
+          <div class="field"><label>Return flight or transportation</label><input type="text" id="e-return" placeholder="Airline, flight number, confirmation…" /></div>
+          <div class="field"><label>Where you're staying</label><input type="text" id="e-stay-name" placeholder="Hotel or Airbnb name" /></div>
+          <div class="field"><label>Address</label><input type="text" id="e-stay-address" placeholder="Street address" /></div>
+          <div class="field"><label>Confirmation number</label><input type="text" id="e-stay-confirmation" placeholder="Booking confirmation number" /></div>
+          <div class="field"><label>Wi-Fi password</label><input type="text" id="e-wifi" placeholder="Wi-Fi network name and password" /></div>
+          <div class="field-row">
+            <div class="field"><label>Check-in</label><input type="text" id="e-checkin" placeholder="e.g. 3:00 PM, Sep 5" /></div>
+            <div class="field"><label>Check-out</label><input type="text" id="e-checkout" placeholder="e.g. 11:00 AM, Sep 9" /></div>
+          </div>
+          <div class="field"><label>Other transportation notes</label><textarea id="e-transport-notes" placeholder="Rental car, train tickets, transfers…"></textarea></div>
+        </div>
+
+        <div class="editor-panel" data-editor-panel="budget" style="display:none;">
+          <div class="field"><label>Total budget</label><input type="text" inputmode="decimal" id="e-budget-total" placeholder="Total trip budget" /></div>
+          <div style="background:var(--bg-soft); border-radius:0.85rem; padding:0.9rem 1rem; margin-bottom:0.8rem;">
+            <div style="display:flex; justify-content:space-between; font-size:0.86rem; color:var(--ink-muted); margin-bottom:0.3rem;">
+              <span>Spent</span><span id="budget-spent-text">$0</span>
+            </div>
+            <div class="progress-container"><div class="progress-fill" id="budget-progress-fill" style="width:0%;"></div></div>
+            <div style="display:flex; justify-content:space-between; font-size:0.78rem; color:var(--ink-faint); margin-top:0.4rem;">
+              <span id="budget-remaining-text">Remaining: $0</span><span id="budget-total-text">Budget: $0</span>
+            </div>
+          </div>
+          <div id="expense-list"></div>
+          <div class="field-row" style="margin-top:0.7rem;">
+            <div class="field" style="margin-bottom:0.5rem;"><input type="text" id="expense-label-input" placeholder="Expense (e.g. Hotel deposit)" /></div>
+            <div class="field" style="margin-bottom:0.5rem;"><input type="text" inputmode="decimal" id="expense-amount-input" placeholder="Amount" /></div>
+          </div>
+          <div class="field" style="margin-bottom:0.6rem;">
+            <select id="expense-category-input" style="width:100%; padding:0.6rem 0.7rem; border-radius:0.7rem; border:1.5px solid var(--border-strong); background:var(--bg); color:var(--ink); font-family:'Plus Jakarta Sans',sans-serif; font-size:0.86rem;">
+              <option value="Transport">Transport</option>
+              <option value="Lodging">Lodging</option>
+              <option value="Food">Food</option>
+              <option value="Activities">Activities</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <button class="add-item-btn" id="expense-add-btn" style="width:100%;">Add expense</button>
+        </div>
+
+        <div class="editor-panel" data-editor-panel="packing" style="display:none;">
+          <div class="subtab-row" style="margin-bottom:0.6rem;">
+            <button class="template-pill" data-packing-template="beach">Beach</button>
+            <button class="template-pill" data-packing-template="cold">Cold weather</button>
+            <button class="template-pill" data-packing-template="city">City</button>
+            <button class="template-pill" data-packing-template="camping">Camping</button>
+          </div>
+          <div id="packing-list"></div>
+          <div class="packing-add-wrap">
+            <input type="text" id="packing-input" placeholder="Add a packing item…" />
+            <div class="packing-add-controls">
+              <select id="packing-category-input">
+                <option value="Clothing">Clothing</option>
+                <option value="Toiletries">Toiletries</option>
+                <option value="Misc" selected>Misc</option>
+              </select>
+              <button class="add-item-btn" id="packing-add-btn">Add</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="editor-panel" data-editor-panel="important" style="display:none;">
+          <div class="field"><label>Passport or ID number</label><input type="text" id="e-passport" placeholder="Passport / ID number" /></div>
+          <div class="field"><label>Travel insurance</label><input type="text" id="e-insurance" placeholder="Policy number or provider" /></div>
+          <div class="field-row">
+            <div class="field"><label>Emergency contact</label><input type="text" id="e-emergency-name" placeholder="Name" /></div>
+            <div class="field"><label>Emergency phone</label><input type="text" id="e-emergency-phone" placeholder="Phone number" /></div>
+          </div>
+          <div class="field"><label>Other important info</label><textarea id="e-important-other" placeholder="Embassy address, allergies, medications, anything else…"></textarea></div>
+          <div class="field"><label>Home &amp; pet care notes</label><textarea id="e-home-care" placeholder="Instructions for whoever's watching your home, plants, or pets…"></textarea></div>
+        </div>
+
+        <div class="editor-panel" data-editor-panel="mustdo" style="display:none;">
+          <div id="mustdo-list"></div>
+          <div class="add-item-row">
+            <input type="text" id="mustdo-input" placeholder="Add something you must do…" />
+            <button class="add-item-btn" id="mustdo-add-btn">Add</button>
+          </div>
+        </div>
+
+        <div class="editor-panel" data-editor-panel="itinerary" style="display:none;">
+          <div id="itinerary-days"></div>
+          <div class="note" id="itinerary-empty-note" style="display:none;">Set your start and end dates on the Overview tab to build your day-by-day itinerary.</div>
+        </div>
+
+        <div class="editor-panel" data-editor-panel="journal" style="display:none;">
+          <div class="note" style="margin-top:0; margin-bottom:0.7rem;">A page for after each day happens — highlights, a favorite moment, anything worth remembering.</div>
+          <div id="journal-days"></div>
+          <div class="note" id="journal-empty-note" style="display:none;">Set your start and end dates on the Overview tab to build your day-by-day journal.</div>
+        </div>
+
+        <div class="editor-panel" data-editor-panel="notes" style="display:none;">
+          <div class="field"><label>Trip notes</label><textarea id="e-notes" placeholder="Confirmation numbers, reminders, anything else…" style="min-height:140px;"></textarea></div>
+        </div>
+
+        <button class="btn-primary" id="save-trip-btn" style="margin-top:0.8rem;">Save trip</button>
+        <button class="btn-secondary" id="cancel-trip-btn">Cancel</button>
+        <button class="btn-danger" id="delete-trip-btn" style="display:none; width:100%; margin-top:0.6rem;">Delete this trip</button>
+      </section>
+    </section>
+
+    <!-- PROGRESS -->
+    <section id="screen-progress" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Trip readiness</div>
+          <div class="card-subtitle">How prepared you are for each trip.</div>
+        </div>
+        <div id="progress-trip-selector" style="margin-bottom:0.9rem;"></div>
+        <div id="readiness-scores"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Backup &amp; sync</div>
+          <div class="card-subtitle">Keep your trips safe.</div>
+        </div>
+
+        <div class="upsell-card">
+          <div class="upsell-card-title">Google Drive backup</div>
+          <div class="upsell-card-text">The full version of Vacation Planner backs up every trip to your own Google Drive, so it's never tied to one device.</div>
+          <a class="upsell-link" href="https://www.etsy.com/listing/4536307474/vacation-planner-travel-budget-tracker" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+        </div>
+
+        <div class="backup-divider">
+          <div class="backup-section-label">Local backup file</div>
+          <div class="backup-actions">
+            <button class="backup-btn" id="export-btn">Export backup file</button>
+            <button class="backup-btn" id="import-btn">Import backup file</button>
+          </div>
+        </div>
+
+        <div class="note">Exporting or backing up saves every trip in this app, including cover photos. It never includes anything else from your device.</div>
+      </section>
+    </section>
+
+  </main>
+
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+
+  <div class="tabbar">
+    <button class="tab tab-active" data-target="screen-home">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
+      Home
+    </button>
+    <button class="tab" data-target="screen-trips">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>
+      Trips
+    </button>
+    <button class="tab" data-target="screen-progress">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+      Progress
+    </button>
+  </div>
+</div>
+
+<div class="trial-lock-overlay" id="trial-lock">
+  <div class="trial-lock-card">
+    <div class="trial-lock-title">Your free trial has ended</div>
+    <div class="trial-lock-text">Your 14-day trial of Vacation Planner is up. Unlock the full app on Etsy to keep planning your trips, no subscription, just a one-time purchase.</div>
+    <a class="trial-lock-cta" href="https://www.etsy.com/listing/4536307474/vacation-planner-travel-budget-tracker" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+</div>
+
+<!-- SHARED MODAL -->
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body-text" id="modal-body-text"></div>
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta-secondary" id="modal-secondary-btn"></button>
+  </div>
+</div>
+
+<!-- ACCENT COLOR MODAL -->
+<div id="accent-modal-overlay" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">Appearance</div>
+      <button class="modal-close" id="accent-modal-close-btn">×</button>
+    </div>
+    <div class="mode-toggle-row" id="mode-toggle-row">
+      <button class="mode-toggle-btn" data-mode-key="light">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+        Light
+      </button>
+      <button class="mode-toggle-btn" data-mode-key="dark">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>
+        Dark
+      </button>
+    </div>
+    <div class="card-subtitle" style="margin-top:1rem; margin-bottom:0.4rem;">Accent color</div>
+    <div class="swatch-row" id="accent-swatch-row"></div>
+    <button class="modal-cta" id="accent-modal-done-btn" style="margin-top:1.2rem;">Done</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const STORE_KEY = "vac_data_demo_v1";
+
+  function defaultDB() { return { trips: [], accent: "coral", mode: "light" }; }
+  let DB = defaultDB();
+  let currentTripId = null;
+  let activeEditorTab = "overview";
+
+  function ld() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) DB = Object.assign(defaultDB(), JSON.parse(raw));
+    } catch (e) { DB = defaultDB(); }
+  }
+  function sv() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+  }
+
+  function todayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  function uid() { return Date.now() + Math.floor(Math.random() * 1000); }
+  function startOfToday() { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }
+
+  function daysBetween(dateStrA, dateStrB) {
+    const a = new Date(dateStrA + "T00:00:00");
+    const b = new Date(dateStrB + "T00:00:00");
+    return Math.round((b - a) / 86400000);
+  }
+  function tripDayCount(trip) {
+    if (!trip.startDate || !trip.endDate) return 0;
+    return Math.max(1, daysBetween(trip.startDate, trip.endDate) + 1);
+  }
+
+  function defaultTrip() {
+    return {
+      id: uid(), destination: "", startDate: "", endDate: "", coverPhoto: "",
+      outbound: "", returnTransport: "", stayName: "", stayAddress: "", stayConfirmation: "", wifiPassword: "", checkIn: "", checkOut: "", transportNotes: "",
+      budgetTotal: "", expenses: [],
+      packingList: [], mustDo: [], itinerary: [], journal: [],
+      passport: "", insurance: "", emergencyName: "", emergencyPhone: "", importantOther: "", homeCareNotes: "",
+      notes: "", createdAt: new Date().toISOString()
+    };
+  }
+
+  const ACCENT_PALETTE = {
+    coral:  { label: "Coral",  accent: "#ff6b57", dark: "#e8503c", soft: "#ffe4de", shadow: "rgba(255,107,87,0.32)",  toast: "#ffb3a8" },
+    teal:   { label: "Teal",   accent: "#14b8a6", dark: "#0d9488", soft: "#ccfbf1", shadow: "rgba(20,184,166,0.32)", toast: "#7dd8cd" },
+    blue:   { label: "Blue",   accent: "#3b82f6", dark: "#2563eb", soft: "#dbeafe", shadow: "rgba(59,130,246,0.32)", toast: "#93c0fb" },
+    violet: { label: "Violet", accent: "#8b5cf6", dark: "#7c3aed", soft: "#ede9fe", shadow: "rgba(139,92,246,0.32)", toast: "#c4b1fa" },
+    pink:   { label: "Pink",   accent: "#ec4899", dark: "#db2777", soft: "#fce7f3", shadow: "rgba(236,72,153,0.32)", toast: "#f6a8cd" },
+    amber:  { label: "Amber",  accent: "#f59e0b", dark: "#d97706", soft: "#fef3c7", shadow: "rgba(245,158,11,0.32)", toast: "#fbc96b" },
+    green:  { label: "Green",  accent: "#10b981", dark: "#059669", soft: "#d1fae5", shadow: "rgba(16,185,129,0.32)", toast: "#6fddb8" },
+    red:    { label: "Red",    accent: "#ef4444", dark: "#dc2626", soft: "#fee2e2", shadow: "rgba(239,68,68,0.32)",  toast: "#f79c9c" },
+    indigo: { label: "Indigo", accent: "#6366f1", dark: "#4f46e5", soft: "#e0e7ff", shadow: "rgba(99,102,241,0.32)", toast: "#aab0f7" },
+    sunset: { label: "Sunset", accent: "#f97316", dark: "#ea580c", soft: "#ffedd5", shadow: "rgba(249,115,22,0.32)", toast: "#fbb677" }
+  };
+  const ACCENT_ORDER = ["coral", "teal", "blue", "violet", "pink", "amber", "green", "red", "indigo", "sunset"];
+
+  function hexToRgb(hex) {
+    const m = hex.replace("#", "");
+    return { r: parseInt(m.substring(0, 2), 16), g: parseInt(m.substring(2, 4), 16), b: parseInt(m.substring(4, 6), 16) };
+  }
+
+  function applyAppearance() {
+    const mode = DB.mode === "dark" ? "dark" : "light";
+    const a = ACCENT_PALETTE[DB.accent] || ACCENT_PALETTE.coral;
+    document.documentElement.setAttribute("data-mode", mode);
+    const rgb = hexToRgb(a.accent);
+    const softValue = mode === "dark" ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.18)` : a.soft;
+    const iconValue = mode === "dark" ? a.accent : a.dark;
+    const root = document.documentElement.style;
+    root.setProperty("--accent", a.accent);
+    root.setProperty("--accent-dark", a.dark);
+    root.setProperty("--accent-soft", softValue);
+    root.setProperty("--accent-icon", iconValue);
+    root.setProperty("--accent-shadow", a.shadow);
+    root.setProperty("--accent-toast-link", a.toast);
+    const metaTheme = document.querySelector('meta[name="theme-color"]');
+    if (metaTheme) metaTheme.setAttribute("content", mode === "dark" ? "#131316" : "#ffffff");
+  }
+
+  function renderAccentModal() {
+    const row = document.getElementById("accent-swatch-row");
+    if (row) {
+      row.innerHTML = ACCENT_ORDER.map((key) => {
+        const a = ACCENT_PALETTE[key];
+        const selected = DB.accent === key;
+        return `<button class="swatch-btn ${selected ? "selected" : ""}" data-accent-key="${key}" style="background:${a.accent};" title="${a.label}" aria-label="${a.label}"></button>`;
+      }).join("");
+      row.querySelectorAll("[data-accent-key]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          DB.accent = btn.dataset.accentKey;
+          sv();
+          applyAppearance();
+          renderAccentModal();
+        });
+      });
+    }
+    document.querySelectorAll(".mode-toggle-btn").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.modeKey === (DB.mode === "dark" ? "dark" : "light"));
+    });
+  }
+
+  function openAccentModal() {
+    renderAccentModal();
+    document.getElementById("accent-modal-overlay").classList.add("open");
+  }
+  function closeAccentModal() { document.getElementById("accent-modal-overlay").classList.remove("open"); }
+
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => { onAction(); el.classList.remove("show"); });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+
+  function openModal({ title, bodyText, ctaLabel, onCta, ctaDanger, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    if (ctaLabel) {
+      ctaBtn.style.display = "block"; ctaBtn.textContent = ctaLabel;
+      ctaBtn.classList.toggle("danger", !!ctaDanger);
+      ctaBtn.onclick = onCta || null;
+    } else { ctaBtn.style.display = "none"; ctaBtn.onclick = null; }
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    if (secondaryLabel) { secondaryBtn.style.display = "block"; secondaryBtn.textContent = secondaryLabel; secondaryBtn.onclick = onSecondary || closeModal; }
+    else { secondaryBtn.style.display = "none"; secondaryBtn.onclick = null; }
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function closeModal() { document.getElementById("app-modal").classList.remove("open"); }
+
+  function switchToTab(targetId) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
+    document.getElementById(targetId).classList.add("active-screen");
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("tab-active", t.dataset.target === targetId));
+    if (targetId === "screen-home") renderHome();
+    if (targetId === "screen-trips") renderTripsList();
+    if (targetId === "screen-progress") renderProgress();
+  }
+
+  function switchEditorTab(tab) {
+    activeEditorTab = tab;
+    document.querySelectorAll(".editor-panel").forEach((el) => { el.style.display = el.dataset.editorPanel === tab ? "block" : "none"; });
+    document.querySelectorAll("[data-editor-tab]").forEach((btn) => btn.classList.toggle("active", btn.dataset.editorTab === tab));
+    if (tab === "itinerary") { syncOverviewIntoTrip(); renderItineraryPanel(); }
+    if (tab === "journal") { syncOverviewIntoTrip(); renderJournalPanel(); }
+    if (tab === "budget") { renderExpenses(); }
+  }
+
+  function syncOverviewIntoTrip() {
+    const trip = currentTrip();
+    if (!trip) return;
+    trip.startDate = document.getElementById("e-start").value;
+    trip.endDate = document.getElementById("e-end").value;
+  }
+
+  function renderCountdownRing(score) {
+    const circle = document.getElementById("ring-progress");
+    if (!circle) return;
+    const r = 60;
+    const circumference = 2 * Math.PI * r;
+    const offset = circumference - (score / 100) * circumference;
+    circle.setAttribute("stroke-dasharray", circumference.toFixed(1));
+    circle.setAttribute("stroke-dashoffset", circumference.toFixed(1));
+    void circle.getBoundingClientRect();
+    requestAnimationFrame(() => { circle.setAttribute("stroke-dashoffset", offset.toFixed(1)); });
+  }
+
+  function seasonalOutlook(dateStr) {
+    if (!dateStr) return null;
+    const month = new Date(dateStr + "T00:00:00").getMonth();
+    const table = [
+      "Cool — pack layers", "Cool — pack layers", "Mild — light layers", "Mild — light layers",
+      "Warming up", "Warm — pack light", "Warm — pack light", "Warm — pack light",
+      "Crisp — bring a jacket", "Crisp — bring a jacket", "Cooling down", "Cool — pack layers"
+    ];
+    return table[month];
+  }
+
+  function tripSubScores(trip) {
+    const overview = (trip.destination && trip.startDate && trip.endDate) ? 100 : 0;
+    const travel = (trip.outbound || trip.returnTransport || trip.stayName || trip.stayConfirmation || trip.transportNotes) ? 100 : 0;
+    const budget = (trip.budgetTotal || trip.expenses.length) ? 100 : 0;
+    const packing = trip.packingList.length ? Math.round((trip.packingList.filter((i) => i.checked).length / trip.packingList.length) * 100) : 0;
+    const mustdo = trip.mustDo.length > 0 ? 100 : 0;
+    const itinerary = (trip.itinerary && trip.itinerary.some(d => d && d.trim())) ? 100 : 0;
+    const important = (trip.passport || trip.insurance || trip.emergencyName || trip.importantOther) ? 100 : 0;
+    const notes = trip.notes && trip.notes.trim() ? 100 : 0;
+    return { overview, travel, budget, packing, mustdo, itinerary, important, notes };
+  }
+  function tripOverallScore(trip) {
+    const s = tripSubScores(trip);
+    const values = Object.values(s);
+    return Math.round(values.reduce((a, b) => a + b, 0) / values.length);
+  }
+
+  function tripTotalSpent(trip) {
+    return trip.expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+  }
+
+  function getNextTrip() {
+    const today = startOfToday();
+    const upcoming = DB.trips
+      .filter((t) => t.startDate && new Date(t.startDate + "T00:00:00") >= today)
+      .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+    return upcoming[0] || null;
+  }
+
+  function renderHome() {
+    const nextTrip = getNextTrip();
+    const bodyEl = document.getElementById("next-trip-body");
+    if (!nextTrip) {
+      bodyEl.innerHTML = `<div class="empty-state">No upcoming trips yet. Plan one to see your countdown and prep progress here.</div>`;
+    } else {
+      const score = tripOverallScore(nextTrip);
+      const today = startOfToday();
+      const daysUntil = Math.max(0, daysBetween(todayKey(today), nextTrip.startDate));
+      let label, sub;
+      if (score === 0) { label = "Just getting started"; sub = "Add your trip details to begin prepping."; }
+      else if (score < 40) { label = "Off to a start"; sub = "You're getting started on the essentials."; }
+      else if (score < 80) { label = "Well underway"; sub = "Your trip prep is well underway."; }
+      else { label = "Ready to go"; sub = "You're fully prepped for this trip."; }
+      const outlook = seasonalOutlook(nextTrip.startDate);
+      const r = 60, circumference = 2 * Math.PI * r;
+      bodyEl.innerHTML = `
+        <div class="ring-wrap">
+          <div class="ring-svg-wrap">
+            <svg viewBox="0 0 138 138">
+              <circle class="ring-track" cx="69" cy="69" r="${r}" />
+              <circle class="ring-progress" id="ring-progress" cx="69" cy="69" r="${r}"
+                stroke-dasharray="${circumference.toFixed(1)}" stroke-dashoffset="${circumference.toFixed(1)}" />
+            </svg>
+            <div class="ring-center">
+              <div class="ring-days">${daysUntil}</div>
+              <div class="ring-days-label">${daysUntil === 1 ? "day to go" : "days to go"}</div>
+            </div>
+          </div>
+          <div class="card-title" style="margin-top:0.8rem;">${nextTrip.destination || "Untitled trip"}</div>
+          ${outlook ? `<div class="weather-chip"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>${outlook}</div>` : ""}
+        </div>
+        <div class="status-row">
+          <div class="status-icon"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M9 12.5l2 2 4-4.5"/><circle cx="12" cy="12" r="9"/></svg></div>
+          <div class="status-info">
+            <div class="status-label">${label}</div>
+            <div class="status-sub">${sub}</div>
+          </div>
+        </div>
+        <div class="progress-container"><div class="progress-fill" style="width:${score}%;"></div></div>
+        <div class="progress-score-text">${score}/100 ready</div>
+      `;
+      renderCountdownRing(score);
+    }
+    document.getElementById("stat-trips").textContent = DB.trips.length;
+    document.getElementById("stat-days").textContent = nextTrip ? Math.max(0, daysBetween(todayKey(startOfToday()), nextTrip.startDate)) : "—";
+    const uniqueDestinations = new Set(DB.trips.map((t) => (t.destination || "").trim().toLowerCase()).filter(Boolean));
+    document.getElementById("stat-destinations").textContent = uniqueDestinations.size;
+  }
+
+  function renderTripsList() {
+    const listEl = document.getElementById("trips-list");
+    if (!DB.trips.length) {
+      listEl.innerHTML = `<div class="empty-state">No trips yet. Tap "+ New trip" to plan your first one.</div>`;
+      return;
+    }
+    const sorted = [...DB.trips].sort((a, b) => {
+      if (!a.startDate) return 1;
+      if (!b.startDate) return -1;
+      return new Date(a.startDate) - new Date(b.startDate);
+    });
+    listEl.innerHTML = sorted.map((trip) => {
+      const score = tripOverallScore(trip);
+      const today = startOfToday();
+      let badge = "";
+      if (trip.startDate) {
+        const days = daysBetween(todayKey(today), trip.startDate);
+        badge = days > 0 ? `${days}d away` : days === 0 ? "Today" : "Past trip";
+      }
+      const dateLabel = trip.startDate && trip.endDate
+        ? `${formatDateLabel(trip.startDate)} – ${formatDateLabel(trip.endDate)}`
+        : "Dates not set";
+      const photoInner = trip.coverPhoto
+        ? `<img src="${trip.coverPhoto}" alt="" />`
+        : `<div class="trip-photo-placeholder"><svg class="icon" viewBox="0 0 24 24" style="width:32px;height:32px;"><path d="M4 17V7a2 2 0 0 1 2-2h2l1.5-2h5L16 5h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12" r="3.5"/></svg></div>`;
+      return `
+        <div class="trip-card" data-trip-id="${trip.id}">
+          <div class="trip-photo">
+            ${photoInner}
+            ${badge ? `<div class="trip-photo-badge">${badge}</div>` : ""}
+          </div>
+          <div class="trip-body">
+            <div class="trip-destination">${trip.destination || "Untitled trip"}</div>
+            <div class="trip-dates">${dateLabel}</div>
+            <div class="trip-prep-row">
+              <div class="progress-container"><div class="progress-fill" style="width:${score}%;"></div></div>
+              <div class="trip-prep-pct">${score}%</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    listEl.querySelectorAll("[data-trip-id]").forEach((el) => {
+      el.addEventListener("click", () => openTripEditor(Number(el.dataset.tripId)));
+    });
+  }
+
+  function formatDateLabel(dateStr) {
+    return new Date(dateStr + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+
+  function renderCoverUpload() {
+    const trip = currentTrip();
+    const img = document.getElementById("cover-upload-img");
+    const icon = document.getElementById("cover-upload-icon");
+    const text = document.getElementById("cover-upload-text");
+    const removeBtn = document.getElementById("cover-remove-btn");
+    if (trip && trip.coverPhoto) {
+      img.src = trip.coverPhoto;
+      img.style.display = "block";
+      icon.style.display = "none";
+      text.style.display = "none";
+      removeBtn.style.display = "flex";
+    } else {
+      img.style.display = "none";
+      icon.style.display = "block";
+      text.style.display = "block";
+      removeBtn.style.display = "none";
+    }
+  }
+
+  function handleCoverFileChange(event) {
+    const file = event.target.files[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { showToast("Please choose an image file."); return; }
+    const trip = currentTrip();
+    if (!trip) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX_DIM = 1280;
+        let { width, height } = img;
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width >= height) { height = Math.round(height * (MAX_DIM / width)); width = MAX_DIM; }
+          else { width = Math.round(width * (MAX_DIM / height)); height = MAX_DIM; }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width; canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        const resizedDataUrl = canvas.toDataURL("image/jpeg", 0.82);
+        trip.coverPhoto = resizedDataUrl;
+        try { sv(); renderCoverUpload(); }
+        catch (e) { showToast("That photo is too large to save. Try a smaller one."); }
+      };
+      img.onerror = () => showToast("Could not read that image.");
+      img.src = reader.result;
+    };
+    reader.onerror = () => showToast("Could not read that image.");
+    reader.readAsDataURL(file);
+  }
+
+  function removeCoverPhoto(e) {
+    e.stopPropagation();
+    const trip = currentTrip();
+    if (!trip) return;
+    trip.coverPhoto = "";
+    sv();
+    renderCoverUpload();
+  }
+
+  function openTripEditor(tripId) {
+    currentTripId = tripId;
+    const trip = DB.trips.find((t) => t.id === tripId);
+    document.getElementById("editor-title").textContent = trip.destination || "Edit trip";
+    document.getElementById("e-destination").value = trip.destination || "";
+    document.getElementById("e-start").value = trip.startDate || "";
+    document.getElementById("e-end").value = trip.endDate || "";
+    document.getElementById("e-outbound").value = trip.outbound || "";
+    document.getElementById("e-return").value = trip.returnTransport || "";
+    document.getElementById("e-stay-name").value = trip.stayName || "";
+    document.getElementById("e-stay-address").value = trip.stayAddress || "";
+    document.getElementById("e-stay-confirmation").value = trip.stayConfirmation || "";
+    document.getElementById("e-wifi").value = trip.wifiPassword || "";
+    document.getElementById("e-checkin").value = trip.checkIn || "";
+    document.getElementById("e-checkout").value = trip.checkOut || "";
+    document.getElementById("e-transport-notes").value = trip.transportNotes || "";
+    document.getElementById("e-budget-total").value = trip.budgetTotal || "";
+    document.getElementById("e-passport").value = trip.passport || "";
+    document.getElementById("e-insurance").value = trip.insurance || "";
+    document.getElementById("e-emergency-name").value = trip.emergencyName || "";
+    document.getElementById("e-emergency-phone").value = trip.emergencyPhone || "";
+    document.getElementById("e-important-other").value = trip.importantOther || "";
+    document.getElementById("e-home-care").value = trip.homeCareNotes || "";
+    document.getElementById("e-notes").value = trip.notes || "";
+    document.getElementById("delete-trip-btn").style.display = "block";
+    renderCoverUpload();
+    renderPackingList(); renderMustDoList(); renderExpenses();
+    switchEditorTab("overview");
+    switchToTab("screen-editor");
+  }
+
+  function openNewTripEditor() {
+    const trip = defaultTrip();
+    DB.trips.push(trip);
+    sv();
+    currentTripId = trip.id;
+    document.getElementById("editor-title").textContent = "New trip";
+    document.getElementById("e-destination").value = "";
+    document.getElementById("e-start").value = "";
+    document.getElementById("e-end").value = "";
+    document.getElementById("e-outbound").value = "";
+    document.getElementById("e-return").value = "";
+    document.getElementById("e-stay-name").value = "";
+    document.getElementById("e-stay-address").value = "";
+    document.getElementById("e-stay-confirmation").value = "";
+    document.getElementById("e-wifi").value = "";
+    document.getElementById("e-checkin").value = "";
+    document.getElementById("e-checkout").value = "";
+    document.getElementById("e-transport-notes").value = "";
+    document.getElementById("e-budget-total").value = "";
+    document.getElementById("e-passport").value = "";
+    document.getElementById("e-insurance").value = "";
+    document.getElementById("e-emergency-name").value = "";
+    document.getElementById("e-emergency-phone").value = "";
+    document.getElementById("e-important-other").value = "";
+    document.getElementById("e-home-care").value = "";
+    document.getElementById("e-notes").value = "";
+    document.getElementById("delete-trip-btn").style.display = "none";
+    renderCoverUpload();
+    renderPackingList(); renderMustDoList(); renderExpenses();
+    switchEditorTab("overview");
+    switchToTab("screen-editor");
+  }
+
+  function currentTrip() { return DB.trips.find((t) => t.id === currentTripId); }
+
+  function renderChecklist(containerId, listKey) {
+    const trip = currentTrip();
+    if (!trip) return;
+    const container = document.getElementById(containerId);
+    const items = trip[listKey];
+    if (!items.length) {
+      container.innerHTML = `<div class="empty-state" style="margin-top:0;">Nothing added yet.</div>`;
+      return;
+    }
+    container.innerHTML = items.map((item) => `
+      <div class="checklist-item ${item.checked ? "checked" : ""}" data-item-id="${item.id}">
+        <input type="checkbox" ${item.checked ? "checked" : ""} data-check-id="${item.id}" />
+        <div class="item-text">${item.text}</div>
+        <button class="item-remove" data-remove-id="${item.id}" title="Remove">×</button>
+      </div>
+    `).join("");
+    container.querySelectorAll("[data-check-id]").forEach((el) => {
+      el.addEventListener("change", () => {
+        const item = trip[listKey].find((i) => i.id === Number(el.dataset.checkId));
+        item.checked = el.checked;
+        sv();
+        renderChecklist(containerId, listKey);
+      });
+    });
+    container.querySelectorAll("[data-remove-id]").forEach((el) => {
+      el.addEventListener("click", () => {
+        trip[listKey] = trip[listKey].filter((i) => i.id !== Number(el.dataset.removeId));
+        sv();
+        renderChecklist(containerId, listKey);
+      });
+    });
+  }
+  function renderMustDoList() { renderChecklist("mustdo-list", "mustDo"); }
+
+  const PACKING_CATEGORY_ORDER = ["Clothing", "Toiletries", "Misc"];
+  function renderPackingList() {
+    const trip = currentTrip();
+    if (!trip) return;
+    const container = document.getElementById("packing-list");
+    if (!trip.packingList.length) {
+      container.innerHTML = `<div class="empty-state" style="margin-top:0;">Nothing added yet.</div>`;
+      return;
+    }
+    const groups = {};
+    PACKING_CATEGORY_ORDER.forEach((c) => { groups[c] = []; });
+    trip.packingList.forEach((item) => {
+      const cat = PACKING_CATEGORY_ORDER.includes(item.category) ? item.category : "Misc";
+      groups[cat].push(item);
+    });
+    container.innerHTML = PACKING_CATEGORY_ORDER.filter((cat) => groups[cat].length).map((cat) => `
+      <div style="margin-bottom:0.4rem;">
+        <div class="backup-section-label" style="margin-top:0.6rem;">${cat}</div>
+        ${groups[cat].map((item) => `
+          <div class="checklist-item ${item.checked ? "checked" : ""}" data-item-id="${item.id}">
+            <input type="checkbox" ${item.checked ? "checked" : ""} data-check-id="${item.id}" />
+            <div class="item-text">${item.text}</div>
+            <button class="item-remove" data-remove-id="${item.id}" title="Remove">×</button>
+          </div>
+        `).join("")}
+      </div>
+    `).join("");
+    container.querySelectorAll("[data-check-id]").forEach((el) => {
+      el.addEventListener("change", () => {
+        const item = trip.packingList.find((i) => i.id === Number(el.dataset.checkId));
+        item.checked = el.checked;
+        sv();
+        renderPackingList();
+      });
+    });
+    container.querySelectorAll("[data-remove-id]").forEach((el) => {
+      el.addEventListener("click", () => {
+        trip.packingList = trip.packingList.filter((i) => i.id !== Number(el.dataset.removeId));
+        sv();
+        renderPackingList();
+      });
+    });
+  }
+
+  function renderExpenses() {
+    const trip = currentTrip();
+    if (!trip) return;
+    const container = document.getElementById("expense-list");
+    const total = parseFloat(document.getElementById("e-budget-total").value) || parseFloat(trip.budgetTotal) || 0;
+    const spent = tripTotalSpent(trip);
+    const remaining = total - spent;
+    const pct = total > 0 ? Math.min(100, Math.round((spent / total) * 100)) : 0;
+    document.getElementById("budget-spent-text").textContent = formatMoney(spent);
+    document.getElementById("budget-total-text").textContent = "Budget: " + formatMoney(total);
+    document.getElementById("budget-remaining-text").textContent = "Remaining: " + formatMoney(remaining);
+    document.getElementById("budget-progress-fill").style.width = pct + "%";
+    document.getElementById("budget-progress-fill").style.background = remaining < 0 ? "#c94a37" : "var(--accent)";
+    if (!trip.expenses.length) {
+      container.innerHTML = `<div class="empty-state" style="margin-top:0;">No expenses logged yet.</div>`;
+      return;
+    }
+    container.innerHTML = trip.expenses.map((exp) => `
+      <div class="checklist-item" data-exp-id="${exp.id}">
+        <div class="item-text"><strong>${exp.label}</strong> <span style="color:var(--ink-faint); font-size:0.78rem;">· ${exp.category}</span></div>
+        <div style="font-weight:700; color:var(--ink); flex-shrink:0;">${formatMoney(parseFloat(exp.amount) || 0)}</div>
+        <button class="item-remove" data-exp-remove="${exp.id}" title="Remove">×</button>
+      </div>
+    `).join("");
+    container.querySelectorAll("[data-exp-remove]").forEach((el) => {
+      el.addEventListener("click", () => {
+        trip.expenses = trip.expenses.filter((e) => e.id !== Number(el.dataset.expRemove));
+        sv();
+        renderExpenses();
+      });
+    });
+  }
+
+  function formatMoney(n) {
+    return "$" + (Math.round(n * 100) / 100).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
+  function addExpense() {
+    const trip = currentTrip();
+    if (!trip) return;
+    const labelInput = document.getElementById("expense-label-input");
+    const amountInput = document.getElementById("expense-amount-input");
+    const categoryInput = document.getElementById("expense-category-input");
+    const label = labelInput.value.trim();
+    const amount = amountInput.value.trim();
+    if (!label || !amount || isNaN(parseFloat(amount))) { showToast("Enter both a label and an amount."); return; }
+    trip.expenses.push({ id: uid(), label, amount, category: categoryInput.value });
+    labelInput.value = ""; amountInput.value = "";
+    sv();
+    renderExpenses();
+  }
+
+  const PACKING_TEMPLATES = {
+    beach: [["Swimsuit", "Clothing"], ["Flip-flops", "Clothing"], ["Hat", "Clothing"], ["Sunscreen", "Toiletries"], ["Sunglasses", "Misc"], ["Beach towel", "Misc"]],
+    cold: [["Winter coat", "Clothing"], ["Gloves", "Clothing"], ["Thermal layers", "Clothing"], ["Wool socks", "Clothing"], ["Beanie", "Clothing"], ["Scarf", "Clothing"]],
+    city: [["Comfortable walking shoes", "Clothing"], ["Light jacket", "Clothing"], ["Day bag", "Misc"], ["Portable charger", "Misc"], ["Offline maps downloaded", "Misc"]],
+    camping: [["Tent", "Misc"], ["Sleeping bag", "Misc"], ["Headlamp", "Misc"], ["Water bottle", "Misc"], ["First aid kit", "Toiletries"], ["Bug spray", "Toiletries"]]
+  };
+  function applyPackingTemplate(templateKey) {
+    const trip = currentTrip();
+    if (!trip) return;
+    const existing = new Set(trip.packingList.map((i) => i.text.toLowerCase()));
+    const toAdd = (PACKING_TEMPLATES[templateKey] || []).filter(([text]) => !existing.has(text.toLowerCase()));
+    if (!toAdd.length) { showToast("Those items are already on your list."); return; }
+    toAdd.forEach(([text, category]) => trip.packingList.push({ id: uid(), text, category, checked: false }));
+    sv();
+    renderPackingList();
+    showToast(`Added ${toAdd.length} item${toAdd.length === 1 ? "" : "s"}.`);
+  }
+
+  function addChecklistItem(listKey, inputId, renderFn) {
+    const trip = currentTrip();
+    if (!trip) return;
+    const input = document.getElementById(inputId);
+    const text = input.value.trim();
+    if (!text) return;
+    const entry = { id: uid(), text, checked: false };
+    if (listKey === "packingList") {
+      entry.category = document.getElementById("packing-category-input").value;
+    }
+    trip[listKey].push(entry);
+    input.value = "";
+    sv();
+    renderFn();
+  }
+
+  function renderDayByDayPanel(containerId, emptyNoteId, arrayKey, placeholder) {
+    const trip = currentTrip();
+    if (!trip) return;
+    const dayCount = tripDayCount(trip);
+    const container = document.getElementById(containerId);
+    const emptyNote = document.getElementById(emptyNoteId);
+    if (!dayCount || !trip.startDate || !trip.endDate) {
+      container.innerHTML = "";
+      emptyNote.style.display = "block";
+      return;
+    }
+    emptyNote.style.display = "none";
+    while (trip[arrayKey].length < dayCount) trip[arrayKey].push("");
+    if (trip[arrayKey].length > dayCount) trip[arrayKey] = trip[arrayKey].slice(0, dayCount);
+    container.innerHTML = "";
+    for (let i = 0; i < dayCount; i++) {
+      const dayDate = new Date(trip.startDate + "T00:00:00");
+      dayDate.setDate(dayDate.getDate() + i);
+      const wrap = document.createElement("div");
+      wrap.className = "day-block";
+      const label = document.createElement("div");
+      label.className = "day-block-label";
+      label.textContent = `Day ${i + 1} — ${dayDate.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}`;
+      const textarea = document.createElement("textarea");
+      textarea.className = "day-block-textarea";
+      textarea.placeholder = placeholder;
+      textarea.value = trip[arrayKey][i] || "";
+      textarea.addEventListener("input", () => { trip[arrayKey][i] = textarea.value; });
+      textarea.addEventListener("blur", () => sv());
+      wrap.appendChild(label);
+      wrap.appendChild(textarea);
+      container.appendChild(wrap);
+    }
+  }
+  function renderItineraryPanel() { renderDayByDayPanel("itinerary-days", "itinerary-empty-note", "itinerary", "Plans for this day…"); }
+  function renderJournalPanel() { renderDayByDayPanel("journal-days", "journal-empty-note", "journal", "Highlights, a favorite moment, anything worth remembering…"); }
+
+  function saveTripFromEditor() {
+    const trip = currentTrip();
+    if (!trip) return;
+    trip.destination = document.getElementById("e-destination").value.trim();
+    trip.startDate = document.getElementById("e-start").value;
+    trip.endDate = document.getElementById("e-end").value;
+    trip.outbound = document.getElementById("e-outbound").value.trim();
+    trip.returnTransport = document.getElementById("e-return").value.trim();
+    trip.stayName = document.getElementById("e-stay-name").value.trim();
+    trip.stayAddress = document.getElementById("e-stay-address").value.trim();
+    trip.stayConfirmation = document.getElementById("e-stay-confirmation").value.trim();
+    trip.wifiPassword = document.getElementById("e-wifi").value.trim();
+    trip.checkIn = document.getElementById("e-checkin").value.trim();
+    trip.checkOut = document.getElementById("e-checkout").value.trim();
+    trip.transportNotes = document.getElementById("e-transport-notes").value.trim();
+    trip.budgetTotal = document.getElementById("e-budget-total").value.trim();
+    trip.passport = document.getElementById("e-passport").value.trim();
+    trip.insurance = document.getElementById("e-insurance").value.trim();
+    trip.emergencyName = document.getElementById("e-emergency-name").value.trim();
+    trip.emergencyPhone = document.getElementById("e-emergency-phone").value.trim();
+    trip.importantOther = document.getElementById("e-important-other").value.trim();
+    trip.homeCareNotes = document.getElementById("e-home-care").value.trim();
+    trip.notes = document.getElementById("e-notes").value.trim();
+    if (!trip.destination && !trip.startDate) {
+      DB.trips = DB.trips.filter((t) => t.id !== trip.id);
+      sv();
+      showToast("Empty trip discarded.");
+      switchToTab("screen-trips");
+      return;
+    }
+    sv();
+    showToast("Trip saved.");
+    switchToTab("screen-trips");
+  }
+
+  function cancelTripEditor() {
+    const trip = currentTrip();
+    const isEmpty = trip && !trip.destination && !trip.startDate && !trip.budgetTotal && !trip.notes && !trip.coverPhoto
+      && !trip.outbound && !trip.returnTransport && !trip.stayName && !trip.stayConfirmation && !trip.transportNotes && !trip.wifiPassword
+      && !trip.passport && !trip.insurance && !trip.emergencyName && !trip.importantOther && !trip.homeCareNotes
+      && !trip.packingList.length && !trip.mustDo.length && !trip.expenses.length
+      && !(trip.itinerary || []).some((d) => d && d.trim()) && !(trip.journal || []).some((d) => d && d.trim());
+    if (isEmpty) {
+      DB.trips = DB.trips.filter((t) => t.id !== trip.id);
+      sv();
+    }
+    switchToTab("screen-trips");
+  }
+
+  function confirmDeleteTrip() {
+    const trip = currentTrip();
+    if (!trip) return;
+    openModal({
+      title: "Delete this trip?",
+      bodyText: `This permanently removes ${trip.destination || "this trip"}, including its packing list, itinerary, cover photo, and notes.`,
+      ctaLabel: "Delete trip",
+      ctaDanger: true,
+      onCta: () => {
+        DB.trips = DB.trips.filter((t) => t.id !== trip.id);
+        sv(); closeModal();
+        showToast("Trip deleted.");
+        switchToTab("screen-trips");
+      },
+      secondaryLabel: "Keep it",
+      onSecondary: closeModal
+    });
+  }
+
+  let progressSelectedTripId = null;
+
+  function renderProgress() {
+    const selectorEl = document.getElementById("progress-trip-selector");
+    const container = document.getElementById("readiness-scores");
+
+    if (!DB.trips.length) {
+      selectorEl.innerHTML = "";
+      container.innerHTML = `<div class="empty-state">No trips yet — plan one to see its readiness breakdown here.</div>`;
+      return;
+    }
+
+    // Sort trips: upcoming first (by start date), then past
+    const sorted = [...DB.trips].sort((a, b) => {
+      if (!a.startDate) return 1;
+      if (!b.startDate) return -1;
+      return new Date(a.startDate) - new Date(b.startDate);
+    });
+
+    // Default to next upcoming trip if nothing selected or selection was deleted
+    if (!progressSelectedTripId || !DB.trips.find(t => t.id === progressSelectedTripId)) {
+      const next = getNextTrip();
+      progressSelectedTripId = next ? next.id : sorted[0].id;
+    }
+
+    // Render pill selector
+    selectorEl.innerHTML = `<div class="subtab-row" style="margin-bottom:0;">` +
+      sorted.map(t => `
+        <button class="subtab ${t.id === progressSelectedTripId ? "active" : ""}"
+          data-progress-trip="${t.id}">
+          ${t.destination || "Untitled trip"}
+        </button>
+      `).join("") +
+      `</div>`;
+
+    selectorEl.querySelectorAll("[data-progress-trip]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        progressSelectedTripId = Number(btn.dataset.progressTrip);
+        renderProgress();
+      });
+    });
+
+    const trip = DB.trips.find(t => t.id === progressSelectedTripId);
+    const s = tripSubScores(trip);
+    const rows = [
+      ["Trip details", s.overview],
+      ["Travel & stay", s.travel],
+      ["Budget", s.budget],
+      ["Packing list", s.packing],
+      ["Must-do list", s.mustdo],
+      ["Itinerary", s.itinerary],
+      ["Important info", s.important],
+      ["Trip notes", s.notes]
+    ];
+    container.innerHTML = rows.map(([label, value]) => `
+      <div style="margin-bottom:1rem;">
+        <div class="card-subtitle" style="margin-bottom:0.35rem;">${label}</div>
+        <div class="progress-container"><div class="progress-fill" style="width:${value}%;"></div></div>
+        <div class="progress-score-text">${value}/100</div>
+      </div>
+    `).join("");
+  }
+
+  const PRE_RESTORE_KEY = "vac_pre_restore_snapshot";
+  const DEMO_SINCE_KEY = "vacation_planner_demo_since";
+
+  function demoTrialDaysLeft() {
+    let since = localStorage.getItem(DEMO_SINCE_KEY);
+    if (!since) {
+      since = new Date().toISOString();
+      localStorage.setItem(DEMO_SINCE_KEY, since);
+    }
+    const startedAt = new Date(since).getTime();
+    const elapsedDays = (Date.now() - startedAt) / 86400000;
+    return Math.max(0, Math.ceil(14 - elapsedDays));
+  }
+
+  function enforceDemoTrial() {
+    const daysLeft = demoTrialDaysLeft();
+    const overlay = document.getElementById("trial-lock");
+    if (daysLeft <= 0) {
+      overlay.classList.add("show");
+      document.body.style.overflow = "hidden";
+    } else {
+      overlay.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+  }
+
+  function buildBackupPayload() {
+    return JSON.stringify({ ...DB, exportedAt: new Date().toISOString(), source: "Vacation Planner" }, null, 2);
+  }
+
+  function confirmAndApplyRestore(parsed, sourceDate, sourceLabel) {
+    const incomingTrips = Array.isArray(parsed.trips) ? parsed.trips.length : 0;
+    const currentTrips = DB.trips.length;
+    const dateLabel = sourceDate ? new Date(sourceDate).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "an earlier backup";
+    openModal({
+      title: `Restore from ${sourceLabel}`,
+      bodyText: `This replaces ${currentTrips} ${currentTrips === 1 ? "trip" : "trips"} on this device with ${incomingTrips} ${incomingTrips === 1 ? "trip" : "trips"} from a backup made ${dateLabel}. You'll be able to undo this immediately after.`,
+      ctaLabel: "Restore backup",
+      onCta: () => { applyRestoredData(parsed); closeModal(); },
+      secondaryLabel: "Cancel", onSecondary: closeModal
+    });
+  }
+
+  function applyRestoredData(parsed) {
+    localStorage.setItem(PRE_RESTORE_KEY, JSON.stringify({ data: DB, savedAt: new Date().toISOString() }));
+    DB = Object.assign(defaultDB(), parsed);
+    sv();
+    applyAppearance();
+    renderHome(); renderTripsList(); renderProgress();
+    showToast("Backup restored.", "Undo", undoRestore);
+  }
+
+  function undoRestore() {
+    const raw = localStorage.getItem(PRE_RESTORE_KEY);
+    if (!raw) { showToast("Nothing to undo."); return; }
+    try {
+      const snap = JSON.parse(raw);
+      DB = Object.assign(defaultDB(), snap.data);
+      sv();
+      localStorage.removeItem(PRE_RESTORE_KEY);
+      applyAppearance();
+      renderHome(); renderTripsList(); renderProgress();
+      showToast("Restore undone.");
+    } catch (e) {
+      showToast("Could not undo — the previous snapshot was unreadable.");
+    }
+  }
+
+  function exportBackupFile() {
+    const payload = buildBackupPayload();
+    const blob = new Blob([payload], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `vacation-planner-backup-${todayKey(new Date())}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Backup file downloaded.");
+  }
+  function triggerImportPicker() { document.getElementById("import-file-input").click(); }
+  function handleImportFileChange(event) {
+    const file = event.target.files[0];
+    event.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let parsed;
+      try { parsed = JSON.parse(reader.result); }
+      catch (e) { showToast("This file is not a valid backup."); return; }
+      if (!parsed || typeof parsed !== "object") { showToast("This file is not a valid backup."); return; }
+      confirmAndApplyRestore(parsed, parsed.exportedAt, "file");
+    };
+    reader.onerror = () => showToast("Could not read that file.");
+    reader.readAsText(file);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    ld();
+    applyAppearance();
+    renderHome();
+    renderTripsList();
+    renderProgress();
+
+    document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => switchToTab(tab.dataset.target)));
+    document.getElementById("new-trip-btn").addEventListener("click", openNewTripEditor);
+    document.getElementById("new-trip-home-btn").addEventListener("click", openNewTripEditor);
+    document.querySelectorAll("[data-editor-tab]").forEach((btn) => btn.addEventListener("click", () => switchEditorTab(btn.dataset.editorTab)));
+    document.getElementById("save-trip-btn").addEventListener("click", saveTripFromEditor);
+    document.getElementById("cancel-trip-btn").addEventListener("click", cancelTripEditor);
+    document.getElementById("delete-trip-btn").addEventListener("click", confirmDeleteTrip);
+    document.getElementById("cover-upload").addEventListener("click", () => document.getElementById("cover-file-input").click());
+    document.getElementById("cover-file-input").addEventListener("change", handleCoverFileChange);
+    document.getElementById("cover-remove-btn").addEventListener("click", removeCoverPhoto);
+    document.getElementById("packing-add-btn").addEventListener("click", () => addChecklistItem("packingList", "packing-input", renderPackingList));
+    document.getElementById("packing-input").addEventListener("keydown", (e) => { if (e.key === "Enter") addChecklistItem("packingList", "packing-input", renderPackingList); });
+    document.getElementById("mustdo-add-btn").addEventListener("click", () => addChecklistItem("mustDo", "mustdo-input", renderMustDoList));
+    document.getElementById("mustdo-input").addEventListener("keydown", (e) => { if (e.key === "Enter") addChecklistItem("mustDo", "mustdo-input", renderMustDoList); });
+    document.getElementById("expense-add-btn").addEventListener("click", addExpense);
+    document.getElementById("expense-amount-input").addEventListener("keydown", (e) => { if (e.key === "Enter") addExpense(); });
+    document.getElementById("e-budget-total").addEventListener("input", () => { const t = currentTrip(); if (t) t.budgetTotal = document.getElementById("e-budget-total").value; renderExpenses(); });
+    document.querySelectorAll("[data-packing-template]").forEach((btn) => btn.addEventListener("click", () => applyPackingTemplate(btn.dataset.packingTemplate)));
+    document.getElementById("e-start").addEventListener("change", () => { syncOverviewIntoTrip(); if (activeEditorTab === "itinerary") renderItineraryPanel(); });
+    document.getElementById("e-end").addEventListener("change", () => { syncOverviewIntoTrip(); if (activeEditorTab === "itinerary") renderItineraryPanel(); });
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => { if (e.target.id === "app-modal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeModal(); closeAccentModal(); } });
+    document.getElementById("accent-open-btn").addEventListener("click", openAccentModal);
+    document.getElementById("accent-modal-close-btn").addEventListener("click", closeAccentModal);
+    document.getElementById("accent-modal-done-btn").addEventListener("click", closeAccentModal);
+    document.getElementById("accent-modal-overlay").addEventListener("click", (e) => { if (e.target.id === "accent-modal-overlay") closeAccentModal(); });
+    document.querySelectorAll(".mode-toggle-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        DB.mode = btn.dataset.modeKey;
+        sv();
+        applyAppearance();
+        renderAccentModal();
+      });
+    });
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+
+    enforceDemoTrial();
+    setInterval(enforceDemoTrial, 60000);
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileChange);
+  });
+</script>
+
+</body>
+</html>
