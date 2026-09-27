@@ -1,0 +1,12 @@
+{
+  "name": "Self-Love Routine Builder — Free Trial",
+  "short_name": "Self-Love Routine",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#e7e4f3",
+  "theme_color": "#b9a8d9",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
