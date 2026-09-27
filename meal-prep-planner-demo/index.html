@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Meal Prep Planner — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#f6ede1" id="theme-color-meta" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root, [data-theme="cream"] {
+    --bg-a: #f6ede1; --bg-b: #ecdcc7;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.72);
+    --accent-a: #e3a869; --accent-b: #c9823f;
+    --text: #2b1d10; --text-muted: #6b533b; --text-faint: #8c7256;
+    --border-soft: rgba(201, 130, 63, 0.26); --on-accent: #2b1d10;
+    --danger: #b5495a;
+  }
+  [data-theme="terracotta"] {
+    --bg-a: #f5e2d8; --bg-b: #e7c3af;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.72);
+    --accent-a: #e08a68; --accent-b: #c1633f;
+    --text: #331c12; --text-muted: #77462f; --text-faint: #96634a;
+    --border-soft: rgba(193, 99, 63, 0.28); --on-accent: #331c12;
+    --danger: #b5495a;
+  }
+  [data-theme="citrus"] {
+    --bg-a: #f7f0d8; --bg-b: #ecdfae;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.72);
+    --accent-a: #e8c257; --accent-b: #cf9f2e;
+    --text: #2c2410; --text-muted: #6b5c2e; --text-faint: #8c7c49;
+    --border-soft: rgba(207, 159, 46, 0.28); --on-accent: #2c2410;
+    --danger: #b5495a;
+  }
+  [data-theme="linen"] {
+    --bg-a: #f1ede4; --bg-b: #ded5c2;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.72);
+    --accent-a: #a9b98f; --accent-b: #7f9467;
+    --text: #23271c; --text-muted: #565f47; --text-faint: #77806a;
+    --border-soft: rgba(127, 148, 103, 0.26); --on-accent: #23271c;
+    --danger: #b5495a;
+  }
+  [data-theme="hearth"] {
+    --bg-a: #2b1c14; --bg-b: #14100c;
+    --card: rgba(50, 34, 24, 0.78); --card-hi: rgba(64, 44, 30, 0.85);
+    --accent-a: #f0a868; --accent-b: #d9823f;
+    --text: #fbf1e6; --text-muted: #d9bfa6; --text-faint: #b39a80;
+    --border-soft: rgba(217, 130, 63, 0.24); --on-accent: #2b1c14;
+    --danger: #e2777f;
+  }
+  [data-theme="sage"] {
+    --bg-a: #2b1c14; --bg-b: #14100c;
+    --card: rgba(50, 34, 24, 0.78); --card-hi: rgba(64, 44, 30, 0.85);
+    --accent-a: #a8cf9e; --accent-b: #7fae70;
+    --text: #f4faf1; --text-muted: #c4d6bc; --text-faint: #9fb597;
+    --border-soft: rgba(127, 174, 112, 0.24); --on-accent: #132313;
+    --danger: #e2777f;
+  }
+  [data-theme="berry"] {
+    --bg-a: #2b1c14; --bg-b: #14100c;
+    --card: rgba(50, 34, 24, 0.78); --card-hi: rgba(64, 44, 30, 0.85);
+    --accent-a: #e28a94; --accent-b: #c15a68;
+    --text: #fdf2f3; --text-muted: #d9b6ba; --text-faint: #b68f93;
+    --border-soft: rgba(193, 90, 104, 0.24); --on-accent: #2a0d10;
+    --danger: #e2777f;
+  }
+  [data-theme="midnight"] {
+    --bg-a: #1c2130; --bg-b: #0c0e16;
+    --card: rgba(30, 36, 52, 0.78); --card-hi: rgba(40, 47, 66, 0.85);
+    --accent-a: #d9c17a; --accent-b: #b89a4e;
+    --text: #f7f5ea; --text-muted: #c9c2a6; --text-faint: #a39c81;
+    --border-soft: rgba(184, 154, 78, 0.22); --on-accent: #241c06;
+    --danger: #e2777f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, var(--bg-a), var(--bg-b));
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+  .app { width: 100%; max-width: 480px; min-height: 100vh; padding: 1.1rem 1rem 2rem; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.1rem; gap: 0.6rem; }
+  .header-text { display: flex; flex-direction: column; gap: 0.15rem; }
+  .eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-faint); }
+  .app-name { font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 500; font-size: 1.55rem; color: var(--text); }
+  .app-subtitle { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+  .header-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+  .theme-btn {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-soft);
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  main { width: 100%; }
+  .screen { display: none; width: 100%; }
+  .screen.active-screen { display: block; }
+  .card {
+    background: var(--card); border: 1px solid var(--border-soft); border-radius: 1.1rem;
+    padding: 1.1rem 1.05rem; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12); margin-bottom: 0.85rem;
+    backdrop-filter: blur(6px);
+  }
+  .card-header { margin-bottom: 0.7rem; }
+  .card-title { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.1rem; color: var(--text); }
+  .card-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+  .note { margin-top: 0.7rem; font-size: 0.72rem; color: var(--text-faint); line-height: 1.55; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .stat-row + .stat-row { margin-top: 0.55rem; }
+  .stat { background: rgba(255, 255, 255, 0.35); border: 1px solid var(--border-soft); border-radius: 0.75rem; padding: 0.6rem 0.5rem; text-align: center; }
+  .stat-value { font-family: "Fraunces", Georgia, serif; font-size: 1.2rem; color: var(--text); }
+  .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+
+  .progress-container { background: rgba(255, 255, 255, 0.35); border: 1px solid var(--border-soft); border-radius: 999px; height: 10px; width: 100%; overflow: hidden; margin-top: 0.5rem; }
+  .progress-fill { background: linear-gradient(90deg, var(--accent-a), var(--accent-b)); height: 100%; width: 0%; border-radius: 999px; transition: width 0.5s ease; }
+  .progress-score-text { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+  .btn-primary {
+    width: 100%; padding: 0.65rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
+  }
+  .btn-primary:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .btn-secondary {
+    width: 100%; padding: 0.6rem; border-radius: 999px; margin-top: 0.5rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.76rem; cursor: pointer;
+  }
+
+  .subtab-row { display: flex; gap: 0.35rem; margin-bottom: 0.85rem; overflow-x: auto; }
+  .subtab {
+    flex-shrink: 0; padding: 0.4rem 0.7rem; border-radius: 999px; font-size: 0.68rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); cursor: pointer;
+  }
+  .subtab.active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; border-color: transparent; }
+
+  .field { margin-bottom: 0.75rem; }
+  .field label { display: block; font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+  .field textarea, .field input, .field select {
+    width: 100%; padding: 0.65rem 0.75rem; border-radius: 0.75rem;
+    border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.35);
+    color: var(--text); font-family: "Inter", sans-serif; font-size: 0.82rem; line-height: 1.5;
+  }
+  .field textarea { min-height: 74px; resize: vertical; }
+  .field textarea:focus-visible, .field input:focus-visible, .field select:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .checkbox-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+  .checkbox-row input { width: auto; }
+
+  .list-item {
+    background: rgba(255, 255, 255, 0.35); border: 1px solid var(--border-soft); border-radius: 0.85rem;
+    padding: 0.7rem 0.8rem; margin-bottom: 0.5rem;
+  }
+  .list-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+  .list-item-title { font-size: 0.86rem; color: var(--text); font-weight: 600; line-height: 1.4; }
+  .list-item-sub { font-size: 0.7rem; color: var(--text-faint); margin-top: 0.2rem; }
+  .list-item-actions { display: flex; gap: 0.6rem; margin-top: 0.55rem; flex-wrap: wrap; }
+  .list-item-action-btn { background: none; border: none; color: var(--text-muted); font-size: 0.68rem; cursor: pointer; padding: 0; }
+  .list-item-action-btn:hover { color: var(--text); }
+  .list-item-action-btn.danger:hover { color: var(--danger); }
+  .list-item-action-btn.strong { color: var(--accent-b); font-weight: 600; }
+
+  .badge { display: inline-block; font-size: 0.6rem; padding: 0.15rem 0.5rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.3rem; margin-right: 0.3rem; }
+  .badge-tag { background: rgba(255, 255, 255, 0.4); color: var(--text-muted); border: 1px solid var(--border-soft); }
+  .badge-ok { background: rgba(127, 174, 112, 0.22); color: var(--text); }
+  .badge-soon { background: rgba(232, 194, 87, 0.3); color: var(--text); }
+  .badge-expired { background: rgba(226, 119, 127, 0.3); color: var(--text); }
+  .badge-low { background: rgba(224, 138, 104, 0.3); color: var(--text); }
+
+  .empty-state { margin-top: 0.7rem; padding: 1.1rem 0.9rem; border: 1px dashed var(--border-soft); border-radius: 0.85rem; text-align: center; font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+  .attn-row { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-soft); font-size: 0.78rem; }
+  .attn-row:last-child { border-bottom: none; }
+
+  .backup-status-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.35); }
+  .backup-status-text { font-size: 0.75rem; color: var(--text-muted); }
+  .backup-status-sub { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.1rem; }
+  .backup-badge { font-size: 0.62rem; padding: 0.2rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .backup-badge.connected { color: #16210f; background: linear-gradient(135deg, #b7d99a, #8ab86a); }
+  .backup-badge.disconnected { color: var(--text-faint); background: rgba(255, 255, 255, 0.4); }
+  .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
+  .backup-btn { padding: 0.6rem 0.5rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: transparent; color: var(--text); font-size: 0.74rem; font-weight: 500; cursor: pointer; font-family: "Inter", sans-serif; }
+  .backup-btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+  .backup-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
+  .backup-section-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20, 15, 10, 0.45); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft);
+    border-top-left-radius: 1.4rem; border-top-right-radius: 1.4rem;
+    padding: 1.3rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom)); width: 100%; max-width: 480px;
+    max-height: 84vh; overflow-y: auto; box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.2); animation: modalUp 0.28s ease-out;
+    backdrop-filter: blur(10px);
+  }
+  @keyframes modalUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .modal-title { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.25rem; color: var(--text); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--text-muted); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .modal-body-text { margin-top: 0.7rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; white-space: pre-wrap; }
+  .modal-cta { margin-top: 1.1rem; width: 100%; padding: 0.7rem; border-radius: 999px; border: none; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .modal-cta.danger { background: linear-gradient(135deg, #eba3ac, var(--danger)); color: #2a0a0c; }
+  .modal-cta-secondary { margin-top: 0.6rem; width: 100%; padding: 0.65rem; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; }
+
+  .toast {
+    position: fixed; bottom: 1.6rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--card-hi); border: 1px solid var(--border-soft); color: var(--text);
+    font-size: 0.78rem; padding: 0.6rem 1rem; border-radius: 999px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000;
+    white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+    backdrop-filter: blur(8px);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-action { color: var(--text); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; }
+
+  .demo-banner {
+    margin: -1.1rem -1rem 0.85rem -1rem;
+    padding: 0.55rem 1rem;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 0.01em;
+  }
+  .demo-banner a { color: var(--on-accent); text-decoration: underline; }
+
+  .upsell-card {
+    background: linear-gradient(155deg, var(--accent-a), var(--accent-b));
+    border-radius: 1rem;
+    padding: 1rem 1.05rem;
+    color: var(--on-accent);
+    margin-top: 0.5rem;
+  }
+  .upsell-card .upsell-title { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.05rem; margin-bottom: 0.4rem; }
+  .upsell-card p { font-size: 0.8rem; line-height: 1.55; margin-bottom: 0.8rem; }
+  .upsell-card a.btn-primary { display: block; text-align: center; text-decoration: none; background: var(--on-accent); color: var(--accent-b); }
+
+  #trial-lock {
+    position: fixed; inset: 0; z-index: 2000; display: none;
+    align-items: center; justify-content: center; padding: 1.5rem;
+    background: rgba(20, 15, 10, 0.72); backdrop-filter: blur(8px);
+    text-align: center;
+  }
+  #trial-lock.show { display: flex; }
+  #trial-lock .lock-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft); border-radius: 1.2rem;
+    padding: 1.8rem 1.5rem; max-width: 340px; color: var(--text);
+  }
+  #trial-lock .lock-title { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.3rem; margin-bottom: 0.6rem; }
+  #trial-lock p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.1rem; }
+  #trial-lock a.btn-primary { display: block; text-decoration: none; }
+</style>
+</head>
+<body data-theme="cream">
+
+<div class="app">
+  <div class="demo-banner" id="demo-banner"></div>
+  <header>
+    <div class="header-text">
+      <div class="eyebrow">Mobile First Studio</div>
+      <div class="app-name">Meal Prep Planner</div>
+      <div class="app-subtitle">Batch it once, eat well all week.</div>
+    </div>
+    <div class="header-actions">
+      <button class="theme-btn" id="theme-btn" title="Change theme">✨</button>
+      <button class="theme-btn" id="backup-btn" title="Backup &amp; Sync">☁</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- MAIN -->
+    <section id="screen-home" class="screen active-screen">
+      <section class="card">
+        <div class="card-header"><div class="card-title">Prep Overview</div></div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-value" id="stat-active">0</div><div class="stat-label">Active sessions</div></div>
+          <div class="stat"><div class="stat-value" id="stat-remaining">0</div><div class="stat-label">Portions left</div></div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-value" id="stat-week">0</div><div class="stat-label">Eaten this week</div></div>
+          <div class="stat"><div class="stat-value" id="stat-completed">0</div><div class="stat-label">Completed all-time</div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Prep Sessions</div>
+          <div class="card-subtitle">Batches you've made, and what's left of them.</div>
+        </div>
+        <button class="btn-primary" id="add-session-btn">Log a prep session</button>
+        <div class="subtab-row" style="margin-top:0.85rem;">
+          <button class="subtab active" data-session-tab="active">Active</button>
+          <button class="subtab" data-session-tab="finished">Finished</button>
+        </div>
+        <div id="session-list"></div>
+      </section>
+    </section>
+
+    <!-- BACKUP -->
+    <section id="screen-backup" class="screen">
+      <section class="card">
+        <div class="card-header" style="display:flex;align-items:flex-start;gap:0.6rem;">
+          <button id="backup-back-btn" style="background:none;border:none;font-size:1.1rem;color:var(--text-muted);cursor:pointer;padding:0;line-height:1.3;">‹</button>
+          <div>
+            <div class="card-title">Backup &amp; Sync</div>
+            <div class="card-subtitle">Keep your prep sessions safe.</div>
+          </div>
+        </div>
+        <div class="upsell-card">
+          <div class="upsell-title">Back up to your own Google Drive</div>
+          <p>The full version backs up your prep sessions to your own Google Drive automatically, plus keeps a week of daily snapshots, so you never lose a batch even if you switch phones.</p>
+          <a class="btn-primary" href="https://www.etsy.com/listing/4563447990/meal-prep-planner-app-track-batch" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+        </div>
+        <div class="backup-divider">
+          <div class="backup-section-label">Local backup file</div>
+          <div class="backup-actions">
+            <button class="backup-btn" id="export-btn">Export backup file</button>
+            <button class="backup-btn" id="import-btn">Import backup file</button>
+          </div>
+          <div id="local-restore-undo-slot"></div>
+        </div>
+        <div class="note">Exporting or backing up saves everything in this app. It never includes anything else from your device.</div>
+      </section>
+    </section>
+
+  </main>
+
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+</div>
+
+<!-- SHARED MODAL -->
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body-text" id="modal-body-text"></div>
+    <div id="modal-extra-body"></div>
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta-secondary" id="modal-secondary-btn"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div id="trial-lock">
+  <div class="lock-card">
+    <div class="lock-title">Your free trial has ended</div>
+    <p>Thanks for trying Meal Prep Planner! Unlock the full app to keep logging your batches and keep everything you've saved.</p>
+    <a class="btn-primary" href="https://www.etsy.com/listing/4563447990/meal-prep-planner-app-track-batch" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+</div>
+
+<script>
+  /* =========================================================
+     STORAGE
+     ========================================================= */
+  const STORE_KEY = "mpp_data_demo_v1";
+  const DEMO_SINCE_KEY = "mpp_demo_since";
+  const TRIAL_DAYS = 14;
+  const ETSY_URL = "https://www.etsy.com/listing/4563447990/meal-prep-planner-app-track-batch";
+  function defaultDB() {
+    return { theme: "cream", sessions: [], eatenEvents: [] };
+  }
+  let DB = defaultDB();
+  function ld() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) DB = Object.assign(defaultDB(), JSON.parse(raw));
+    } catch (e) { DB = defaultDB(); }
+  }
+  function sv() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+    scheduleAutoBackup();
+  }
+
+  function todayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+  function uid() { return Date.now() + Math.floor(Math.random() * 1000); }
+  function daysBetween(a, b) { return Math.round((b - a) / 86400000); }
+
+  /* =========================================================
+     FREE TRIAL
+     ========================================================= */
+  function demoTrialDaysLeft() {
+    let since = localStorage.getItem(DEMO_SINCE_KEY);
+    if (!since) {
+      since = new Date().toISOString();
+      localStorage.setItem(DEMO_SINCE_KEY, since);
+    }
+    const daysUsed = Math.floor((Date.now() - new Date(since).getTime()) / 86400000);
+    return Math.max(0, TRIAL_DAYS - daysUsed);
+  }
+  function enforceDemoTrial() {
+    const daysLeft = demoTrialDaysLeft();
+    const banner = document.getElementById("demo-banner");
+    if (banner) {
+      banner.innerHTML = daysLeft > 0
+        ? `Free trial &middot; ${daysLeft} day${daysLeft === 1 ? "" : "s"} left &middot; <a href="${ETSY_URL}" target="_blank" rel="noopener">Unlock the full app &rarr;</a>`
+        : `Your free trial has ended &middot; <a href="${ETSY_URL}" target="_blank" rel="noopener">Unlock the full app &rarr;</a>`;
+    }
+    const lock = document.getElementById("trial-lock");
+    if (lock) {
+      if (daysLeft <= 0) { lock.classList.add("show"); document.body.style.overflow = "hidden"; }
+      else { lock.classList.remove("show"); document.body.style.overflow = ""; }
+    }
+  }
+
+  /* =========================================================
+     THEME
+     ========================================================= */
+  const THEMES = ["cream", "terracotta", "citrus", "linen", "hearth", "sage", "berry", "midnight"];
+  const THEME_COLORS = { cream: "#f6ede1", terracotta: "#f5e2d8", citrus: "#f7f0d8", linen: "#f1ede4", hearth: "#14100c", sage: "#14100c", berry: "#14100c", midnight: "#0c0e16" };
+  function applyTheme() {
+    document.body.setAttribute("data-theme", DB.theme);
+    document.getElementById("theme-color-meta").setAttribute("content", THEME_COLORS[DB.theme]);
+  }
+  function cycleTheme() {
+    const idx = THEMES.indexOf(DB.theme);
+    DB.theme = THEMES[(idx + 1) % THEMES.length];
+    sv(); applyTheme();
+    showToast(`Theme: ${DB.theme[0].toUpperCase() + DB.theme.slice(1)}`);
+  }
+
+  /* =========================================================
+     TOAST
+     ========================================================= */
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => { onAction(); el.classList.remove("show"); });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+
+  /* =========================================================
+     SHARED MODAL
+     ========================================================= */
+  function openModal({ title, bodyText, extraHtml, ctaLabel, onCta, ctaDanger, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+    document.getElementById("modal-extra-body").innerHTML = extraHtml || "";
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    if (ctaLabel) {
+      ctaBtn.style.display = "block";
+      ctaBtn.textContent = ctaLabel;
+      ctaBtn.classList.toggle("danger", !!ctaDanger);
+      ctaBtn.onclick = onCta || null;
+    } else { ctaBtn.style.display = "none"; ctaBtn.onclick = null; }
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    if (secondaryLabel) {
+      secondaryBtn.style.display = "block";
+      secondaryBtn.textContent = secondaryLabel;
+      secondaryBtn.onclick = onSecondary || closeModal;
+    } else { secondaryBtn.style.display = "none"; secondaryBtn.onclick = null; }
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function closeModal() { document.getElementById("app-modal").classList.remove("open"); }
+
+  /* =========================================================
+     TAB NAVIGATION
+     ========================================================= */
+  function switchToTab(targetId) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
+    document.getElementById(targetId).classList.add("active-screen");
+    if (targetId === "screen-home") { renderOverview(); renderSessions(); }
+    if (targetId === "screen-backup") { renderLocalRestoreUndo(); }
+  }
+
+  /* =========================================================
+     SESSION STATUS + STATS
+     ========================================================= */
+  function useByStatus(session) {
+    if (!session.useBy) return "ok";
+    const days = daysBetween(new Date(todayKey(new Date()) + "T00:00:00"), new Date(session.useBy + "T00:00:00"));
+    if (days < 0) return "expired";
+    if (days <= 3) return "soon";
+    return "ok";
+  }
+  function isFinished(s) { return s.portionsRemaining <= 0; }
+  function activeSessions() {
+    return DB.sessions.filter((s) => !isFinished(s)).sort((a, b) => (a.useBy || "").localeCompare(b.useBy || ""));
+  }
+  function finishedSessions() {
+    return DB.sessions.filter(isFinished).sort((a, b) => (b.finishedAt || "").localeCompare(a.finishedAt || ""));
+  }
+  function eatenThisWeek() {
+    const today = new Date(todayKey(new Date()) + "T00:00:00");
+    return DB.eatenEvents.reduce((sum, e) => {
+      const d = new Date(e.date + "T00:00:00");
+      const days = daysBetween(d, today);
+      return (days >= 0 && days <= 6) ? sum + e.qty : sum;
+    }, 0);
+  }
+  function logEaten(session, qty) {
+    qty = Math.max(0, Math.min(qty, session.portionsRemaining));
+    if (qty <= 0) return;
+    session.portionsRemaining -= qty;
+    DB.eatenEvents.push({ date: todayKey(new Date()), qty });
+    if (session.portionsRemaining <= 0) {
+      session.portionsRemaining = 0;
+      session.finishedAt = new Date().toISOString();
+    }
+    sv();
+  }
+  function findSession(id) { return DB.sessions.find((s) => s.id === id); }
+
+  /* =========================================================
+     OVERVIEW
+     ========================================================= */
+  function renderOverview() {
+    const active = activeSessions();
+    const remaining = active.reduce((sum, s) => sum + s.portionsRemaining, 0);
+    document.getElementById("stat-active").textContent = active.length;
+    document.getElementById("stat-remaining").textContent = remaining;
+    document.getElementById("stat-week").textContent = eatenThisWeek();
+    document.getElementById("stat-completed").textContent = finishedSessions().length;
+  }
+
+  /* =========================================================
+     SESSION LIST
+     ========================================================= */
+  let sessionTab = "active";
+  function dishesTitle(dishes) {
+    if (!dishes.length) return "(no dishes listed)";
+    if (dishes.length <= 2) return dishes.join(", ");
+    return dishes.slice(0, 2).join(", ") + ` +${dishes.length - 2} more`;
+  }
+  function fmtDate(iso) {
+    if (!iso) return "";
+    return new Date(iso + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  }
+  function renderSessions() {
+    const listEl = document.getElementById("session-list");
+    if (sessionTab === "active") {
+      const items = activeSessions();
+      if (!items.length) {
+        listEl.innerHTML = `<div class="empty-state">No active prep sessions. Log one above to get started.</div>`;
+        return;
+      }
+      listEl.innerHTML = items.map((s) => {
+        const status = useByStatus(s);
+        let badge = `<span class="badge badge-tag">${s.location}</span>`;
+        if (status === "expired") badge += `<span class="badge badge-expired">Expired</span>`;
+        else if (status === "soon") badge += `<span class="badge badge-soon">Use soon</span>`;
+        else badge += `<span class="badge badge-ok">Fresh</span>`;
+        const pct = s.portionsTotal > 0 ? Math.round((s.portionsRemaining / s.portionsTotal) * 100) : 0;
+        return `
+          <div class="list-item" data-session-id="${s.id}">
+            <div class="list-item-top">
+              <div style="flex:1;min-width:0;">
+                <div class="list-item-title">${dishesTitle(s.dishes)}</div>
+                <div class="list-item-sub">${s.portionsRemaining}/${s.portionsTotal} portions remaining${s.useBy ? " · use by " + fmtDate(s.useBy) : ""}</div>
+                <div>${badge}</div>
+                <div class="progress-container"><div class="progress-fill" style="width:${pct}%;"></div></div>
+              </div>
+            </div>
+            <div class="list-item-actions">
+              <button class="list-item-action-btn strong" data-eat-one="${s.id}">−1 portion</button>
+              <button class="list-item-action-btn strong" data-eat-all="${s.id}">Eat all remaining</button>
+            </div>
+            <div class="list-item-actions">
+              <button class="list-item-action-btn" data-edit-session="${s.id}">Edit</button>
+              <button class="list-item-action-btn danger" data-delete-session="${s.id}">Delete</button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    } else {
+      const items = finishedSessions();
+      if (!items.length) {
+        listEl.innerHTML = `<div class="empty-state">No finished sessions yet. Sessions land here once every portion is eaten.</div>`;
+        return;
+      }
+      listEl.innerHTML = items.map((s) => `
+        <div class="list-item" data-session-id="${s.id}">
+          <div class="list-item-top">
+            <div style="flex:1;min-width:0;">
+              <div class="list-item-title">${dishesTitle(s.dishes)}</div>
+              <div class="list-item-sub">${s.portionsTotal} portions · ${s.location}${s.finishedAt ? " · finished " + new Date(s.finishedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""}</div>
+              <div><span class="badge badge-tag">${s.location}</span><span class="badge badge-ok">Done</span></div>
+            </div>
+          </div>
+          <div class="list-item-actions">
+            <button class="list-item-action-btn danger" data-delete-session="${s.id}">Delete</button>
+          </div>
+        </div>
+      `).join("");
+    }
+  }
+  document.querySelectorAll("[data-session-tab]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      sessionTab = btn.dataset.sessionTab;
+      document.querySelectorAll("[data-session-tab]").forEach((b) => b.classList.toggle("active", b === btn));
+      renderSessions();
+    });
+  });
+  document.getElementById("session-list").addEventListener("click", (e) => {
+    const eatOne = e.target.closest("[data-eat-one]");
+    if (eatOne) {
+      const s = findSession(Number(eatOne.dataset.eatOne));
+      if (s) {
+        logEaten(s, 1);
+        renderOverview(); renderSessions();
+        showToast(isFinished(s) ? "Last portion eaten — session finished!" : "Logged 1 portion eaten.");
+      }
+      return;
+    }
+    const eatAll = e.target.closest("[data-eat-all]");
+    if (eatAll) {
+      const s = findSession(Number(eatAll.dataset.eatAll));
+      if (s) {
+        const qty = s.portionsRemaining;
+        logEaten(s, qty);
+        renderOverview(); renderSessions();
+        showToast("All remaining portions eaten — session finished!");
+      }
+      return;
+    }
+    const edit = e.target.closest("[data-edit-session]");
+    if (edit) { openSessionForm(Number(edit.dataset.editSession)); return; }
+    const del = e.target.closest("[data-delete-session]");
+    if (del) { confirmDeleteSession(Number(del.dataset.deleteSession)); }
+  });
+
+  /* =========================================================
+     LOG / EDIT SESSION FORM
+     ========================================================= */
+  function openSessionForm(existingId) {
+    const existing = existingId ? findSession(existingId) : null;
+    const today = todayKey(new Date());
+    const extraHtml = `
+      <div class="field"><label>Date made</label><input type="date" id="sf-date" value="${existing ? existing.dateMade : today}" /></div>
+      <div class="field"><label>Dishes made (one per line)</label><textarea id="sf-dishes" placeholder="Chicken stir fry&#10;Steamed rice&#10;Roasted broccoli">${existing ? existing.dishes.join("\n") : ""}</textarea></div>
+      <div class="field-row">
+        <div class="field"><label>Total portions made</label><input type="number" id="sf-total" min="1" step="1" value="${existing ? existing.portionsTotal : 4}" /></div>
+        <div class="field"><label>Storage location</label>
+          <select id="sf-location">
+            ${["Fridge", "Freezer"].map((l) => `<option value="${l}" ${existing && existing.location === l ? "selected" : ""}>${l}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+      ${existing ? `<div class="field"><label>Portions remaining</label><input type="number" id="sf-remaining" min="0" step="1" value="${existing.portionsRemaining}" /></div>` : ""}
+      <div class="field"><label>Use-by date</label><input type="date" id="sf-useby" value="${existing ? existing.useBy || "" : ""}" /></div>
+    `;
+    openModal({
+      title: existing ? "Edit Prep Session" : "Log a Prep Session",
+      extraHtml,
+      ctaLabel: existing ? "Save changes" : "Save session",
+      onCta: () => {
+        const dateMade = document.getElementById("sf-date").value || today;
+        const dishes = document.getElementById("sf-dishes").value.split("\n").map((s) => s.trim()).filter(Boolean);
+        if (!dishes.length) { showToast("List at least one dish."); return; }
+        const totalRaw = Number(document.getElementById("sf-total").value);
+        const portionsTotal = Math.max(1, Math.floor(totalRaw) || 0);
+        if (!portionsTotal) { showToast("Enter how many portions this made."); return; }
+        const location = document.getElementById("sf-location").value;
+        const useBy = document.getElementById("sf-useby").value;
+        if (!useBy) { showToast("Set a use-by date."); return; }
+        if (existing) {
+          let remaining = Number(document.getElementById("sf-remaining").value);
+          if (isNaN(remaining)) remaining = existing.portionsRemaining;
+          remaining = Math.max(0, Math.min(portionsTotal, Math.floor(remaining)));
+          const wasFinished = isFinished(existing);
+          Object.assign(existing, { dateMade, dishes, portionsTotal, location, useBy, portionsRemaining: remaining });
+          if (remaining <= 0 && !existing.finishedAt) existing.finishedAt = new Date().toISOString();
+          if (remaining > 0) existing.finishedAt = null;
+          showToast("Session updated.");
+        } else {
+          DB.sessions.push({
+            id: uid(), dateMade, dishes, portionsTotal, portionsRemaining: portionsTotal,
+            location, useBy, createdAt: new Date().toISOString(), finishedAt: null
+          });
+          showToast("Prep session logged.");
+        }
+        sv(); closeModal(); renderOverview(); renderSessions();
+      },
+      secondaryLabel: "Cancel", onSecondary: closeModal
+    });
+  }
+  function confirmDeleteSession(id) {
+    openModal({
+      title: "Delete this session?",
+      bodyText: "This can't be undone once confirmed.",
+      ctaLabel: "Delete", ctaDanger: true,
+      onCta: () => {
+        DB.sessions = DB.sessions.filter((s) => s.id !== id);
+        sv(); closeModal(); renderOverview(); renderSessions();
+        showToast("Session deleted.");
+      },
+      secondaryLabel: "Keep it", onSecondary: closeModal
+    });
+  }
+  document.getElementById("add-session-btn").addEventListener("click", () => openSessionForm(null));
+
+  /* =========================================================
+     RESTORE — shared confirmation flow using the existing
+     shared modal.
+     ========================================================= */
+  function dataSummary(db) {
+    db = db || DB;
+    return Array.isArray(db.sessions) ? db.sessions.length : 0;
+  }
+  let _pendingRestoreData = null;
+  function openRestoreConfirm(data, sourceLabel) {
+    _pendingRestoreData = data;
+    const incoming = dataSummary(data);
+    const current = dataSummary(DB);
+    let body = `This backup has ${incoming} prep session${incoming === 1 ? "" : "s"}. Your current data has ${current}. Restoring replaces what you have now — you can undo it right after if needed.`;
+    if (incoming < current) {
+      body = `⚠ This backup has FEWER sessions (${incoming}) than your current data (${current}). Double-check this is the right one before continuing.`;
+    }
+    openModal({
+      title: `Restore from ${sourceLabel}?`,
+      bodyText: body,
+      ctaLabel: "Yes, restore",
+      onCta: confirmRestoreNow,
+      secondaryLabel: "Cancel",
+      onSecondary: () => { _pendingRestoreData = null; closeModal(); }
+    });
+  }
+  function confirmRestoreNow() {
+    if (!_pendingRestoreData) { closeModal(); return; }
+    try { localStorage.setItem("mpp_pre_restore_snapshot", JSON.stringify({ data: DB, ts: Date.now() })); } catch (e) {}
+    DB = Object.assign(defaultDB(), _pendingRestoreData);
+    _pendingRestoreData = null;
+    sv(); closeModal(); applyTheme();
+    renderOverview(); renderSessions();
+    renderLocalRestoreUndo();
+    showToast("Restored!");
+  }
+  function undoLastRestore() {
+    try {
+      const raw = localStorage.getItem("mpp_pre_restore_snapshot");
+      if (!raw) { showToast("Nothing to undo."); return; }
+      const snap = JSON.parse(raw);
+      DB = Object.assign(defaultDB(), snap.data);
+      localStorage.removeItem("mpp_pre_restore_snapshot");
+      sv(); applyTheme();
+      renderOverview(); renderSessions();
+      renderLocalRestoreUndo();
+      showToast("Restore undone.");
+    } catch (e) { showToast("Could not undo."); }
+  }
+  function renderLocalRestoreUndo() {
+    const el = document.getElementById("local-restore-undo-slot");
+    if (!el) return;
+    const hasUndo = !!localStorage.getItem("mpp_pre_restore_snapshot");
+    el.innerHTML = hasUndo
+      ? '<button class="backup-btn" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger);" onclick="undoLastRestore()">Undo Last Restore</button>'
+      : '';
+  }
+
+  /* =========================================================
+     LOCAL FILE BACKUP — real export + real import
+     ========================================================= */
+  function buildBackupPayload() {
+    return JSON.stringify({ ...DB, exportedAt: new Date().toISOString(), source: "Meal Prep Planner" }, null, 2);
+  }
+  function localDateStr(d) {
+    d = d || new Date();
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+  function exportBackupFile() {
+    try {
+      const content = buildBackupPayload();
+      const blob = new Blob([content], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `meal-prep-planner-backup-${localDateStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast("Backup file downloaded.");
+    } catch (e) {
+      showToast("Export failed — try a different browser.");
+    }
+  }
+  function triggerImportPicker() { document.getElementById("import-file-input").click(); }
+  function handleImportFileSelected(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const data = JSON.parse(evt.target.result);
+        if (!data || !Array.isArray(data.sessions)) { showToast("That file doesn't look like a valid backup."); return; }
+        openRestoreConfirm(data, `the file "${file.name}"`);
+      } catch (err) { showToast("Could not read that file."); }
+    };
+    reader.onerror = () => showToast("Error reading file.");
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
+  /* =========================================================
+     GOOGLE DRIVE BACKUP — removed for the free-trial demo.
+     scheduleAutoBackup() kept as a no-op stub since sv() calls it.
+     ========================================================= */
+  function scheduleAutoBackup() {}
+
+  /* =========================================================
+     INIT
+     ========================================================= */
+  document.addEventListener("DOMContentLoaded", () => {
+    ld();
+    applyTheme();
+    renderOverview();
+    renderSessions();
+    renderLocalRestoreUndo();
+    enforceDemoTrial();
+    setInterval(enforceDemoTrial, 60000);
+
+    document.getElementById("theme-btn").addEventListener("click", cycleTheme);
+    document.getElementById("backup-btn").addEventListener("click", () => {
+      const onBackup = document.getElementById("screen-backup").classList.contains("active-screen");
+      switchToTab(onBackup ? "screen-home" : "screen-backup");
+    });
+    document.getElementById("backup-back-btn").addEventListener("click", () => switchToTab("screen-home"));
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => { if (e.target.id === "app-modal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileSelected);
+  });
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
