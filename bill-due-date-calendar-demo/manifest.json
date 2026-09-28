@@ -1,0 +1,18 @@
+{
+  "name": "Bill Due Date Calendar (Free Trial)",
+  "short_name": "Bill Calendar",
+  "description": "Track recurring bills, due dates, and overdue status so you never miss a payment.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f4c75",
+  "theme_color": "#0f4c75",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "categories": ["finance", "lifestyle"],
+  "lang": "en-US"
+}
