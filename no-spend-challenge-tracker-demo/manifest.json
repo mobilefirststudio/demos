@@ -1,0 +1,16 @@
+{
+  "name": "No-Spend Challenge Tracker Demo",
+  "short_name": "No-Spend Demo",
+  "description": "Free trial demo of No-Spend Challenge Tracker by Mobile First Studio",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f4c75",
+  "theme_color": "#0f4c75",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
