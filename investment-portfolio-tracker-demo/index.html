@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<link rel="icon" href="icon-192.png" type="image/png"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<meta property="og:image" content="icon-512.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" id="meta-theme" content="#0f4c75"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Investment Portfolio Tracker — Mobile First Studio</title>
+<script>(function(){function setAppHeight(){document.documentElement.style.setProperty('--app-height',window.innerHeight+'px');}setAppHeight();window.addEventListener('resize',setAppHeight);window.addEventListener('orientationchange',setAppHeight);})();</script>
+<style>
+:root{--navy:#0f4c75;--navy-dark:#0a3554;--navy-light:#1a6ba0;--teal:#1ecbe1;--teal-dark:#17a8bb;--amount-color:var(--navy);--nav-active-color:var(--navy);--bg:#fff;--bg-soft:#f5f7fa;--bg-card:#fff;--ink:#1a1e2e;--ink-muted:#5a6070;--ink-faint:#9aa0b0;--border:#e4e8f0;--border-strong:#c8d2de;--success:#12b76a;--success-soft:#ecfdf3;--danger:#f04438;--danger-soft:#fef3f2;--warning:#f79009;--warning-soft:#fffaeb;--blue:#2c5282;--blue-soft:#ebf0fa;--shadow:0 2px 8px rgba(15,76,117,0.07),0 4px 16px rgba(15,76,117,0.05);}
+[data-mode="dark"]{--bg:#0f1117;--bg-soft:#181b24;--bg-card:#1e2230;--ink:#e8edf5;--ink-muted:#8b95a8;--ink-faint:#4a5060;--border:#252b38;--border-strong:#323a4a;--shadow:0 2px 8px rgba(0,0,0,0.4),0 4px 16px rgba(0,0,0,0.3);--success-soft:rgba(18,183,106,0.12);--danger-soft:rgba(240,68,56,0.12);--warning-soft:rgba(247,144,9,0.12);--blue-soft:rgba(44,82,130,0.2);--amount-color:#cfd5e2;--nav-active-color:#9ca2ac;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{height:100%;}
+body{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;background:var(--bg-soft);color:var(--ink);height:100dvh;height:var(--app-height,100dvh);overflow:hidden;display:flex;justify-content:center;-webkit-font-smoothing:antialiased;}
+.app{width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.app-header{background:linear-gradient(160deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-light) 100%);padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 14px;flex-shrink:0;}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.header-eyebrow{font-size:0.62rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);font-weight:600;text-transform:uppercase;}
+.header-title{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-0.02em;margin-top:2px;}
+.header-btns{display:flex;gap:8px;}
+.hdr-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
+.header-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.header-chip{background:rgba(255,255,255,0.1);border-radius:10px;padding:9px 12px;border:1px solid rgba(255,255,255,0.12);}
+.header-chip-label{font-size:0.62rem;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
+.header-chip-val{font-size:1.3rem;font-weight:800;color:#fff;font-family:"Inter",sans-serif;letter-spacing:-0.02em;margin-top:1px;}
+.header-chip-val.success-light{color:#86efac;}
+.header-chip-val.danger-light{color:#fca5a5;}
+.header-chip-sub{font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:1px;}
+.tab-bar{background:var(--bg-card);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;flex-shrink:0;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{flex:0 0 auto;padding:10px 14px;border:none;background:transparent;font-size:0.78rem;font-weight:600;color:var(--ink-faint);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all 0.15s;}
+.tab-btn.active{color:var(--nav-active-color);border-bottom-color:var(--nav-active-color);}
+.content{flex:1;overflow-y:auto;padding:14px 14px calc(80px + env(safe-area-inset-bottom,0px));background:var(--bg-soft);-webkit-overflow-scrolling:touch;}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);}
+.card-title{font-size:0.88rem;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.sl{font-size:0.67rem;letter-spacing:0.1em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-bottom:8px;margin-top:4px;}
+.ledger-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.ledger-row:last-child{border-bottom:none;}
+.ledger-info{flex:1;min-width:0;}
+.ledger-desc{font-size:0.86rem;font-weight:600;color:var(--ink);}
+.ledger-date{font-size:0.7rem;color:var(--ink-muted);margin-top:2px;font-style:italic;}
+.ledger-right{text-align:right;flex-shrink:0;}
+.ledger-amt{font-size:0.9rem;font-weight:700;font-family:"Inter",sans-serif;}
+.ledger-amt.pos{color:var(--success);}
+.ledger-amt.neg{color:var(--danger);}
+.summary-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.summary-chip{background:var(--bg-card);border-radius:10px;padding:11px 13px;border:1px solid var(--border);}
+.summary-chip-label{font-size:0.65rem;letter-spacing:0.08em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;}
+.summary-chip-val{font-size:1.1rem;font-weight:800;font-family:"Inter",sans-serif;margin-top:3px;}
+.summary-chip-val.pos{color:var(--success);}
+.summary-chip-val.neg{color:var(--danger);}
+.holding-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow);cursor:pointer;}
+.holding-card-header{display:flex;justify-content:space-between;align-items:flex-start;}
+.holding-name{font-size:0.92rem;font-weight:700;color:var(--ink);}
+.holding-category-badge{font-size:0.62rem;letter-spacing:0.07em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-top:2px;}
+.holding-value{font-size:1.3rem;font-weight:800;color:var(--ink);font-family:"Inter",sans-serif;letter-spacing:-0.02em;}
+.holding-value-label{font-size:0.65rem;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;text-align:right;}
+.gainloss-badge{display:inline-flex;align-items:center;gap:3px;font-size:0.72rem;font-weight:700;border-radius:7px;padding:3px 8px;margin-top:6px;}
+.gainloss-badge.pos{background:var(--success-soft);color:var(--success);}
+.gainloss-badge.neg{background:var(--danger-soft);color:var(--danger);}
+.holding-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px;}
+.holding-stat{background:var(--bg-soft);border-radius:8px;padding:7px 8px;border:1px solid var(--border);}
+.holding-stat-label{font-size:0.6rem;letter-spacing:0.07em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;}
+.holding-stat-val{font-size:0.84rem;font-weight:700;color:var(--ink);font-family:"Inter",sans-serif;margin-top:2px;}
+.holding-actions{display:flex;gap:8px;margin-top:10px;}
+.holding-btn{flex:1;padding:8px;border-radius:9px;border:1px solid var(--border-strong);background:transparent;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.76rem;font-weight:600;cursor:pointer;}
+.holding-btn.primary{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border:none;}
+.portfolio-summary-banner{background:linear-gradient(135deg,rgba(15,76,117,0.08),rgba(30,203,225,0.06));border:1px solid rgba(15,76,117,0.12);border-radius:12px;padding:14px 16px;margin-bottom:12px;text-align:center;}
+.portfolio-summary-label{font-size:0.65rem;letter-spacing:0.08em;color:var(--ink-muted);text-transform:uppercase;font-weight:700;}
+.portfolio-summary-val{font-size:1.7rem;font-weight:800;color:var(--amount-color);font-family:"Inter",sans-serif;letter-spacing:-0.02em;margin-top:2px;}
+.alloc-row{margin-bottom:12px;}
+.alloc-row:last-child{margin-bottom:0;}
+.alloc-row-top{display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:5px;}
+.alloc-row-name{font-weight:600;color:var(--ink);}
+.alloc-row-val{color:var(--ink-muted);font-family:"Inter",sans-serif;font-weight:600;}
+.alloc-bar-track{height:9px;background:var(--bg-soft);border-radius:999px;overflow:hidden;border:1px solid var(--border);}
+.alloc-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--navy),var(--navy-light));}
+.trend-chart-wrap{margin-top:4px;}
+.trend-chart-svg{width:100%;height:130px;display:block;}
+.trend-range-row{display:flex;justify-content:space-between;font-size:0.68rem;color:var(--ink-faint);margin-top:4px;}
+.trend-empty{text-align:center;padding:24px 0;color:var(--ink-muted);font-size:0.82rem;font-style:italic;}
+.row-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.row-item:last-child{border-bottom:none;}
+.row-info{flex:1;min-width:0;}
+.row-title{font-size:0.88rem;font-weight:600;color:var(--ink);}
+.row-sub{font-size:0.72rem;color:var(--ink-muted);margin-top:2px;font-style:italic;}
+.fab{position:absolute;bottom:calc(68px + env(safe-area-inset-bottom,0px));right:14px;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 4px 14px rgba(15,76,117,0.4);}
+.fab i{font-size:22px;color:white;}
+.bottom-nav{background:var(--bg-card);border-top:1px solid var(--border);padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-around;flex-shrink:0;box-shadow:0 -2px 10px rgba(15,76,117,0.05);}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 8px;border-radius:8px;background:none;border:none;min-width:44px;}
+.nav-btn i{font-size:20px;color:var(--ink-faint);}
+.nav-btn span{font-size:0.6rem;font-weight:600;color:var(--ink-faint);letter-spacing:0.04em;text-transform:uppercase;font-family:"Plus Jakarta Sans",sans-serif;}
+.nav-btn.active i,.nav-btn.active span{color:var(--nav-active-color);}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:0.72rem;letter-spacing:0.1em;color:var(--ink-muted);text-transform:uppercase;font-weight:600;margin-bottom:5px;}
+.field input,.field select{width:100%;background:var(--bg-soft);border:1px solid var(--border-strong);border-radius:10px;padding:10px 13px;color:var(--ink);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;outline:none;-webkit-appearance:none;}
+.field input::placeholder{color:var(--ink-faint);font-style:italic;}
+.field input:focus,.field select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(15,76,117,0.1);}
+.field-hint{font-size:0.7rem;color:var(--ink-faint);font-style:italic;margin-top:4px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-row{display:flex;gap:10px;margin-top:14px;}
+.btn-save{flex:1;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:10px;padding:13px;color:white;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:13px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;cursor:pointer;}
+.btn-delete{width:100%;background:var(--danger-soft);border:1px solid rgba(240,68,56,0.3);border-radius:10px;padding:12px;color:var(--danger);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;margin-top:8px;}
+.btn-ghost{width:100%;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:11px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;cursor:pointer;margin-top:6px;}
+.btn-full{width:100%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:10px;padding:13px;color:white;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-bottom:10px;}
+.modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);background:rgba(10,20,35,0.5);z-index:20;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg-card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:90dvh;overflow-y:auto;border-top:1px solid var(--border);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal h2{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:16px;}
+.empty{text-align:center;padding:28px 0;color:var(--ink-muted);font-size:0.9rem;line-height:1.8;font-style:italic;}
+.toast{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(8px);background:#1a1e2e;color:#fff;font-size:0.82rem;padding:8px 16px;border-radius:20px;opacity:0;pointer-events:none;z-index:100;transition:opacity 0.2s,transform 0.2s;white-space:normal;text-align:center;max-width:calc(100% - 48px);width:max-content;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.settings-subtab-bar{display:flex;background:var(--bg-card);border-bottom:1px solid var(--border);flex-shrink:0;}
+.settings-subtab{flex:1;padding:10px 4px;border:none;background:transparent;font-size:0.76rem;font-weight:700;color:var(--ink-faint);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;border-bottom:2.5px solid transparent;transition:all 0.15s;text-align:center;}
+.settings-subtab.active{color:var(--nav-active-color);border-bottom-color:var(--nav-active-color);}
+.settings-panel{display:none;}
+.settings-panel.active{display:block;}
+.swatch-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.swatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:transform 0.15s;position:relative;}
+.swatch.selected{border-color:var(--ink);}
+.swatch.selected::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.8rem;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,0.3);}
+.mode-row{display:flex;gap:8px;margin-top:6px;}
+.mode-btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border-strong);background:transparent;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;}
+.mode-btn.active{background:var(--ink);color:var(--bg-card);border-color:var(--ink);}
+.confirm-modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);background:rgba(10,20,35,0.5);z-index:30;display:none;align-items:center;justify-content:center;}
+.confirm-modal-bg.open{display:flex;}
+.confirm-box{background:var(--bg-card);border-radius:16px;padding:20px;width:calc(100% - 32px);max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.confirm-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.confirm-body{font-size:0.84rem;color:var(--ink-muted);line-height:1.6;margin-bottom:16px;}
+.confirm-btns{display:flex;gap:8px;}
+.confirm-yes{flex:1;background:var(--danger);border:none;border-radius:10px;padding:11px;color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;}
+.confirm-no{flex:1;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:11px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;cursor:pointer;}
+.calc-modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);background:rgba(10,20,35,0.5);z-index:25;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.calc-modal-bg.open{display:flex;}
+.calc-modal{background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));width:100%;border-top:1px solid var(--border);animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+.calc-display{background:var(--bg-soft);border-radius:12px;padding:12px 16px;margin-bottom:12px;text-align:right;border:1px solid var(--border);}
+.calc-expr{font-size:0.78rem;color:var(--ink-muted);font-family:"Inter",sans-serif;min-height:1.2em;}
+.calc-result{font-size:2.2rem;font-weight:800;color:var(--ink);font-family:"Inter",sans-serif;letter-spacing:-0.03em;line-height:1.1;margin-top:2px;}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.calc-key{height:60px;border-radius:12px;border:none;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:"Inter",sans-serif;transition:opacity 0.1s,transform 0.08s;}
+.calc-key:active{opacity:0.75;transform:scale(0.95);}
+.calc-key.num{background:var(--bg-soft);color:var(--ink);border:1px solid var(--border);}
+.calc-key.op{background:rgba(15,76,117,0.1);color:var(--nav-active-color);border:1px solid rgba(15,76,117,0.15);}
+.calc-key.eq{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border:none;}
+.calc-key.clear{background:var(--danger-soft);color:var(--danger);border:1px solid rgba(240,68,56,0.2);}
+.calc-key.del{background:var(--bg-soft);color:var(--ink-muted);border:1px solid var(--border);}
+.calc-close-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.calc-close-btn{background:none;border:none;color:var(--ink-faint);font-size:1.4rem;cursor:pointer;padding:4px 8px;line-height:1;}
+.demo-banner{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;font-size:0.76rem;font-weight:600;text-align:center;padding:8px 12px;flex-shrink:0;}
+.demo-banner a{color:var(--teal);font-weight:800;text-decoration:none;}
+.upsell-card{background:linear-gradient(135deg,rgba(15,76,117,0.08),rgba(30,203,225,0.06));border:1px solid rgba(15,76,117,0.15);border-radius:14px;padding:16px;text-align:center;}
+.upsell-card .upsell-title{font-size:0.92rem;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.upsell-card p{font-size:0.82rem;color:var(--ink-muted);line-height:1.5;margin-bottom:12px;}
+.upsell-card a{display:inline-block;background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;text-decoration:none;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.86rem;font-weight:700;padding:11px 20px;border-radius:10px;}
+#trial-lock{position:fixed;inset:0;background:rgba(10,20,35,0.92);z-index:999;display:none;align-items:center;justify-content:center;padding:24px;text-align:center;}
+#trial-lock.show{display:flex;}
+#trial-lock .lock-box{background:var(--bg-card);border-radius:18px;padding:32px 24px;max-width:340px;}
+#trial-lock .lock-icon{font-size:2.4rem;margin-bottom:12px;}
+#trial-lock h2{font-size:1.15rem;font-weight:800;color:var(--ink);margin-bottom:10px;}
+#trial-lock p{font-size:0.88rem;color:var(--ink-muted);line-height:1.6;margin-bottom:18px;}
+#trial-lock a{display:inline-block;background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;text-decoration:none;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;padding:13px 26px;border-radius:10px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="demo-banner" id="demo-banner">Free trial &middot; <span id="demo-days-left">14 days</span> left &middot; <a href="https://www.etsy.com/listing/4567125505/investment-portfolio-tracker-app">Unlock the full app →</a></div>
+  <div class="app-header">
+    <div class="header-top">
+      <div><div class="header-eyebrow">MOBILE FIRST STUDIO</div><div class="header-title" id="app-title">Investment Portfolio Tracker</div></div>
+      <div class="header-btns">
+        <button class="hdr-btn" id="calc-btn" title="Calculator"><i class="ti ti-calculator"></i></button>
+        <button class="hdr-btn" id="appearance-btn" title="Change color"><i class="ti ti-palette"></i></button>
+      </div>
+    </div>
+    <div class="header-chips">
+      <div class="header-chip"><div class="header-chip-label">Total Value</div><div class="header-chip-val" id="header-total">$0.00</div><div class="header-chip-sub">All holdings</div></div>
+      <div class="header-chip"><div class="header-chip-label">Total Gain/Loss</div><div class="header-chip-val success-light" id="header-gainloss">$0.00</div><div class="header-chip-sub" id="header-gainloss-pct">0%</div></div>
+    </div>
+  </div>
+
+  <div id="pg-main" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('holdings',this)">Holdings</button>
+      <button class="tab-btn" onclick="switchTab('portfolio',this)">Portfolio</button>
+      <button class="tab-btn" onclick="switchTab('history',this)">History</button>
+    </div>
+    <div class="content" id="main-content"></div>
+    <button class="fab" id="main-fab" onclick="openAdd()"><i class="ti ti-plus"></i></button>
+  </div>
+
+  <div id="pg-settings" style="display:none;flex-direction:column;flex:1;min-height:0;">
+    <div class="settings-subtab-bar">
+      <button class="settings-subtab active" data-panel="general" onclick="switchSettingsPanel('general',this)">General</button>
+      <button class="settings-subtab" data-panel="backup" onclick="switchSettingsPanel('backup',this)">Backup</button>
+    </div>
+    <div class="content">
+      <div class="settings-panel active" id="settings-panel-general">
+        <div class="card"><div class="card-title">App name</div><div class="field"><input type="text" id="s-app-name" placeholder="Investment Portfolio Tracker" maxlength="40"/></div><button class="btn-full" onclick="saveAppName()" style="margin-bottom:0;">Save name</button></div>
+        <div class="card"><div class="card-title">Appearance</div><div class="sl">Mode</div><div class="mode-row"><button class="mode-btn active" data-mode="light" onclick="setMode('light')">☀ Light</button><button class="mode-btn" data-mode="dark" onclick="setMode('dark')">☾ Dark</button></div><div class="sl" style="margin-top:12px;">Color</div><div class="swatch-row" id="swatch-row"></div></div>
+        <div class="card"><div class="card-title" style="color:var(--danger);">Danger zone</div><button class="btn-delete" onclick="confirmReset()" style="margin-top:0;">Reset all data</button></div>
+      </div>
+      <div class="settings-panel" id="settings-panel-backup">
+        <div class="card"><div class="card-title">Local backup</div><p class="field-hint" style="margin-bottom:12px;">Download a backup file to your device.</p><div id="local-backup-section"></div><input type="file" id="restore-file-input" accept="application/json" style="display:none;"/></div>
+        <div class="card upsell-card"><div class="upsell-title">🔒 Google Drive Backup</div><p>The full version backs up your holdings, value history, and portfolio snapshots to your own Google Drive automatically.</p><a href="https://www.etsy.com/listing/4567125505/investment-portfolio-tracker-app">Unlock the full app →</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('main',this)"><i class="ti ti-chart-line"></i><span>Portfolio</span></button>
+    <button class="nav-btn" onclick="showPage('settings',this)"><i class="ti ti-settings"></i><span>Settings</span></button>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="holding-modal"><div class="modal">
+  <h2 id="holding-modal-title">Add Holding</h2>
+  <div class="field"><label>Name</label><input id="hold-name" placeholder="e.g. VTI, Apple Inc., Bitcoin"/></div>
+  <div class="field"><label>Category</label><select id="hold-category"><option value="Stocks">Stocks</option><option value="ETFs">ETFs</option><option value="Mutual Funds">Mutual Funds</option><option value="Bonds">Bonds</option><option value="Crypto">Crypto</option><option value="Real Estate">Real Estate</option><option value="Cash">Cash</option><option value="Other">Other</option></select></div>
+  <div class="field-row">
+    <div class="field"><label>Cost Basis</label><input type="number" id="hold-cost" placeholder="e.g. 5000.00" step="0.01"/><div class="field-hint">Total amount invested</div></div>
+    <div class="field"><label>Current Value</label><input type="number" id="hold-value" placeholder="e.g. 6200.00" step="0.01"/><div class="field-hint">Today's total value</div></div>
+  </div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('holding-modal')">Cancel</button><button class="btn-save" onclick="saveHolding()">Save</button></div>
+  <button class="btn-delete" id="holding-del-btn" style="display:none;" onclick="deleteHolding()">Delete Holding</button>
+</div></div>
+
+<div class="modal-bg" id="value-modal"><div class="modal">
+  <h2 id="uv-title">Update Value</h2>
+  <div class="field"><label>New Current Value</label><input type="number" id="uv-value" placeholder="e.g. 6500.00" step="0.01"/></div>
+  <div class="field"><label>Date</label><input type="date" id="uv-date"/></div>
+  <div class="field"><label>Note (optional)</label><input id="uv-note" placeholder="e.g. Quarterly check-in, market rally"/></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('value-modal')">Cancel</button><button class="btn-save" onclick="saveValueUpdate()">Save update</button></div>
+  <button class="btn-delete" id="uv-del-btn" style="display:none;" onclick="deleteValueLog()">Delete this log entry</button>
+</div></div>
+
+<div class="confirm-modal-bg" id="confirm-modal"><div class="confirm-box"><div class="confirm-title" id="confirm-title">Are you sure?</div><div class="confirm-body" id="confirm-body">This cannot be undone.</div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('confirm-modal')">Cancel</button><button class="confirm-yes" id="confirm-yes-btn">Delete</button></div></div></div>
+<div class="confirm-modal-bg" id="restore-confirm-modal"><div class="confirm-box"><div class="confirm-title" id="restore-confirm-title">Restore?</div><div class="confirm-body" id="restore-confirm-body"></div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('restore-confirm-modal')">Cancel</button><button class="confirm-yes" id="restore-confirm-yes">Restore</button></div></div></div>
+<div class="calc-modal-bg" id="calc-modal"><div class="calc-modal">
+  <div class="calc-close-row"><button class="calc-close-btn" onclick="closeModal('calc-modal')">✕</button></div>
+  <div class="calc-display"><div class="calc-expr" id="calc-expr"></div><div class="calc-result" id="calc-result">0</div></div>
+  <div class="calc-grid">
+    <button class="calc-key clear" onclick="calcClear()">C</button>
+    <button class="calc-key del" onclick="calcDel()">⌫</button>
+    <button class="calc-key op" onclick="calcOp('%')">%</button>
+    <button class="calc-key op" onclick="calcOp('÷')">÷</button>
+    <button class="calc-key num" onclick="calcNum('7')">7</button>
+    <button class="calc-key num" onclick="calcNum('8')">8</button>
+    <button class="calc-key num" onclick="calcNum('9')">9</button>
+    <button class="calc-key op" onclick="calcOp('×')">×</button>
+    <button class="calc-key num" onclick="calcNum('4')">4</button>
+    <button class="calc-key num" onclick="calcNum('5')">5</button>
+    <button class="calc-key num" onclick="calcNum('6')">6</button>
+    <button class="calc-key op" onclick="calcOp('−')">−</button>
+    <button class="calc-key num" onclick="calcNum('1')">1</button>
+    <button class="calc-key num" onclick="calcNum('2')">2</button>
+    <button class="calc-key num" onclick="calcNum('3')">3</button>
+    <button class="calc-key op" onclick="calcOp('+')">+</button>
+    <button class="calc-key num" onclick="calcNum('0')" style="grid-column:span 2;">0</button>
+    <button class="calc-key num" onclick="calcNum('.')">.</button>
+    <button class="calc-key eq" onclick="calcEquals()">=</button>
+  </div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<div id="trial-lock"><div class="lock-box"><div class="lock-icon">📈</div><h2>Your free trial has ended</h2><p>Unlock Investment Portfolio Tracker to keep tracking your holdings, portfolio value, and gain/loss history.</p><a href="https://www.etsy.com/listing/4567125505/investment-portfolio-tracker-app">Unlock the full app →</a></div></div>
+
+<script>
+const STORE="mfs_ipt_demo_v1";
+const DEMO_SINCE_KEY="mfs_ipt_demo_since";
+const TRIAL_DAYS=14;
+const ETSY_URL="https://www.etsy.com/listing/4567125505/investment-portfolio-tracker-app";
+const PRERESTORE_KEY="mfs_ipt_demo_prerestore";
+const PALETTE=[{key:"navy",navy:"#0f4c75",teal:"#1ecbe1"},{key:"forest",navy:"#1a5c3a",teal:"#2dd4a0"},{key:"violet",navy:"#4c1d95",teal:"#a78bfa"},{key:"rose",navy:"#881337",teal:"#fb7185"},{key:"slate",navy:"#1e293b",teal:"#38bdf8"},{key:"amber",navy:"#78350f",teal:"#fbbf24"}];
+
+let DB,curTab="holdings",eId={},pendingHoldingId=null,_editingValueLogId=null;
+let pendingRestore=null,pressTimer=null;
+let calcCurrent="0",calcExpr="",calcJustEvaled=false;
+
+// ── DEMO TRIAL ──
+function demoTrialDaysLeft(){
+  let since=localStorage.getItem(DEMO_SINCE_KEY);
+  if(!since){since=Date.now().toString();localStorage.setItem(DEMO_SINCE_KEY,since);}
+  const elapsedDays=(Date.now()-parseInt(since,10))/86400000;
+  return Math.max(0,Math.ceil(TRIAL_DAYS-elapsedDays));
+}
+function enforceDemoTrial(){
+  const daysLeft=demoTrialDaysLeft();
+  const dl=g("demo-days-left");
+  if(dl)dl.textContent=daysLeft===1?"1 day":daysLeft+" days";
+  if(daysLeft<=0){
+    g("trial-lock").classList.add("show");
+    document.body.style.overflow="hidden";
+  }
+}
+
+// ── DATA ──
+function defDB(){return{appName:"Investment Portfolio Tracker",holdings:[],valueLogs:[],portfolioSnapshots:[],accent:"navy",mode:"light"};}
+function load(){
+  try{const r=localStorage.getItem(STORE);if(r){DB=Object.assign(defDB(),JSON.parse(r));if(!DB.holdings)DB.holdings=[];if(!DB.valueLogs)DB.valueLogs=[];if(!DB.portfolioSnapshots)DB.portfolioSnapshots=[];}else DB=defDB();}catch(e){DB=defDB();}
+}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(DB));}catch(e){}}
+
+// ── LOCAL BACKUP ──
+function downloadBackup(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="investment-portfolio-tracker-backup-"+todayKey()+".json";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup downloaded!");}
+function renderLocalBackupSection(){const e=g("local-backup-section");if(!e)return;const hasUndo=!!localStorage.getItem(PRERESTORE_KEY);e.innerHTML=`<button class="btn-full" onclick="downloadBackup()" style="margin-bottom:8px;">⬇ Download backup</button><button class="btn-ghost" onclick="g('restore-file-input').click()" style="margin-bottom:${hasUndo?6:0}px;">⬆ Restore from file</button>${hasUndo?'<button class="btn-ghost" onclick="undoRestore()" style="color:var(--danger);">Undo last restore</button>':""}`;}
+function handleRestoreFile(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=evt=>{try{const data=JSON.parse(evt.target.result);if(!data||!data.holdings){toast("Invalid backup.");return;}openRestoreConfirm(data,'"'+file.name+'"');}catch(err){toast("Could not read file.");}};r.readAsText(file);e.target.value="";}
+function openRestoreConfirm(data,source){pendingRestore=data;g("restore-confirm-title").textContent="Restore from "+source+"?";g("restore-confirm-body").textContent="This replaces all your current data. You can undo right after.";g("restore-confirm-yes").onclick=confirmRestoreNow;openModal("restore-confirm-modal");}
+function confirmRestoreNow(){if(!pendingRestore){closeModal("restore-confirm-modal");return;}try{localStorage.setItem(PRERESTORE_KEY,JSON.stringify({db:DB,ts:Date.now()}));}catch(e){}DB=pendingRestore;pendingRestore=null;save();closeModal("restore-confirm-modal");toast("Restored!");setTimeout(()=>location.reload(),1200);}
+function undoRestore(){try{const raw=localStorage.getItem(PRERESTORE_KEY);if(!raw){toast("Nothing to undo.");return;}DB=JSON.parse(raw).db;localStorage.removeItem(PRERESTORE_KEY);save();toast("Undo done!");setTimeout(()=>location.reload(),1200);}catch(e){toast("Could not undo.");}}
+
+// ── UTILS ──
+function uid(){return Date.now()+Math.floor(Math.random()*1000);}
+function todayKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function today(){return todayKey();}
+function fmt$(n){const v=parseFloat(n)||0;return(v<0?"-$":"$")+Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtDate(d){if(!d)return"";try{const p=d.split("-");return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});}catch(e){return d;}}
+function g(id){return document.getElementById(id);}
+function toast(msg){const t=g("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400);}
+function openModal(id){g(id).classList.add("open");}
+function closeModal(id){g(id).classList.remove("open");}
+function confirmAction(title,body,cb){g("confirm-title").textContent=title;g("confirm-body").textContent=body;g("confirm-yes-btn").onclick=()=>{closeModal("confirm-modal");cb();};openModal("confirm-modal");}
+
+// ── ACCENT / MODE ──
+function shade(hex,p){const n=parseInt(hex.replace("#",""),16);const r=Math.min(255,Math.max(0,((n>>16)&0xff)+Math.round(255*p/100)));const gg=Math.min(255,Math.max(0,((n>>8)&0xff)+Math.round(255*p/100)));const b=Math.min(255,Math.max(0,(n&0xff)+Math.round(255*p/100)));return"#"+[r,gg,b].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function applyAccent(key){const p=PALETTE.find(a=>a.key===key)||PALETTE[0];const r=document.documentElement;r.style.setProperty("--navy",p.navy);r.style.setProperty("--navy-dark",shade(p.navy,-15));r.style.setProperty("--navy-light",shade(p.navy,20));r.style.setProperty("--teal",p.teal);r.style.setProperty("--teal-dark",shade(p.teal,-15));g("meta-theme").setAttribute("content",p.navy);}
+function applyMode(mode){document.documentElement.setAttribute("data-mode",mode);document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));}
+function setMode(mode){DB.mode=mode;applyMode(mode);save();}
+function renderSwatches(){const row=g("swatch-row");if(!row)return;row.innerHTML=PALETTE.map(p=>`<div class="swatch ${DB.accent===p.key?"selected":""}" data-key="${p.key}" style="background:linear-gradient(135deg,${p.navy} 50%,${p.teal} 50%)" onclick="setAccent('${p.key}')"></div>`).join("");}
+function setAccent(key){DB.accent=key;applyAccent(key);save();renderSwatches();}
+
+// ── PORTFOLIO CALCS ──
+// Note: unlike the debt/loan apps in this line, a holding's currentValue is a direct
+// stated field (what it's worth right now), not something derived by summing a ledger —
+// a stock's value isn't computed by subtracting transactions, it just IS whatever it's worth today.
+// valueLogs is a pure audit trail / chart data source, not the source of truth for currentValue.
+function holdingGainLoss(h){return(parseFloat(h.currentValue)||0)-(parseFloat(h.costBasis)||0);}
+function holdingGainLossPct(h){const cost=parseFloat(h.costBasis)||0;if(cost<=0)return 0;return(holdingGainLoss(h)/cost)*100;}
+function totalCostBasis(){return DB.holdings.reduce((s,h)=>s+(parseFloat(h.costBasis)||0),0);}
+function totalCurrentValue(){return DB.holdings.reduce((s,h)=>s+(parseFloat(h.currentValue)||0),0);}
+function totalGainLoss(){return totalCurrentValue()-totalCostBasis();}
+function totalGainLossPct(){const cost=totalCostBasis();if(cost<=0)return 0;return(totalGainLoss()/cost)*100;}
+function allocationBreakdown(){
+  const total=totalCurrentValue();
+  const map={};
+  DB.holdings.forEach(h=>{const cat=h.category||"Other";map[cat]=(map[cat]||0)+(parseFloat(h.currentValue)||0);});
+  return Object.keys(map).map(cat=>({category:cat,value:map[cat],pct:total>0?(map[cat]/total)*100:0})).sort((a,b)=>b.value-a.value);
+}
+// Upserts today's total portfolio value into the snapshot series (same-day edits overwrite
+// rather than duplicating a point), then keeps the series sorted for charting.
+function recordSnapshot(){
+  const total=totalCurrentValue();
+  const dk=todayKey();
+  const existing=DB.portfolioSnapshots.find(s=>s.date===dk);
+  if(existing)existing.value=total;else DB.portfolioSnapshots.push({date:dk,value:total});
+  DB.portfolioSnapshots.sort((a,b)=>a.date.localeCompare(b.date));
+}
+// ── TREND CHART (new lightweight SVG component — no external charting library) ──
+// points: [{date,value}] sorted ascending. Returns an inline <svg> line+area chart,
+// or '' if there isn't enough data yet (needs at least 2 points to draw a line).
+function buildTrendChartSVG(points){
+  if(!points||points.length<2)return"";
+  const w=320,h=130,padL=6,padR=6,padT=12,padB=10;
+  const values=points.map(p=>parseFloat(p.value)||0);
+  let min=Math.min(...values),max=Math.max(...values);
+  if(min===max){min=min-Math.max(1,Math.abs(min)*0.1);max=max+Math.max(1,Math.abs(max)*0.1);}
+  const range=max-min;
+  const stepX=points.length>1?(w-padL-padR)/(points.length-1):0;
+  const coords=points.map((p,i)=>{
+    const x=padL+i*stepX;
+    const y=padT+(1-((parseFloat(p.value)||0)-min)/range)*(h-padT-padB);
+    return{x,y};
+  });
+  const linePath=coords.map((c,i)=>(i===0?"M":"L")+c.x.toFixed(1)+","+c.y.toFixed(1)).join(" ");
+  const areaPath=linePath+` L${coords[coords.length-1].x.toFixed(1)},${h-padB} L${coords[0].x.toFixed(1)},${h-padB} Z`;
+  const dots=coords.map(c=>`<circle cx="${c.x.toFixed(1)}" cy="${c.y.toFixed(1)}" r="3" style="fill:var(--navy);"/>`).join("");
+  return`<svg viewBox="0 0 ${w} ${h}" class="trend-chart-svg" preserveAspectRatio="none">
+<defs><linearGradient id="trendFillGrad" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" style="stop-color:var(--navy-light);stop-opacity:0.35"/>
+<stop offset="100%" style="stop-color:var(--navy-light);stop-opacity:0"/>
+</linearGradient></defs>
+<path d="${areaPath}" style="fill:url(#trendFillGrad);stroke:none;"/>
+<path d="${linePath}" style="fill:none;stroke:var(--navy);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;"/>
+${dots}
+</svg>`;
+}
+
+// ── HEADER ──
+function updateHeader(){
+  g("app-title").textContent=DB.appName||"Investment Portfolio Tracker";
+  g("header-total").textContent=fmt$(totalCurrentValue());
+  const gl=totalGainLoss(),glPct=totalGainLossPct();
+  const glEl=g("header-gainloss");
+  glEl.textContent=(gl>=0?"+":"")+fmt$(gl);
+  glEl.classList.toggle("success-light",gl>=0);
+  glEl.classList.toggle("danger-light",gl<0);
+  g("header-gainloss-pct").textContent=(gl>=0?"+":"")+glPct.toFixed(1)+"%";
+}
+
+// ── NAV ──
+function showPage(id,btn){["main","settings"].forEach(p=>{const el=g("pg-"+p);if(el)el.style.display="none";});const pg=g("pg-"+id);if(pg)pg.style.display="flex";document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");if(id==="settings"){renderSwatches();renderLocalBackupSection();g("s-app-name").value=DB.appName||"";}}
+function switchTab(tab,btn){curTab=tab;document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");g("main-fab").style.display=(tab==="holdings")?"flex":"none";renderContent();}
+function openAdd(){if(curTab==="holdings")openHoldingModal(null);}
+
+// ── HOLDING MODAL ──
+function openHoldingModal(id){
+  eId.holding=id;
+  if(id){
+    const h=DB.holdings.find(x=>x.id===id);if(!h)return;
+    g("holding-modal-title").textContent="Edit Holding";
+    g("hold-name").value=h.name;g("hold-category").value=h.category;g("hold-cost").value=h.costBasis;g("hold-value").value=h.currentValue;
+    g("holding-del-btn").style.display="block";
+  }else{
+    g("holding-modal-title").textContent="Add Holding";
+    g("hold-name").value="";g("hold-category").value="Stocks";g("hold-cost").value="";g("hold-value").value="";
+    g("holding-del-btn").style.display="none";
+  }
+  openModal("holding-modal");
+}
+function saveHolding(){
+  const name=g("hold-name").value.trim();
+  if(!name){toast("Enter a name.");return;}
+  const category=g("hold-category").value;
+  const costBasis=parseFloat(g("hold-cost").value)||0;
+  const currentValue=parseFloat(g("hold-value").value)||0;
+  if(eId.holding){
+    const h=DB.holdings.find(x=>x.id===eId.holding);
+    if(h){h.name=name;h.category=category;h.costBasis=costBasis;h.currentValue=currentValue;}
+    toast("Updated ✓");
+  }else{
+    DB.holdings.push({id:"h"+uid(),name,category,costBasis,currentValue});
+    toast("Holding added ✓");
+  }
+  recordSnapshot();
+  save();closeModal("holding-modal");renderContent();updateHeader();
+}
+function deleteHolding(){confirmAction("Delete this holding?","Its value-update history will also be removed.",()=>{DB.valueLogs=(DB.valueLogs||[]).filter(l=>l.holdingId!==eId.holding);DB.holdings=DB.holdings.filter(h=>h.id!==eId.holding);recordSnapshot();save();closeModal("holding-modal");renderContent();updateHeader();});}
+
+// ── VALUE UPDATE MODAL ──
+function openValueModal(holdingId,editId){
+  _editingValueLogId=editId||null;
+  pendingHoldingId=holdingId;
+  const h=DB.holdings.find(x=>x.id===holdingId);
+  if(editId){
+    const l=(DB.valueLogs||[]).find(x=>x.id===editId);if(!l)return;
+    g("uv-title").textContent="Edit Update — "+(h?h.name:"");
+    g("uv-value").value=l.newValue;g("uv-date").value=l.date;g("uv-note").value=l.note||"";
+    g("uv-del-btn").style.display="block";
+  }else{
+    g("uv-title").textContent="Update Value — "+(h?h.name:"");
+    g("uv-value").value=h?h.currentValue:"";g("uv-date").value=today();g("uv-note").value="";
+    g("uv-del-btn").style.display="none";
+  }
+  openModal("value-modal");
+}
+function saveValueUpdate(){
+  const newValue=parseFloat(g("uv-value").value);
+  if(isNaN(newValue)){toast("Enter a value.");return;}
+  const h=DB.holdings.find(x=>x.id===pendingHoldingId);
+  if(!h)return;
+  if(!DB.valueLogs)DB.valueLogs=[];
+  if(_editingValueLogId){
+    const i=DB.valueLogs.findIndex(x=>x.id===_editingValueLogId);
+    if(i>-1)DB.valueLogs[i]={...DB.valueLogs[i],newValue,date:g("uv-date").value,note:g("uv-note").value.trim()};
+    toast("Updated ✓");
+  }else{
+    const oldValue=parseFloat(h.currentValue)||0;
+    DB.valueLogs.push({id:"vl"+uid(),holdingId:h.id,oldValue,newValue,date:g("uv-date").value,note:g("uv-note").value.trim()});
+    toast("Value updated ✓");
+  }
+  h.currentValue=newValue;
+  _editingValueLogId=null;
+  recordSnapshot();
+  save();closeModal("value-modal");renderContent();updateHeader();
+}
+function deleteValueLog(){confirmAction("Delete this log entry?","This removes the historical record but keeps the holding's current value as-is.",()=>{DB.valueLogs=(DB.valueLogs||[]).filter(x=>x.id!==_editingValueLogId);_editingValueLogId=null;save();closeModal("value-modal");renderContent();toast("Deleted.");});}
+
+// ── RENDER ──
+function renderContent(){
+  const c=g("main-content");
+  if(curTab==="holdings")renderHoldingsTab(c);
+  else if(curTab==="portfolio")renderPortfolioTab(c);
+  else renderHistoryTab(c);
+}
+const CATEGORY_ICONS={"Stocks":"📈","ETFs":"📊","Mutual Funds":"🧺","Bonds":"🏛️","Crypto":"₿","Real Estate":"🏠","Cash":"💵","Other":"📁"};
+function renderHoldingsTab(c){
+  if(!DB.holdings.length){c.innerHTML='<div class="empty">No holdings added yet.<br>Tap + to add your first investment.</div>';return;}
+  const totalValue=totalCurrentValue(),totalCost=totalCostBasis(),gl=totalGainLoss(),glPct=totalGainLossPct();
+  let h=`<div class="portfolio-summary-banner"><div class="portfolio-summary-label">Total Portfolio Value</div><div class="portfolio-summary-val">${fmt$(totalValue)}</div><div class="gainloss-badge ${gl>=0?"pos":"neg"}" style="margin-top:8px;">${gl>=0?"▲":"▼"} ${fmt$(Math.abs(gl))} (${gl>=0?"+":""}${glPct.toFixed(1)}%)</div></div>`;
+  h+=[...DB.holdings].sort((a,b)=>(parseFloat(b.currentValue)||0)-(parseFloat(a.currentValue)||0)).map(hd=>{
+    const gainLoss=holdingGainLoss(hd),glp=holdingGainLossPct(hd);
+    const logs=(DB.valueLogs||[]).filter(l=>l.holdingId===hd.id);
+    return`<div class="holding-card" onclick="openHoldingModal('${hd.id}')"><div class="holding-card-header"><div><div class="holding-name">${CATEGORY_ICONS[hd.category]||"📁"} ${hd.name}</div><div class="holding-category-badge">${hd.category}</div></div><div style="text-align:right;"><div class="holding-value-label">Current Value</div><div class="holding-value">${fmt$(hd.currentValue)}</div></div></div><div class="gainloss-badge ${gainLoss>=0?"pos":"neg"}">${gainLoss>=0?"▲":"▼"} ${fmt$(Math.abs(gainLoss))} (${gainLoss>=0?"+":""}${glp.toFixed(1)}%)</div><div class="holding-stats"><div class="holding-stat"><div class="holding-stat-label">Cost Basis</div><div class="holding-stat-val">${fmt$(hd.costBasis)}</div></div><div class="holding-stat"><div class="holding-stat-label">Updates logged</div><div class="holding-stat-val">${logs.length}</div></div></div><div class="holding-actions"><button class="holding-btn primary" onclick="event.stopPropagation();openValueModal('${hd.id}')">+ Update value</button><button class="holding-btn" onclick="event.stopPropagation();openHoldingModal('${hd.id}')">Edit</button></div></div>`;
+  }).join("");
+  c.innerHTML=h;
+}
+function renderPortfolioTab(c){
+  if(!DB.holdings.length){c.innerHTML='<div class="empty">Add at least one holding to see your portfolio breakdown.</div>';return;}
+  const alloc=allocationBreakdown();
+  let h=`<div class="card"><div class="card-title">Value over time</div><div class="trend-chart-wrap">`;
+  const pts=DB.portfolioSnapshots||[];
+  if(pts.length<2){
+    h+=`<div class="trend-empty">Update a holding's value on at least two different days to start seeing a trend chart.</div>`;
+  }else{
+    h+=buildTrendChartSVG(pts);
+    h+=`<div class="trend-range-row"><span>${fmtDate(pts[0].date)} · ${fmt$(pts[0].value)}</span><span>${fmtDate(pts[pts.length-1].date)} · ${fmt$(pts[pts.length-1].value)}</span></div>`;
+  }
+  h+=`</div></div>`;
+  h+=`<div class="card"><div class="card-title">Allocation by category</div>`+alloc.map(a=>`<div class="alloc-row"><div class="alloc-row-top"><span class="alloc-row-name">${CATEGORY_ICONS[a.category]||"📁"} ${a.category}</span><span class="alloc-row-val">${fmt$(a.value)} · ${a.pct.toFixed(0)}%</span></div><div class="alloc-bar-track"><div class="alloc-bar-fill" style="width:${a.pct}%;"></div></div></div>`).join("")+`</div>`;
+  h+=`<div class="summary-row"><div class="summary-chip"><div class="summary-chip-label">Total cost basis</div><div class="summary-chip-val">${fmt$(totalCostBasis())}</div></div><div class="summary-chip"><div class="summary-chip-label">Total gain/loss</div><div class="summary-chip-val ${totalGainLoss()>=0?"pos":"neg"}">${totalGainLoss()>=0?"+":""}${fmt$(totalGainLoss())}</div></div></div>`;
+  c.innerHTML=h;
+}
+function renderHistoryTab(c){
+  const all=(DB.valueLogs||[]).map(l=>({...l,holdingName:(DB.holdings.find(h=>h.id===l.holdingId)||{}).name||"Unknown holding"})).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  if(!all.length){c.innerHTML='<div class="empty">No value updates logged yet.<br>Log one from the Holdings tab.</div>';return;}
+  let h=`<div class="card">`+all.map(l=>{
+    const delta=(parseFloat(l.newValue)||0)-(parseFloat(l.oldValue)||0);
+    return`<div class="ledger-row" onclick="openValueModal('${l.holdingId}','${l.id}')"><div class="ledger-info"><div class="ledger-desc">${l.holdingName}${l.note?" — "+l.note:""}</div><div class="ledger-date">${l.date?fmtDate(l.date):""} · ${fmt$(l.oldValue)} → ${fmt$(l.newValue)}</div></div><div class="ledger-right"><div class="ledger-amt ${delta>=0?"pos":"neg"}">${delta>=0?"+":""}${fmt$(delta)}</div></div></div>`;
+  }).join("")+`</div>`;
+  c.innerHTML=h;
+}
+
+// ── SETTINGS ──
+function saveAppName(){const n=g("s-app-name").value.trim();if(!n)return;DB.appName=n;save();updateHeader();toast("Name saved.");}
+function confirmReset(){confirmAction("Reset all data?","This permanently deletes everything.",()=>{DB=defDB();save();location.reload();});}
+function switchSettingsPanel(panel,btn){document.querySelectorAll(".settings-panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".settings-subtab").forEach(t=>t.classList.remove("active"));g("settings-panel-"+panel).classList.add("active");btn.classList.add("active");}
+
+// ── CALCULATOR ──
+function calcUpdateDisplay(){g("calc-result").textContent=calcCurrent;g("calc-expr").textContent=calcExpr;}
+function calcNum(n){if(calcJustEvaled){calcCurrent=n==="."?"0.":n;calcJustEvaled=false;}else if(calcCurrent==="0"&&n!=="."){calcCurrent=n;}else if(n==="."&&calcCurrent.includes(".")){return;}else{calcCurrent+=n;}calcUpdateDisplay();}
+function calcOp(op){if(calcJustEvaled){calcExpr=calcCurrent+" "+op+" ";calcJustEvaled=false;}else{calcExpr+=calcCurrent+" "+op+" ";}calcCurrent="0";calcUpdateDisplay();}
+function calcClear(){calcCurrent="0";calcExpr="";calcJustEvaled=false;calcUpdateDisplay();}
+function calcDel(){calcCurrent=calcCurrent.length>1?calcCurrent.slice(0,-1):"0";calcUpdateDisplay();}
+function calcEquals(){try{const full=(calcExpr+calcCurrent).replace(/×/g,"*").replace(/÷/g,"/").replace(/−/g,"-").replace(/(\d+(\.\d+)?)%/g,"($1/100)");const result=Function('"use strict";return ('+full+')')();calcExpr="";calcCurrent=String(Math.round(result*100)/100);calcJustEvaled=true;calcUpdateDisplay();}catch(e){calcCurrent="Error";calcExpr="";calcUpdateDisplay();calcJustEvaled=true;}}
+
+// ── INIT ──
+document.addEventListener("DOMContentLoaded",()=>{
+  load();
+  applyAccent(DB.accent||"navy");
+  applyMode(DB.mode||"light");
+  renderSwatches();
+  renderContent();
+  updateHeader();
+  g("restore-file-input").addEventListener("change",handleRestoreFile);
+  g("calc-btn").addEventListener("click",()=>{openModal("calc-modal");});
+  g("appearance-btn").addEventListener("click",()=>{const keys=PALETTE.map(p=>p.key);const next=keys[(keys.indexOf(DB.accent||"navy")+1)%keys.length];setAccent(next);toast(next.charAt(0).toUpperCase()+next.slice(1));});
+  g("appearance-btn").addEventListener("pointerdown",()=>{pressTimer=setTimeout(()=>{const m=DB.mode==="dark"?"light":"dark";setMode(m);toast(m==="dark"?"Dark mode":"Light mode");},600);});
+  g("appearance-btn").addEventListener("pointerup",()=>clearTimeout(pressTimer));
+  g("appearance-btn").addEventListener("pointerleave",()=>clearTimeout(pressTimer));
+  enforceDemoTrial();
+  setInterval(enforceDemoTrial,60000);
+  if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});}
+});
+</script>
+</body>
+</html>
