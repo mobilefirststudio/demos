@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<link rel="icon" href="icon-192.png" type="image/png"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<meta property="og:image" content="icon-512.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" id="meta-theme" content="#0f4c75"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Daily Expense Tracker — Mobile First Studio</title>
+<script>(function(){function setAppHeight(){document.documentElement.style.setProperty('--app-height',window.innerHeight+'px');}setAppHeight();window.addEventListener('resize',setAppHeight);window.addEventListener('orientationchange',setAppHeight);})();</script>
+<style>
+:root{--navy:#0f4c75;--navy-dark:#0a3554;--navy-light:#1a6ba0;--teal:#1ecbe1;--teal-dark:#17a8bb;--amount-color:var(--navy);--nav-active-color:var(--navy);--bg:#fff;--bg-soft:#f5f7fa;--bg-card:#fff;--ink:#1a1e2e;--ink-muted:#5a6070;--ink-faint:#9aa0b0;--border:#e4e8f0;--border-strong:#c8d2de;--success:#12b76a;--success-soft:#ecfdf3;--danger:#f04438;--danger-soft:#fef3f2;--warning:#f79009;--warning-soft:#fffaeb;--blue:#2c5282;--blue-soft:#ebf0fa;--shadow:0 2px 8px rgba(15,76,117,0.07),0 4px 16px rgba(15,76,117,0.05);}
+[data-mode="dark"]{--bg:#0f1117;--bg-soft:#181b24;--bg-card:#1e2230;--ink:#e8edf5;--ink-muted:#8b95a8;--ink-faint:#4a5060;--border:#252b38;--border-strong:#323a4a;--shadow:0 2px 8px rgba(0,0,0,0.4),0 4px 16px rgba(0,0,0,0.3);--success-soft:rgba(18,183,106,0.12);--danger-soft:rgba(240,68,56,0.12);--warning-soft:rgba(247,144,9,0.12);--blue-soft:rgba(44,82,130,0.2);--amount-color:#cfd5e2;--nav-active-color:#9ca2ac;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{height:100%;}
+body{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;background:var(--bg-soft);color:var(--ink);height:100dvh;height:var(--app-height,100dvh);overflow:hidden;display:flex;justify-content:center;-webkit-font-smoothing:antialiased;}
+.app{width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.app-header{background:linear-gradient(160deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-light) 100%);padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 14px;flex-shrink:0;}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.header-eyebrow{font-size:0.62rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);font-weight:600;text-transform:uppercase;}
+.header-title{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-0.02em;margin-top:2px;}
+.header-btns{display:flex;gap:8px;}
+.hdr-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
+.header-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.header-chip{background:rgba(255,255,255,0.1);border-radius:10px;padding:9px 12px;border:1px solid rgba(255,255,255,0.12);}
+.header-chip-label{font-size:0.62rem;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
+.header-chip-val{font-size:1.3rem;font-weight:800;color:#fff;font-family:"Inter",sans-serif;letter-spacing:-0.02em;margin-top:1px;}
+.header-chip-val.success-light{color:#86efac;}
+.header-chip-sub{font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:1px;}
+.tab-bar{background:var(--bg-card);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;flex-shrink:0;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{flex:0 0 auto;padding:10px 14px;border:none;background:transparent;font-size:0.78rem;font-weight:600;color:var(--ink-faint);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all 0.15s;}
+.tab-btn.active{color:var(--nav-active-color);border-bottom-color:var(--nav-active-color);}
+.content{flex:1;overflow-y:auto;padding:14px 14px calc(80px + env(safe-area-inset-bottom,0px));background:var(--bg-soft);-webkit-overflow-scrolling:touch;}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);}
+.card-title{font-size:0.88rem;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.sl{font-size:0.67rem;letter-spacing:0.1em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-bottom:8px;margin-top:4px;}
+.ledger-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.ledger-row:last-child{border-bottom:none;}
+.ledger-info{flex:1;min-width:0;}
+.ledger-desc{font-size:0.86rem;font-weight:600;color:var(--ink);}
+.ledger-date{font-size:0.7rem;color:var(--ink-muted);margin-top:2px;font-style:italic;}
+.ledger-right{text-align:right;flex-shrink:0;}
+.ledger-amt{font-size:0.9rem;font-weight:700;font-family:"Inter",sans-serif;color:var(--amount-color);}
+.day-group{margin-bottom:14px;}
+.day-group-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;padding:0 2px;}
+.day-group-label{font-size:0.72rem;font-weight:700;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.05em;}
+.day-group-total{font-size:0.86rem;font-weight:800;color:var(--amount-color);font-family:"Inter",sans-serif;}
+.limit-bar-track{background:var(--bg-soft);border-radius:8px;height:10px;overflow:hidden;margin:8px 0 4px;border:1px solid var(--border);}
+.limit-bar-fill{height:100%;border-radius:8px;transition:width 0.3s;}
+.limit-bar-fill.ok{background:var(--success);}
+.limit-bar-fill.warn{background:var(--warning);}
+.limit-bar-fill.over{background:var(--danger);}
+.limit-bar-label{font-size:0.72rem;color:var(--ink-muted);}
+.breakdown-row{margin-bottom:12px;}
+.breakdown-row-top{display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px;}
+.breakdown-cat{font-weight:600;color:var(--ink);}
+.breakdown-amt{font-weight:700;color:var(--amount-color);font-family:"Inter",sans-serif;}
+.breakdown-bar-track{background:var(--bg-soft);border-radius:6px;height:8px;overflow:hidden;border:1px solid var(--border);}
+.breakdown-bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--navy-dark),var(--navy-light));}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.stat-box{background:var(--bg-soft);border-radius:10px;padding:12px;border:1px solid var(--border);text-align:center;}
+.stat-box-label{font-size:0.62rem;letter-spacing:0.07em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;}
+.stat-box-val{font-size:1.2rem;font-weight:800;font-family:"Inter",sans-serif;color:var(--amount-color);margin-top:2px;}
+.fab{position:absolute;bottom:calc(68px + env(safe-area-inset-bottom,0px));right:14px;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 4px 14px rgba(15,76,117,0.4);}
+.fab i{font-size:22px;color:white;}
+.bottom-nav{background:var(--bg-card);border-top:1px solid var(--border);padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-around;flex-shrink:0;box-shadow:0 -2px 10px rgba(15,76,117,0.05);}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 8px;border-radius:8px;background:none;border:none;min-width:44px;}
+.nav-btn i{font-size:20px;color:var(--ink-faint);}
+.nav-btn span{font-size:0.6rem;font-weight:600;color:var(--ink-faint);letter-spacing:0.04em;text-transform:uppercase;font-family:"Plus Jakarta Sans",sans-serif;}
+.nav-btn.active i,.nav-btn.active span{color:var(--nav-active-color);}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:0.72rem;letter-spacing:0.1em;color:var(--ink-muted);text-transform:uppercase;font-weight:600;margin-bottom:5px;}
+.field input,.field select{width:100%;background:var(--bg-soft);border:1px solid var(--border-strong);border-radius:10px;padding:10px 13px;color:var(--ink);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;outline:none;-webkit-appearance:none;}
+.field input::placeholder{color:var(--ink-faint);font-style:italic;}
+.field input:focus,.field select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(15,76,117,0.1);}
+.field-hint{font-size:0.7rem;color:var(--ink-faint);font-style:italic;margin-top:4px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-row{display:flex;gap:10px;margin-top:14px;}
+.btn-save{flex:1;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:10px;padding:13px;color:white;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:13px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;cursor:pointer;}
+.btn-delete{width:100%;background:var(--danger-soft);border:1px solid rgba(240,68,56,0.3);border-radius:10px;padding:12px;color:var(--danger);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;margin-top:8px;}
+.btn-ghost{width:100%;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:11px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;cursor:pointer;margin-top:6px;}
+.btn-full{width:100%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:10px;padding:13px;color:white;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-bottom:10px;}
+.modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);background:rgba(10,20,35,0.5);z-index:20;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg-card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:90dvh;overflow-y:auto;border-top:1px solid var(--border);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal h2{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:16px;}
+.empty{text-align:center;padding:28px 0;color:var(--ink-muted);font-size:0.9rem;line-height:1.8;font-style:italic;}
+.toast{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(8px);background:#1a1e2e;color:#fff;font-size:0.82rem;padding:8px 16px;border-radius:18px;opacity:0;pointer-events:none;z-index:100;transition:opacity 0.2s,transform 0.2s;white-space:normal;text-align:center;max-width:calc(100% - 48px);width:max-content;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.settings-subtab-bar{display:flex;background:var(--bg-card);border-bottom:1px solid var(--border);flex-shrink:0;}
+.settings-subtab{flex:1;padding:10px 4px;border:none;background:transparent;font-size:0.76rem;font-weight:700;color:var(--ink-faint);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;border-bottom:2.5px solid transparent;transition:all 0.15s;text-align:center;}
+.settings-subtab.active{color:var(--nav-active-color);border-bottom-color:var(--nav-active-color);}
+.settings-panel{display:none;}
+.settings-panel.active{display:block;}
+.swatch-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.swatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:transform 0.15s;position:relative;}
+.swatch.selected{border-color:var(--ink);}
+.swatch.selected::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.8rem;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,0.3);}
+.mode-row{display:flex;gap:8px;margin-top:6px;}
+.mode-btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border-strong);background:transparent;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;}
+.mode-btn.active{background:var(--ink);color:var(--bg-card);border-color:var(--ink);}
+.confirm-modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);background:rgba(10,20,35,0.5);z-index:30;display:none;align-items:center;justify-content:center;}
+.confirm-modal-bg.open{display:flex;}
+.confirm-box{background:var(--bg-card);border-radius:16px;padding:20px;width:calc(100% - 32px);max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.confirm-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.confirm-body{font-size:0.84rem;color:var(--ink-muted);line-height:1.6;margin-bottom:16px;}
+.confirm-btns{display:flex;gap:8px;}
+.confirm-yes{flex:1;background:var(--danger);border:none;border-radius:10px;padding:11px;color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;}
+.confirm-no{flex:1;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:11px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;cursor:pointer;}
+.calc-modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);background:rgba(10,20,35,0.5);z-index:25;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.calc-modal-bg.open{display:flex;}
+.calc-modal{background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));width:100%;border-top:1px solid var(--border);animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+.calc-display{background:var(--bg-soft);border-radius:12px;padding:12px 16px;margin-bottom:12px;text-align:right;border:1px solid var(--border);}
+.calc-expr{font-size:0.78rem;color:var(--ink-muted);font-family:"Inter",sans-serif;min-height:1.2em;}
+.calc-result{font-size:2.2rem;font-weight:800;color:var(--ink);font-family:"Inter",sans-serif;letter-spacing:-0.03em;line-height:1.1;margin-top:2px;}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.calc-key{height:60px;border-radius:12px;border:none;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:"Inter",sans-serif;transition:opacity 0.1s,transform 0.08s;}
+.calc-key:active{opacity:0.75;transform:scale(0.95);}
+.calc-key.num{background:var(--bg-soft);color:var(--ink);border:1px solid var(--border);}
+.calc-key.op{background:rgba(15,76,117,0.1);color:var(--nav-active-color);border:1px solid rgba(15,76,117,0.15);}
+.calc-key.eq{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border:none;}
+.calc-key.clear{background:var(--danger-soft);color:var(--danger);border:1px solid rgba(240,68,56,0.2);}
+.calc-key.del{background:var(--bg-soft);color:var(--ink-muted);border:1px solid var(--border);}
+.calc-close-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.calc-close-btn{background:none;border:none;color:var(--ink-faint);font-size:1.4rem;cursor:pointer;padding:4px 8px;line-height:1;}
+.demo-banner{background:linear-gradient(135deg,var(--navy-dark),var(--navy-light));padding:9px 16px;text-align:center;flex-shrink:0;}
+.demo-banner-text{color:#fff;font-size:0.76rem;font-weight:700;letter-spacing:0.01em;}
+.demo-banner-link{color:#fff;font-size:0.76rem;font-weight:700;text-decoration:underline;margin-left:6px;white-space:nowrap;}
+#trial-lock{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);background:linear-gradient(160deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-light) 100%);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px 28px;}
+#trial-lock.open{display:flex;}
+.trial-lock-box{max-width:340px;}
+.trial-lock-icon{font-size:44px;margin-bottom:14px;}
+.trial-lock-box h2{color:#fff;font-size:1.3rem;font-weight:800;margin-bottom:10px;letter-spacing:-0.01em;}
+.trial-lock-box p{color:rgba(255,255,255,0.82);font-size:0.9rem;line-height:1.6;margin-bottom:22px;}
+.trial-lock-cta{display:inline-block;background:#fff;color:var(--navy-dark);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.92rem;font-weight:800;padding:13px 26px;border-radius:12px;text-decoration:none;}
+.trial-lock-note{color:rgba(255,255,255,0.55);font-size:0.74rem;margin-top:16px;line-height:1.5;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="demo-banner" id="demo-banner"><span class="demo-banner-text" id="demo-banner-text">14 days left in your free trial</span><a class="demo-banner-link" href="https://www.etsy.com/listing/4566992100/daily-expense-tracker-app-budget" target="_blank">Unlock full app →</a></div>
+  <div class="app-header">
+    <div class="header-top">
+      <div><div class="header-eyebrow">MOBILE FIRST STUDIO</div><div class="header-title" id="app-title">Daily Expense Tracker</div></div>
+      <div class="header-btns">
+        <button class="hdr-btn" id="calc-btn" title="Calculator"><i class="ti ti-calculator"></i></button>
+        <button class="hdr-btn" id="appearance-btn" title="Change color"><i class="ti ti-palette"></i></button>
+      </div>
+    </div>
+    <div class="header-chips">
+      <div class="header-chip"><div class="header-chip-label">Today</div><div class="header-chip-val success-light" id="header-today">$0.00</div><div class="header-chip-sub" id="header-today-sub">No limit set</div></div>
+      <div class="header-chip"><div class="header-chip-label">This Week</div><div class="header-chip-val" id="header-week">$0.00</div><div class="header-chip-sub">Last 7 days</div></div>
+    </div>
+  </div>
+
+  <div id="pg-main" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('expenses',this)">Expenses</button>
+      <button class="tab-btn" onclick="switchTab('insights',this)">Insights</button>
+    </div>
+    <div class="content" id="main-content"></div>
+    <button class="fab" id="main-fab" onclick="openAdd()"><i class="ti ti-plus"></i></button>
+  </div>
+
+  <div id="pg-settings" style="display:none;flex-direction:column;flex:1;min-height:0;">
+    <div class="settings-subtab-bar">
+      <button class="settings-subtab active" data-panel="general" onclick="switchSettingsPanel('general',this)">General</button>
+      <button class="settings-subtab" data-panel="backup" onclick="switchSettingsPanel('backup',this)">Backup</button>
+    </div>
+    <div class="content">
+      <div class="settings-panel active" id="settings-panel-general">
+        <div class="card"><div class="card-title">App name</div><div class="field"><input type="text" id="s-app-name" placeholder="Daily Expense Tracker" maxlength="40"/></div><button class="btn-full" onclick="saveAppName()" style="margin-bottom:0;">Save name</button></div>
+        <div class="card"><div class="card-title">Daily spending limit</div><p class="field-hint" style="margin-bottom:10px;">Optional — shows a progress bar under today's total once set.</p><div class="field"><input type="number" id="s-daily-limit" placeholder="e.g. 50.00" step="0.01"/></div><button class="btn-full" onclick="saveDailyLimit()" style="margin-bottom:0;">Save limit</button></div>
+        <div class="card"><div class="card-title">Appearance</div><div class="sl">Mode</div><div class="mode-row"><button class="mode-btn active" data-mode="light" onclick="setMode('light')">☀ Light</button><button class="mode-btn" data-mode="dark" onclick="setMode('dark')">☾ Dark</button></div><div class="sl" style="margin-top:12px;">Color</div><div class="swatch-row" id="swatch-row"></div></div>
+        <div class="card"><div class="card-title" style="color:var(--danger);">Danger zone</div><button class="btn-delete" onclick="confirmReset()" style="margin-top:0;">Reset all data</button></div>
+      </div>
+      <div class="settings-panel" id="settings-panel-backup">
+        <div class="card"><div class="card-title">Local backup</div><p class="field-hint" style="margin-bottom:12px;">Download a backup file to your device.</p><div id="local-backup-section"></div><input type="file" id="restore-file-input" accept="application/json" style="display:none;"/></div>
+        <div class="card"><div class="card-title">Google Drive backup</div><p class="field-hint" style="margin-bottom:12px;">Back up to your own Google Drive, automatically.</p><button class="btn-full" style="margin-bottom:0;" onclick="window.open('https://www.etsy.com/listing/4566992100/daily-expense-tracker-app-budget','_blank')">Unlock the full app →</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('main',this)"><i class="ti ti-receipt"></i><span>Expenses</span></button>
+    <button class="nav-btn" onclick="showPage('settings',this)"><i class="ti ti-settings"></i><span>Settings</span></button>
+  </div>
+</div>
+
+<div id="trial-lock"><div class="trial-lock-box">
+  <div class="trial-lock-icon">💰</div>
+  <h2>Your free trial has ended</h2>
+  <p>Your expenses are still saved on this device. Unlock Daily Expense Tracker on Etsy to keep logging, tracking your limit, and reviewing your spending.</p>
+  <a class="trial-lock-cta" href="https://www.etsy.com/listing/4566992100/daily-expense-tracker-app-budget" target="_blank">Unlock the full app →</a>
+  <div class="trial-lock-note">One time purchase. No subscription, no account needed.</div>
+</div></div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="expense-modal"><div class="modal">
+  <h2 id="expense-modal-title">Add Expense</h2>
+  <div class="field"><label>Amount</label><input type="number" id="expense-amount" placeholder="e.g. 12.50" step="0.01" inputmode="decimal"/></div>
+  <div class="field"><label>Category</label><select id="expense-category">
+    <option value="Food & Dining">Food &amp; Dining</option>
+    <option value="Groceries">Groceries</option>
+    <option value="Transportation">Transportation</option>
+    <option value="Shopping">Shopping</option>
+    <option value="Entertainment">Entertainment</option>
+    <option value="Bills & Utilities">Bills &amp; Utilities</option>
+    <option value="Health">Health</option>
+    <option value="Other">Other</option>
+  </select></div>
+  <div class="field"><label>Date</label><input type="date" id="expense-date"/></div>
+  <div class="field"><label>Note (optional)</label><input id="expense-note" placeholder="e.g. Coffee with a friend"/></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('expense-modal')">Cancel</button><button class="btn-save" onclick="saveExpense()">Save</button></div>
+  <button class="btn-delete" id="expense-del-btn" style="display:none;" onclick="deleteExpense()">Delete Expense</button>
+</div></div>
+
+<div class="confirm-modal-bg" id="confirm-modal"><div class="confirm-box"><div class="confirm-title" id="confirm-title">Are you sure?</div><div class="confirm-body" id="confirm-body">This cannot be undone.</div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('confirm-modal')">Cancel</button><button class="confirm-yes" id="confirm-yes-btn">Delete</button></div></div></div>
+<div class="confirm-modal-bg" id="restore-confirm-modal"><div class="confirm-box"><div class="confirm-title" id="restore-confirm-title">Restore?</div><div class="confirm-body" id="restore-confirm-body"></div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('restore-confirm-modal')">Cancel</button><button class="confirm-yes" id="restore-confirm-yes">Restore</button></div></div></div>
+<div class="calc-modal-bg" id="calc-modal"><div class="calc-modal">
+  <div class="calc-close-row"><button class="calc-close-btn" onclick="closeModal('calc-modal')">✕</button></div>
+  <div class="calc-display"><div class="calc-expr" id="calc-expr"></div><div class="calc-result" id="calc-result">0</div></div>
+  <div class="calc-grid">
+    <button class="calc-key clear" onclick="calcClear()">C</button>
+    <button class="calc-key del" onclick="calcDel()">⌫</button>
+    <button class="calc-key op" onclick="calcOp('%')">%</button>
+    <button class="calc-key op" onclick="calcOp('÷')">÷</button>
+    <button class="calc-key num" onclick="calcNum('7')">7</button>
+    <button class="calc-key num" onclick="calcNum('8')">8</button>
+    <button class="calc-key num" onclick="calcNum('9')">9</button>
+    <button class="calc-key op" onclick="calcOp('×')">×</button>
+    <button class="calc-key num" onclick="calcNum('4')">4</button>
+    <button class="calc-key num" onclick="calcNum('5')">5</button>
+    <button class="calc-key num" onclick="calcNum('6')">6</button>
+    <button class="calc-key op" onclick="calcOp('−')">−</button>
+    <button class="calc-key num" onclick="calcNum('1')">1</button>
+    <button class="calc-key num" onclick="calcNum('2')">2</button>
+    <button class="calc-key num" onclick="calcNum('3')">3</button>
+    <button class="calc-key op" onclick="calcOp('+')">+</button>
+    <button class="calc-key num" onclick="calcNum('0')" style="grid-column:span 2;">0</button>
+    <button class="calc-key num" onclick="calcNum('.')">.</button>
+    <button class="calc-key eq" onclick="calcEquals()">=</button>
+  </div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORE="mfs_det_demo_v1";
+const DEMO_SINCE_KEY="mfs_det_demo_since";
+const TRIAL_DAYS=14;
+const ETSY_URL="https://www.etsy.com/listing/4566992100/daily-expense-tracker-app-budget";
+const PRERESTORE_KEY="mfs_det_demo_prerestore";
+const PALETTE=[{key:"navy",navy:"#0f4c75",teal:"#1ecbe1"},{key:"forest",navy:"#1a5c3a",teal:"#2dd4a0"},{key:"violet",navy:"#4c1d95",teal:"#a78bfa"},{key:"rose",navy:"#881337",teal:"#fb7185"},{key:"slate",navy:"#1e293b",teal:"#38bdf8"},{key:"amber",navy:"#78350f",teal:"#fbbf24"}];
+
+let DB,curTab="expenses",eId={};
+let pendingRestore=null,pressTimer=null;
+let calcCurrent="0",calcExpr="",calcJustEvaled=false;
+
+// ── DATA ──
+function defDB(){return{appName:"Daily Expense Tracker",expenses:[],dailyLimit:0,accent:"navy",mode:"light"};}
+function load(){
+  try{const r=localStorage.getItem(STORE);if(r){DB=Object.assign(defDB(),JSON.parse(r));if(!DB.expenses)DB.expenses=[];}else DB=defDB();}catch(e){DB=defDB();}
+}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(DB));}catch(e){}}
+
+// ── LOCAL BACKUP ──
+function downloadBackup(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="daily-expense-tracker-backup-"+todayKey()+".json";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup downloaded!");}
+function renderLocalBackupSection(){const e=g("local-backup-section");if(!e)return;const hasUndo=!!localStorage.getItem(PRERESTORE_KEY);e.innerHTML=`<button class="btn-full" onclick="downloadBackup()" style="margin-bottom:8px;">⬇ Download backup</button><button class="btn-ghost" onclick="g('restore-file-input').click()" style="margin-bottom:${hasUndo?6:0}px;">⬆ Restore from file</button>${hasUndo?'<button class="btn-ghost" onclick="undoRestore()" style="color:var(--danger);">Undo last restore</button>':""}`;}
+function handleRestoreFile(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=evt=>{try{const data=JSON.parse(evt.target.result);if(!data||!data.expenses){toast("Invalid backup.");return;}openRestoreConfirm(data,'"'+file.name+'"');}catch(err){toast("Could not read file.");}};r.readAsText(file);e.target.value="";}
+function openRestoreConfirm(data,source){pendingRestore=data;g("restore-confirm-title").textContent="Restore from "+source+"?";g("restore-confirm-body").textContent="This replaces all your current data. You can undo right after.";g("restore-confirm-yes").onclick=confirmRestoreNow;openModal("restore-confirm-modal");}
+function confirmRestoreNow(){if(!pendingRestore){closeModal("restore-confirm-modal");return;}try{localStorage.setItem(PRERESTORE_KEY,JSON.stringify({db:DB,ts:Date.now()}));}catch(e){}DB=pendingRestore;pendingRestore=null;save();closeModal("restore-confirm-modal");toast("Restored!");setTimeout(()=>location.reload(),1200);}
+function undoRestore(){try{const raw=localStorage.getItem(PRERESTORE_KEY);if(!raw){toast("Nothing to undo.");return;}DB=JSON.parse(raw).db;localStorage.removeItem(PRERESTORE_KEY);save();toast("Undo done!");setTimeout(()=>location.reload(),1200);}catch(e){toast("Could not undo.");}}
+
+// ── UTILS ──
+function uid(){return Date.now()+Math.floor(Math.random()*1000);}
+function todayKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function today(){return todayKey();}
+function fmt$(n){const v=parseFloat(n)||0;return(v<0?"-$":"$")+Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function parseLocalDate(d){if(!d)return null;const p=d.split("-");return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}
+function fmtDate(d){if(!d)return"";try{const dt=parseLocalDate(d);return dt.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});}catch(e){return d;}}
+function fmtDayHeader(d){if(!d)return"";if(d===today())return"Today";const y=new Date();y.setDate(y.getDate()-1);if(d===(y.getFullYear()+"-"+String(y.getMonth()+1).padStart(2,"0")+"-"+String(y.getDate()).padStart(2,"0")))return"Yesterday";return fmtDate(d);}
+function g(id){return document.getElementById(id);}
+function toast(msg){const t=g("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400);}
+function openModal(id){g(id).classList.add("open");}
+function closeModal(id){g(id).classList.remove("open");}
+function confirmAction(title,body,cb){g("confirm-title").textContent=title;g("confirm-body").textContent=body;g("confirm-yes-btn").onclick=()=>{closeModal("confirm-modal");cb();};openModal("confirm-modal");}
+
+// ── ACCENT / MODE ──
+function shade(hex,p){const n=parseInt(hex.replace("#",""),16);const r=Math.min(255,Math.max(0,((n>>16)&0xff)+Math.round(255*p/100)));const gg=Math.min(255,Math.max(0,((n>>8)&0xff)+Math.round(255*p/100)));const b=Math.min(255,Math.max(0,(n&0xff)+Math.round(255*p/100)));return"#"+[r,gg,b].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function applyAccent(key){const p=PALETTE.find(a=>a.key===key)||PALETTE[0];const r=document.documentElement;r.style.setProperty("--navy",p.navy);r.style.setProperty("--navy-dark",shade(p.navy,-15));r.style.setProperty("--navy-light",shade(p.navy,20));r.style.setProperty("--teal",p.teal);r.style.setProperty("--teal-dark",shade(p.teal,-15));g("meta-theme").setAttribute("content",p.navy);}
+function applyMode(mode){document.documentElement.setAttribute("data-mode",mode);document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));}
+function setMode(mode){DB.mode=mode;applyMode(mode);save();}
+function renderSwatches(){const row=g("swatch-row");if(!row)return;row.innerHTML=PALETTE.map(p=>`<div class="swatch ${DB.accent===p.key?"selected":""}" data-key="${p.key}" style="background:linear-gradient(135deg,${p.navy} 50%,${p.teal} 50%)" onclick="setAccent('${p.key}')"></div>`).join("");}
+function setAccent(key){DB.accent=key;applyAccent(key);save();renderSwatches();}
+
+// ── EXPENSE CALCS ──
+function expensesForDate(dateStr){return DB.expenses.filter(e=>e.date===dateStr);}
+function totalForDate(dateStr){return expensesForDate(dateStr).reduce((s,e)=>s+(parseFloat(e.amount)||0),0);}
+function todayTotal(){return totalForDate(today());}
+function weekTotal(){const cutoff=new Date();cutoff.setHours(0,0,0,0);cutoff.setDate(cutoff.getDate()-6);return DB.expenses.filter(e=>{const d=parseLocalDate(e.date);return d&&d>=cutoff;}).reduce((s,e)=>s+(parseFloat(e.amount)||0),0);}
+function monthTotal(){const now=new Date();return DB.expenses.filter(e=>{const d=parseLocalDate(e.date);return d&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();}).reduce((s,e)=>s+(parseFloat(e.amount)||0),0);}
+// Groups expenses by category within a period ("week"|"month"|"all"), sorted highest-spend first — powers the Insights breakdown bars.
+function categoryBreakdown(period){
+  let list=DB.expenses;
+  if(period==="week"){const cutoff=new Date();cutoff.setHours(0,0,0,0);cutoff.setDate(cutoff.getDate()-6);list=list.filter(e=>{const d=parseLocalDate(e.date);return d&&d>=cutoff;});}
+  else if(period==="month"){const now=new Date();list=list.filter(e=>{const d=parseLocalDate(e.date);return d&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth();});}
+  const map={};
+  list.forEach(e=>{const c=e.category||"Other";map[c]=(map[c]||0)+(parseFloat(e.amount)||0);});
+  return Object.entries(map).map(([category,total])=>({category,total})).sort((a,b)=>b.total-a.total);
+}
+function dailyLimitPct(){const limit=parseFloat(DB.dailyLimit)||0;if(limit<=0)return null;return Math.round((todayTotal()/limit)*100);}
+
+// ── DEMO TRIAL ──
+function demoTrialDaysLeft(){
+  let since=localStorage.getItem(DEMO_SINCE_KEY);
+  if(!since){since=todayKey();try{localStorage.setItem(DEMO_SINCE_KEY,since);}catch(e){}}
+  const p=since.split("-");const startDate=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
+  const today=new Date();today.setHours(0,0,0,0);startDate.setHours(0,0,0,0);
+  const daysElapsed=Math.floor((today-startDate)/(1000*60*60*24));
+  return TRIAL_DAYS-daysElapsed;
+}
+function enforceDemoTrial(){
+  const daysLeft=demoTrialDaysLeft();
+  const banner=g("demo-banner"),lock=g("trial-lock");
+  if(daysLeft<=0){if(lock)lock.classList.add("open");return;}
+  if(lock)lock.classList.remove("open");
+  const label=daysLeft===1?"1 day left in your free trial":daysLeft+" days left in your free trial";
+  const t=g("demo-banner-text");if(t)t.textContent=label;
+}
+
+// ── HEADER ──
+function updateHeader(){
+  g("app-title").textContent=DB.appName||"Daily Expense Tracker";
+  g("header-today").textContent=fmt$(todayTotal());
+  const pct=dailyLimitPct();
+  g("header-today-sub").textContent=pct===null?"No limit set":("of "+fmt$(DB.dailyLimit)+" limit");
+  g("header-week").textContent=fmt$(weekTotal());
+}
+
+// ── PAGES / TABS ──
+function showPage(id,btn){["main","settings"].forEach(p=>{const el=g("pg-"+p);if(el)el.style.display="none";});const pg=g("pg-"+id);if(pg)pg.style.display="flex";document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");if(id==="settings"){renderSwatches();renderLocalBackupSection();g("s-app-name").value=DB.appName||"";g("s-daily-limit").value=DB.dailyLimit||"";}}
+function switchTab(tab,btn){curTab=tab;document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");g("main-fab").style.display=(tab==="expenses")?"flex":"none";renderContent();}
+function openAdd(){if(curTab==="expenses")openExpenseModal(null);}
+
+// ── EXPENSE CRUD ──
+function openExpenseModal(id){
+  eId.expense=id;
+  const e=id?DB.expenses.find(x=>x.id===id):null;
+  g("expense-modal-title").textContent=id?"Edit Expense":"Add Expense";
+  g("expense-amount").value=e?e.amount:"";
+  g("expense-category").value=e?e.category:"Food & Dining";
+  g("expense-date").value=e?e.date:today();
+  g("expense-note").value=e?(e.note||""):"";
+  g("expense-del-btn").style.display=id?"block":"none";
+  openModal("expense-modal");
+}
+function saveExpense(){
+  const amt=parseFloat(g("expense-amount").value)||0;
+  if(!amt){toast("Enter an amount.");return;}
+  const entry={amount:amt,category:g("expense-category").value,date:g("expense-date").value||today(),note:g("expense-note").value.trim()};
+  if(eId.expense){const i=DB.expenses.findIndex(x=>x.id===eId.expense);if(i>-1)DB.expenses[i]={...DB.expenses[i],...entry};}
+  else DB.expenses.push({id:"exp"+uid(),createdAt:Date.now(),...entry});
+  save();closeModal("expense-modal");renderContent();updateHeader();
+}
+function deleteExpense(){confirmAction("Delete this expense?","This cannot be undone.",()=>{DB.expenses=DB.expenses.filter(e=>e.id!==eId.expense);save();closeModal("expense-modal");renderContent();updateHeader();});}
+
+// ── RENDER ──
+function renderContent(){
+  const c=g("main-content");
+  if(curTab==="expenses")renderExpensesTab(c);
+  else if(curTab==="insights")renderInsightsTab(c);
+}
+
+function renderExpensesTab(c){
+  if(!DB.expenses.length){c.innerHTML='<div class="empty">No expenses logged yet.<br>Tap + to log your first one — it only takes a few seconds.</div>';return;}
+  const dates=[...new Set(DB.expenses.map(e=>e.date))].sort((a,b)=>b.localeCompare(a));
+  c.innerHTML=dates.map(date=>{
+    const items=[...expensesForDate(date)].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    const total=totalForDate(date);
+    const isToday=date===today();
+    const limit=parseFloat(DB.dailyLimit)||0;
+    let limitHtml="";
+    if(isToday&&limit>0){
+      const pct=Math.min(100,Math.round((total/limit)*100));
+      const cls=total>limit?"over":(pct>=80?"warn":"ok");
+      limitHtml=`<div class="limit-bar-track"><div class="limit-bar-fill ${cls}" style="width:${pct}%;"></div></div><div class="limit-bar-label">${fmt$(total)} of ${fmt$(limit)} daily limit${total>limit?" — over budget":""}</div>`;
+    }
+    return`<div class="day-group"><div class="day-group-header"><div class="day-group-label">${fmtDayHeader(date)}</div><div class="day-group-total">${fmt$(total)}</div></div><div class="card" style="padding-top:6px;padding-bottom:2px;">${limitHtml}${items.map(e=>`<div class="ledger-row" onclick="openExpenseModal('${e.id}')"><div class="ledger-info"><div class="ledger-desc">${e.category}${e.note?" — "+e.note:""}</div><div class="ledger-date">tap to edit</div></div><div class="ledger-right"><div class="ledger-amt">${fmt$(e.amount)}</div></div></div>`).join("")}</div></div>`;
+  }).join("");
+}
+
+function renderInsightsTab(c){
+  const wTotal=weekTotal(),mTotal=monthTotal();
+  const breakdown=categoryBreakdown("month");
+  const topAmt=breakdown.length?breakdown[0].total:0;
+  let h=`<div class="card"><div class="card-title">Totals</div><div class="stat-grid"><div class="stat-box"><div class="stat-box-label">This week</div><div class="stat-box-val">${fmt$(wTotal)}</div></div><div class="stat-box"><div class="stat-box-label">This month</div><div class="stat-box-val">${fmt$(mTotal)}</div></div></div></div>`;
+  h+=`<div class="card"><div class="card-title">Spending by category — this month</div>`;
+  if(!breakdown.length){h+=`<div class="empty" style="padding:12px 0;">No expenses logged this month yet.</div>`;}
+  else{h+=breakdown.map(b=>{const pct=topAmt>0?Math.round((b.total/topAmt)*100):0;return`<div class="breakdown-row"><div class="breakdown-row-top"><div class="breakdown-cat">${b.category}</div><div class="breakdown-amt">${fmt$(b.total)}</div></div><div class="breakdown-bar-track"><div class="breakdown-bar-fill" style="width:${pct}%;"></div></div></div>`;}).join("");}
+  h+=`</div>`;
+  c.innerHTML=h;
+}
+
+// ── SETTINGS ──
+function saveAppName(){const n=g("s-app-name").value.trim();if(!n)return;DB.appName=n;save();updateHeader();toast("Name saved.");}
+function saveDailyLimit(){DB.dailyLimit=parseFloat(g("s-daily-limit").value)||0;save();updateHeader();renderContent();toast(DB.dailyLimit>0?"Limit saved.":"Limit cleared.");}
+function confirmReset(){confirmAction("Reset all data?","This permanently deletes everything.",()=>{DB=defDB();save();location.reload();});}
+function switchSettingsPanel(panel,btn){document.querySelectorAll(".settings-panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".settings-subtab").forEach(t=>t.classList.remove("active"));g("settings-panel-"+panel).classList.add("active");btn.classList.add("active");}
+
+// ── CALCULATOR ──
+function calcUpdateDisplay(){g("calc-result").textContent=calcCurrent;g("calc-expr").textContent=calcExpr;}
+function calcNum(n){if(calcJustEvaled){calcCurrent=n==="."?"0.":n;calcExpr="";calcJustEvaled=false;}else if(n==="."&&calcCurrent.includes("."))return;else if(calcCurrent==="0"&&n!==".")calcCurrent=n;else calcCurrent+=n;calcUpdateDisplay();}
+function calcOp(op){calcJustEvaled=false;if(calcExpr&&calcExpr.slice(-1)==="="){calcExpr=calcCurrent+op;calcCurrent="0";}else if(calcExpr&&!["÷","×","−","+","%"].includes(calcExpr.slice(-1))){calcExpr+=calcCurrent+op;calcCurrent="0";}else if(!calcExpr){calcExpr=calcCurrent+op;calcCurrent="0";}else{calcExpr=calcExpr.slice(0,-1)+op;}calcUpdateDisplay();}
+function calcEquals(){if(!calcExpr)return;const full=calcExpr+calcCurrent;const safe=full.replace(/÷/g,"/").replace(/×/g,"*").replace(/−/g,"-").replace(/%/g,"/100");try{const result=Function('"use strict";return ('+safe+')')();calcExpr=full+"=";calcCurrent=String(parseFloat(result.toFixed(10)));calcJustEvaled=true;calcUpdateDisplay();}catch(e){calcCurrent="Error";calcUpdateDisplay();}}
+function calcClear(){calcExpr="";calcCurrent="0";calcJustEvaled=false;calcUpdateDisplay();}
+function calcDel(){if(calcJustEvaled){calcClear();return;}if(calcCurrent.length>1)calcCurrent=calcCurrent.slice(0,-1);else calcCurrent="0";calcUpdateDisplay();}
+
+// ── INIT ──
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){["expense-modal","calc-modal","confirm-modal","restore-confirm-modal"].forEach(id=>closeModal(id));}});
+document.addEventListener("DOMContentLoaded",()=>{
+  load();applyAccent(DB.accent||"navy");applyMode(DB.mode||"light");
+  enforceDemoTrial();setInterval(enforceDemoTrial,60000);
+  updateHeader();renderContent();
+  g("calc-btn").addEventListener("click",()=>{openModal("calc-modal");});
+  g("appearance-btn").addEventListener("click",()=>{const keys=PALETTE.map(p=>p.key);const next=keys[(keys.indexOf(DB.accent||"navy")+1)%keys.length];setAccent(next);toast(next.charAt(0).toUpperCase()+next.slice(1));});
+  g("appearance-btn").addEventListener("pointerdown",()=>{pressTimer=setTimeout(()=>{const m=DB.mode==="dark"?"light":"dark";setMode(m);toast(m==="dark"?"Dark mode":"Light mode");},600);});
+  g("appearance-btn").addEventListener("pointerup",()=>clearTimeout(pressTimer));
+  g("appearance-btn").addEventListener("pointerleave",()=>clearTimeout(pressTimer));
+  g("restore-file-input").addEventListener("change",handleRestoreFile);
+  if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});}
+});
+</script>
+</body>
+</html>
