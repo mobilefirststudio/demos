@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<link rel="icon" href="icon-192.png" type="image/png"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<meta property="og:image" content="icon-512.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" id="meta-theme" content="#0f4c75"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Sinking Funds Planner — Mobile First Studio</title>
+<script>(function(){function setAppHeight(){document.documentElement.style.setProperty('--app-height',window.innerHeight+'px');}setAppHeight();window.addEventListener('resize',setAppHeight);window.addEventListener('orientationchange',setAppHeight);})();</script>
+<style>
+:root{--navy:#0f4c75;--navy-dark:#0a3554;--navy-light:#1a6ba0;--teal:#1ecbe1;--teal-dark:#17a8bb;--amount-color:var(--navy);--nav-active-color:var(--navy);--bg:#fff;--bg-soft:#f5f7fa;--bg-card:#fff;--ink:#1a1e2e;--ink-muted:#5a6070;--ink-faint:#9aa0b0;--border:#e4e8f0;--border-strong:#c8d2de;--success:#12b76a;--success-soft:#ecfdf3;--danger:#f04438;--danger-soft:#fef3f2;--warning:#f79009;--warning-soft:#fffaeb;--blue:#2c5282;--blue-soft:#ebf0fa;--shadow:0 2px 8px rgba(15,76,117,0.07),0 4px 16px rgba(15,76,117,0.05);}
+[data-mode="dark"]{--bg:#0f1117;--bg-soft:#181b24;--bg-card:#1e2230;--ink:#e8edf5;--ink-muted:#8b95a8;--ink-faint:#4a5060;--border:#252b38;--border-strong:#323a4a;--shadow:0 2px 8px rgba(0,0,0,0.4),0 4px 16px rgba(0,0,0,0.3);--success-soft:rgba(18,183,106,0.12);--danger-soft:rgba(240,68,56,0.12);--warning-soft:rgba(247,144,9,0.12);--blue-soft:rgba(44,82,130,0.2);--amount-color:#cfd5e2;--nav-active-color:#9ca2ac;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{height:100%;}
+body{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;background:var(--bg-soft);color:var(--ink);height:100dvh;height:var(--app-height,100dvh);overflow:hidden;display:flex;justify-content:center;-webkit-font-smoothing:antialiased;}
+.app{width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.app-header{background:linear-gradient(160deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-light) 100%);padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 14px;flex-shrink:0;}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.header-eyebrow{font-size:0.62rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);font-weight:600;text-transform:uppercase;}
+.header-title{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-0.02em;margin-top:2px;}
+.header-btns{display:flex;gap:8px;}
+.hdr-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
+.header-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.header-chip{background:rgba(255,255,255,0.1);border-radius:10px;padding:9px 12px;border:1px solid rgba(255,255,255,0.12);}
+.header-chip-label{font-size:0.62rem;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
+.header-chip-val{font-size:1.3rem;font-weight:800;color:#fff;font-family:"Inter",sans-serif;letter-spacing:-0.02em;margin-top:1px;}
+.header-chip-val.success-light{color:#86efac;}
+.header-chip-sub{font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:1px;}
+.tab-bar{background:var(--bg-card);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;flex-shrink:0;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{flex:0 0 auto;padding:10px 14px;border:none;background:transparent;font-size:0.78rem;font-weight:600;color:var(--ink-faint);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all 0.15s;}
+.tab-btn.active{color:var(--nav-active-color);border-bottom-color:var(--nav-active-color);}
+.content{flex:1;overflow-y:auto;padding:14px 14px calc(80px + env(safe-area-inset-bottom,0px));background:var(--bg-soft);-webkit-overflow-scrolling:touch;}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);}
+.card-title{font-size:0.88rem;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.sl{font-size:0.67rem;letter-spacing:0.1em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-bottom:8px;margin-top:4px;}
+.ledger-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.ledger-row:last-child{border-bottom:none;}
+.ledger-info{flex:1;min-width:0;}
+.ledger-desc{font-size:0.86rem;font-weight:600;color:var(--ink);}
+.ledger-date{font-size:0.7rem;color:var(--ink-muted);margin-top:2px;font-style:italic;}
+.ledger-right{text-align:right;flex-shrink:0;}
+.ledger-amt{font-size:0.9rem;font-weight:700;font-family:"Inter",sans-serif;}
+.ledger-amt.pos{color:var(--success);}
+.ledger-amt.neg{color:var(--danger);}
+.fund-summary-banner{background:var(--success-soft);border:1px solid rgba(18,183,106,0.2);border-radius:12px;padding:13px 15px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.fund-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow);}
+.fund-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.fund-name{font-size:0.92rem;font-weight:700;color:var(--ink);}
+.fund-type-badge{font-size:0.62rem;letter-spacing:0.07em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-top:2px;}
+.fund-balance{font-size:1.5rem;font-weight:800;color:var(--success);font-family:"Inter",sans-serif;letter-spacing:-0.02em;}
+.fund-balance-label{font-size:0.65rem;color:var(--ink-faint);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
+.fund-progress-track{height:8px;background:var(--bg-soft);border-radius:999px;overflow:hidden;border:1px solid var(--border);margin:10px 0;}
+.fund-progress-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--success),#34d399);transition:width 0.6s cubic-bezier(0.34,1.56,0.64,1);}
+.fund-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;}
+.fund-stat{background:var(--bg-soft);border-radius:8px;padding:7px 8px;border:1px solid var(--border);}
+.fund-stat-label{font-size:0.6rem;letter-spacing:0.07em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;}
+.fund-stat-val{font-size:0.84rem;font-weight:700;color:var(--ink);font-family:"Inter",sans-serif;margin-top:2px;}
+.fund-needed-banner{background:linear-gradient(135deg,rgba(15,76,117,0.08),rgba(30,203,225,0.06));border:1px solid rgba(15,76,117,0.12);border-radius:10px;padding:10px 12px;margin-top:10px;}
+.fund-needed-val{font-size:0.88rem;font-weight:700;color:var(--amount-color);}
+.fund-needed-banner.reached{background:var(--success-soft);border-color:rgba(18,183,106,0.2);}
+.fund-needed-banner.reached .fund-needed-val{color:var(--success);}
+.fund-needed-banner.overdue{background:var(--warning-soft);border-color:rgba(247,144,9,0.2);}
+.fund-needed-banner.overdue .fund-needed-val{color:var(--warning);}
+.fund-actions{display:flex;gap:8px;margin-top:10px;}
+.fund-btn{flex:1;padding:8px;border-radius:9px;border:1px solid var(--border-strong);background:transparent;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.76rem;font-weight:600;cursor:pointer;}
+.fund-btn.primary{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border:none;}
+.fab{position:absolute;bottom:calc(68px + env(safe-area-inset-bottom,0px));right:14px;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 4px 14px rgba(15,76,117,0.4);}
+.fab i{font-size:22px;color:white;}
+.bottom-nav{background:var(--bg-card);border-top:1px solid var(--border);padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-around;flex-shrink:0;box-shadow:0 -2px 10px rgba(15,76,117,0.05);}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 8px;border-radius:8px;background:none;border:none;min-width:44px;}
+.nav-btn i{font-size:20px;color:var(--ink-faint);}
+.nav-btn span{font-size:0.6rem;font-weight:600;color:var(--ink-faint);letter-spacing:0.04em;text-transform:uppercase;font-family:"Plus Jakarta Sans",sans-serif;}
+.nav-btn.active i,.nav-btn.active span{color:var(--nav-active-color);}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:0.72rem;letter-spacing:0.1em;color:var(--ink-muted);text-transform:uppercase;font-weight:600;margin-bottom:5px;}
+.field input,.field select{width:100%;background:var(--bg-soft);border:1px solid var(--border-strong);border-radius:10px;padding:10px 13px;color:var(--ink);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;outline:none;-webkit-appearance:none;}
+.field input::placeholder{color:var(--ink-faint);font-style:italic;}
+.field input:focus,.field select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(15,76,117,0.1);}
+.field-hint{font-size:0.7rem;color:var(--ink-faint);font-style:italic;margin-top:4px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-row{display:flex;gap:10px;margin-top:14px;}
+.btn-save{flex:1;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:10px;padding:13px;color:white;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:13px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;cursor:pointer;}
+.btn-delete{width:100%;background:var(--danger-soft);border:1px solid rgba(240,68,56,0.3);border-radius:10px;padding:12px;color:var(--danger);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;margin-top:8px;}
+.btn-ghost{width:100%;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:11px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;cursor:pointer;margin-top:6px;}
+.btn-full{width:100%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:10px;padding:13px;color:white;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-bottom:10px;}
+.modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);background:rgba(10,20,35,0.5);z-index:20;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg-card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:90dvh;overflow-y:auto;border-top:1px solid var(--border);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal h2{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:16px;}
+.empty{text-align:center;padding:28px 0;color:var(--ink-muted);font-size:0.9rem;line-height:1.8;font-style:italic;}
+.toast{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(8px);background:#1a1e2e;color:#fff;font-size:0.82rem;padding:8px 16px;border-radius:20px;opacity:0;pointer-events:none;z-index:100;transition:opacity 0.2s,transform 0.2s;white-space:normal;text-align:center;max-width:calc(100% - 48px);width:max-content;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.settings-subtab-bar{display:flex;background:var(--bg-card);border-bottom:1px solid var(--border);flex-shrink:0;}
+.settings-subtab{flex:1;padding:10px 4px;border:none;background:transparent;font-size:0.76rem;font-weight:700;color:var(--ink-faint);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;border-bottom:2.5px solid transparent;transition:all 0.15s;text-align:center;}
+.settings-subtab.active{color:var(--nav-active-color);border-bottom-color:var(--nav-active-color);}
+.settings-panel{display:none;}
+.settings-panel.active{display:block;}
+.swatch-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.swatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:transform 0.15s;position:relative;}
+.swatch.selected{border-color:var(--ink);}
+.swatch.selected::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.8rem;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,0.3);}
+.mode-row{display:flex;gap:8px;margin-top:6px;}
+.mode-btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border-strong);background:transparent;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;}
+.mode-btn.active{background:var(--ink);color:var(--bg-card);border-color:var(--ink);}
+.confirm-modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);background:rgba(10,20,35,0.5);z-index:30;display:none;align-items:center;justify-content:center;}
+.confirm-modal-bg.open{display:flex;}
+.confirm-box{background:var(--bg-card);border-radius:16px;padding:20px;width:calc(100% - 32px);max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.confirm-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.confirm-body{font-size:0.84rem;color:var(--ink-muted);line-height:1.6;margin-bottom:16px;}
+.confirm-btns{display:flex;gap:8px;}
+.confirm-yes{flex:1;background:var(--danger);border:none;border-radius:10px;padding:11px;color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;}
+.confirm-no{flex:1;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:11px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;cursor:pointer;}
+.calc-modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);background:rgba(10,20,35,0.5);z-index:25;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.calc-modal-bg.open{display:flex;}
+.calc-modal{background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));width:100%;border-top:1px solid var(--border);animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+.calc-display{background:var(--bg-soft);border-radius:12px;padding:12px 16px;margin-bottom:12px;text-align:right;border:1px solid var(--border);}
+.calc-expr{font-size:0.78rem;color:var(--ink-muted);font-family:"Inter",sans-serif;min-height:1.2em;}
+.calc-result{font-size:2.2rem;font-weight:800;color:var(--ink);font-family:"Inter",sans-serif;letter-spacing:-0.03em;line-height:1.1;margin-top:2px;}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.calc-key{height:60px;border-radius:12px;border:none;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:"Inter",sans-serif;transition:opacity 0.1s,transform 0.08s;}
+.calc-key:active{opacity:0.75;transform:scale(0.95);}
+.calc-key.num{background:var(--bg-soft);color:var(--ink);border:1px solid var(--border);}
+.calc-key.op{background:rgba(15,76,117,0.1);color:var(--nav-active-color);border:1px solid rgba(15,76,117,0.15);}
+.calc-key.eq{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border:none;}
+.calc-key.clear{background:var(--danger-soft);color:var(--danger);border:1px solid rgba(240,68,56,0.2);}
+.calc-key.del{background:var(--bg-soft);color:var(--ink-muted);border:1px solid var(--border);}
+.calc-close-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.calc-close-btn{background:none;border:none;color:var(--ink-faint);font-size:1.4rem;cursor:pointer;padding:4px 8px;line-height:1;}
+.demo-banner{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;text-align:center;padding:9px 14px;font-size:0.74rem;font-weight:600;flex-shrink:0;line-height:1.5;}
+.demo-banner a{color:#fff;text-decoration:underline;font-weight:700;}
+.upsell-card{background:linear-gradient(135deg,rgba(15,76,117,0.08),rgba(30,203,225,0.06));border:1px solid rgba(15,76,117,0.18);border-radius:14px;padding:16px 18px;}
+.upsell-card .upsell-title{font-size:0.94rem;font-weight:800;color:var(--ink);margin-bottom:6px;}
+.upsell-card p{font-size:0.82rem;line-height:1.55;color:var(--ink-muted);margin-bottom:12px;}
+.upsell-card a.upsell-link{display:inline-block;background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;text-decoration:none;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.86rem;font-weight:700;padding:11px 18px;border-radius:10px;}
+#trial-lock{display:none;position:fixed;inset:0;z-index:999;background:rgba(10,20,35,0.72);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:24px;}
+#trial-lock.show{display:flex;}
+#trial-lock .lock-box{background:var(--bg-card);border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.3);}
+#trial-lock .lock-box .lock-emoji{font-size:2.2rem;margin-bottom:10px;}
+#trial-lock .lock-box h2{font-family:"Plus Jakarta Sans",sans-serif;font-size:1.15rem;font-weight:800;color:var(--ink);margin-bottom:8px;}
+#trial-lock .lock-box p{font-size:0.86rem;line-height:1.55;color:var(--ink-muted);margin-bottom:18px;}
+#trial-lock .lock-box a{display:block;background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;text-decoration:none;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;padding:13px;border-radius:10px;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="demo-banner" id="demo-banner">Free trial &middot; <span id="demo-days-left">14 days</span> left &middot; <a href="https://www.etsy.com/listing/4567009468/sinking-funds-planner-app-save-for" target="_blank" rel="noopener">Unlock the full app →</a></div>
+  <div class="app-header">
+    <div class="header-top">
+      <div><div class="header-eyebrow">MOBILE FIRST STUDIO</div><div class="header-title" id="app-title">Sinking Funds Planner</div></div>
+      <div class="header-btns">
+        <button class="hdr-btn" id="calc-btn" title="Calculator"><i class="ti ti-calculator"></i></button>
+        <button class="hdr-btn" id="appearance-btn" title="Change color"><i class="ti ti-palette"></i></button>
+      </div>
+    </div>
+    <div class="header-chips">
+      <div class="header-chip"><div class="header-chip-label">Total Saved</div><div class="header-chip-val success-light" id="header-total">$0.00</div><div class="header-chip-sub">All funds</div></div>
+      <div class="header-chip"><div class="header-chip-label">Toward Goals</div><div class="header-chip-val" id="header-pct">0%</div><div class="header-chip-sub">Overall progress</div></div>
+    </div>
+  </div>
+
+  <div id="pg-main" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('funds',this)">Funds</button>
+      <button class="tab-btn" onclick="switchTab('history',this)">History</button>
+    </div>
+    <div class="content" id="main-content"></div>
+    <button class="fab" id="main-fab" onclick="openAdd()"><i class="ti ti-plus"></i></button>
+  </div>
+
+  <div id="pg-settings" style="display:none;flex-direction:column;flex:1;min-height:0;">
+    <div class="settings-subtab-bar">
+      <button class="settings-subtab active" data-panel="general" onclick="switchSettingsPanel('general',this)">General</button>
+      <button class="settings-subtab" data-panel="backup" onclick="switchSettingsPanel('backup',this)">Backup</button>
+    </div>
+    <div class="content">
+      <div class="settings-panel active" id="settings-panel-general">
+        <div class="card"><div class="card-title">App name</div><div class="field"><input type="text" id="s-app-name" placeholder="Sinking Funds Planner" maxlength="40"/></div><button class="btn-full" onclick="saveAppName()" style="margin-bottom:0;">Save name</button></div>
+        <div class="card"><div class="card-title">Appearance</div><div class="sl">Mode</div><div class="mode-row"><button class="mode-btn active" data-mode="light" onclick="setMode('light')">☀ Light</button><button class="mode-btn" data-mode="dark" onclick="setMode('dark')">☾ Dark</button></div><div class="sl" style="margin-top:12px;">Color</div><div class="swatch-row" id="swatch-row"></div></div>
+        <div class="card"><div class="card-title" style="color:var(--danger);">Danger zone</div><button class="btn-delete" onclick="confirmReset()" style="margin-top:0;">Reset all data</button></div>
+      </div>
+      <div class="settings-panel" id="settings-panel-backup">
+        <div class="card"><div class="card-title">Local backup</div><p class="field-hint" style="margin-bottom:12px;">Download a backup file to your device.</p><div id="local-backup-section"></div><input type="file" id="restore-file-input" accept="application/json" style="display:none;"/></div>
+        <div class="upsell-card"><div class="upsell-title">Want automatic backups?</div><p>The full version backs up your sinking funds to your own Google Drive automatically, so you never have to think about it.</p><a class="upsell-link" href="https://www.etsy.com/listing/4567009468/sinking-funds-planner-app-save-for" target="_blank" rel="noopener">Unlock the full app →</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('main',this)"><i class="ti ti-pig-money"></i><span>Funds</span></button>
+    <button class="nav-btn" onclick="showPage('settings',this)"><i class="ti ti-settings"></i><span>Settings</span></button>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="fund-modal"><div class="modal">
+  <h2 id="fund-modal-title">Add Sinking Fund</h2>
+  <div class="field"><label>Fund Name</label><input id="fund-name" placeholder="e.g. Car Repairs, Holiday Gifts"/></div>
+  <div class="field"><label>Category</label><select id="fund-category"><option value="Car Repairs">Car Repairs</option><option value="Home Repairs">Home Repairs</option><option value="Holiday Gifts">Holiday Gifts</option><option value="Annual Insurance">Annual Insurance</option><option value="Vet Bills">Vet Bills</option><option value="Travel">Travel</option><option value="Other">Other</option></select></div>
+  <div class="field-row">
+    <div class="field"><label>Target Amount</label><input type="number" id="fund-target" placeholder="e.g. 1200.00" step="0.01"/></div>
+    <div class="field"><label>Target Date</label><input type="date" id="fund-date"/></div>
+  </div>
+  <div class="field"><label>Starting Balance</label><input type="number" id="fund-balance" placeholder="e.g. 0.00 (optional)" step="0.01"/><div class="field-hint">Already have some saved toward this? Enter it here.</div></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('fund-modal')">Cancel</button><button class="btn-save" onclick="saveFund()">Save</button></div>
+  <button class="btn-delete" id="fund-del-btn" style="display:none;" onclick="deleteFund()">Delete Fund</button>
+</div></div>
+
+<div class="modal-bg" id="fund-tx-modal"><div class="modal">
+  <h2 id="fund-tx-title">Add Deposit</h2>
+  <div class="field"><label>Type</label>
+    <div style="display:flex;gap:8px;margin-top:4px;">
+      <button type="button" id="ftx-type-deposit" onclick="setFundTxType('deposit')" style="flex:1;padding:9px;border-radius:9px;border:1.5px solid var(--success);background:var(--success);color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">💰 Deposit</button>
+      <button type="button" id="ftx-type-withdrawal" onclick="setFundTxType('withdrawal')" style="flex:1;padding:9px;border-radius:9px;border:1.5px solid var(--border-strong);background:transparent;color:var(--ink-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">➖ Withdrawal</button>
+    </div>
+  </div>
+  <div class="field"><label id="ftx-amt-label">Deposit Amount</label><input type="number" id="ftx-amt" placeholder="e.g. 50.00" step="0.01"/></div>
+  <div class="field"><label>Date</label><input type="date" id="ftx-date"/></div>
+  <div class="field"><label>Note (optional)</label><input id="ftx-note" placeholder="e.g. Extra from tax refund"/></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('fund-tx-modal')">Cancel</button><button class="btn-save" id="ftx-save-btn" onclick="saveFundTx()">Add deposit</button></div>
+  <button class="btn-delete" id="ftx-del-btn" style="display:none;" onclick="deleteFundTx()">Delete</button>
+</div></div>
+
+<div class="confirm-modal-bg" id="confirm-modal"><div class="confirm-box"><div class="confirm-title" id="confirm-title">Are you sure?</div><div class="confirm-body" id="confirm-body">This cannot be undone.</div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('confirm-modal')">Cancel</button><button class="confirm-yes" id="confirm-yes-btn">Delete</button></div></div></div>
+<div class="confirm-modal-bg" id="restore-confirm-modal"><div class="confirm-box"><div class="confirm-title" id="restore-confirm-title">Restore?</div><div class="confirm-body" id="restore-confirm-body"></div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('restore-confirm-modal')">Cancel</button><button class="confirm-yes" id="restore-confirm-yes">Restore</button></div></div></div>
+<div class="calc-modal-bg" id="calc-modal"><div class="calc-modal">
+  <div class="calc-close-row"><button class="calc-close-btn" onclick="closeModal('calc-modal')">✕</button></div>
+  <div class="calc-display"><div class="calc-expr" id="calc-expr"></div><div class="calc-result" id="calc-result">0</div></div>
+  <div class="calc-grid">
+    <button class="calc-key clear" onclick="calcClear()">C</button>
+    <button class="calc-key del" onclick="calcDel()">⌫</button>
+    <button class="calc-key op" onclick="calcOp('%')">%</button>
+    <button class="calc-key op" onclick="calcOp('÷')">÷</button>
+    <button class="calc-key num" onclick="calcNum('7')">7</button>
+    <button class="calc-key num" onclick="calcNum('8')">8</button>
+    <button class="calc-key num" onclick="calcNum('9')">9</button>
+    <button class="calc-key op" onclick="calcOp('×')">×</button>
+    <button class="calc-key num" onclick="calcNum('4')">4</button>
+    <button class="calc-key num" onclick="calcNum('5')">5</button>
+    <button class="calc-key num" onclick="calcNum('6')">6</button>
+    <button class="calc-key op" onclick="calcOp('−')">−</button>
+    <button class="calc-key num" onclick="calcNum('1')">1</button>
+    <button class="calc-key num" onclick="calcNum('2')">2</button>
+    <button class="calc-key num" onclick="calcNum('3')">3</button>
+    <button class="calc-key op" onclick="calcOp('+')">+</button>
+    <button class="calc-key num" onclick="calcNum('0')" style="grid-column:span 2;">0</button>
+    <button class="calc-key num" onclick="calcNum('.')">.</button>
+    <button class="calc-key eq" onclick="calcEquals()">=</button>
+  </div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<div id="trial-lock"><div class="lock-box">
+  <div class="lock-emoji">⏳</div>
+  <h2>Your free trial has ended</h2>
+  <p>Your 14 day trial of Sinking Funds Planner is over, but your data is still saved. Unlock the full app to keep using it, no time limit, no subscription.</p>
+  <a href="https://www.etsy.com/listing/4567009468/sinking-funds-planner-app-save-for" target="_blank" rel="noopener">Unlock the full app →</a>
+</div></div>
+
+<script>
+const STORE="mfs_sfp_demo_v1";
+const PRERESTORE_KEY="mfs_sfp_demo_prerestore";
+const DEMO_SINCE_KEY="mfs_sfp_demo_since";
+const TRIAL_DAYS=14;
+const ETSY_URL="https://www.etsy.com/listing/4567009468/sinking-funds-planner-app-save-for";
+const PALETTE=[{key:"navy",navy:"#0f4c75",teal:"#1ecbe1"},{key:"forest",navy:"#1a5c3a",teal:"#2dd4a0"},{key:"violet",navy:"#4c1d95",teal:"#a78bfa"},{key:"rose",navy:"#881337",teal:"#fb7185"},{key:"slate",navy:"#1e293b",teal:"#38bdf8"},{key:"amber",navy:"#78350f",teal:"#fbbf24"}];
+
+let DB,curTab="funds",eId={};
+let pendingRestore=null,pendingFundId=null,_editingFundTxId=null,pressTimer=null;
+let calcCurrent="0",calcExpr="",calcJustEvaled=false;
+
+// ── DEMO TRIAL ──
+function demoTrialDaysLeft(){
+  let since=localStorage.getItem(DEMO_SINCE_KEY);
+  if(!since){since=Date.now().toString();try{localStorage.setItem(DEMO_SINCE_KEY,since);}catch(e){}}
+  const elapsedDays=(Date.now()-parseInt(since))/86400000;
+  return Math.max(0,Math.ceil(TRIAL_DAYS-elapsedDays));
+}
+function enforceDemoTrial(){
+  const daysLeft=demoTrialDaysLeft();
+  const banner=g("demo-days-left");
+  if(banner)banner.textContent=daysLeft===1?"1 day":daysLeft+" days";
+  if(daysLeft<=0){
+    g("trial-lock").classList.add("show");
+    document.body.style.overflow="hidden";
+  }
+}
+
+// ── DATA ──
+function defDB(){return{appName:"Sinking Funds Planner",funds:[],contributions:[],accent:"navy",mode:"light"};}
+function load(){
+  try{const r=localStorage.getItem(STORE);if(r){DB=Object.assign(defDB(),JSON.parse(r));if(!DB.funds)DB.funds=[];if(!DB.contributions)DB.contributions=[];}else DB=defDB();}catch(e){DB=defDB();}
+}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(DB));}catch(e){}scheduleAutoBackup();}
+function scheduleAutoBackup(){}
+
+// ── LOCAL BACKUP ──
+function downloadBackup(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="sinking-funds-planner-backup-"+todayKey()+".json";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup downloaded!");}
+function renderLocalBackupSection(){const e=g("local-backup-section");if(!e)return;const hasUndo=!!localStorage.getItem(PRERESTORE_KEY);e.innerHTML=`<button class="btn-full" onclick="downloadBackup()" style="margin-bottom:8px;">⬇ Download backup</button><button class="btn-ghost" onclick="g('restore-file-input').click()" style="margin-bottom:${hasUndo?6:0}px;">⬆ Restore from file</button>${hasUndo?'<button class="btn-ghost" onclick="undoRestore()" style="color:var(--danger);">Undo last restore</button>':""}`;}
+function handleRestoreFile(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=evt=>{try{const data=JSON.parse(evt.target.result);if(!data||!data.funds){toast("Invalid backup.");return;}openRestoreConfirm(data,'"'+file.name+'"');}catch(err){toast("Could not read file.");}};r.readAsText(file);e.target.value="";}
+function openRestoreConfirm(data,source){pendingRestore=data;g("restore-confirm-title").textContent="Restore from "+source+"?";g("restore-confirm-body").textContent="This replaces all your current data. You can undo right after.";g("restore-confirm-yes").onclick=confirmRestoreNow;openModal("restore-confirm-modal");}
+function confirmRestoreNow(){if(!pendingRestore){closeModal("restore-confirm-modal");return;}try{localStorage.setItem(PRERESTORE_KEY,JSON.stringify({db:DB,ts:Date.now()}));}catch(e){}DB=pendingRestore;pendingRestore=null;save();closeModal("restore-confirm-modal");toast("Restored!");setTimeout(()=>location.reload(),1200);}
+function undoRestore(){try{const raw=localStorage.getItem(PRERESTORE_KEY);if(!raw){toast("Nothing to undo.");return;}DB=JSON.parse(raw).db;localStorage.removeItem(PRERESTORE_KEY);save();toast("Undo done!");setTimeout(()=>location.reload(),1200);}catch(e){toast("Could not undo.");}}
+
+// ── UTILS ──
+function uid(){return Date.now()+Math.floor(Math.random()*1000);}
+function todayKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function today(){return todayKey();}
+function fmt$(n){const v=parseFloat(n)||0;return(v<0?"-$":"$")+Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtDate(d){if(!d)return"";try{const p=d.split("-");return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});}catch(e){return d;}}
+function g(id){return document.getElementById(id);}
+function toast(msg){const t=g("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400);}
+function openModal(id){g(id).classList.add("open");}
+function closeModal(id){g(id).classList.remove("open");}
+function confirmAction(title,body,cb){g("confirm-title").textContent=title;g("confirm-body").textContent=body;g("confirm-yes-btn").onclick=()=>{closeModal("confirm-modal");cb();};openModal("confirm-modal");}
+
+// ── ACCENT / MODE ──
+function shade(hex,p){const n=parseInt(hex.replace("#",""),16);const r=Math.min(255,Math.max(0,((n>>16)&0xff)+Math.round(255*p/100)));const gg=Math.min(255,Math.max(0,((n>>8)&0xff)+Math.round(255*p/100)));const b=Math.min(255,Math.max(0,(n&0xff)+Math.round(255*p/100)));return"#"+[r,gg,b].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function applyAccent(key){const p=PALETTE.find(a=>a.key===key)||PALETTE[0];const r=document.documentElement;r.style.setProperty("--navy",p.navy);r.style.setProperty("--navy-dark",shade(p.navy,-15));r.style.setProperty("--navy-light",shade(p.navy,20));r.style.setProperty("--teal",p.teal);r.style.setProperty("--teal-dark",shade(p.teal,-15));g("meta-theme").setAttribute("content",p.navy);}
+function applyMode(mode){document.documentElement.setAttribute("data-mode",mode);document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));}
+function setMode(mode){DB.mode=mode;applyMode(mode);save();}
+function renderSwatches(){const row=g("swatch-row");if(!row)return;row.innerHTML=PALETTE.map(p=>`<div class="swatch ${DB.accent===p.key?"selected":""}" data-key="${p.key}" style="background:linear-gradient(135deg,${p.navy} 50%,${p.teal} 50%)" onclick="setAccent('${p.key}')"></div>`).join("");}
+function setAccent(key){DB.accent=key;applyAccent(key);save();renderSwatches();}
+
+// ── FUND CALCS ──
+function fundCurrentBal(fundId){const f=DB.funds.find(x=>x.id===fundId);if(!f)return 0;let bal=parseFloat(f.balance)||0;(DB.contributions||[]).filter(c=>c.fundId===fundId).forEach(c=>{if(c.txType==="withdrawal")bal-=parseFloat(c.amount)||0;else bal+=parseFloat(c.amount)||0;});return Math.max(0,bal);}
+function monthsUntil(dateStr){if(!dateStr)return null;const target=new Date(dateStr+"T00:00:00");const now=new Date();now.setHours(0,0,0,0);let months=(target.getFullYear()-now.getFullYear())*12+(target.getMonth()-now.getMonth());if(target.getDate()<now.getDate())months-=0;return months;}
+function monthlyNeeded(fund){const bal=fundCurrentBal(fund.id);const target=parseFloat(fund.targetAmount)||0;const remaining=Math.max(0,target-bal);if(remaining<=0)return{status:"reached",amount:0};const months=monthsUntil(fund.targetDate);if(months===null)return{status:"nodate",amount:remaining};if(months<=0)return{status:"overdue",amount:remaining};return{status:"ontrack",amount:remaining/months,months};}
+
+// ── HEADER ──
+function updateHeader(){
+  g("app-title").textContent=DB.appName||"Sinking Funds Planner";
+  const totalSaved=DB.funds.reduce((s,f)=>s+fundCurrentBal(f.id),0);
+  const totalTarget=DB.funds.reduce((s,f)=>s+(parseFloat(f.targetAmount)||0),0);
+  const pct=totalTarget>0?Math.min(100,Math.round((totalSaved/totalTarget)*100)):0;
+  g("header-total").textContent=fmt$(totalSaved);
+  g("header-pct").textContent=pct+"%";
+}
+
+// ── PAGES / TABS ──
+function showPage(id,btn){["main","settings"].forEach(p=>{const el=g("pg-"+p);if(el)el.style.display="none";});const pg=g("pg-"+id);if(pg)pg.style.display="flex";document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");if(id==="settings"){renderSwatches();renderLocalBackupSection();g("s-app-name").value=DB.appName||"";}}
+function switchTab(tab,btn){curTab=tab;document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");g("main-fab").style.display=(tab==="funds")?"flex":"none";renderContent();}
+function openAdd(){if(curTab==="funds")openFundModal(null);}
+
+// ── FUND CRUD ──
+function openFundModal(id){
+  eId.fund=id;
+  const f=id?DB.funds.find(x=>x.id===id):null;
+  g("fund-modal-title").textContent=id?"Edit Fund":"Add Sinking Fund";
+  g("fund-name").value=f?f.name:"";
+  g("fund-category").value=f?f.category:"Car Repairs";
+  g("fund-target").value=f?f.targetAmount:"";
+  g("fund-date").value=f?f.targetDate:"";
+  g("fund-balance").value=f?f.balance:"";
+  g("fund-del-btn").style.display=id?"block":"none";
+  openModal("fund-modal");
+}
+function saveFund(){
+  const name=g("fund-name").value.trim();if(!name){toast("Enter a name.");return;}
+  const entry={id:eId.fund||("f"+uid()),name,category:g("fund-category").value,targetAmount:parseFloat(g("fund-target").value)||0,targetDate:g("fund-date").value||"",balance:parseFloat(g("fund-balance").value)||0,createdAt:eId.fund?undefined:Date.now()};
+  if(eId.fund){const i=DB.funds.findIndex(x=>x.id===eId.fund);if(i>-1)DB.funds[i]={...DB.funds[i],...entry};}else DB.funds.push(entry);
+  save();closeModal("fund-modal");renderContent();updateHeader();
+}
+function deleteFund(){confirmAction("Delete this fund?","All contribution history will also be removed.",()=>{DB.contributions=(DB.contributions||[]).filter(c=>c.fundId!==eId.fund);DB.funds=DB.funds.filter(f=>f.id!==eId.fund);save();closeModal("fund-modal");renderContent();updateHeader();});}
+function setFundTxType(type){
+  const db=g('ftx-type-deposit'),wb=g('ftx-type-withdrawal'),lbl=g('ftx-amt-label'),btn=g('ftx-save-btn');
+  if(!db||!wb)return;
+  if(type==='deposit'){db.style.background='var(--success)';db.style.borderColor='var(--success)';db.style.color='#fff';wb.style.background='transparent';wb.style.borderColor='var(--border-strong)';wb.style.color='var(--ink-muted)';if(lbl)lbl.textContent='Deposit Amount';if(btn)btn.textContent='Add deposit';db.dataset.active='true';wb.dataset.active='';}
+  else{wb.style.background='var(--danger)';wb.style.borderColor='var(--danger)';wb.style.color='#fff';db.style.background='transparent';db.style.borderColor='var(--border-strong)';db.style.color='var(--ink-muted)';if(lbl)lbl.textContent='Withdrawal Amount';if(btn)btn.textContent='Log withdrawal';wb.dataset.active='true';db.dataset.active='';}
+}
+function openFundTxModal(fundId,txType,editId){
+  _editingFundTxId=editId||null;
+  pendingFundId=fundId;
+  const f=DB.funds.find(x=>x.id===fundId);
+  if(editId){
+    const c=(DB.contributions||[]).find(x=>x.id===editId);if(!c)return;
+    g("fund-tx-title").textContent=(c.txType==="withdrawal"?"Edit Withdrawal — ":"Edit Deposit — ")+(f?f.name:"");
+    g("ftx-amt").value=c.amount;g("ftx-date").value=c.date;g("ftx-note").value=c.note||"";
+    setFundTxType(c.txType||"deposit");g("ftx-del-btn").style.display="block";
+  }else{
+    g("fund-tx-title").textContent=(txType==="withdrawal"?"Log a Withdrawal — ":"Add a Deposit — ")+(f?f.name:"");
+    g("ftx-amt").value="";g("ftx-date").value=today();g("ftx-note").value="";
+    setFundTxType(txType||"deposit");g("ftx-del-btn").style.display="none";
+  }
+  openModal("fund-tx-modal");
+}
+function deleteFundTx(){confirmAction("Delete this entry?","This will adjust the fund balance accordingly.",()=>{DB.contributions=(DB.contributions||[]).filter(x=>x.id!==_editingFundTxId);_editingFundTxId=null;save();closeModal("fund-tx-modal");renderContent();updateHeader();toast("Deleted.");});}
+function saveFundTx(){
+  const amt=parseFloat(g("ftx-amt").value)||0;
+  if(!amt){toast("Enter an amount.");return;}
+  const wb=g("ftx-type-withdrawal");
+  const txType=wb&&wb.dataset.active==="true"?"withdrawal":"deposit";
+  if(!DB.contributions)DB.contributions=[];
+  if(_editingFundTxId){
+    const i=DB.contributions.findIndex(x=>x.id===_editingFundTxId);
+    if(i>-1)DB.contributions[i]={...DB.contributions[i],amount:amt,date:g("ftx-date").value,note:g("ftx-note").value.trim(),txType};
+    toast("Updated ✓");
+  }else{
+    DB.contributions.push({id:"ftx"+uid(),fundId:pendingFundId,amount:amt,date:g("ftx-date").value,note:g("ftx-note").value.trim(),txType});
+    toast(fmt$(amt)+(txType==="withdrawal"?" withdrawn":" deposited")+" ✓");
+  }
+  _editingFundTxId=null;
+  save();closeModal("fund-tx-modal");renderContent();updateHeader();
+}
+// ── RENDER ──
+function renderContent(){
+  const c=g("main-content");
+  if(curTab==="funds")renderFundsTab(c);
+  else if(curTab==="history")renderHistoryTab(c);
+}
+
+function renderFundsTab(c){
+  if(!DB.funds.length){c.innerHTML='<div class="empty">No sinking funds yet.<br>Tap + to start saving for a car repair, holiday gifts, or anything else you plan for.</div>';return;}
+  const totalSaved=DB.funds.reduce((s,f)=>s+fundCurrentBal(f.id),0);
+  const totalTarget=DB.funds.reduce((s,f)=>s+(parseFloat(f.targetAmount)||0),0);
+  const pct=totalTarget>0?Math.min(100,Math.round((totalSaved/totalTarget)*100)):0;
+  let h=`<div class="fund-summary-banner"><div><div style="font-size:0.65rem;letter-spacing:0.08em;color:var(--success);font-weight:700;text-transform:uppercase;">Total saved</div><div style="font-size:1.5rem;font-weight:800;color:var(--success);font-family:'Inter',sans-serif;letter-spacing:-0.02em;">${fmt$(totalSaved)}</div></div><div style="text-align:right;"><div style="font-size:0.65rem;color:var(--ink-muted);">Of combined targets</div><div style="font-size:1.3rem;font-weight:800;color:var(--amount-color);font-family:'Inter',sans-serif;">${pct}%</div></div></div>`;
+  const sorted=[...DB.funds].sort((a,b)=>(a.targetDate||"9999").localeCompare(b.targetDate||"9999"));
+  h+=sorted.map(f=>{
+    const bal=fundCurrentBal(f.id);const target=parseFloat(f.targetAmount)||1;const pctFund=Math.min(100,Math.round((bal/target)*100));
+    const need=monthlyNeeded(f);
+    const contributions=(DB.contributions||[]).filter(c=>c.fundId===f.id);
+    const totalDeposited=contributions.filter(c=>c.txType!=="withdrawal").reduce((s,c)=>s+(parseFloat(c.amount)||0),0);
+    const totalWithdrawn=contributions.filter(c=>c.txType==="withdrawal").reduce((s,c)=>s+(parseFloat(c.amount)||0),0);
+    let bannerClass="",bannerHtml="";
+    if(need.status==="reached"){bannerClass="reached";bannerHtml=`<div style="font-size:0.72rem;color:var(--ink-muted);margin-bottom:2px;">🎉 Goal reached!</div><div class="fund-needed-val">Fully funded</div>`;}
+    else if(need.status==="overdue"){bannerClass="overdue";bannerHtml=`<div style="font-size:0.72rem;color:var(--ink-muted);margin-bottom:2px;">Target date has passed</div><div class="fund-needed-val">${fmt$(need.amount)} still needed</div>`;}
+    else if(need.status==="nodate"){bannerHtml=`<div style="font-size:0.72rem;color:var(--ink-muted);margin-bottom:2px;">No target date set</div><div class="fund-needed-val">${fmt$(need.amount)} still needed</div>`;}
+    else{bannerHtml=`<div style="font-size:0.72rem;color:var(--ink-muted);margin-bottom:2px;">To reach your goal by ${fmtDate(f.targetDate)}</div><div class="fund-needed-val">${fmt$(need.amount)}/mo · ${need.months} months left</div>`;}
+    return`<div class="fund-card"><div class="fund-card-header"><div><div class="fund-name">${f.name}</div><div class="fund-type-badge">${f.category}</div></div><div style="text-align:right;"><div class="fund-balance-label">Saved</div><div class="fund-balance">${fmt$(bal)}</div></div></div><div class="fund-progress-track"><div class="fund-progress-fill" style="width:${pctFund}%;"></div></div><div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--ink-faint);margin-bottom:8px;"><span>${pctFund}% funded</span><span>${fmt$(bal)} of ${fmt$(target)}</span></div><div class="fund-stats"><div class="fund-stat"><div class="fund-stat-label">Target date</div><div class="fund-stat-val">${f.targetDate?fmtDate(f.targetDate):"—"}</div></div><div class="fund-stat"><div class="fund-stat-label">Deposited</div><div class="fund-stat-val" style="color:var(--success);">${fmt$(totalDeposited)}</div></div><div class="fund-stat"><div class="fund-stat-label">Withdrawn</div><div class="fund-stat-val" style="color:var(--danger);">${fmt$(totalWithdrawn)}</div></div></div><div class="fund-needed-banner ${bannerClass}">${bannerHtml}</div><div class="fund-actions"><button class="fund-btn primary" onclick="openFundTxModal('${f.id}','deposit')">+ Deposit</button><button class="fund-btn" style="border-color:var(--danger);color:var(--danger);" onclick="openFundTxModal('${f.id}','withdrawal')">− Withdraw</button><button class="fund-btn" onclick="openFundModal('${f.id}')">Edit</button></div>${contributions.length?`<div style="margin-top:10px;"><div class="sl">Recent activity</div>`+[...contributions].reverse().slice(0,5).map(c=>`<div class="ledger-row" onclick="openFundTxModal('${f.id}','${c.txType}','${c.id}')"><div class="ledger-info"><div class="ledger-desc">${c.txType==="withdrawal"?"➖ ":"💰 "}${c.note||(c.txType==="withdrawal"?"Withdrawal":"Deposit")}</div><div class="ledger-date">${c.date?fmtDate(c.date):""} <span style="font-size:0.62rem;color:var(--navy);">tap to edit</span></div></div><div class="ledger-right"><div class="ledger-amt ${c.txType==="withdrawal"?"neg":"pos"}">${c.txType==="withdrawal"?"-":"+"}${fmt$(c.amount)}</div></div></div>`).join("")+(contributions.length>5?`<div style="font-size:0.72rem;color:var(--ink-faint);text-align:center;padding:6px 0;">+${contributions.length-5} more</div>`:"")+`</div>`:""}</div>`;
+  }).join("");
+  c.innerHTML=h;
+}
+
+function renderHistoryTab(c){
+  const all=(DB.contributions||[]).map(c=>({...c,fundName:(DB.funds.find(f=>f.id===c.fundId)||{}).name||"Unknown fund"})).sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  if(!all.length){c.innerHTML='<div class="empty">No deposits or withdrawals logged yet.<br>Log one from the Funds tab.</div>';return;}
+  let h=`<div class="card">`+all.map(c=>`<div class="ledger-row" onclick="openFundTxModal('${c.fundId}','${c.txType}','${c.id}')"><div class="ledger-info"><div class="ledger-desc">${c.txType==="withdrawal"?"➖ ":"💰 "}${c.fundName}${c.note?" — "+c.note:""}</div><div class="ledger-date">${c.date?fmtDate(c.date):""}</div></div><div class="ledger-right"><div class="ledger-amt ${c.txType==="withdrawal"?"neg":"pos"}">${c.txType==="withdrawal"?"-":"+"}${fmt$(c.amount)}</div></div></div>`).join("")+`</div>`;
+  c.innerHTML=h;
+}
+
+// ── SETTINGS ──
+function saveAppName(){const n=g("s-app-name").value.trim();if(!n)return;DB.appName=n;save();updateHeader();toast("Name saved.");}
+function confirmReset(){confirmAction("Reset all data?","This permanently deletes everything.",()=>{DB=defDB();save();location.reload();});}
+function switchSettingsPanel(panel,btn){document.querySelectorAll(".settings-panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".settings-subtab").forEach(t=>t.classList.remove("active"));g("settings-panel-"+panel).classList.add("active");btn.classList.add("active");}
+
+// ── CALCULATOR ──
+function calcUpdateDisplay(){g("calc-result").textContent=calcCurrent;g("calc-expr").textContent=calcExpr;}
+function calcNum(n){if(calcJustEvaled){calcCurrent=n==="."?"0.":n;calcExpr="";calcJustEvaled=false;}else if(n==="."&&calcCurrent.includes("."))return;else if(calcCurrent==="0"&&n!==".")calcCurrent=n;else calcCurrent+=n;calcUpdateDisplay();}
+function calcOp(op){calcJustEvaled=false;if(calcExpr&&calcExpr.slice(-1)==="="){calcExpr=calcCurrent+op;calcCurrent="0";}else if(calcExpr&&!["÷","×","−","+","%"].includes(calcExpr.slice(-1))){calcExpr+=calcCurrent+op;calcCurrent="0";}else if(!calcExpr){calcExpr=calcCurrent+op;calcCurrent="0";}else{calcExpr=calcExpr.slice(0,-1)+op;}calcUpdateDisplay();}
+function calcEquals(){if(!calcExpr)return;const full=calcExpr+calcCurrent;const safe=full.replace(/÷/g,"/").replace(/×/g,"*").replace(/−/g,"-").replace(/%/g,"/100");try{const result=Function('"use strict";return ('+safe+')')();calcExpr=full+"=";calcCurrent=String(parseFloat(result.toFixed(10)));calcJustEvaled=true;calcUpdateDisplay();}catch(e){calcCurrent="Error";calcUpdateDisplay();}}
+function calcClear(){calcExpr="";calcCurrent="0";calcJustEvaled=false;calcUpdateDisplay();}
+function calcDel(){if(calcJustEvaled){calcClear();return;}if(calcCurrent.length>1)calcCurrent=calcCurrent.slice(0,-1);else calcCurrent="0";calcUpdateDisplay();}
+
+// ── INIT ──
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){["fund-modal","fund-tx-modal","calc-modal","confirm-modal","restore-confirm-modal"].forEach(id=>closeModal(id));}});
+document.addEventListener("DOMContentLoaded",()=>{
+  load();applyAccent(DB.accent||"navy");applyMode(DB.mode||"light");
+  updateHeader();renderContent();enforceDemoTrial();
+  setInterval(enforceDemoTrial,60000);
+  g("calc-btn").addEventListener("click",()=>{openModal("calc-modal");});
+  g("appearance-btn").addEventListener("click",()=>{const keys=PALETTE.map(p=>p.key);const next=keys[(keys.indexOf(DB.accent||"navy")+1)%keys.length];setAccent(next);toast(next.charAt(0).toUpperCase()+next.slice(1));});
+  g("appearance-btn").addEventListener("pointerdown",()=>{pressTimer=setTimeout(()=>{const m=DB.mode==="dark"?"light":"dark";setMode(m);toast(m==="dark"?"Dark mode":"Light mode");},600);});
+  g("appearance-btn").addEventListener("pointerup",()=>clearTimeout(pressTimer));
+  g("appearance-btn").addEventListener("pointerleave",()=>clearTimeout(pressTimer));
+  g("restore-file-input").addEventListener("change",handleRestoreFile);
+  if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});}
+});
+</script>
+</body>
+</html>
