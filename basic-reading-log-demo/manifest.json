@@ -1,0 +1,16 @@
+{
+  "name": "Basic Reading Log Demo",
+  "short_name": "Reading Log Demo",
+  "description": "Free trial demo of Basic Reading Log by Mobile First Studio",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3ECDC",
+  "theme_color": "#141F35",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
