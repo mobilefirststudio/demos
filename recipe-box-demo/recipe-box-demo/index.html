@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Recipe Box — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#f6ede1" id="theme-color-meta" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="./icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root, [data-theme="cream"] {
+    --bg-a: #f6ede1; --bg-b: #ecdcc7;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.72);
+    --accent-a: #e3a869; --accent-b: #c9823f;
+    --text: #2b1d10; --text-muted: #6b533b; --text-faint: #8c7256;
+    --border-soft: rgba(201, 130, 63, 0.26); --on-accent: #2b1d10;
+    --danger: #b5495a;
+  }
+  [data-theme="terracotta"] {
+    --bg-a: #f5e2d8; --bg-b: #e7c3af;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.72);
+    --accent-a: #e08a68; --accent-b: #c1633f;
+    --text: #331c12; --text-muted: #77462f; --text-faint: #96634a;
+    --border-soft: rgba(193, 99, 63, 0.28); --on-accent: #331c12;
+    --danger: #b5495a;
+  }
+  [data-theme="citrus"] {
+    --bg-a: #f7f0d8; --bg-b: #ecdfae;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.72);
+    --accent-a: #e8c257; --accent-b: #cf9f2e;
+    --text: #2c2410; --text-muted: #6b5c2e; --text-faint: #8c7c49;
+    --border-soft: rgba(207, 159, 46, 0.28); --on-accent: #2c2410;
+    --danger: #b5495a;
+  }
+  [data-theme="linen"] {
+    --bg-a: #f1ede4; --bg-b: #ded5c2;
+    --card: rgba(255, 255, 255, 0.55); --card-hi: rgba(255, 255, 255, 0.72);
+    --accent-a: #a9b98f; --accent-b: #7f9467;
+    --text: #23271c; --text-muted: #565f47; --text-faint: #77806a;
+    --border-soft: rgba(127, 148, 103, 0.26); --on-accent: #23271c;
+    --danger: #b5495a;
+  }
+  [data-theme="hearth"] {
+    --bg-a: #2b1c14; --bg-b: #14100c;
+    --card: rgba(50, 34, 24, 0.78); --card-hi: rgba(64, 44, 30, 0.85);
+    --accent-a: #f0a868; --accent-b: #d9823f;
+    --text: #fbf1e6; --text-muted: #d9bfa6; --text-faint: #b39a80;
+    --border-soft: rgba(217, 130, 63, 0.24); --on-accent: #2b1c14;
+    --danger: #e2777f;
+  }
+  [data-theme="sage"] {
+    --bg-a: #2b1c14; --bg-b: #14100c;
+    --card: rgba(50, 34, 24, 0.78); --card-hi: rgba(64, 44, 30, 0.85);
+    --accent-a: #a8cf9e; --accent-b: #7fae70;
+    --text: #f4faf1; --text-muted: #c4d6bc; --text-faint: #9fb597;
+    --border-soft: rgba(127, 174, 112, 0.24); --on-accent: #132313;
+    --danger: #e2777f;
+  }
+  [data-theme="berry"] {
+    --bg-a: #2b1c14; --bg-b: #14100c;
+    --card: rgba(50, 34, 24, 0.78); --card-hi: rgba(64, 44, 30, 0.85);
+    --accent-a: #e28a94; --accent-b: #c15a68;
+    --text: #fdf2f3; --text-muted: #d9b6ba; --text-faint: #b68f93;
+    --border-soft: rgba(193, 90, 104, 0.24); --on-accent: #2a0d10;
+    --danger: #e2777f;
+  }
+  [data-theme="midnight"] {
+    --bg-a: #1c2130; --bg-b: #0c0e16;
+    --card: rgba(30, 36, 52, 0.78); --card-hi: rgba(40, 47, 66, 0.85);
+    --accent-a: #d9c17a; --accent-b: #b89a4e;
+    --text: #f7f5ea; --text-muted: #c9c2a6; --text-faint: #a39c81;
+    --border-soft: rgba(184, 154, 78, 0.22); --on-accent: #241c06;
+    --danger: #e2777f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, var(--bg-a), var(--bg-b));
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+  .app { width: 100%; max-width: 480px; min-height: 100vh; padding: 1.1rem 1rem 2rem; }
+  header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.1rem; gap: 0.6rem; }
+  .header-text { display: flex; flex-direction: column; gap: 0.15rem; }
+  .eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-faint); }
+  .app-name { font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 500; font-size: 1.55rem; color: var(--text); }
+  .app-subtitle { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+  .header-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+  .theme-btn {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-soft);
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+  main { width: 100%; }
+  .screen { display: none; width: 100%; }
+  .screen.active-screen { display: block; }
+  .card {
+    background: var(--card); border: 1px solid var(--border-soft); border-radius: 1.1rem;
+    padding: 1.1rem 1.05rem; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12); margin-bottom: 0.85rem;
+    backdrop-filter: blur(6px);
+  }
+  .card-header { margin-bottom: 0.7rem; }
+  .card-title { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.1rem; color: var(--text); }
+  .card-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+  .note { margin-top: 0.7rem; font-size: 0.72rem; color: var(--text-faint); line-height: 1.55; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .stat { background: rgba(255, 255, 255, 0.35); border: 1px solid var(--border-soft); border-radius: 0.75rem; padding: 0.6rem 0.5rem; text-align: center; }
+  .stat-value { font-family: "Fraunces", Georgia, serif; font-size: 1.2rem; color: var(--text); }
+  .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+
+  .btn-primary {
+    width: 100%; padding: 0.65rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
+  }
+  .btn-primary:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .btn-secondary {
+    width: 100%; padding: 0.6rem; border-radius: 999px; margin-top: 0.5rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.76rem; cursor: pointer;
+  }
+
+  .subtab-row { display: flex; gap: 0.35rem; margin-bottom: 0.85rem; overflow-x: auto; }
+  .subtab {
+    flex-shrink: 0; padding: 0.4rem 0.7rem; border-radius: 999px; font-size: 0.68rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); cursor: pointer;
+  }
+  .subtab.active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; border-color: transparent; }
+
+  .field { margin-bottom: 0.75rem; }
+  .field label { display: block; font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+  .field textarea, .field input, .field select {
+    width: 100%; padding: 0.65rem 0.75rem; border-radius: 0.75rem;
+    border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.35);
+    color: var(--text); font-family: "Inter", sans-serif; font-size: 0.82rem; line-height: 1.5;
+  }
+  .field textarea { min-height: 64px; resize: vertical; }
+  .field textarea:focus-visible, .field input:focus-visible, .field select:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .checkbox-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+  .checkbox-row input { width: auto; }
+
+  .list-item {
+    background: rgba(255, 255, 255, 0.35); border: 1px solid var(--border-soft); border-radius: 0.85rem;
+    padding: 0.7rem 0.8rem; margin-bottom: 0.5rem;
+  }
+  .list-item-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+  .list-item-title { font-size: 0.86rem; color: var(--text); font-weight: 600; line-height: 1.4; }
+  .list-item-sub { font-size: 0.7rem; color: var(--text-faint); margin-top: 0.2rem; }
+  .list-item-actions { display: flex; gap: 0.6rem; margin-top: 0.55rem; }
+  .list-item-action-btn { background: none; border: none; color: var(--text-muted); font-size: 0.68rem; cursor: pointer; padding: 0; }
+  .list-item-action-btn:hover { color: var(--text); }
+  .list-item-action-btn.danger:hover { color: var(--danger); }
+  .star-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--text-faint); flex-shrink: 0; line-height: 1; }
+  .star-btn.starred { color: var(--accent-b); }
+
+  .badge { display: inline-block; font-size: 0.6rem; padding: 0.15rem 0.5rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 0.3rem; margin-right: 0.3rem; }
+  .badge-tag { background: rgba(255, 255, 255, 0.4); color: var(--text-muted); border: 1px solid var(--border-soft); }
+  .badge-ok { background: rgba(127, 174, 112, 0.22); color: var(--text); }
+  .badge-soon { background: rgba(232, 194, 87, 0.3); color: var(--text); }
+  .badge-expired { background: rgba(226, 119, 127, 0.3); color: var(--text); }
+  .badge-low { background: rgba(224, 138, 104, 0.3); color: var(--text); }
+
+  .empty-state { margin-top: 0.7rem; padding: 1.1rem 0.9rem; border: 1px dashed var(--border-soft); border-radius: 0.85rem; text-align: center; font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+
+  .attn-row { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-soft); font-size: 0.78rem; }
+  .attn-row:last-child { border-bottom: none; }
+
+  .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
+  .backup-btn { padding: 0.6rem 0.5rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: transparent; color: var(--text); font-size: 0.74rem; font-weight: 500; cursor: pointer; font-family: "Inter", sans-serif; }
+  .backup-btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+  .backup-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
+  .backup-section-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20, 15, 10, 0.45); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft);
+    border-top-left-radius: 1.4rem; border-top-right-radius: 1.4rem;
+    padding: 1.3rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom)); width: 100%; max-width: 480px;
+    max-height: 84vh; overflow-y: auto; box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.2); animation: modalUp 0.28s ease-out;
+    backdrop-filter: blur(10px);
+  }
+  @keyframes modalUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .modal-title { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.25rem; color: var(--text); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--text-muted); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .modal-body-text { margin-top: 0.7rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; white-space: pre-wrap; }
+  .modal-cta { margin-top: 1.1rem; width: 100%; padding: 0.7rem; border-radius: 999px; border: none; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .modal-cta.danger { background: linear-gradient(135deg, #eba3ac, var(--danger)); color: #2a0a0c; }
+  .modal-cta-secondary { margin-top: 0.6rem; width: 100%; padding: 0.65rem; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; }
+
+  .toast {
+    position: fixed; bottom: 1.6rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--card-hi); border: 1px solid var(--border-soft); color: var(--text);
+    font-size: 0.78rem; padding: 0.6rem 1rem; border-radius: 999px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000;
+    white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+    backdrop-filter: blur(8px);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-action { color: var(--text); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; }
+
+  /* ===== FREE TRIAL DEMO ===== */
+  .demo-banner{
+    position:sticky; top:0; z-index:500; display:flex; align-items:center; justify-content:space-between;
+    gap:0.6rem; padding:0.55rem 1rem; margin:-1.1rem -1rem 1rem;
+    background:linear-gradient(135deg, var(--accent-a), var(--accent-b)); color:var(--on-accent);
+    font-size:0.74rem; font-weight:600;
+  }
+  .demo-banner a{ color:var(--on-accent); text-decoration:underline; font-weight:700; flex-shrink:0; }
+  #trial-lock{
+    position:fixed; inset:0; background:rgba(20,15,10,0.55); backdrop-filter:blur(6px);
+    display:none; align-items:center; justify-content:center; z-index:2000; padding:1.5rem;
+  }
+  .trial-lock-card{
+    background:var(--card-hi); border:1px solid var(--border-soft); border-radius:1.2rem;
+    padding:1.8rem 1.5rem; max-width:360px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  }
+  .trial-lock-title{ font-family:"Fraunces", Georgia, serif; font-style:italic; font-size:1.3rem; color:var(--text); margin-bottom:0.6rem; }
+  .trial-lock-text{ font-size:0.85rem; color:var(--text-muted); line-height:1.6; margin-bottom:1.2rem; }
+  .trial-lock-btn{
+    display:inline-block; padding:0.75rem 1.4rem; border-radius:999px;
+    background:linear-gradient(135deg, var(--accent-a), var(--accent-b)); color:var(--on-accent);
+    font-size:0.85rem; font-weight:700; text-decoration:none;
+  }
+  .upsell-card{ border:1px solid var(--border-soft); border-radius:0.9rem; padding:1rem; background:rgba(255,255,255,0.4); text-align:center; }
+  .upsell-card-title{ font-family:"Fraunces", Georgia, serif; font-style:italic; font-size:1.05rem; color:var(--text); margin-bottom:0.4rem; }
+  .upsell-card-text{ font-size:0.78rem; color:var(--text-muted); line-height:1.55; margin-bottom:0.8rem; }
+  .upsell-link{
+    display:inline-block; padding:0.6rem 1.1rem; border-radius:999px;
+    background:linear-gradient(135deg, var(--accent-a), var(--accent-b)); color:var(--on-accent);
+    font-size:0.78rem; font-weight:700; text-decoration:none;
+  }
+</style>
+</head>
+<body data-theme="cream">
+
+<div class="app">
+  <div class="demo-banner" id="demoBanner">
+    <span id="demoBannerText">Free trial: 14 days left</span>
+    <a href="https://www.etsy.com/listing/4563407404/recipe-box-app-save-organize-your" target="_blank" rel="noopener" class="demo-banner-link">Unlock full version &rarr;</a>
+  </div>
+  <header>
+    <div class="header-text">
+      <div class="eyebrow">Mobile First Studio</div>
+      <div class="app-name">Recipe Box</div>
+      <div class="app-subtitle">Every recipe you cook, organized in one place.</div>
+    </div>
+    <div class="header-actions">
+      <button class="theme-btn" id="theme-btn" title="Change theme">✨</button>
+      <button class="theme-btn" id="backup-btn" title="Backup &amp; Sync">☁</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- MAIN -->
+    <section id="screen-home" class="screen active-screen">
+      <section class="card">
+        <div class="card-header"><div class="card-title">Your Collection</div></div>
+        <div class="stat-row" style="grid-template-columns:repeat(2, minmax(0, 1fr));">
+          <div class="stat"><div class="stat-value" id="home-stat-total">0</div><div class="stat-label">Recipes</div></div>
+          <div class="stat"><div class="stat-value" id="home-stat-favorites">0</div><div class="stat-label">Favorites</div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Recipe Box</div>
+          <div class="card-subtitle">Everything you cook, saved in one place.</div>
+        </div>
+        <div class="subtab-row">
+          <button class="subtab active" data-recipe-filter="all">All</button>
+          <button class="subtab" data-recipe-filter="favorites">Favorites</button>
+        </div>
+        <button class="btn-primary" id="add-recipe-btn">Add a recipe</button>
+        <div id="recipe-list" style="margin-top:0.85rem;"></div>
+      </section>
+    </section>
+
+    <!-- BACKUP -->
+    <section id="screen-backup" class="screen">
+      <section class="card">
+        <div class="card-header" style="display:flex;align-items:flex-start;gap:0.6rem;">
+          <button id="backup-back-btn" style="background:none;border:none;font-size:1.1rem;color:var(--text-muted);cursor:pointer;padding:0;line-height:1.3;">‹</button>
+          <div>
+            <div class="card-title">Backup &amp; Sync</div>
+            <div class="card-subtitle">Keep your recipes safe.</div>
+          </div>
+        </div>
+        <div class="upsell-card" id="upsellSection">
+          <div class="upsell-card-title">Unlock the full app</div>
+          <div class="upsell-card-text">This demo saves data on this device only. Get lifetime access plus optional Google Drive backup, in your own account, no subscription.</div>
+          <a class="upsell-link" href="https://www.etsy.com/listing/4563407404/recipe-box-app-save-organize-your" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+        </div>
+        <div class="backup-divider">
+          <div class="backup-section-label">Local backup file</div>
+          <div class="backup-actions">
+            <button class="backup-btn" id="export-btn">Export backup file</button>
+            <button class="backup-btn" id="import-btn">Import backup file</button>
+          </div>
+          <div id="local-restore-undo-slot"></div>
+        </div>
+        <div class="note">Exporting or backing up saves everything in this app. It never includes anything else from your device.</div>
+      </section>
+    </section>
+
+  </main>
+
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+</div>
+
+<div id="trial-lock">
+  <div class="trial-lock-card">
+    <div class="trial-lock-title">Your free trial has ended</div>
+    <div class="trial-lock-text">Unlock Recipe Box to keep saving and organizing every recipe you cook.</div>
+    <a class="trial-lock-btn" href="https://www.etsy.com/listing/4563407404/recipe-box-app-save-organize-your" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+</div>
+
+<!-- SHARED MODAL -->
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body-text" id="modal-body-text"></div>
+    <div id="modal-extra-body"></div>
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta-secondary" id="modal-secondary-btn"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* =========================================================
+     STORAGE
+     ========================================================= */
+  const STORE_KEY = "rb_data_demo_v1";
+  const PRE_RESTORE_KEY = "rb_demo_pre_restore_snapshot";
+  function defaultDB() {
+    return { theme: "cream", recipes: [] };
+  }
+  let DB = defaultDB();
+  function ld() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) DB = Object.assign(defaultDB(), JSON.parse(raw));
+    } catch (e) { DB = defaultDB(); }
+  }
+  function sv() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+    scheduleAutoBackup();
+  }
+
+  function uid() { return Date.now() + Math.floor(Math.random() * 1000); }
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function findRecipe(id) { return DB.recipes.find((r) => r.id === id); }
+
+  /* =========================================================
+     THEME
+     ========================================================= */
+  const THEMES = ["cream", "terracotta", "citrus", "linen", "hearth", "sage", "berry", "midnight"];
+  const THEME_COLORS = { cream: "#f6ede1", terracotta: "#f5e2d8", citrus: "#f7f0d8", linen: "#f1ede4", hearth: "#14100c", sage: "#14100c", berry: "#14100c", midnight: "#0c0e16" };
+  function applyTheme() {
+    document.body.setAttribute("data-theme", DB.theme);
+    document.getElementById("theme-color-meta").setAttribute("content", THEME_COLORS[DB.theme]);
+  }
+  function cycleTheme() {
+    const idx = THEMES.indexOf(DB.theme);
+    DB.theme = THEMES[(idx + 1) % THEMES.length];
+    sv(); applyTheme();
+    showToast(`Theme: ${DB.theme[0].toUpperCase() + DB.theme.slice(1)}`);
+  }
+
+  /* =========================================================
+     TOAST
+     ========================================================= */
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => { onAction(); el.classList.remove("show"); });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+
+  /* =========================================================
+     SHARED MODAL
+     ========================================================= */
+  function openModal({ title, bodyText, extraHtml, ctaLabel, onCta, ctaDanger, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+    document.getElementById("modal-extra-body").innerHTML = extraHtml || "";
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    if (ctaLabel) {
+      ctaBtn.style.display = "block";
+      ctaBtn.textContent = ctaLabel;
+      ctaBtn.classList.toggle("danger", !!ctaDanger);
+      ctaBtn.onclick = onCta || null;
+    } else { ctaBtn.style.display = "none"; ctaBtn.onclick = null; }
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    if (secondaryLabel) {
+      secondaryBtn.style.display = "block";
+      secondaryBtn.textContent = secondaryLabel;
+      secondaryBtn.onclick = onSecondary || closeModal;
+    } else { secondaryBtn.style.display = "none"; secondaryBtn.onclick = null; }
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function closeModal() { document.getElementById("app-modal").classList.remove("open"); }
+
+  /* =========================================================
+     TAB NAVIGATION
+     ========================================================= */
+  function switchToTab(targetId) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
+    document.getElementById(targetId).classList.add("active-screen");
+    if (targetId === "screen-home") { renderHome(); renderRecipes(); }
+    if (targetId === "screen-backup") { renderLocalRestoreUndo(); }
+  }
+
+  /* =========================================================
+     HOME
+     ========================================================= */
+  function renderHome() {
+    document.getElementById("home-stat-total").textContent = DB.recipes.length;
+    document.getElementById("home-stat-favorites").textContent = DB.recipes.filter((r) => r.favorite).length;
+  }
+
+  /* =========================================================
+     RECIPES
+     ========================================================= */
+  let recipeFilter = "all";
+  function renderRecipes() {
+    let list = DB.recipes.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    if (recipeFilter === "favorites") list = list.filter((r) => r.favorite);
+    const listEl = document.getElementById("recipe-list");
+    if (!list.length) {
+      const msg = recipeFilter === "favorites"
+        ? "No favorites yet. Star a recipe to keep it handy."
+        : "No recipes yet. Add your first one above.";
+      listEl.innerHTML = `<div class="empty-state">${msg}</div>`;
+      return;
+    }
+    listEl.innerHTML = list.map((r) => `
+      <div class="list-item" data-recipe-id="${esc(r.id)}">
+        <div class="list-item-top">
+          <div style="flex:1;min-width:0;">
+            <div class="list-item-title" data-view-recipe="${esc(r.id)}" style="cursor:pointer;">${esc(r.title)}</div>
+            <div class="list-item-sub">${esc(r.mealType)} · ${r.ingredients.length} ingredient${r.ingredients.length === 1 ? "" : "s"}</div>
+          </div>
+          <button class="star-btn ${r.favorite ? "starred" : ""}" data-toggle-fav="${esc(r.id)}" title="Favorite">${r.favorite ? "★" : "☆"}</button>
+        </div>
+        <div class="list-item-actions">
+          <button class="list-item-action-btn" data-edit-recipe="${esc(r.id)}">Edit</button>
+          <button class="list-item-action-btn danger" data-delete-recipe="${esc(r.id)}">Delete</button>
+        </div>
+      </div>
+    `).join("");
+  }
+  document.querySelectorAll("[data-recipe-filter]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      recipeFilter = btn.dataset.recipeFilter;
+      document.querySelectorAll("[data-recipe-filter]").forEach((b) => b.classList.toggle("active", b === btn));
+      renderRecipes();
+    });
+  });
+  document.getElementById("recipe-list").addEventListener("click", (e) => {
+    const fav = e.target.closest("[data-toggle-fav]");
+    if (fav) {
+      const r = findRecipe(Number(fav.dataset.toggleFav));
+      if (r) { r.favorite = !r.favorite; sv(); renderRecipes(); renderHome(); }
+      return;
+    }
+    const view = e.target.closest("[data-view-recipe]");
+    if (view) { openRecipeDetail(Number(view.dataset.viewRecipe)); return; }
+    const edit = e.target.closest("[data-edit-recipe]");
+    if (edit) { openRecipeForm(Number(edit.dataset.editRecipe)); return; }
+    const del = e.target.closest("[data-delete-recipe]");
+    if (del) { confirmDeleteRecipe(Number(del.dataset.deleteRecipe)); }
+  });
+
+  function openRecipeDetail(id) {
+    const r = findRecipe(id);
+    if (!r) return;
+    const body = `Ingredients:\n${r.ingredients.map((i) => "• " + i).join("\n") || "(none listed)"}\n\nSteps:\n${r.steps.map((s, i) => `${i + 1}. ${s}`).join("\n") || "(none listed)"}`;
+    openModal({
+      title: r.title,
+      bodyText: body,
+      ctaLabel: "Edit recipe",
+      onCta: () => openRecipeForm(id),
+      secondaryLabel: "Close",
+      onSecondary: closeModal
+    });
+  }
+
+  function openRecipeForm(existingId) {
+    const existing = existingId ? findRecipe(existingId) : null;
+    const extraHtml = `
+      <div class="field"><label>Title</label><input type="text" id="rf-title" value="${existing ? esc(existing.title) : ""}" placeholder="Sunday Roast Chicken" /></div>
+      <div class="field"><label>Meal type</label>
+        <select id="rf-mealtype">
+          ${["Breakfast", "Lunch", "Dinner", "Snack", "Dessert"].map((m) => `<option value="${m}" ${existing && existing.mealType === m ? "selected" : ""}>${m}</option>`).join("")}
+        </select>
+      </div>
+      <div class="field"><label>Ingredients (one per line)</label><textarea id="rf-ingredients" placeholder="2 chicken breasts&#10;1 lemon&#10;olive oil" style="min-height:90px;">${existing ? esc(existing.ingredients.join("\n")) : ""}</textarea></div>
+      <div class="field"><label>Steps (one per line)</label><textarea id="rf-steps" placeholder="Preheat oven to 400°F&#10;Season the chicken&#10;Roast 35 minutes" style="min-height:90px;">${existing ? esc(existing.steps.join("\n")) : ""}</textarea></div>
+      <div class="checkbox-row"><input type="checkbox" id="rf-favorite" ${existing && existing.favorite ? "checked" : ""} /><label for="rf-favorite" style="margin:0;text-transform:none;font-size:0.8rem;">Mark as favorite</label></div>
+    `;
+    openModal({
+      title: existing ? "Edit Recipe" : "Add Recipe",
+      extraHtml,
+      ctaLabel: existing ? "Save changes" : "Save recipe",
+      onCta: () => {
+        const title = document.getElementById("rf-title").value.trim();
+        if (!title) { showToast("Give the recipe a title first."); return; }
+        const mealType = document.getElementById("rf-mealtype").value;
+        const ingredients = document.getElementById("rf-ingredients").value.split("\n").map((s) => s.trim()).filter(Boolean);
+        const steps = document.getElementById("rf-steps").value.split("\n").map((s) => s.trim()).filter(Boolean);
+        const favorite = document.getElementById("rf-favorite").checked;
+        if (existing) {
+          Object.assign(existing, { title, mealType, ingredients, steps, favorite });
+          showToast("Recipe updated.");
+        } else {
+          DB.recipes.push({ id: uid(), title, mealType, ingredients, steps, favorite, createdAt: new Date().toISOString() });
+          showToast("Recipe saved.");
+        }
+        sv(); closeModal(); renderRecipes(); renderHome();
+      },
+      secondaryLabel: "Cancel",
+      onSecondary: closeModal
+    });
+  }
+  function confirmDeleteRecipe(id) {
+    openModal({
+      title: "Delete this recipe?",
+      bodyText: "This can't be undone once confirmed.",
+      ctaLabel: "Delete", ctaDanger: true,
+      onCta: () => {
+        DB.recipes = DB.recipes.filter((r) => r.id !== id);
+        sv(); closeModal(); renderRecipes(); renderHome();
+        showToast("Recipe deleted.");
+      },
+      secondaryLabel: "Keep it", onSecondary: closeModal
+    });
+  }
+  document.getElementById("add-recipe-btn").addEventListener("click", () => openRecipeForm(null));
+
+  /* =========================================================
+     RESTORE — shared confirmation flow using the existing
+     shared modal.
+     ========================================================= */
+  function dataSummary(db) {
+    db = db || DB;
+    return Array.isArray(db.recipes) ? db.recipes.length : 0;
+  }
+  let _pendingRestoreData = null;
+  function openRestoreConfirm(data, sourceLabel) {
+    _pendingRestoreData = data;
+    const incoming = dataSummary(data);
+    const current = dataSummary(DB);
+    let body = `This backup has ${incoming} recipe${incoming === 1 ? "" : "s"}. Your current data has ${current}. Restoring replaces what you have now — you can undo it right after if needed.`;
+    if (incoming < current) {
+      body = `⚠ This backup has FEWER recipes (${incoming}) than your current data (${current}). Double-check this is the right one before continuing.`;
+    }
+    openModal({
+      title: `Restore from ${sourceLabel}?`,
+      bodyText: body,
+      ctaLabel: "Yes, restore",
+      onCta: confirmRestoreNow,
+      secondaryLabel: "Cancel",
+      onSecondary: () => { _pendingRestoreData = null; closeModal(); }
+    });
+  }
+  function confirmRestoreNow() {
+    if (!_pendingRestoreData) { closeModal(); return; }
+    try { localStorage.setItem(PRE_RESTORE_KEY, JSON.stringify({ data: DB, ts: Date.now() })); } catch (e) {}
+    DB = Object.assign(defaultDB(), _pendingRestoreData);
+    _pendingRestoreData = null;
+    sv(); closeModal(); applyTheme();
+    renderHome(); renderRecipes();
+    renderLocalRestoreUndo();
+    showToast("Restored!");
+  }
+  function undoLastRestore() {
+    try {
+      const raw = localStorage.getItem(PRE_RESTORE_KEY);
+      if (!raw) { showToast("Nothing to undo."); return; }
+      const snap = JSON.parse(raw);
+      DB = Object.assign(defaultDB(), snap.data);
+      localStorage.removeItem(PRE_RESTORE_KEY);
+      sv(); applyTheme();
+      renderHome(); renderRecipes();
+      renderLocalRestoreUndo();
+      showToast("Restore undone.");
+    } catch (e) { showToast("Could not undo."); }
+  }
+  function renderLocalRestoreUndo() {
+    const el = document.getElementById("local-restore-undo-slot");
+    if (!el) return;
+    const hasUndo = !!localStorage.getItem(PRE_RESTORE_KEY);
+    el.innerHTML = hasUndo
+      ? '<button class="backup-btn" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger);" onclick="undoLastRestore()">Undo Last Restore</button>'
+      : '';
+  }
+
+  /* =========================================================
+     LOCAL FILE BACKUP — real export + real import
+     ========================================================= */
+  function buildBackupPayload() {
+    return JSON.stringify({ ...DB, exportedAt: new Date().toISOString(), source: "Recipe Box" }, null, 2);
+  }
+  function localDateStr(d) {
+    d = d || new Date();
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+  function exportBackupFile() {
+    try {
+      const content = buildBackupPayload();
+      const blob = new Blob([content], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `recipe-box-backup-${localDateStr()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast("Backup file downloaded.");
+    } catch (e) {
+      showToast("Export failed — try a different browser.");
+    }
+  }
+  function triggerImportPicker() { document.getElementById("import-file-input").click(); }
+  function handleImportFileSelected(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const data = JSON.parse(evt.target.result);
+        if (!data || !Array.isArray(data.recipes)) { showToast("That file doesn't look like a valid backup."); return; }
+        openRestoreConfirm(data, `the file "${file.name}"`);
+      } catch (err) { showToast("Could not read that file."); }
+    };
+    reader.onerror = () => showToast("Error reading file.");
+    reader.readAsText(file);
+    e.target.value = "";
+  }
+
+  /* =========================================================
+     FREE TRIAL DEMO LOGIC
+     ========================================================= */
+  const DEMO_SINCE_KEY = "rb_demo_since";
+  const TRIAL_DAYS = 14;
+  const ETSY_URL = "https://www.etsy.com/listing/4563407404/recipe-box-app-save-organize-your";
+  function demoTrialDaysLeft() {
+    let since = null;
+    try { since = localStorage.getItem(DEMO_SINCE_KEY); } catch (e) {}
+    if (!since) {
+      since = String(Date.now());
+      try { localStorage.setItem(DEMO_SINCE_KEY, since); } catch (e) {}
+    }
+    const elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
+    return TRIAL_DAYS - elapsedDays;
+  }
+  function enforceDemoTrial() {
+    const left = demoTrialDaysLeft();
+    const lock = document.getElementById("trial-lock");
+    const bannerText = document.getElementById("demoBannerText");
+    if (left <= 0) {
+      if (lock) lock.style.display = "flex";
+      if (bannerText) bannerText.textContent = "Free trial ended";
+      document.body.style.overflow = "hidden";
+    } else {
+      if (lock) lock.style.display = "none";
+      if (bannerText) bannerText.textContent = "Free trial: " + left + " day" + (left === 1 ? "" : "s") + " left";
+      document.body.style.overflow = "";
+    }
+  }
+  function scheduleAutoBackup() {}
+
+  /* =========================================================
+     INIT
+     ========================================================= */
+  document.addEventListener("DOMContentLoaded", () => {
+    ld();
+    applyTheme();
+    renderHome();
+    renderRecipes();
+    renderLocalRestoreUndo();
+    enforceDemoTrial();
+    setInterval(enforceDemoTrial, 60000);
+
+    document.getElementById("theme-btn").addEventListener("click", cycleTheme);
+    document.getElementById("backup-btn").addEventListener("click", () => {
+      const onBackup = document.getElementById("screen-backup").classList.contains("active-screen");
+      switchToTab(onBackup ? "screen-home" : "screen-backup");
+    });
+    document.getElementById("backup-back-btn").addEventListener("click", () => switchToTab("screen-home"));
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => { if (e.target.id === "app-modal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileSelected);
+  });
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
