@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Daily Healing Habits Tracker Demo — Mobile First Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#f4f1fb" id="theme-color-meta" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ---------- Dark themes ---------- */
+  :root, [data-theme="deep"] {
+    --bg-a: #17102c; --bg-b: #0d0a1c;
+    --card: rgba(28, 20, 51, 0.78); --card-hi: rgba(35, 25, 63, 0.85);
+    --accent-a: #c2b3ff; --accent-b: #9d84ff;
+    --text: #f3efff; --text-muted: #b3a4d9; --text-faint: #6f5f96;
+    --border-soft: rgba(157, 132, 255, 0.24); --on-accent: #1c1440;
+  }
+  [data-theme="rose"] {
+    --bg-a: #17102c; --bg-b: #0d0a1c;
+    --card: rgba(28, 20, 51, 0.78); --card-hi: rgba(35, 25, 63, 0.85);
+    --accent-a: #f3b8c8; --accent-b: #e08aa4;
+    --text: #f3efff; --text-muted: #b3a4d9; --text-faint: #6f5f96;
+    --border-soft: rgba(224, 138, 164, 0.26); --on-accent: #2f1420;
+  }
+  [data-theme="sage"] {
+    --bg-a: #17102c; --bg-b: #0d0a1c;
+    --card: rgba(28, 20, 51, 0.78); --card-hi: rgba(35, 25, 63, 0.85);
+    --accent-a: #b7d9a8; --accent-b: #8ab86e;
+    --text: #f3efff; --text-muted: #b3a4d9; --text-faint: #6f5f96;
+    --border-soft: rgba(138, 184, 110, 0.26); --on-accent: #16210f;
+  }
+  [data-theme="midnight"] {
+    --bg-a: #0b0f1f; --bg-b: #05070f;
+    --card: rgba(18, 24, 43, 0.8); --card-hi: rgba(24, 32, 56, 0.88);
+    --accent-a: #8fb8ff; --accent-b: #5b8cf0;
+    --text: #eaf1ff; --text-muted: #9aabcf; --text-faint: #5d6c8f;
+    --border-soft: rgba(91, 140, 240, 0.26); --on-accent: #0c1730;
+  }
+
+  /* ---------- Light themes ---------- */
+  [data-theme="soft"] {
+    --bg-a: #f4f1fb; --bg-b: #e2ddf3;
+    --card: rgba(255, 255, 255, 0.65); --card-hi: rgba(255, 255, 255, 0.8);
+    --accent-a: #b9aaf2; --accent-b: #8f78e8;
+    --text: #2a2145; --text-muted: #5c4f80; --text-faint: #8f82ad;
+    --border-soft: rgba(143, 120, 232, 0.28); --on-accent: #ffffff;
+  }
+  [data-theme="warm"] {
+    --bg-a: #f7ecf5; --bg-b: #ecd7ea;
+    --card: rgba(255, 255, 255, 0.6); --card-hi: rgba(255, 255, 255, 0.75);
+    --accent-a: #d9b8e8; --accent-b: #b98fd1;
+    --text: #3a1f3a; --text-muted: #6b4a68; --text-faint: #9c7a97;
+    --border-soft: rgba(185, 143, 209, 0.28); --on-accent: #2f1830;
+  }
+  [data-theme="cool"] {
+    --bg-a: #eef3fb; --bg-b: #dbe6f5;
+    --card: rgba(255, 255, 255, 0.62); --card-hi: rgba(255, 255, 255, 0.78);
+    --accent-a: #a8c5ea; --accent-b: #6f9bd8;
+    --text: #1e2c3f; --text-muted: #4f647d; --text-faint: #8296ac;
+    --border-soft: rgba(111, 155, 216, 0.28); --on-accent: #ffffff;
+  }
+  [data-theme="sand"] {
+    --bg-a: #faf3ea; --bg-b: #f0e2cf;
+    --card: rgba(255, 255, 255, 0.62); --card-hi: rgba(255, 255, 255, 0.78);
+    --accent-a: #e3c497; --accent-b: #c99b5c;
+    --text: #3a2b1a; --text-muted: #6b5740; --text-faint: #9c8a72;
+    --border-soft: rgba(201, 155, 92, 0.28); --on-accent: #2f2213;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  body {
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: radial-gradient(circle at top, var(--bg-a), var(--bg-b));
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s ease, color 0.4s ease;
+  }
+
+  .app { width: 100%; max-width: 480px; min-height: 100vh; padding: 1.1rem 1rem calc(6rem + env(safe-area-inset-bottom)); }
+
+  /* ---------- Demo trial banner ---------- */
+  .demo-banner {
+    margin: -1.1rem -1rem 1rem;
+    padding: 0.55rem 1rem;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+  .demo-banner a { color: var(--on-accent); text-decoration: underline; font-weight: 700; }
+
+  /* ---------- Demo trial lock ---------- */
+  #trial-lock {
+    position: fixed; inset: 0; z-index: 2000; display: none;
+    align-items: center; justify-content: center; padding: 2rem;
+    background: rgba(10, 7, 20, 0.82); backdrop-filter: blur(10px);
+  }
+  #trial-lock.show { display: flex; }
+  .trial-lock-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft); border-radius: 1.4rem;
+    padding: 2rem 1.6rem; max-width: 380px; width: 100%; text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  }
+  .trial-lock-title { font-family: "Lora", Georgia, serif; font-style: italic; font-size: 1.32rem; color: var(--text); margin-bottom: 0.6rem; }
+  .trial-lock-body { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.3rem; }
+  .trial-lock-cta {
+    display: block; width: 100%; padding: 0.75rem; border-radius: 999px; text-decoration: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 0.85rem; font-weight: 700;
+  }
+
+  header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.1rem; gap: 0.6rem; }
+  .header-text { display: flex; flex-direction: column; gap: 0.15rem; }
+  .eyebrow { font-size: 0.66rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-faint); }
+  .app-name { font-family: "Lora", Georgia, serif; font-style: italic; font-weight: 500; font-size: 1.42rem; color: var(--accent-b); }
+  .app-subtitle { font-size: 0.76rem; color: var(--text-muted); line-height: 1.5; }
+
+  .theme-btn {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-soft);
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
+    font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  }
+
+  main { width: 100%; }
+  .screen { display: none; width: 100%; }
+  .screen.active-screen { display: block; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border-soft); border-radius: 1.1rem;
+    padding: 1.1rem 1.05rem; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.1); margin-bottom: 0.85rem;
+    backdrop-filter: blur(6px);
+  }
+  .card-header { margin-bottom: 0.7rem; }
+  .card-title { font-family: "Lora", Georgia, serif; font-style: italic; font-size: 1.08rem; color: var(--text); }
+  .card-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+  .note { margin-top: 0.7rem; font-size: 0.72rem; color: var(--text-faint); line-height: 1.55; }
+
+  /* ---------- Healing Wheel (signature element) ---------- */
+  .wheel-row { display: flex; align-items: center; gap: 1rem; }
+  .wheel-wrap { position: relative; width: 76px; height: 76px; flex-shrink: 0; }
+  .wheel-wrap svg { width: 100%; height: 100%; }
+  .wheel-quadrant { transition: opacity 0.6s ease; }
+  .wheel-center { position: absolute; left: 50%; top: 50%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--card-hi); border: 1px solid var(--border-soft); }
+  .wheel-info { flex: 1; min-width: 0; }
+  .wheel-label { font-family: "Lora", Georgia, serif; font-style: italic; font-size: 1.02rem; color: var(--text); }
+  .wheel-sub { font-size: 0.74rem; color: var(--text-muted); margin-top: 0.15rem; line-height: 1.5; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.55rem; margin-top: 0.9rem; }
+  .stat { background: rgba(255, 255, 255, 0.4); border: 1px solid var(--border-soft); border-radius: 0.75rem; padding: 0.6rem 0.5rem; text-align: center; }
+  .stat-value { font-family: "Lora", Georgia, serif; font-size: 1.2rem; color: var(--text); }
+  .stat-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+
+  .progress-container { background: rgba(255, 255, 255, 0.35); border: 1px solid var(--border-soft); border-radius: 999px; height: 16px; width: 100%; overflow: hidden; margin-top: 0.5rem; }
+  .progress-fill { background: linear-gradient(90deg, var(--accent-a), var(--accent-b)); height: 100%; width: 0%; border-radius: 999px; transition: width 0.5s ease; }
+  .progress-score-text { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+  .field { margin-bottom: 0.75rem; }
+  .field label { display: block; font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; }
+  .field textarea {
+    width: 100%; min-height: 64px; padding: 0.65rem 0.75rem; border-radius: 0.75rem; resize: vertical;
+    border: 1px solid var(--border-soft); background: var(--card-hi);
+    color: var(--text); font-family: "Inter", sans-serif; font-size: 0.82rem; line-height: 1.5;
+  }
+  .field textarea::placeholder { color: var(--text-faint); opacity: 1; }
+  .field textarea:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+
+  .btn-primary {
+    width: 100%; padding: 0.65rem; border-radius: 999px; border: none;
+    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
+    color: var(--on-accent); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.02em; cursor: pointer;
+  }
+  .btn-primary:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .btn-secondary {
+    width: 100%; padding: 0.6rem; border-radius: 999px; margin-top: 0.5rem;
+    border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.76rem; cursor: pointer;
+  }
+
+  .today-summary-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-soft); }
+  .today-summary-row:last-child { border-bottom: none; }
+  .today-summary-label { font-size: 0.68rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .today-summary-value { font-size: 0.82rem; color: var(--text); text-align: right; line-height: 1.5; }
+
+  /* ---------- Local backup ---------- */
+  .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
+  .backup-btn { padding: 0.6rem 0.5rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: transparent; color: var(--text); font-size: 0.74rem; font-weight: 500; cursor: pointer; font-family: "Inter", sans-serif; }
+  .backup-btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+
+  /* ---------- Tabbar ---------- */
+  .tabbar {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 480px; display: flex; justify-content: space-between; gap: 0.2rem;
+    padding: 0.6rem 0.6rem calc(0.6rem + env(safe-area-inset-bottom));
+    border-radius: 0; background: var(--card-hi); border: none; border-top: 1px solid var(--border-soft);
+    backdrop-filter: blur(10px); box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+    transition: background 0.3s ease, border-color 0.3s ease; z-index: 50;
+  }
+  .tab { flex: 1; text-align: center; font-size: 0.68rem; padding: 0.5rem 0.2rem; border-radius: 999px; color: var(--text-faint); cursor: pointer; border: none; background: transparent; font-family: "Inter", sans-serif; transition: background 0.2s ease, color 0.2s ease; }
+  .tab:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
+  .tab-active { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(20, 15, 30, 0.4); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
+  .modal-overlay.open { display: flex; }
+  .modal-card {
+    background: var(--card-hi); border: 1px solid var(--border-soft);
+    border-top-left-radius: 1.4rem; border-top-right-radius: 1.4rem;
+    padding: 1.3rem 1.15rem calc(1.5rem + env(safe-area-inset-bottom)); width: 100%; max-width: 480px;
+    max-height: 82vh; overflow-y: auto; box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.18); animation: modalUp 0.28s ease-out;
+    backdrop-filter: blur(10px);
+  }
+  @keyframes modalUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; }
+  .modal-title { font-family: "Lora", Georgia, serif; font-style: italic; font-size: 1.22rem; color: var(--text); }
+  .modal-close { background: none; border: none; font-size: 1.3rem; color: var(--text-muted); cursor: pointer; line-height: 1; flex-shrink: 0; }
+  .modal-body-text { margin-top: 0.7rem; font-size: 0.82rem; color: var(--text-muted); line-height: 1.6; }
+  .modal-cta { margin-top: 1.1rem; width: 100%; padding: 0.7rem; border-radius: 999px; border: none; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-size: 0.82rem; font-weight: 600; cursor: pointer; }
+  .modal-cta.danger { background: linear-gradient(135deg, #eba3ac, #cf5a68); color: #2a0a0c; }
+  .modal-cta-secondary { margin-top: 0.6rem; width: 100%; padding: 0.65rem; border-radius: 999px; border: 1px solid var(--border-soft); background: transparent; color: var(--text-muted); font-size: 0.78rem; cursor: pointer; }
+
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; bottom: 5.6rem; left: 50%; transform: translateX(-50%) translateY(10px);
+    background: var(--card-hi); border: 1px solid var(--border-soft); color: var(--text);
+    font-size: 0.78rem; padding: 0.6rem 1rem; border-radius: 18px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease, transform 0.25s ease; z-index: 1000;
+    white-space: normal; text-align: center; max-width: calc(100% - 48px); width: max-content;
+    backdrop-filter: blur(8px);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast-action { color: var(--text); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; }
+</style>
+</head>
+<body data-theme="soft">
+
+<div class="app">
+  <div class="demo-banner">
+    <span id="demo-banner-text">Free trial — 14 days left</span>
+    <a href="https://www.etsy.com/listing/4535915962/daily-healing-habits-tracker-o-somatic" target="_blank" rel="noopener">Buy now</a>
+  </div>
+
+  <header>
+    <div class="header-text">
+      <div class="eyebrow">Mobile First Studio</div>
+      <div class="app-name">Daily Healing Habits Tracker</div>
+      <div class="app-subtitle">Daily somatic, cognitive, emotional, and spiritual healing.</div>
+    </div>
+    <button class="theme-btn" id="theme-btn" title="Change theme">✨</button>
+  </header>
+
+  <main>
+
+    <!-- TODAY -->
+    <section id="screen-today" class="screen active-screen">
+      <section class="card">
+        <div class="card-header"><div class="card-title">Today's Healing Wheel</div></div>
+        <div class="wheel-row">
+          <div class="wheel-wrap">
+            <svg viewBox="0 0 76 76">
+              <path class="wheel-quadrant" id="q-somatic" d="M38,38 L38,0 A38,38 0 0,1 76,38 Z" fill="var(--accent-b)" />
+              <path class="wheel-quadrant" id="q-cognitive" d="M38,38 L76,38 A38,38 0 0,1 38,76 Z" fill="var(--accent-a)" />
+              <path class="wheel-quadrant" id="q-emotional" d="M38,38 L38,76 A38,38 0 0,1 0,38 Z" fill="var(--accent-b)" />
+              <path class="wheel-quadrant" id="q-spiritual" d="M38,38 L0,38 A38,38 0 0,1 38,0 Z" fill="var(--accent-a)" />
+            </svg>
+            <div class="wheel-center"></div>
+          </div>
+          <div class="wheel-info">
+            <div class="wheel-label" id="wheel-label">Just getting started</div>
+            <div class="wheel-sub" id="wheel-sub">Each quadrant reflects one dimension of healing.</div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-value" id="home-stat-streak">0</div><div class="stat-label">Day streak</div></div>
+          <div class="stat"><div class="stat-value" id="home-stat-days">0</div><div class="stat-label">Days logged</div></div>
+          <div class="stat"><div class="stat-value" id="home-stat-today">—</div><div class="stat-label">Today's score</div></div>
+        </div>
+      </section>
+
+      <section class="card" id="habits-form-card">
+        <div class="card-header"><div class="card-title">Daily Healing Habits</div></div>
+        <div class="field"><label>Somatic healing habit</label><textarea id="f-somatic" placeholder="Movement, stretching, shaking, grounding…"></textarea></div>
+        <div class="field"><label>Cognitive healing habit</label><textarea id="f-cognitive" placeholder="Reframing, journaling, thought work…"></textarea></div>
+        <div class="field"><label>Emotional healing habit</label><textarea id="f-emotional" placeholder="Feeling feelings, self-compassion, validation…"></textarea></div>
+        <div class="field"><label>Spiritual healing habit</label><textarea id="f-spiritual" placeholder="Prayer, meditation, ritual, connection…"></textarea></div>
+        <div class="field"><label>Today's healing focus</label><textarea id="f-focus" placeholder="What healing theme feels most important today?"></textarea></div>
+        <button class="btn-primary" id="save-habits-btn">Save healing habits</button>
+      </section>
+
+      <section class="card" id="today-summary-card" style="display:none;">
+        <div class="card-header"><div class="card-title">Today, so far</div></div>
+        <div id="today-summary-body"></div>
+        <button class="btn-secondary" id="edit-today-btn">Edit today's habits</button>
+      </section>
+    </section>
+
+    <!-- PROGRESS -->
+    <section id="screen-progress" class="screen">
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Healing Progress</div>
+          <div class="card-subtitle">Based on your last 7 days.</div>
+        </div>
+        <div id="progress-scores"></div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Full Version</div>
+          <div class="card-subtitle">Unlock optional Google Drive backup.</div>
+        </div>
+        <div class="note" style="margin-top:0;">This free trial saves everything privately on this device only. The full version adds optional Google Drive backup, in your own account, so your healing habits history is safe even if you switch phones.</div>
+        <a class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-top:0.9rem;" href="https://www.etsy.com/listing/4535915962/daily-healing-habits-tracker-o-somatic" target="_blank" rel="noopener">Get the full version</a>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Local Backup File</div>
+          <div class="card-subtitle">Keep your healing habits history safe on this device.</div>
+        </div>
+        <div class="backup-actions">
+          <button class="backup-btn primary" id="export-btn">Export backup file</button>
+          <button class="backup-btn" id="import-btn">Import backup file</button>
+        </div>
+        <div class="note">Exporting or importing saves your healing habits history. It never includes anything else from your device.</div>
+      </section>
+    </section>
+
+  </main>
+
+  <input type="file" id="import-file-input" accept="application/json" style="display:none" />
+
+  <div class="tabbar">
+    <button class="tab tab-active" data-target="screen-today">Today</button>
+    <button class="tab" data-target="screen-progress">Progress</button>
+  </div>
+</div>
+
+<div id="trial-lock">
+  <div class="trial-lock-card">
+    <div class="trial-lock-title">Your free trial has ended</div>
+    <div class="trial-lock-body">Thanks for trying Daily Healing Habits Tracker! Purchase the full version to keep logging your healing habits and unlock optional Google Drive backup.</div>
+    <a class="trial-lock-cta" href="https://www.etsy.com/listing/4535915962/daily-healing-habits-tracker-o-somatic" target="_blank" rel="noopener">Get the full version</a>
+  </div>
+</div>
+
+<!-- SHARED MODAL -->
+<div id="app-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close-btn">×</button>
+    </div>
+    <div class="modal-body-text" id="modal-body-text"></div>
+    <button class="modal-cta" id="modal-cta-btn"></button>
+    <button class="modal-cta-secondary" id="modal-secondary-btn"></button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* =========================================================
+     DEMO TRIAL
+     ========================================================= */
+  const DEMO_SINCE_KEY = "hht_demo_since";
+  const TRIAL_DAYS = 14;
+  const ETSY_URL = "https://www.etsy.com/listing/4535915962/daily-healing-habits-tracker-o-somatic";
+
+  function demoTrialDaysLeft() {
+    let since = localStorage.getItem(DEMO_SINCE_KEY);
+    if (!since) {
+      since = new Date().toISOString();
+      localStorage.setItem(DEMO_SINCE_KEY, since);
+    }
+    const startedAt = new Date(since).getTime();
+    const elapsedDays = (Date.now() - startedAt) / (1000 * 60 * 60 * 24);
+    return Math.max(0, Math.ceil(TRIAL_DAYS - elapsedDays));
+  }
+
+  function enforceDemoTrial() {
+    const daysLeft = demoTrialDaysLeft();
+    const bannerText = document.getElementById("demo-banner-text");
+    if (bannerText) {
+      bannerText.textContent = daysLeft > 0
+        ? `Free trial — ${daysLeft} day${daysLeft === 1 ? "" : "s"} left`
+        : "Your free trial has ended";
+    }
+    const lock = document.getElementById("trial-lock");
+    if (lock) lock.classList.toggle("show", daysLeft <= 0);
+  }
+
+  /* =========================================================
+     STORAGE
+     ========================================================= */
+  const STORE_KEY = "hht_data_demo_v1";
+
+  function defaultDB() {
+    return { theme: "soft", dailyEntries: {} };
+  }
+
+  let DB = defaultDB();
+
+  function ld() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (raw) DB = Object.assign(defaultDB(), JSON.parse(raw));
+    } catch (e) { DB = defaultDB(); }
+  }
+  function sv() {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+  }
+
+  // FIX: use local date parts instead of toISOString() which returns UTC
+  function todayKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
+  function dayKeysWithinLastN(n) {
+    const keys = [];
+    const cursor = new Date();
+    for (let i = 0; i < n; i++) { keys.push(todayKey(cursor)); cursor.setDate(cursor.getDate() - 1); }
+    return keys;
+  }
+
+  function computeStreakInfo() {
+    const activeDays = new Set(Object.keys(DB.dailyEntries));
+    let current = 0;
+    const cursor = new Date();
+    while (activeDays.has(todayKey(cursor))) { current += 1; cursor.setDate(cursor.getDate() - 1); }
+    return { current };
+  }
+
+  /* =========================================================
+     THEME
+     ========================================================= */
+  const THEME_COLORS = {
+    deep: "#17102c", rose: "#17102c", sage: "#17102c", midnight: "#0b0f1f",
+    soft: "#f4f1fb", warm: "#f7ecf5", cool: "#eef3fb", sand: "#faf3ea"
+  };
+  const THEMES = ["deep", "rose", "sage", "midnight", "soft", "warm", "cool", "sand"];
+
+  function applyTheme() {
+    document.body.setAttribute("data-theme", DB.theme);
+    document.getElementById("theme-color-meta").setAttribute("content", THEME_COLORS[DB.theme]);
+  }
+  function cycleTheme() {
+    const idx = THEMES.indexOf(DB.theme);
+    DB.theme = THEMES[(idx + 1) % THEMES.length];
+    sv();
+    applyTheme();
+    showToast(`Theme: ${DB.theme[0].toUpperCase() + DB.theme.slice(1)}`);
+  }
+
+  /* =========================================================
+     TOAST
+     ========================================================= */
+  let toastTimer = null;
+  function showToast(message, actionLabel, onAction) {
+    const el = document.getElementById("toast");
+    el.textContent = message;
+    if (actionLabel && onAction) {
+      const actionEl = document.createElement("span");
+      actionEl.className = "toast-action";
+      actionEl.textContent = actionLabel;
+      actionEl.addEventListener("click", () => { onAction(); el.classList.remove("show"); });
+      el.appendChild(actionEl);
+    }
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), actionLabel ? 5000 : 2200);
+  }
+
+  /* =========================================================
+     SHARED MODAL
+     ========================================================= */
+  function openModal({ title, bodyText, ctaLabel, onCta, ctaDanger, secondaryLabel, onSecondary }) {
+    document.getElementById("modal-title").textContent = title || "";
+    const bodyEl = document.getElementById("modal-body-text");
+    bodyEl.textContent = bodyText || "";
+    bodyEl.style.display = bodyText ? "block" : "none";
+
+    const ctaBtn = document.getElementById("modal-cta-btn");
+    if (ctaLabel) {
+      ctaBtn.style.display = "block";
+      ctaBtn.textContent = ctaLabel;
+      ctaBtn.classList.toggle("danger", !!ctaDanger);
+      ctaBtn.onclick = onCta || null;
+    } else { ctaBtn.style.display = "none"; ctaBtn.onclick = null; }
+
+    const secondaryBtn = document.getElementById("modal-secondary-btn");
+    if (secondaryLabel) {
+      secondaryBtn.style.display = "block";
+      secondaryBtn.textContent = secondaryLabel;
+      secondaryBtn.onclick = onSecondary || closeModal;
+    } else { secondaryBtn.style.display = "none"; secondaryBtn.onclick = null; }
+
+    document.getElementById("app-modal").classList.add("open");
+  }
+  function closeModal() { document.getElementById("app-modal").classList.remove("open"); }
+
+  /* =========================================================
+     TAB NAVIGATION
+     ========================================================= */
+  function switchToTab(targetId) {
+    document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
+    document.getElementById(targetId).classList.add("active-screen");
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("tab-active", t.dataset.target === targetId));
+    if (targetId === "screen-progress") renderProgress();
+  }
+
+  /* =========================================================
+     HEALING WHEEL (signature element)
+     ========================================================= */
+  function renderWheel(scores) {
+    document.getElementById("q-somatic").style.opacity = (0.2 + (scores.somatic / 100) * 0.8).toFixed(2);
+    document.getElementById("q-cognitive").style.opacity = (0.2 + (scores.cognitive / 100) * 0.8).toFixed(2);
+    document.getElementById("q-emotional").style.opacity = (0.2 + (scores.emotional / 100) * 0.8).toFixed(2);
+    document.getElementById("q-spiritual").style.opacity = (0.2 + (scores.spiritual / 100) * 0.8).toFixed(2);
+
+    const avg = (scores.somatic + scores.cognitive + scores.emotional + scores.spiritual) / 4;
+    const labelEl = document.getElementById("wheel-label");
+    const subEl = document.getElementById("wheel-sub");
+    if (avg === 0) { labelEl.textContent = "Just getting started"; subEl.textContent = "Each quadrant reflects one dimension of healing."; }
+    else if (avg < 40) { labelEl.textContent = "Early stages"; subEl.textContent = "Any single habit logged moves a quadrant forward."; }
+    else if (avg < 70) { labelEl.textContent = "Building steadily"; subEl.textContent = "Your practice is taking a real shape."; }
+    else { labelEl.textContent = "Well balanced"; subEl.textContent = "All four dimensions are getting real attention."; }
+  }
+
+  /* =========================================================
+     SCORING — rolling 7-day fill-rate per dimension
+     ========================================================= */
+  function computeAllScores() {
+    const last7Keys = dayKeysWithinLastN(7);
+    const last7 = last7Keys.map((k) => DB.dailyEntries[k]).filter(Boolean);
+    function fillRate(field) {
+      return last7.length ? (last7.filter((e) => e[field]).length / last7.length) * 100 : 0;
+    }
+    return {
+      somatic: Math.round(fillRate("somatic")),
+      cognitive: Math.round(fillRate("cognitive")),
+      emotional: Math.round(fillRate("emotional")),
+      spiritual: Math.round(fillRate("spiritual"))
+    };
+  }
+
+  function renderProgress() {
+    const scores = computeAllScores();
+    const rows = [
+      ["Somatic Score", "somatic"],
+      ["Cognitive Score", "cognitive"],
+      ["Emotional Score", "emotional"],
+      ["Spiritual Score", "spiritual"]
+    ];
+    document.getElementById("progress-scores").innerHTML = rows.map(([label, key]) => `
+      <div style="margin-bottom:1rem;">
+        <div class="today-summary-label" style="margin-bottom:0.35rem;">${label}</div>
+        <div class="progress-container"><div class="progress-fill" style="width:${scores[key]}%;"></div></div>
+        <div class="progress-score-text">${scores[key]}/100 over the last 7 days</div>
+      </div>
+    `).join("");
+  }
+
+  /* =========================================================
+     TODAY / HABITS FORM
+     ========================================================= */
+  function renderToday() {
+    const key = todayKey(new Date());
+    const entry = DB.dailyEntries[key];
+    const { current } = computeStreakInfo();
+    const allDays = Object.keys(DB.dailyEntries);
+
+    document.getElementById("home-stat-streak").textContent = current;
+    document.getElementById("home-stat-days").textContent = allDays.length;
+
+    const fields = ["somatic", "cognitive", "emotional", "spiritual"];
+    const todayScore = entry ? Math.round((fields.filter((f) => entry[f]).length / fields.length) * 100) : null;
+    document.getElementById("home-stat-today").textContent = todayScore !== null ? todayScore : "—";
+
+    renderWheel(computeAllScores());
+
+    const formCard = document.getElementById("habits-form-card");
+    const summaryCard = document.getElementById("today-summary-card");
+    if (entry) {
+      formCard.style.display = "none";
+      summaryCard.style.display = "block";
+      renderTodaySummary(entry);
+    } else {
+      formCard.style.display = "block";
+      summaryCard.style.display = "none";
+      clearForm();
+    }
+  }
+
+  function renderTodaySummary(entry) {
+    const rows = [
+      ["Somatic", entry.somatic], ["Cognitive", entry.cognitive],
+      ["Emotional", entry.emotional], ["Spiritual", entry.spiritual],
+      ["Today's focus", entry.focus]
+    ];
+    const bodyEl = document.getElementById("today-summary-body");
+    bodyEl.innerHTML = rows.map(([label]) => `
+      <div class="today-summary-row"><div class="today-summary-label">${label}</div><div class="today-summary-value" data-field="${label}"></div></div>
+    `).join("");
+    bodyEl.querySelectorAll("[data-field]").forEach((el) => {
+      const match = rows.find(([label]) => label === el.dataset.field);
+      el.textContent = match && match[1] ? match[1] : "—";
+    });
+  }
+
+  function clearForm() {
+    ["f-somatic", "f-cognitive", "f-emotional", "f-spiritual", "f-focus"].forEach((id) => { document.getElementById(id).value = ""; });
+  }
+
+  function loadTodayIntoForm() {
+    const entry = DB.dailyEntries[todayKey(new Date())];
+    if (!entry) { clearForm(); return; }
+    document.getElementById("f-somatic").value = entry.somatic || "";
+    document.getElementById("f-cognitive").value = entry.cognitive || "";
+    document.getElementById("f-emotional").value = entry.emotional || "";
+    document.getElementById("f-spiritual").value = entry.spiritual || "";
+    document.getElementById("f-focus").value = entry.focus || "";
+  }
+
+  function saveHabits() {
+    const entry = {
+      somatic: document.getElementById("f-somatic").value.trim(),
+      cognitive: document.getElementById("f-cognitive").value.trim(),
+      emotional: document.getElementById("f-emotional").value.trim(),
+      spiritual: document.getElementById("f-spiritual").value.trim(),
+      focus: document.getElementById("f-focus").value.trim()
+    };
+    if (!Object.values(entry).some(Boolean)) { showToast("Fill in at least one field before saving."); return; }
+    DB.dailyEntries[todayKey(new Date())] = { ...entry, loggedAt: new Date().toISOString() };
+    sv();
+    showToast("Healing habits saved.");
+    renderToday();
+  }
+
+  function editToday() {
+    document.getElementById("habits-form-card").style.display = "block";
+    document.getElementById("today-summary-card").style.display = "none";
+    loadTodayIntoForm();
+  }
+
+  /* =========================================================
+     LOCAL EXPORT / IMPORT / UNDO-RESTORE
+     ========================================================= */
+  const PRERESTORE_KEY = "hht_demo_prerestore";
+
+  function buildBackupPayload() {
+    return JSON.stringify({ ...DB, exportedAt: new Date().toISOString(), source: "Daily Healing Habits Tracker" }, null, 2);
+  }
+
+  function confirmAndApplyRestore(parsed, sourceDate, sourceLabel) {
+    const incomingDays = parsed.dailyEntries && typeof parsed.dailyEntries === "object" ? Object.keys(parsed.dailyEntries).length : 0;
+    const currentDays = Object.keys(DB.dailyEntries).length;
+    const dateLabel = sourceDate ? new Date(sourceDate).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "an earlier backup";
+
+    openModal({
+      title: `Restore from ${sourceLabel}`,
+      bodyText: `This replaces ${currentDays} logged ${currentDays === 1 ? "day" : "days"} on this device with ${incomingDays} ${incomingDays === 1 ? "day" : "days"} from a backup made ${dateLabel}. You'll be able to undo this immediately after.`,
+      ctaLabel: "Restore backup",
+      onCta: () => { applyRestoredData(parsed); closeModal(); },
+      secondaryLabel: "Cancel", onSecondary: closeModal
+    });
+  }
+
+  function applyRestoredData(parsed) {
+    localStorage.setItem(PRERESTORE_KEY, JSON.stringify({ data: DB, savedAt: new Date().toISOString() }));
+    DB = Object.assign(defaultDB(), parsed);
+    sv();
+    applyTheme();
+    renderToday(); renderProgress();
+    showToast("Backup restored.", "Undo", undoRestore);
+  }
+
+  function undoRestore() {
+    const raw = localStorage.getItem(PRERESTORE_KEY);
+    if (!raw) { showToast("Nothing to undo."); return; }
+    try {
+      const snap = JSON.parse(raw);
+      DB = Object.assign(defaultDB(), snap.data);
+      sv();
+      localStorage.removeItem(PRERESTORE_KEY);
+      applyTheme();
+      renderToday(); renderProgress();
+      showToast("Restore undone.");
+    } catch (e) {
+      showToast("Could not undo — the previous snapshot was unreadable.");
+    }
+  }
+
+  function exportBackupFile() {
+    const payload = buildBackupPayload();
+    const blob = new Blob([payload], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `healing-habits-tracker-backup-${todayKey(new Date())}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("Backup file downloaded.");
+  }
+  function triggerImportPicker() { document.getElementById("import-file-input").click(); }
+  function handleImportFileChange(event) {
+    const file = event.target.files[0];
+    event.target.value = "";
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      let parsed;
+      try { parsed = JSON.parse(reader.result); }
+      catch (e) { showToast("This file is not a valid backup."); return; }
+      if (!parsed || typeof parsed !== "object") { showToast("This file is not a valid backup."); return; }
+      confirmAndApplyRestore(parsed, parsed.exportedAt, "file");
+    };
+    reader.onerror = () => showToast("Could not read that file.");
+    reader.readAsText(file);
+  }
+
+  /* =========================================================
+     INIT + EVENT WIRING
+     ========================================================= */
+  document.addEventListener("DOMContentLoaded", () => {
+    ld();
+    applyTheme();
+    renderToday();
+    renderProgress();
+
+    document.getElementById("theme-btn").addEventListener("click", cycleTheme);
+
+    document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => switchToTab(tab.dataset.target)));
+
+    document.getElementById("save-habits-btn").addEventListener("click", saveHabits);
+    document.getElementById("edit-today-btn").addEventListener("click", editToday);
+
+    document.getElementById("modal-close-btn").addEventListener("click", closeModal);
+    document.getElementById("app-modal").addEventListener("click", (e) => { if (e.target.id === "app-modal") closeModal(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./sw.js").catch(() => {});
+    }
+
+    document.getElementById("export-btn").addEventListener("click", exportBackupFile);
+    document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
+    document.getElementById("import-file-input").addEventListener("change", handleImportFileChange);
+
+    enforceDemoTrial();
+    setInterval(enforceDemoTrial, 60000);
+  });
+</script>
+
+</body>
+</html>
