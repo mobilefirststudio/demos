@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<link rel="icon" href="./icon-192.png" type="image/png"/>
+<link rel="icon" href="data:,"/>
+<meta property="og:image" content="./icon-192.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<link rel="manifest" href="./manifest.json"/>
+<meta name="theme-color" id="meta-theme" content="#0f4c75"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Lite Finance Hub — Mobile First Studio</title>
+<style>
+:root{--navy:#0f4c75;--navy-dark:#0a3554;--navy-light:#1a6ba0;--teal:#1ecbe1;--teal-dark:#17a8bb;--bg:#fff;--bg-soft:#f5f7fa;--bg-card:#fff;--ink:#1a1e2e;--ink-muted:#5a6070;--ink-faint:#9aa0b0;--border:#e4e8f0;--border-strong:#c8d2de;--success:#12b76a;--success-soft:#ecfdf3;--danger:#f04438;--danger-soft:#fef3f2;--warning:#f79009;--warning-soft:#fffaeb;--blue:#2c5282;--blue-soft:#ebf0fa;--shadow:0 2px 8px rgba(15,76,117,0.07),0 4px 16px rgba(15,76,117,0.05);}
+[data-mode="dark"]{--bg:#0f1117;--bg-soft:#181b24;--bg-card:#1e2230;--ink:#e8edf5;--ink-muted:#8b95a8;--ink-faint:#4a5060;--border:#252b38;--border-strong:#323a4a;--shadow:0 2px 8px rgba(0,0,0,0.4),0 4px 16px rgba(0,0,0,0.3);--success-soft:rgba(18,183,106,0.12);--danger-soft:rgba(240,68,56,0.12);--warning-soft:rgba(247,144,9,0.12);--blue-soft:rgba(44,82,130,0.2);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;background:var(--bg-soft);color:var(--ink);height:100dvh;overflow:hidden;display:flex;justify-content:center;-webkit-font-smoothing:antialiased;}
+.app{width:100%;max-width:480px;height:100dvh;display:flex;flex-direction:column;}
+.app-header{background:linear-gradient(160deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-light) 100%);padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 14px;flex-shrink:0;}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.header-eyebrow{font-size:0.62rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);font-weight:600;text-transform:uppercase;}
+.header-title{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-0.02em;margin-top:2px;}
+.header-btns{display:flex;gap:8px;}
+.hdr-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
+.header-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.header-chip{background:rgba(255,255,255,0.1);border-radius:10px;padding:9px 12px;border:1px solid rgba(255,255,255,0.12);}
+.header-chip-label{font-size:0.62rem;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
+.header-chip-val{font-size:1.3rem;font-weight:800;color:#fff;font-family:"Inter",sans-serif;letter-spacing:-0.02em;margin-top:1px;}
+.header-chip-val.danger{color:#fca5a5;}
+.header-chip-val.success-light{color:#86efac;}
+.header-chip-sub{font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:1px;}
+.tab-bar{background:var(--bg-card);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;flex-shrink:0;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{flex:0 0 auto;padding:10px 14px;border:none;background:transparent;font-size:0.78rem;font-weight:600;color:var(--ink-faint);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all 0.15s;}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--navy);}
+.content{flex:1;overflow-y:auto;padding:14px 14px calc(80px + env(safe-area-inset-bottom,0px));background:var(--bg-soft);-webkit-overflow-scrolling:touch;}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);}
+.card-title{font-size:0.88rem;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.sl{font-size:0.67rem;letter-spacing:0.1em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-bottom:8px;margin-top:4px;}
+
+/* ── ACCOUNT CARDS (shared with income) ── */
+.acct-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.acct-card{background:var(--bg-card);border-radius:12px;padding:13px 14px;border:1px solid var(--border);cursor:pointer;box-shadow:var(--shadow);}
+.acct-card.main-acct{border-color:var(--navy);border-width:1.5px;}
+.acct-type-badge{font-size:0.62rem;letter-spacing:0.08em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+.acct-name{font-size:0.84rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.acct-bal{font-size:1.3rem;font-weight:800;color:var(--ink);font-family:"Inter",sans-serif;letter-spacing:-0.02em;margin-top:4px;}
+.acct-bal.negative{color:var(--danger);}
+.acct-bal.income-color{color:var(--success);}
+.acct-main-star{font-size:0.68rem;font-weight:700;color:var(--navy);margin-top:4px;}
+.acct-tap{font-size:0.65rem;color:var(--ink-faint);margin-top:3px;}
+.acct-ledger-btn{width:100%;margin-top:8px;padding:5px 0;border:none;background:rgba(15,76,117,0.07);border-radius:7px;color:var(--navy);font-size:0.72rem;font-weight:700;cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;letter-spacing:0.03em;}
+
+.summary-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.summary-chip{background:var(--bg-card);border-radius:10px;padding:11px 13px;border:1px solid var(--border);}
+.summary-chip-label{font-size:0.65rem;letter-spacing:0.08em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;}
+.summary-chip-val{font-size:1.1rem;font-weight:800;font-family:"Inter",sans-serif;margin-top:3px;}
+.summary-chip-val.pos{color:var(--success);}
+.summary-chip-val.neg{color:var(--danger);}
+.summary-chip-val.neutral{color:var(--ink);}
+.summary-chip-val.navy{color:var(--navy);}
+
+.bill-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);}
+.bill-row:last-child{border-bottom:none;}
+.bill-info{flex:1;min-width:0;}
+.bill-name{font-size:0.88rem;font-weight:600;color:var(--ink);cursor:pointer;}
+.bill-sub{font-size:0.72rem;color:var(--ink-muted);margin-top:2px;font-style:italic;}
+.bill-amt{font-size:0.88rem;font-weight:700;color:var(--ink);font-family:"Inter",sans-serif;white-space:nowrap;}
+.bill-status{font-size:0.68rem;padding:3px 9px;border-radius:20px;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.04em;flex-shrink:0;}
+.bs-P{background:var(--success-soft);color:var(--success);}
+.bs-A{background:var(--blue-soft);color:var(--blue);}
+.bs-D{background:var(--danger-soft);color:var(--danger);}
+.bs-N{background:var(--bg-soft);color:var(--ink-faint);}
+.bill-post-btn{font-size:0.65rem;padding:3px 7px;border-radius:6px;border:1px solid var(--border-strong);background:transparent;color:var(--ink-muted);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;white-space:nowrap;flex-shrink:0;}
+
+.ledger-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.ledger-row:last-child{border-bottom:none;}
+.ledger-info{flex:1;min-width:0;}
+.ledger-desc{font-size:0.86rem;font-weight:600;color:var(--ink);}
+.ledger-date{font-size:0.7rem;color:var(--ink-muted);margin-top:2px;font-style:italic;}
+.ledger-right{text-align:right;flex-shrink:0;}
+.ledger-amt{font-size:0.9rem;font-weight:700;font-family:"Inter",sans-serif;}
+.ledger-amt.pos{color:var(--success);}
+.ledger-amt.neg{color:var(--danger);}
+.ledger-bal{font-size:0.68rem;color:var(--ink-faint);margin-top:2px;font-family:"Inter",sans-serif;}
+
+.row-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.row-item:last-child{border-bottom:none;}
+.row-info{flex:1;min-width:0;}
+.row-title{font-size:0.88rem;font-weight:600;color:var(--ink);}
+.row-sub{font-size:0.72rem;color:var(--ink-muted);margin-top:2px;font-style:italic;}
+.row-amt-pos{font-size:0.92rem;font-weight:700;color:var(--success);font-family:"Inter",sans-serif;}
+.row-amt-neg{font-size:0.92rem;font-weight:700;color:var(--danger);font-family:"Inter",sans-serif;}
+.edit-hint{font-size:0.65rem;color:var(--ink-faint);}
+
+.month-nav{display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);border-radius:10px;padding:8px 12px;margin-bottom:12px;border:1px solid var(--border);}
+.month-nav-btn{background:none;border:none;color:var(--navy);font-size:1.2rem;cursor:pointer;padding:2px 8px;border-radius:6px;line-height:1;}
+.month-nav-label{font-size:0.86rem;font-weight:700;color:var(--ink);}
+
+.cat-bar-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.cat-bar-row:last-child{border-bottom:none;}
+.cat-bar-label{font-size:0.8rem;font-weight:600;color:var(--ink);width:90px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cat-bar-track{flex:1;height:7px;background:var(--bg-soft);border-radius:999px;overflow:hidden;border:1px solid var(--border);}
+.cat-bar-fill{height:100%;border-radius:999px;transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+.cat-bar-val{font-size:0.78rem;font-weight:700;color:var(--ink);font-family:"Inter",sans-serif;min-width:52px;text-align:right;flex-shrink:0;}
+
+.fab{position:fixed;bottom:calc(68px + env(safe-area-inset-bottom,0px));right:calc(50% - 220px + 14px);width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 4px 14px rgba(15,76,117,0.4);}
+@media(max-width:480px){.fab{right:14px;}}
+.fab i{font-size:22px;color:white;}
+.bottom-nav{background:var(--bg-card);border-top:1px solid var(--border);padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-around;flex-shrink:0;box-shadow:0 -2px 10px rgba(15,76,117,0.05);}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 8px;border-radius:8px;background:none;border:none;min-width:44px;}
+.nav-btn i{font-size:20px;color:var(--ink-faint);}
+.nav-btn span{font-size:0.6rem;font-weight:600;color:var(--ink-faint);letter-spacing:0.04em;text-transform:uppercase;font-family:"Plus Jakarta Sans",sans-serif;}
+.nav-btn.active i,.nav-btn.active span{color:var(--navy);}
+
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:0.72rem;letter-spacing:0.1em;color:var(--ink-muted);text-transform:uppercase;font-weight:600;margin-bottom:5px;}
+.field input,.field select{width:100%;background:var(--bg-soft);border:1px solid var(--border-strong);border-radius:10px;padding:10px 13px;color:var(--ink);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;outline:none;-webkit-appearance:none;}
+.field input::placeholder{color:var(--ink-faint);font-style:italic;}
+.field input:focus,.field select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(15,76,117,0.1);}
+.field-hint{font-size:0.7rem;color:var(--ink-faint);font-style:italic;margin-top:4px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-row{display:flex;gap:10px;margin-top:14px;}
+.btn-save{flex:1;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:10px;padding:13px;color:white;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:13px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;cursor:pointer;}
+.btn-delete{width:100%;background:var(--danger-soft);border:1px solid rgba(240,68,56,0.3);border-radius:10px;padding:12px;color:var(--danger);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;margin-top:8px;}
+.btn-ghost{width:100%;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:11px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;cursor:pointer;margin-top:6px;}
+.btn-full{width:100%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:10px;padding:13px;color:white;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-bottom:10px;}
+
+.modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;background:rgba(10,20,35,0.5);z-index:20;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg-card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:90dvh;overflow-y:auto;border-top:1px solid var(--border);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal h2{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:16px;}
+.empty{text-align:center;padding:28px 0;color:var(--ink-muted);font-size:0.9rem;line-height:1.8;font-style:italic;}
+.toast{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(8px);background:#1a1e2e;color:#fff;font-size:0.82rem;padding:8px 16px;border-radius:20px;opacity:0;pointer-events:none;z-index:100;transition:opacity 0.2s,transform 0.2s;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.settings-subtab-bar{display:flex;background:var(--bg-card);border-bottom:1px solid var(--border);flex-shrink:0;}
+.settings-subtab{flex:1;padding:10px 4px;border:none;background:transparent;font-size:0.76rem;font-weight:700;color:var(--ink-faint);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;border-bottom:2.5px solid transparent;transition:all 0.15s;text-align:center;}
+.settings-subtab.active{color:var(--navy);border-bottom-color:var(--navy);}
+.settings-panel{display:none;}
+.settings-panel.active{display:block;}
+.swatch-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.swatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:transform 0.15s;position:relative;}
+.swatch.selected{border-color:var(--ink);}
+.swatch.selected::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.8rem;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,0.3);}
+.mode-row{display:flex;gap:8px;margin-top:6px;}
+.mode-btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border-strong);background:transparent;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;}
+.mode-btn.active{background:var(--ink);color:var(--bg-card);border-color:var(--ink);}
+.gdrive-connected-box{background:var(--success-soft);border-radius:10px;padding:10px 13px;font-size:0.82rem;color:var(--success);font-weight:600;margin-bottom:10px;}
+.share-code-box{background:rgba(15,76,117,0.08);border-radius:10px;padding:12px 14px;margin-bottom:10px;}
+.share-code-val{font-size:2rem;font-family:monospace;letter-spacing:0.2em;color:var(--navy);font-weight:700;}
+.share-code-hint{font-size:0.72rem;color:var(--ink-muted);margin-top:4px;}
+.confirm-modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;background:rgba(10,20,35,0.5);z-index:30;display:none;align-items:center;justify-content:center;}
+.confirm-modal-bg.open{display:flex;}
+.confirm-box{background:var(--bg-card);border-radius:16px;padding:20px;width:calc(100% - 32px);max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.confirm-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.confirm-body{font-size:0.84rem;color:var(--ink-muted);line-height:1.6;margin-bottom:16px;}
+.confirm-btns{display:flex;gap:8px;}
+.confirm-yes{flex:1;background:var(--danger);border:none;border-radius:10px;padding:11px;color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;}
+.confirm-no{flex:1;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:11px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;cursor:pointer;}
+
+.ledger-sheet-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;background:rgba(10,20,35,0.5);z-index:15;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.ledger-sheet-bg.open{display:flex;}
+.ledger-sheet{background:var(--bg-card);border-radius:20px 20px 0 0;width:100%;max-height:85dvh;display:flex;flex-direction:column;border-top:1px solid var(--border);animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+.ledger-sheet-header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.ledger-sheet-title{font-size:1rem;font-weight:700;color:var(--ink);}
+.ledger-sheet-close{background:var(--bg-soft);border:none;width:28px;height:28px;border-radius:50%;font-size:1.1rem;color:var(--ink-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.ledger-sheet-body{overflow-y:auto;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));flex:1;}
+
+.calc-modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;background:rgba(10,20,35,0.5);z-index:25;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.calc-modal-bg.open{display:flex;}
+.calc-modal{background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));width:100%;border-top:1px solid var(--border);animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+.calc-display{background:var(--bg-soft);border-radius:12px;padding:12px 16px;margin-bottom:12px;text-align:right;border:1px solid var(--border);}
+.calc-expr{font-size:0.78rem;color:var(--ink-faint);font-family:"Inter",sans-serif;min-height:1.2em;}
+.calc-result{font-size:2.2rem;font-weight:800;color:var(--ink);font-family:"Inter",sans-serif;letter-spacing:-0.03em;line-height:1.1;margin-top:2px;}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.calc-key{height:60px;border-radius:12px;border:none;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:"Inter",sans-serif;transition:opacity 0.1s,transform 0.08s;}
+.calc-key:active{opacity:0.75;transform:scale(0.95);}
+.calc-key.num{background:var(--bg-soft);color:var(--ink);border:1px solid var(--border);}
+.calc-key.op{background:rgba(15,76,117,0.1);color:var(--navy);border:1px solid rgba(15,76,117,0.15);}
+.calc-key.eq{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border:none;}
+.calc-key.clear{background:var(--danger-soft);color:var(--danger);border:1px solid rgba(240,68,56,0.2);}
+.calc-key.del{background:var(--bg-soft);color:var(--ink-muted);border:1px solid var(--border);}
+.calc-close-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.calc-close-btn{background:none;border:none;color:var(--ink-faint);font-size:1.4rem;cursor:pointer;padding:4px 8px;line-height:1;}
+
+  /* ── BILL BADGE ── */
+  .tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--danger);color:#fff;font-size:0.58rem;font-weight:800;margin-left:4px;vertical-align:middle;line-height:1;}
+  .bill-recur-badge{font-size:0.62rem;color:var(--navy);font-weight:700;background:var(--blue-soft);border-radius:6px;padding:1px 5px;margin-left:4px;white-space:nowrap;}
+  .bill-remind-badge{font-size:0.62rem;color:var(--warning);font-weight:700;background:var(--warning-soft);border-radius:6px;padding:1px 5px;white-space:nowrap;}
+  .bill-overdue-badge{font-size:0.62rem;color:var(--danger);font-weight:700;background:var(--danger-soft);border-radius:6px;padding:1px 5px;white-space:nowrap;}
+
+  /* ── DEMO TRIAL BANNER + LOCK ── */
+  .demo-banner{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 14px;background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;font-family:"Plus Jakarta Sans",sans-serif;}
+  .demo-banner-text{font-size:0.74rem;font-weight:600;}
+  .demo-banner-link{flex-shrink:0;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:5px 12px;color:#fff;font-size:0.7rem;font-weight:700;text-decoration:none;white-space:nowrap;}
+  #trial-lock{display:none;position:fixed;inset:0;z-index:200;background:rgba(10,20,35,0.92);align-items:center;justify-content:center;padding:24px;}
+  #trial-lock.open{display:flex;}
+  .trial-lock-box{background:var(--bg-card);border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.4);}
+  .trial-lock-icon{width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,var(--navy-dark),var(--navy));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+  .trial-lock-icon i{font-size:26px;color:#fff;}
+  .trial-lock-title{font-size:1.15rem;font-weight:800;color:var(--ink);margin-bottom:8px;}
+  .trial-lock-body{font-size:0.86rem;color:var(--ink-muted);line-height:1.6;margin-bottom:20px;}
+  .trial-lock-cta{display:block;width:100%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:12px;padding:14px;color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.92rem;font-weight:700;text-decoration:none;}
+  .trial-lock-note{font-size:0.72rem;color:var(--ink-faint);margin-top:12px;font-style:italic;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="demo-banner" id="demo-banner">
+    <span class="demo-banner-text" id="demo-banner-text">14 days left in your free trial</span>
+    <a class="demo-banner-link" href="https://www.etsy.com/listing/4541892597/simple-finance-hub-accounts-bills" target="_blank" rel="noopener">Unlock full app →</a>
+  </div>
+  <div class="app-header">
+    <div class="header-top">
+      <div><div class="header-eyebrow">MOBILE FIRST STUDIO</div><div class="header-title" id="app-title">Lite Finance Hub</div></div>
+      <div class="header-btns">
+        <button class="hdr-btn" id="calc-btn" title="Calculator"><i class="ti ti-calculator"></i></button>
+        <button class="hdr-btn" id="appearance-btn" title="Change color"><i class="ti ti-palette"></i></button>
+      </div>
+    </div>
+    <div class="header-chips">
+      <div class="header-chip"><div class="header-chip-label">Total Funds</div><div class="header-chip-val" id="header-available">$0.00</div><div class="header-chip-sub">All accounts</div></div>
+      <div class="header-chip"><div class="header-chip-label">Safe to spend</div><div class="header-chip-val success-light" id="header-safe">$0.00</div><div class="header-chip-sub" id="header-safe-sub">Main account</div></div>
+    </div>
+  </div>
+
+  <div id="pg-finance" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('accounts',this)">Accounts</button>
+      <button class="tab-btn" onclick="switchTab('bills',this)">Bills</button>
+      <button class="tab-btn" onclick="switchTab('pending',this)">Pending</button>
+    </div>
+    <div class="content" id="finance-content"></div>
+    <button class="fab" id="main-fab" onclick="openAdd()"><i class="ti ti-plus"></i></button>
+  </div>
+
+  <div id="pg-settings" style="display:none;flex-direction:column;flex:1;min-height:0;">
+    <div class="settings-subtab-bar">
+      <button class="settings-subtab active" data-panel="general" onclick="switchSettingsPanel('general',this)">General</button>
+      <button class="settings-subtab" data-panel="profile" onclick="switchSettingsPanel('profile',this)">Profile</button>
+      <button class="settings-subtab" data-panel="backup" onclick="switchSettingsPanel('backup',this)">Backup</button>
+    </div>
+    <div class="content">
+      <div class="settings-panel active" id="settings-panel-general">
+        <div class="card"><div class="card-title">App name</div><div class="field"><input type="text" id="s-app-name" placeholder="Lite Finance Hub" maxlength="40"/></div><button class="btn-full" onclick="saveAppName()" style="margin-bottom:0;">Save name</button></div>
+        <div class="card"><div class="card-title">Appearance</div><div class="sl">Mode</div><div class="mode-row"><button class="mode-btn active" data-mode="light" onclick="setMode('light')">☀ Light</button><button class="mode-btn" data-mode="dark" onclick="setMode('dark')">☾ Dark</button></div><div class="sl" style="margin-top:12px;">Color</div><div class="swatch-row" id="swatch-row"></div></div>
+        <div class="card"><div class="card-title" style="color:var(--danger);">Danger zone</div><button class="btn-delete" onclick="confirmReset()" style="margin-top:0;">Reset all data</button></div>
+      </div>
+      <div class="settings-panel" id="settings-panel-profile">
+        <div class="card">
+          <div class="card-title">Household members</div>
+          <div class="field-hint" style="margin-bottom:12px;">Names used throughout the app.</div>
+          <div class="field"><label>Person 1 name</label><input type="text" id="s-p1-name" placeholder="e.g. Jessica" maxlength="20"/></div>
+          <div class="field"><label>Person 2 name</label><input type="text" id="s-p2-name" placeholder="e.g. Larry" maxlength="20"/></div>
+          <button class="btn-full" onclick="saveProfile()" style="margin-bottom:0;">Save names</button>
+        </div>
+      </div>
+      <div class="settings-panel" id="settings-panel-backup">
+        <div class="card"><div class="card-title">Local backup</div><p class="field-hint" style="margin-bottom:12px;">Download a backup file to your device.</p><div id="local-backup-section"></div><input type="file" id="restore-file-input" accept="application/json" style="display:none;"/></div>
+        <div class="card"><div class="card-title">Google Drive backup</div><p class="field-hint" style="margin-bottom:12px;">Back up to your own Google Drive, with a rolling week of daily snapshots.</p><button class="btn-full" style="margin-bottom:0;background:linear-gradient(135deg,var(--navy-dark),var(--navy));" onclick="window.open('https://www.etsy.com/listing/4541892597/simple-finance-hub-accounts-bills','_blank')">Unlock the full app →</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('finance',this)"><i class="ti ti-currency-dollar"></i><span>Finance</span></button>
+    <button class="nav-btn" onclick="showPage('settings',this)"><i class="ti ti-settings"></i><span>Settings</span></button>
+  </div>
+</div>
+
+<div id="trial-lock">
+  <div class="trial-lock-box">
+    <div class="trial-lock-icon"><i class="ti ti-lock"></i></div>
+    <div class="trial-lock-title">Your free trial has ended</div>
+    <div class="trial-lock-body">Your 14 days with Lite Finance Hub are up. Unlock the full app to keep tracking your accounts, bills, and pending items.</div>
+    <a class="trial-lock-cta" href="https://www.etsy.com/listing/4541892597/simple-finance-hub-accounts-bills" target="_blank" rel="noopener">Unlock the full app →</a>
+    <div class="trial-lock-note">Your data is safe and waiting — it's just locked until you unlock.</div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="account-modal"><div class="modal">
+  <h2 id="acct-modal-title">Add Account</h2>
+  <div class="field"><label>Account Name</label><input id="acct-name" placeholder="e.g. Chase Checking"/></div>
+  <div class="field"><label>Account Type</label><select id="acct-type"><option value="Checking">Checking</option><option value="Savings">Savings</option><option value="Cash">Cash</option><option value="Investment">Investment</option><option value="Other">Other</option></select></div>
+  <div class="field"><label>Current Balance</label><input type="number" id="acct-bal" placeholder="e.g. 2500.00" step="0.01"/><div class="field-hint">Your actual current balance. Ledger transactions add on top.</div></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('account-modal')">Cancel</button><button class="btn-save" onclick="saveAccount()">Save</button></div>
+  <button class="btn-ghost" id="acct-main-btn" style="display:none;" onclick="setMainAcctFromModal()">★ Set as Main Account</button>
+  <button class="btn-delete" id="acct-del-btn" style="display:none;" onclick="deleteAccount()">Delete Account</button>
+</div></div>
+
+<div class="modal-bg" id="bill-modal"><div class="modal">
+  <h2 id="bill-modal-title">Add Bill</h2>
+  <div class="field"><label>Bill Name</label><input id="b-name" placeholder="e.g. Rent, Netflix"/></div>
+  <div class="field-row"><div class="field"><label>Amount</label><input type="number" id="b-amt" placeholder="e.g. 1200.00" step="0.01"/></div><div class="field"><label>Due Date</label><input type="date" id="b-due"/></div></div>
+  <div class="field-row">
+    <div class="field"><label>Status</label><select id="b-status"><option value="N">N/A</option><option value="P">Paid (P)</option><option value="A">Auto (A)</option><option value="D">Due (D)</option></select></div>
+    <div class="field"><label>Account</label><select id="b-acct"></select></div>
+  </div>
+  <div id="bill-edit-hint" style="font-size:0.72rem;color:var(--ink-faint);font-style:italic;margin-bottom:8px;min-height:1em;"></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('bill-modal')">Cancel</button><button class="btn-save" onclick="saveBill()">Save</button></div>
+  <button class="btn-delete" id="bill-del-btn" style="display:none;" onclick="deleteBill()">Delete Bill</button>
+</div></div>
+
+<div class="modal-bg" id="pending-modal"><div class="modal">
+  <h2 id="pend-modal-title">Add Pending Item</h2>
+  <div class="field"><label>Description</label><input id="pend-desc" placeholder="e.g. Groceries, upcoming vet bill"/></div>
+  <div class="field-row"><div class="field"><label>Amount</label><input type="number" id="pend-amt" placeholder="e.g. 300.00" step="0.01"/></div><div class="field"><label>Date</label><input type="date" id="pend-date"/></div></div>
+  <div class="field"><label>Type</label><select id="pend-type"><option value="out">Expense (out)</option><option value="in">Income (in)</option></select></div>
+  <div class="field-hint" style="margin-bottom:12px;">Pending items are planned but not yet paid. Tap "Post to ledger" when the payment clears.</div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('pending-modal')">Cancel</button><button class="btn-save" onclick="savePending()">Save</button></div>
+  <button class="btn-delete" id="pend-del-btn" style="display:none;" onclick="deletePending()">Delete</button>
+</div></div>
+
+<div class="modal-bg" id="ledger-modal"><div class="modal">
+  <h2 id="led-modal-title">Add Transaction</h2>
+  <div class="field"><label>Account</label><select id="led-acct"></select></div>
+  <div class="field-row"><div class="field"><label>Date</label><input type="date" id="led-date"/></div><div class="field"><label>Type</label><select id="led-type"><option value="out">Expense (out)</option><option value="in">Deposit (in)</option></select></div></div>
+  <div class="field"><label>Description</label><input id="led-desc" placeholder="e.g. Grocery run"/></div>
+  <div class="field"><label>Amount</label><input type="number" id="led-amt" placeholder="e.g. 85.50" step="0.01"/></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('ledger-modal')">Cancel</button><button class="btn-save" onclick="saveLedger()">Save</button></div>
+  <button class="btn-delete" id="led-del-btn" style="display:none;" onclick="deleteLedger()">Delete</button>
+</div></div>
+
+<div class="ledger-sheet-bg" id="ledger-sheet">
+  <div class="ledger-sheet">
+    <div class="ledger-sheet-header">
+      <div>
+        <div class="ledger-sheet-title" id="ledger-sheet-title">Ledger</div>
+        <div style="font-size:0.7rem;color:var(--ink-muted);margin-top:2px;" id="ledger-sheet-bal"></div>
+      </div>
+      <button class="ledger-sheet-close" onclick="closeModal('ledger-sheet')">×</button>
+    </div>
+    <div class="ledger-sheet-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <button onclick="changeLedgerSheetMonth(-1)" style="background:none;border:none;color:var(--navy);font-size:1.2rem;cursor:pointer;padding:0 8px;">‹</button>
+        <span style="font-size:0.84rem;font-weight:700;color:var(--ink);" id="ledger-sheet-month-label"></span>
+        <button onclick="changeLedgerSheetMonth(1)" style="background:none;border:none;color:var(--navy);font-size:1.2rem;cursor:pointer;padding:0 8px;">›</button>
+      </div>
+      <div id="ledger-sheet-content"></div>
+      <button class="btn-full" style="margin-top:12px;margin-bottom:0;" onclick="openAddLedgerFromSheet()">+ Add transaction</button>
+    </div>
+  </div>
+</div>
+
+<div class="calc-modal-bg" id="calc-modal"><div class="calc-modal">
+  <div class="calc-close-row"><button class="calc-close-btn" onclick="closeModal('calc-modal')">×</button></div>
+  <div class="calc-display"><div class="calc-expr" id="calc-expr"></div><div class="calc-result" id="calc-result">0</div></div>
+  <div class="calc-grid">
+    <button class="calc-key clear" onclick="calcClear()">AC</button>
+    <button class="calc-key del" onclick="calcDel()"><i class="ti ti-backspace"></i></button>
+    <button class="calc-key op" onclick="calcOp('%')">%</button>
+    <button class="calc-key op" onclick="calcOp('÷')">÷</button>
+    <button class="calc-key num" onclick="calcNum('7')">7</button>
+    <button class="calc-key num" onclick="calcNum('8')">8</button>
+    <button class="calc-key num" onclick="calcNum('9')">9</button>
+    <button class="calc-key op" onclick="calcOp('×')">×</button>
+    <button class="calc-key num" onclick="calcNum('4')">4</button>
+    <button class="calc-key num" onclick="calcNum('5')">5</button>
+    <button class="calc-key num" onclick="calcNum('6')">6</button>
+    <button class="calc-key op" onclick="calcOp('−')">−</button>
+    <button class="calc-key num" onclick="calcNum('1')">1</button>
+    <button class="calc-key num" onclick="calcNum('2')">2</button>
+    <button class="calc-key num" onclick="calcNum('3')">3</button>
+    <button class="calc-key op" onclick="calcOp('+')">+</button>
+    <button class="calc-key num" onclick="calcNum('0')" style="grid-column:span 2;">0</button>
+    <button class="calc-key num" onclick="calcNum('.')">.</button>
+    <button class="calc-key eq" onclick="calcEquals()">=</button>
+  </div>
+</div></div>
+
+<div class="confirm-modal-bg" id="confirm-modal"><div class="confirm-box"><div class="confirm-title" id="confirm-title">Are you sure?</div><div class="confirm-body" id="confirm-body">This cannot be undone.</div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('confirm-modal')">Cancel</button><button class="confirm-yes" id="confirm-yes-btn">Delete</button></div></div></div>
+<div class="confirm-modal-bg" id="restore-confirm-modal"><div class="confirm-box"><div class="confirm-title" id="restore-confirm-title">Restore?</div><div class="confirm-body" id="restore-confirm-body"></div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('restore-confirm-modal')">Cancel</button><button class="confirm-yes" id="restore-confirm-yes">Restore</button></div></div></div>
+
+<!-- POST TO ACCOUNT PICKER -->
+<div class="ledger-sheet-bg" id="post-acct-sheet">
+  <div class="ledger-sheet">
+    <div class="ledger-sheet-header">
+      <div>
+        <div class="ledger-sheet-title">Post to account</div>
+        <div style="font-size:0.7rem;color:var(--ink-muted);margin-top:2px;" id="post-acct-desc"></div>
+      </div>
+      <button class="ledger-sheet-close" onclick="closeModal('post-acct-sheet')">×</button>
+    </div>
+    <div class="ledger-sheet-body">
+      <div id="post-acct-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STORE="mfs_sf_demo_v1";
+const DEMO_SINCE_KEY="mfs_lfh_demo_since";
+const TRIAL_DAYS=14;
+const ETSY_URL="https://www.etsy.com/listing/4541892597/simple-finance-hub-accounts-bills";
+const PALETTE=[{key:"navy",navy:"#0f4c75",teal:"#1ecbe1"},{key:"forest",navy:"#1a5c3a",teal:"#2dd4a0"},{key:"violet",navy:"#4c1d95",teal:"#a78bfa"},{key:"rose",navy:"#881337",teal:"#fb7185"},{key:"slate",navy:"#1e293b",teal:"#38bdf8"},{key:"amber",navy:"#78350f",teal:"#fbbf24"}];
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+let DB,curTab="accounts",eId={},pendingRestore=null;
+let billMonth=null,summaryMonth=null;
+
+function nowYM(){const d=new Date();return{y:d.getFullYear(),m:d.getMonth()};}
+function defDB(){return{appName:"Lite Finance Hub",accounts:[],bills:[],pending:[],ledger:[],profile:{mainAcctId:null,p1Name:"Person 1",p2Name:"Person 2"},accent:"navy",mode:"light"};}
+
+function load(){
+  try{const r=localStorage.getItem(STORE);if(r){DB=Object.assign(defDB(),JSON.parse(r));if(DB.appName==="Simple Finance Hub"||DB.appName==="Finance Hub"||DB.appName==="Finance Hub Lite")DB.appName="Lite Finance Hub";if(!DB.pending)DB.pending=[];if(!DB.profile)DB.profile={mainAcctId:null,p1Name:"Person 1",p2Name:"Person 2"};if(!DB.profile.p1Name)DB.profile.p1Name="Person 1";if(!DB.profile.p2Name)DB.profile.p2Name="Person 2";}else DB=defDB();}catch(e){DB=defDB();}
+  const nm=nowYM();billMonth={...nm};summaryMonth={...nm};
+}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(DB));}catch(e){}}
+
+// ── FREE TRIAL ──
+function demoTrialDaysLeft(){
+  let since=localStorage.getItem(DEMO_SINCE_KEY);
+  if(!since){since=todayKey();try{localStorage.setItem(DEMO_SINCE_KEY,since);}catch(e){}}
+  const p=since.split("-");const startDate=new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));
+  const today=new Date();today.setHours(0,0,0,0);startDate.setHours(0,0,0,0);
+  const daysElapsed=Math.floor((today-startDate)/(1000*60*60*24));
+  return TRIAL_DAYS-daysElapsed;
+}
+function enforceDemoTrial(){
+  const daysLeft=demoTrialDaysLeft();
+  const banner=g("demo-banner"),lock=g("trial-lock");
+  if(daysLeft<=0){if(lock)lock.classList.add("open");return;}
+  if(lock)lock.classList.remove("open");
+  const label=daysLeft===1?"1 day left in your free trial":daysLeft+" days left in your free trial";
+  const t=g("demo-banner-text");if(t)t.textContent=label;
+}
+
+// ── LOCAL BACKUP ──
+function downloadBackup(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="finance-hub-lite-backup-"+todayKey()+".json";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup downloaded!");}
+function renderLocalBackupSection(){const e=g("local-backup-section");if(!e)return;const hasUndo=!!localStorage.getItem("mfs_lfh_demo_prerestore");e.innerHTML=`<button class="btn-full" onclick="downloadBackup()" style="margin-bottom:8px;">⬇ Download backup</button><button class="btn-ghost" onclick="g('restore-file-input').click()" style="margin-bottom:${hasUndo?6:0}px;">⬆ Restore from file</button>${hasUndo?'<button class="btn-ghost" onclick="undoRestore()" style="color:var(--danger);">Undo last restore</button>':""}`;}
+function handleRestoreFile(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=evt=>{try{const data=JSON.parse(evt.target.result);if(!data||!data.accounts){toast("Invalid backup.");return;}openRestoreConfirm(data,'"'+file.name+'"');}catch(err){toast("Could not read file.");}};r.readAsText(file);e.target.value="";}
+function openRestoreConfirm(data,source){pendingRestore=data;g("restore-confirm-title").textContent="Restore from "+source+"?";g("restore-confirm-body").textContent="This replaces all your current data. You can undo right after.";g("restore-confirm-yes").onclick=confirmRestoreNow;openModal("restore-confirm-modal");}
+function confirmRestoreNow(){if(!pendingRestore){closeModal("restore-confirm-modal");return;}try{localStorage.setItem("mfs_lfh_demo_prerestore",JSON.stringify({db:DB,ts:Date.now()}));}catch(e){}DB=pendingRestore;pendingRestore=null;save();closeModal("restore-confirm-modal");toast("Restored!");setTimeout(()=>location.reload(),1200);}
+function undoRestore(){try{const raw=localStorage.getItem("mfs_lfh_demo_prerestore");if(!raw){toast("Nothing to undo.");return;}DB=JSON.parse(raw).db;localStorage.removeItem("mfs_lfh_demo_prerestore");save();toast("Undo done!");setTimeout(()=>location.reload(),1200);}catch(e){toast("Could not undo.");}}
+
+// ── UTILS ──
+function uid(){return Date.now()+Math.floor(Math.random()*1000);}
+function todayKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function today(){return todayKey();}
+function fmt$(n){const v=parseFloat(n)||0;return(v<0?"-$":"$")+Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtDate(d){if(!d)return"";try{const p=d.split("-");return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});}catch(e){return d;}}
+function g(id){return document.getElementById(id);}
+function toast(msg){const t=g("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400);}
+function openModal(id){g(id).classList.add("open");}
+function closeModal(id){g(id).classList.remove("open");}
+function popSelect(sid,val){const s=g(sid);if(!s)return;s.innerHTML='<option value="">Select account…</option>';DB.accounts.forEach(a=>{const o=document.createElement("option");o.value=a.id;o.textContent=a.name+" ("+a.type+")";s.appendChild(o);});if(val)s.value=val;}
+function confirmAction(title,body,cb){g("confirm-title").textContent=title;g("confirm-body").textContent=body;g("confirm-yes-btn").onclick=()=>{closeModal("confirm-modal");cb();};openModal("confirm-modal");}
+
+// ── ACCENT / MODE ──
+function shade(hex,p){const n=parseInt(hex.replace("#",""),16);const r=Math.min(255,Math.max(0,((n>>16)&0xff)+Math.round(255*p/100)));const gg=Math.min(255,Math.max(0,((n>>8)&0xff)+Math.round(255*p/100)));const b=Math.min(255,Math.max(0,(n&0xff)+Math.round(255*p/100)));return"#"+[r,gg,b].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function applyAccent(key){const p=PALETTE.find(a=>a.key===key)||PALETTE[0];const r=document.documentElement;r.style.setProperty("--navy",p.navy);r.style.setProperty("--navy-dark",shade(p.navy,-15));r.style.setProperty("--navy-light",shade(p.navy,20));r.style.setProperty("--teal",p.teal);r.style.setProperty("--teal-dark",shade(p.teal,-15));g("meta-theme").setAttribute("content",p.navy);}
+function applyMode(mode){document.documentElement.setAttribute("data-mode",mode);document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));}
+function setMode(mode){DB.mode=mode;applyMode(mode);save();}
+function renderSwatches(){const row=g("swatch-row");if(!row)return;row.innerHTML=PALETTE.map(p=>`<div class="swatch ${DB.accent===p.key?"selected":""}" data-key="${p.key}" style="background:linear-gradient(135deg,${p.navy} 50%,${p.teal} 50%)" onclick="setAccent('${p.key}')"></div>`).join("");}
+function setAccent(key){DB.accent=key;applyAccent(key);save();renderSwatches();}
+
+// ── ACCOUNT CALCS ──
+function acctBal(acctId){const a=DB.accounts.find(x=>x.id===acctId);if(!a)return 0;let bal=parseFloat(a.balance)||0;DB.ledger.filter(l=>l.acctId===acctId).forEach(l=>{const amt=parseFloat(l.amount)||0;if(l.type==="in")bal+=amt;else bal-=amt;});return bal;}
+
+// ── HEADER ──
+function updateHeader(){
+  g("app-title").textContent=DB.appName||"Lite Finance Hub";
+  const available=DB.accounts.reduce((s,a)=>s+acctBal(a.id),0);
+  const mainAcct=DB.accounts.find(a=>a.id===DB.profile?.mainAcctId)||DB.accounts[0];
+  const mainBal=mainAcct?acctBal(mainAcct.id):0;
+  const dueAmt=DB.bills.filter(b=>b.status==="D"||b.status==="A").reduce((s,b)=>s+(parseFloat(b.amount)||0),0);
+  const pendingAmt=DB.pending.filter(v=>v.type==="out").reduce((s,v)=>s+(parseFloat(v.amount)||0),0);
+  const safe=mainBal-dueAmt-pendingAmt;
+  g("header-available").textContent=fmt$(available);
+  g("header-safe").textContent=fmt$(safe);
+  const sub=g("header-safe-sub");if(sub)sub.textContent=mainAcct?mainAcct.name:"Set main account";
+}
+
+// ── PAGES / TABS ──
+function showPage(id,btn){["finance","settings"].forEach(p=>{const el=g("pg-"+p);if(el)el.style.display="none";});const pg=g("pg-"+id);if(pg)pg.style.display="flex";document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");if(id==="settings"){renderSwatches();renderLocalBackupSection();g("s-app-name").value=DB.appName||"";g("s-p1-name").value=DB.profile?.p1Name||"";g("s-p2-name").value=DB.profile?.p2Name||"";}}
+function switchTab(tab,btn){curTab=tab;document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderFinance();}
+
+function monthNavHTML(mo,tabName){return`<div class="month-nav"><button class="month-nav-btn" onclick="changeMonth('${tabName}',-1)">‹</button><span class="month-nav-label">${MONTHS[mo.m]} ${mo.y}</span><button class="month-nav-btn" onclick="changeMonth('${tabName}',1)">›</button></div>`;}
+function changeMonth(tab,dir){
+  function shift(mo){mo.m+=dir;if(mo.m>11){mo.m=0;mo.y++;}if(mo.m<0){mo.m=11;mo.y--;}}
+  if(tab==="bills")shift(billMonth);
+  else if(tab==="summary")shift(summaryMonth);
+  renderFinance();
+}
+function isInMonth(dateStr,mo){if(!dateStr)return false;const p=dateStr.split("-");return parseInt(p[0])===mo.y&&parseInt(p[1])-1===mo.m;}
+
+// ── FAB / OPEN ADD ──
+function openAdd(){
+  if(curTab==="accounts"){openAccountModal(null);}
+  else if(curTab==="bills"){eId.bill=null;g("bill-modal-title").textContent="Add Bill";const bh=document.getElementById('bill-edit-hint');if(bh)bh.textContent='';["b-name","b-amt"].forEach(id=>{g(id).value="";});g("b-due").value="";g("b-status").value="N";popSelect("b-acct","");g("bill-del-btn").style.display="none";openModal("bill-modal");}
+  else if(curTab==="pending"){eId.pend=null;g("pend-modal-title").textContent="Add Pending Item";["pend-desc","pend-amt"].forEach(id=>{g(id).value="";});g("pend-date").value=today();g("pend-type").value="out";g("pend-del-btn").style.display="none";openModal("pending-modal");}
+}
+
+// ── ACCOUNTS ──
+function openAccountModal(id){eId.acct=id;const a=id?DB.accounts.find(x=>x.id===id):null;g("acct-modal-title").textContent=id?"Edit Account":"Add Account";g("acct-name").value=a?a.name:"";g("acct-type").value=a?a.type:"Checking";g("acct-bal").value=a?a.balance:"";g("acct-del-btn").style.display=id?"block":"none";const smb=g("acct-main-btn");if(smb)smb.style.display=(id&&id!==DB.profile?.mainAcctId)?"block":"none";openModal("account-modal");}
+function saveAccount(){const name=g("acct-name").value.trim();if(!name){toast("Enter an account name.");return;}if(!eId.acct&&DB.accounts.length>=8){toast("Maximum 8 accounts.");return;}const entry={id:eId.acct||("a"+uid()),name,type:g("acct-type").value,balance:parseFloat(g("acct-bal").value)||0};if(eId.acct){const i=DB.accounts.findIndex(x=>x.id===eId.acct);if(i>-1)DB.accounts[i]=entry;}else DB.accounts.push(entry);if(!DB.profile.mainAcctId&&DB.accounts.length===1)DB.profile.mainAcctId=entry.id;save();closeModal("account-modal");renderFinance();updateHeader();}
+function deleteAccount(){confirmAction("Delete this account?","All ledger entries will also be removed.",()=>{DB.ledger=DB.ledger.filter(l=>l.acctId!==eId.acct);DB.accounts=DB.accounts.filter(a=>a.id!==eId.acct);if(DB.profile.mainAcctId===eId.acct)DB.profile.mainAcctId=DB.accounts[0]?.id||null;save();closeModal("account-modal");renderFinance();updateHeader();});}
+function setMainAcctFromModal(){if(eId.acct){DB.profile.mainAcctId=eId.acct;save();closeModal("account-modal");renderFinance();updateHeader();}}
+
+// ── BILLS ──
+function openBillEdit(id){const b=DB.bills.find(x=>x.id===id);if(!b)return;eId.bill=id;g("bill-modal-title").textContent="Edit Bill";g("b-name").value=b.name;g("b-amt").value=b.amount;g("b-due").value=b.due||"";g("b-status").value=b.status||"N";popSelect("b-acct",b.acctId);g("bill-del-btn").style.display="block";openModal("bill-modal");}
+function saveBill(){const name=g("b-name").value.trim();if(!name)return;const aid=g("b-acct").value;const a=DB.accounts.find(x=>x.id===aid);const entry={id:eId.bill||("b"+uid()),name,amount:parseFloat(g("b-amt").value)||0,due:g("b-due").value,status:g("b-status").value,acctId:aid,acctName:a?a.name:""};if(eId.bill){const i=DB.bills.findIndex(x=>x.id===eId.bill);if(i>-1)DB.bills[i]=entry;}else DB.bills.push(entry);save();closeModal("bill-modal");renderFinance();updateHeader();}
+function deleteBill(){confirmAction("Delete this bill?","This cannot be undone.",()=>{DB.bills=DB.bills.filter(x=>x.id!==eId.bill);save();closeModal("bill-modal");renderFinance();updateHeader();});}
+function cycleBillStatus(id){const b=DB.bills.find(x=>x.id===id);if(!b)return;const cycle=["N","P","A","D"];b.status=cycle[(cycle.indexOf(b.status||"N")+1)%cycle.length];save();renderFinance();updateHeader();}
+function postBillToLedger(id){const b=DB.bills.find(x=>x.id===id);if(!b){toast("Bill not found.");return;}if(!b.acctId){toast("Set an account on this bill first.");return;}DB.ledger.push({id:"l"+uid(),acctId:b.acctId,acctName:b.acctName||"",date:b.due||today(),desc:b.name,amount:parseFloat(b.amount)||0,type:"out"});b.status="P";save();renderFinance();updateHeader();toast(b.name+" posted to ledger ✓");}
+
+// ── PENDING ──
+function openPendingEdit(id){const v=DB.pending.find(x=>x.id===id);if(!v)return;eId.pend=id;g("pend-modal-title").textContent="Edit Pending Item";g("pend-desc").value=v.desc;g("pend-amt").value=v.amount;g("pend-date").value=v.date||"";g("pend-type").value=v.type;g("pend-del-btn").style.display="block";openModal("pending-modal");}
+function savePending(){const desc=g("pend-desc").value.trim();if(!desc)return;const entry={id:eId.pend||("p"+uid()),date:g("pend-date").value||today(),desc,amount:parseFloat(g("pend-amt").value)||0,type:g("pend-type").value};if(eId.pend){const i=DB.pending.findIndex(x=>x.id===eId.pend);if(i>-1)DB.pending[i]=entry;}else DB.pending.push(entry);save();closeModal("pending-modal");renderFinance();updateHeader();}
+function deletePending(){confirmAction("Delete this pending item?","This cannot be undone.",()=>{DB.pending=DB.pending.filter(x=>x.id!==eId.pend);save();closeModal("pending-modal");renderFinance();updateHeader();});}
+function postPendingToLedger(id){openPostPicker("pending",id);}
+
+// ── LEDGER ──
+function saveLedger(){const desc=g("led-desc").value.trim();if(!desc)return;const aid=g("led-acct").value;const a=DB.accounts.find(x=>x.id===aid);const entry={id:eId.led||("l"+uid()),acctId:aid,acctName:a?a.name:"",date:g("led-date").value,desc,amount:parseFloat(g("led-amt").value)||0,type:g("led-type").value};if(eId.led){const i=DB.ledger.findIndex(x=>x.id===eId.led);if(i>-1)DB.ledger[i]=entry;}else DB.ledger.push(entry);save();closeModal("ledger-modal");if(g("ledger-sheet").classList.contains("open"))renderLedgerSheet();renderFinance();updateHeader();}
+function deleteLedger(){confirmAction("Delete this transaction?","This cannot be undone.",()=>{DB.ledger=DB.ledger.filter(x=>x.id!==eId.led);save();closeModal("ledger-modal");if(g("ledger-sheet").classList.contains("open"))renderLedgerSheet();renderFinance();updateHeader();});}
+
+// ── RENDER ──
+function renderFinance(){renderBillTabBadge();
+  const c=g("finance-content");if(!c)return;
+
+  // ── ACCOUNTS TAB ──
+  if(curTab==="accounts"){
+    const mo=summaryMonth;
+    const moPrefix=`${mo.y}-${String(mo.m+1).padStart(2,"0")}`;
+    const mainAcct=DB.accounts.find(a=>a.id===DB.profile?.mainAcctId)||DB.accounts[0];
+    const mainBal=mainAcct?acctBal(mainAcct.id):0;
+    const dueAmt=DB.bills.filter(b=>b.status==="D"||b.status==="A").reduce((s,b)=>s+(parseFloat(b.amount)||0),0);
+    const pendingAmt=DB.pending.filter(v=>v.type==="out").reduce((s,v)=>s+(parseFloat(v.amount)||0),0);
+    const safe=mainBal-dueAmt-pendingAmt;
+    const available=DB.accounts.reduce((s,a)=>s+acctBal(a.id),0);
+    const moLedgerIn=DB.ledger.filter(l=>l.date&&l.date.startsWith(moPrefix)&&l.type==="in").reduce((s,l)=>s+(parseFloat(l.amount)||0),0);
+    const moLedgerOut=DB.ledger.filter(l=>l.date&&l.date.startsWith(moPrefix)&&l.type==="out").reduce((s,l)=>s+(parseFloat(l.amount)||0),0);
+
+    if(!DB.accounts.length){c.innerHTML='<div class="empty">No accounts yet.<br>Tap + to add your first account.</div>';return;}
+
+    let h='<div class="acct-grid">'+DB.accounts.map(a=>{const bal=acctBal(a.id);const isMain=a.id===DB.profile?.mainAcctId;return`<div class="acct-card${isMain?" main-acct":""}"><div onclick="openAccountModal('${a.id}')"><div class="acct-type-badge">${a.type}</div><div class="acct-name">${a.name}</div><div class="acct-bal${bal<0?" negative":""}">${fmt$(bal)}</div>${isMain?'<div class="acct-main-star">★ Main</div>':'<div class="acct-tap">tap to edit</div>'}</div><button class="acct-ledger-btn" onclick="openLedgerSheet('${a.id}')">Ledger →</button></div>`;}).join("")+"</div>";
+
+    h+=`<div class="card" style="padding-right:64px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+        <div><div style="font-size:0.65rem;letter-spacing:0.08em;color:var(--ink-faint);font-weight:600;text-transform:uppercase;margin-bottom:3px;">Total Funds</div><div style="font-size:0.7rem;color:var(--ink-faint);">All accounts combined</div></div>
+        <span style="font-size:1.3rem;font-weight:800;color:var(--navy);font-family:'Inter',sans-serif;">${fmt$(available)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:0.65rem;letter-spacing:0.08em;color:var(--ink-faint);font-weight:600;text-transform:uppercase;margin-bottom:3px;">Safe to Spend</div><div style="font-size:0.7rem;color:var(--ink-faint);">${mainAcct?mainAcct.name:''} minus due bills & pending</div></div>
+        <span style="font-size:1.3rem;font-weight:800;color:var(--success);font-family:'Inter',sans-serif;">${fmt$(safe)}</span>
+      </div>
+    </div>`;
+
+    h+=`<div class="card" onclick="toggleMonthDetail()" style="cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><span style="font-size:0.82rem;font-weight:700;color:var(--ink);">${MONTHS[mo.m]} ${mo.y}</span><span style="font-size:0.72rem;color:var(--navy);font-weight:600;" id="month-toggle-label">View breakdown ›</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="text-align:center;"><div style="font-size:0.62rem;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.07em;font-weight:600;margin-bottom:3px;">Deposits in</div><div style="font-size:0.9rem;font-weight:800;color:var(--success);font-family:'Inter',sans-serif;">${fmt$(moLedgerIn)}</div></div>
+        <div style="text-align:center;"><div style="font-size:0.62rem;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.07em;font-weight:600;margin-bottom:3px;">Spending</div><div style="font-size:0.9rem;font-weight:800;color:var(--danger);font-family:'Inter',sans-serif;">${fmt$(moLedgerOut)}</div></div>
+      </div>
+      <div id="month-detail-panel" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <button onclick="event.stopPropagation();changeMonth('summary',-1)" style="background:none;border:none;color:var(--navy);font-size:1.2rem;cursor:pointer;padding:0 8px;line-height:1;">‹</button>
+          <span style="font-size:0.84rem;font-weight:700;color:var(--ink);">${MONTHS[mo.m]} ${mo.y}</span>
+          <button onclick="event.stopPropagation();changeMonth('summary',1)" style="background:none;border:none;color:var(--navy);font-size:1.2rem;cursor:pointer;padding:0 8px;line-height:1;">›</button>
+        </div>
+        ${(()=>{const cats={};DB.ledger.filter(l=>l.date&&l.date.startsWith(moPrefix)&&l.type==="out").forEach(l=>{const cat=l.desc||"Other";cats[cat]=(cats[cat]||0)+(parseFloat(l.amount)||0);});const arr=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,6);if(!arr.length)return'<div style="font-size:0.8rem;color:var(--ink-muted);text-align:center;padding:8px 0;">No spending recorded yet.</div>';const max=arr[0][1];return arr.map(([cat,amt])=>`<div class="cat-bar-row"><div class="cat-bar-label">${cat}</div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${Math.round((amt/max)*100)}%;background:var(--navy);"></div></div><div class="cat-bar-val">${fmt$(amt)}</div></div>`).join("");})()}
+      </div>
+    </div>`;
+    c.innerHTML=h;
+
+  // ── BILLS TAB ──
+  } else if(curTab==="bills"){
+    const mo=billMonth;
+    const filtered=DB.bills.filter(b=>!b.due||isInMonth(b.due,mo));
+    const totals={P:0,A:0,D:0,N:0};DB.bills.forEach(b=>{totals[b.status||"N"]+=(parseFloat(b.amount)||0);});
+    let h=monthNavHTML(mo,"bills");
+    h+=`<div class="summary-row"><div class="summary-chip"><div class="summary-chip-label">Paid</div><div class="summary-chip-val pos">${fmt$(totals.P)}</div></div><div class="summary-chip"><div class="summary-chip-label">Auto</div><div class="summary-chip-val navy">${fmt$(totals.A)}</div></div><div class="summary-chip"><div class="summary-chip-label">Due</div><div class="summary-chip-val neg">${fmt$(totals.D)}</div></div><div class="summary-chip"><div class="summary-chip-label">N/A</div><div class="summary-chip-val neutral">${fmt$(totals.N)}</div></div></div>`;
+    h+=filtered.length?`<div class="card">`+filtered.sort((a,b)=>(a.due||"").localeCompare(b.due||"")).map(b=>{
+      const days=daysUntil(b.due);
+      const overdue=days!==null&&days<0&&b.status!=='P';
+      const dueSoon=days!==null&&days>=0&&days<=3&&b.status!=='P';
+      const dayLabel=b.status==='P'||b.status==='A'?'':days===null?'':overdue?`<span class="bill-overdue-badge">${Math.abs(days)}d overdue</span>`:days===0?'<span class="bill-overdue-badge">Due today</span>':days===1?'<span class="bill-remind-badge">Due tomorrow</span>':dueSoon?`<span class="bill-remind-badge">Due in ${days}d</span>`:'';
+      return`<div class="bill-row"><div class="bill-info"><div class="bill-name" onclick="openBillEdit('${b.id}')">${b.name}</div><div class="bill-sub">${b.due?fmtDate(b.due):''}${b.acctName?' · '+b.acctName:''} ${dayLabel}</div></div><div class="bill-amt">${fmt$(b.amount)}</div><div class="bill-status bs-${b.status||'N'}" onclick="cycleBillStatus('${b.id}')" title="Tap to cycle status">${b.status||'N'}</div>${b.status!=='P'?`<button class="bill-post-btn" onclick="postBillToLedger('${b.id}')">Post</button>`:''}</div>`;
+    }).join("")+"</div>":`<div class="empty">No bills due in ${MONTHS[mo.m]} ${mo.y}.</div>`;
+    c.innerHTML=h;
+
+  // ── PENDING TAB ──
+  } else if(curTab==="pending"){
+    const total=DB.pending.filter(v=>v.type==="out").reduce((s,v)=>s+(parseFloat(v.amount)||0),0);
+    let h=`<div class="card" style="margin-bottom:10px;"><div style="font-size:0.78rem;color:var(--ink-muted);">Pending expenses total</div><div style="font-size:1.4rem;font-weight:800;color:var(--danger);font-family:'Inter',sans-serif;margin-top:2px;">${fmt$(total)}</div><div style="font-size:0.7rem;color:var(--ink-faint);font-style:italic;margin-top:4px;">Planned but not yet paid — tap "Post" when the payment clears</div></div>`;
+    h+=DB.pending.length?`<div class="card">`+DB.pending.sort((a,b)=>(a.date||"").localeCompare(b.date||"")).map(v=>`<div class="bill-row"><div class="bill-info"><div class="bill-name" onclick="openPendingEdit('${v.id}')">${v.desc}</div><div class="bill-sub">${v.date?fmtDate(v.date):""} · ${v.type==="in"?"Incoming":"Outgoing"}</div></div><div class="bill-amt">${v.type==="in"?"+":""}${fmt$(v.amount)}</div><button class="bill-post-btn" onclick="postPendingToLedger('${v.id}')">Post</button></div>`).join("")+"</div>":'<div class="empty">No pending items. Tap + to add.</div>';
+    c.innerHTML=h;
+  }
+}
+
+// ── LEDGER SHEET ──
+let ledgerSheetAcctId=null,ledgerSheetMonth=null;
+function openLedgerSheet(acctId){ledgerSheetAcctId=acctId;if(!ledgerSheetMonth)ledgerSheetMonth={...nowYM()};renderLedgerSheet();openModal("ledger-sheet");}
+function changeLedgerSheetMonth(dir){if(!ledgerSheetMonth)ledgerSheetMonth={...nowYM()};ledgerSheetMonth.m+=dir;if(ledgerSheetMonth.m>11){ledgerSheetMonth.m=0;ledgerSheetMonth.y++;}if(ledgerSheetMonth.m<0){ledgerSheetMonth.m=11;ledgerSheetMonth.y--;}renderLedgerSheet();}
+function renderLedgerSheet(){
+  const acctId=ledgerSheetAcctId;const mo=ledgerSheetMonth||nowYM();
+  const a=DB.accounts.find(x=>x.id===acctId);if(!a)return;
+  g("ledger-sheet-title").textContent=a.name+" Ledger";
+  const allRows=DB.ledger.filter(l=>l.acctId===acctId).sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  let running=parseFloat(a.balance)||0;
+  const rr=[];allRows.forEach(r=>{const amt=parseFloat(r.amount)||0;if(r.type==="in")running+=amt;else running-=amt;rr.push({r,bal:running});});
+  g("ledger-sheet-bal").textContent="Current balance: "+fmt$(running);
+  g("ledger-sheet-month-label").textContent=MONTHS[mo.m]+" "+mo.y;
+  const filtered=rr.filter(x=>isInMonth(x.r.date,mo));
+  const monthIn=filtered.filter(x=>x.r.type==="in").reduce((s,x)=>s+(parseFloat(x.r.amount)||0),0);
+  const monthOut=filtered.filter(x=>x.r.type==="out").reduce((s,x)=>s+(parseFloat(x.r.amount)||0),0);
+  let h=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;"><div class="summary-chip"><div class="summary-chip-label">In</div><div class="summary-chip-val pos">${fmt$(monthIn)}</div></div><div class="summary-chip"><div class="summary-chip-label">Out</div><div class="summary-chip-val neg">${fmt$(monthOut)}</div></div></div>`;
+  h+=filtered.length?`<div class="card" style="padding:0 14px;">`+[...filtered].reverse().map(x=>`<div class="ledger-row" onclick="openLedgerEditFromSheet('${x.r.id}')"><div class="ledger-info"><div class="ledger-desc">${x.r.desc}</div><div class="ledger-date">${x.r.date?fmtDate(x.r.date):""}</div></div><div class="ledger-right"><div class="ledger-amt ${x.r.type==="in"?"pos":"neg"}">${x.r.type==="in"?"+":"-"}${fmt$(x.r.amount)}</div><div class="ledger-bal">${fmt$(x.bal)}</div></div></div>`).join("")+"</div>":`<div class="empty">No transactions in ${MONTHS[mo.m]} ${mo.y}.</div>`;
+  g("ledger-sheet-content").innerHTML=h;
+}
+function openLedgerEditFromSheet(id){const l=DB.ledger.find(x=>x.id===id);if(!l)return;eId.led=id;g("led-modal-title").textContent="Edit Transaction";popSelect("led-acct",l.acctId);g("led-date").value=l.date||today();g("led-desc").value=l.desc;g("led-amt").value=l.amount;g("led-type").value=l.type;g("led-del-btn").style.display="block";openModal("ledger-modal");}
+function openAddLedgerFromSheet(){eId.led=null;g("led-modal-title").textContent="Add Transaction";g("led-date").value=today();["led-desc","led-amt"].forEach(id=>{g(id).value="";});g("led-type").value="out";popSelect("led-acct",ledgerSheetAcctId);g("led-del-btn").style.display="none";openModal("ledger-modal");}
+
+function toggleMonthDetail(){const panel=g("month-detail-panel");const label=g("month-toggle-label");if(!panel)return;const open=panel.style.display==="block";panel.style.display=open?"none":"block";if(label)label.textContent=open?"View breakdown ›":"Hide breakdown ↑";}
+
+// ── SETTINGS ──
+function saveAppName(){const n=g("s-app-name").value.trim();if(!n)return;DB.appName=n;save();updateHeader();toast("Name saved.");}
+function saveProfile(){const p1=g("s-p1-name").value.trim();const p2=g("s-p2-name").value.trim();if(!p1||!p2){toast("Enter both names.");return;}if(!DB.profile)DB.profile={mainAcctId:null};DB.profile.p1Name=p1||"Person 1";DB.profile.p2Name=p2||"Person 2";save();toast("Names saved.");}
+function confirmReset(){confirmAction("Reset all data?","This permanently deletes everything.",()=>{DB=defDB();save();location.reload();});}
+function switchSettingsPanel(panel,btn){document.querySelectorAll(".settings-panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".settings-subtab").forEach(t=>t.classList.remove("active"));g("settings-panel-"+panel).classList.add("active");btn.classList.add("active");}
+
+// ── CALCULATOR ──
+let calcExpr="",calcCurrent="0",calcJustEvaled=false;
+function calcUpdateDisplay(){g("calc-result").textContent=calcCurrent;g("calc-expr").textContent=calcExpr;}
+function calcNum(n){if(calcJustEvaled){calcCurrent=n==="."?"0.":n;calcExpr="";calcJustEvaled=false;}else if(n==="."&&calcCurrent.includes("."))return;else if(calcCurrent==="0"&&n!==".")calcCurrent=n;else calcCurrent+=n;calcUpdateDisplay();}
+function calcOp(op){calcJustEvaled=false;if(calcExpr&&!["÷","×","−","+","%"].includes(calcExpr.slice(-1))){calcExpr+=calcCurrent+op;calcCurrent="0";}else if(!calcExpr){calcExpr=calcCurrent+op;calcCurrent="0";}else{calcExpr=calcExpr.slice(0,-1)+op;}calcUpdateDisplay();}
+function calcEquals(){if(!calcExpr)return;const full=calcExpr+calcCurrent;const safe=full.replace(/÷/g,"/").replace(/×/g,"*").replace(/−/g,"-").replace(/%/g,"/100");try{const result=Function('"use strict";return ('+safe+')')();calcExpr=full+"=";calcCurrent=String(parseFloat(result.toFixed(10)));calcJustEvaled=true;calcUpdateDisplay();}catch(e){calcCurrent="Error";calcUpdateDisplay();}}
+function calcClear(){calcExpr="";calcCurrent="0";calcJustEvaled=false;calcUpdateDisplay();}
+function calcDel(){if(calcJustEvaled){calcClear();return;}if(calcCurrent.length>1)calcCurrent=calcCurrent.slice(0,-1);else calcCurrent="0";calcUpdateDisplay();}
+
+// ── BILL BADGES & HELPERS ──
+function getDueSoonCount(){return DB.bills.filter(b=>b.status==='D').length;}
+function renderBillTabBadge(){const count=getDueSoonCount();document.querySelectorAll('.tab-btn').forEach(btn=>{if(btn.textContent.replace(/\d+/,'').trim()==='Bills'){const existing=btn.querySelector('.tab-badge');if(existing)existing.remove();if(count>0){const badge=document.createElement('span');badge.className='tab-badge';badge.textContent=count;btn.appendChild(badge);}}});}
+function daysUntil(dateStr){if(!dateStr)return null;const today=new Date();today.setHours(0,0,0,0);const due=new Date(dateStr+'T00:00:00');return Math.round((due-today)/(1000*60*60*24));}
+function scheduleBillNotifications(){if(!('Notification' in window)||Notification.permission!=='granted')return;const today=new Date();today.setHours(0,0,0,0);DB.bills.forEach(b=>{if(!b.due||b.status==='P')return;const remind=parseInt(b.remind??3);if(isNaN(remind))return;const due=new Date(b.due+'T00:00:00');const diff=Math.round((due-today)/(1000*60*60*24));if(diff===remind){const label=diff===0?'due today':diff===1?'due tomorrow':'due in '+diff+' days';new Notification('Bill reminder — '+b.name,{body:fmt$(b.amount)+' '+label,icon:'/favicon.ico',tag:'bill-'+b.id});}});}
+
+// ── POST TO ACCOUNT PICKER ──
+let _postPending=null;
+function openPostPicker(type,id){
+  if(!DB.accounts.length){toast('Add an account first.');return;}
+  let desc='',amount=0,date='',txType='out';
+  if(type==='pending'){const v=DB.pending.find(x=>x.id===id);if(!v){toast('Item not found.');return;}desc=v.desc;amount=parseFloat(v.amount)||0;date=v.date||today();txType=v.type;}
+  _postPending={type,id,desc,amount,date,txType};
+  g('post-acct-desc').textContent=(txType==='in'?'+':'-')+fmt$(amount)+' · '+desc;
+  const list=g('post-acct-list');
+  let pickerHTML='';
+  pickerHTML+=DB.accounts.map(a=>{const bal=acctBal(a.id);const isMain=a.id===(DB.profile?.mainAcctId);return`<div onclick="confirmPost('${a.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 4px;border-bottom:1px solid var(--border);cursor:pointer;"><div><div style="font-size:0.9rem;font-weight:700;color:var(--ink);">${a.name}${isMain?' <span style="font-size:0.65rem;color:var(--navy);font-weight:700;">★</span>':''}</div><div style="font-size:0.72rem;color:var(--ink-muted);margin-top:1px;">${a.type}</div></div><div style="text-align:right;"><div style="font-size:0.92rem;font-weight:800;color:var(--ink);font-family:'Inter',sans-serif;">${fmt$(bal)}</div><div style="font-size:0.68rem;color:var(--ink-faint);">balance</div></div></div>`;}).join('');
+  list.innerHTML=pickerHTML;
+  openModal('post-acct-sheet');
+}
+function confirmPost(targetId){
+  if(!_postPending)return;
+  const{type,id,desc,amount,date,txType}=_postPending;
+  const a=DB.accounts.find(x=>x.id===targetId);if(!a){toast('Account not found.');return;}
+  DB.ledger.push({id:'l'+uid(),acctId:targetId,acctName:a.name,date,desc,amount,type:txType});
+  if(type==='pending')DB.pending=DB.pending.filter(x=>x.id!==id);
+  _postPending=null;
+  save();closeModal('post-acct-sheet');renderFinance();updateHeader();
+  toast('Posted to '+a.name+' ✓');
+}
+
+// ── INIT ──
+document.addEventListener("DOMContentLoaded",()=>{
+  load();applyAccent(DB.accent||"navy");applyMode(DB.mode||"light");
+  updateHeader();renderFinance();renderBillTabBadge();scheduleBillNotifications();
+  enforceDemoTrial();setInterval(enforceDemoTrial,60000);
+  g("calc-btn").addEventListener("click",()=>{calcClear();openModal("calc-modal");});
+  let pressTimer=null;
+  g("appearance-btn").addEventListener("click",()=>{const keys=PALETTE.map(p=>p.key);const next=keys[(keys.indexOf(DB.accent||"navy")+1)%keys.length];setAccent(next);toast(next.charAt(0).toUpperCase()+next.slice(1));});
+  g("appearance-btn").addEventListener("pointerdown",()=>{pressTimer=setTimeout(()=>{const m=DB.mode==="dark"?"light":"dark";setMode(m);toast(m==="dark"?"Dark mode":"Light mode");},600);});
+  g("appearance-btn").addEventListener("pointerup",()=>clearTimeout(pressTimer));
+  g("appearance-btn").addEventListener("pointerleave",()=>clearTimeout(pressTimer));
+  g("restore-file-input").addEventListener("change",handleRestoreFile);
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){["account-modal","bill-modal","pending-modal","ledger-modal","calc-modal","confirm-modal","restore-confirm-modal","ledger-sheet","post-acct-sheet"].forEach(id=>closeModal(id));}});
+});
+</script>
+<script>
+if("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(r => console.log("SW registered:", r.scope))
+      .catch(e => console.log("SW error:", e));
+  });
+}
+</script>
+</body>
+</html>
