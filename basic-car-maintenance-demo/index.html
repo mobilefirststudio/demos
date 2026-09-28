@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Lite Car Maintenance Tracker"/>
+<meta name="theme-color" content="#F7F7F8"/>
+<link rel="manifest" href="./manifest.json"/>
+<link rel="apple-touch-icon" href="./icon-192.png"/>
+<title>Lite Car Maintenance Tracker — Mobile First Studio</title>
+<style>
+:root {
+  --bg: #F7F7F8;
+  --card: #FFFFFF;
+  --card-raised: #E9EEF7;
+  --border: #ECECEE;
+  --gold: #0053BA;
+  --gold-soft: rgba(0,83,186,0.12);
+  --cranberry: #C1443D;
+  --cranberry-soft: rgba(193,68,61,0.15);
+  --text: #1A1A1E;
+  --text-dim: #6B6B74;
+  --text-faint: #A3A3AC;
+  --radius: 8px;
+  --radius-sm: 5px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { background: var(--bg); }
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); }
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.display-font { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+header.topbar {
+  padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.brand-block { display: flex; flex-direction: column; gap: 4px; }
+header.topbar .brand {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+header.topbar .brand .accent { color: var(--gold); }
+.tier-badge {
+  align-self: flex-start;
+  font-family: -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.tier-badge-lite {
+  background: var(--card-raised);
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+}
+.header-icons { display: flex; gap: 8px; }
+.icon-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 16px;
+}
+.icon-btn-accent {
+  background: var(--gold);
+  border: none;
+  color: #fff;
+  box-shadow: 0 3px 10px var(--gold-soft);
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 170px;
+  -webkit-overflow-scrolling: touch;
+}
+main::-webkit-scrollbar { width: 0; }
+
+.tab-panel { display: none; animation: fadeIn 0.25s ease; }
+.tab-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+
+.countdown-hero {
+  background: linear-gradient(160deg, var(--card-raised), var(--card));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.countdown-hero::after {
+  content: '';
+  position: absolute;
+  top: -40%; right: -20%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--gold-soft), transparent 70%);
+  pointer-events: none;
+}
+.countdown-hero .eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.countdown-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.countdown-chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 4px;
+  text-align: center;
+  min-width: 0;
+}
+.countdown-chip .num {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+}
+.countdown-chip .lbl {
+  font-size: 9.5px;
+  color: var(--text-dim);
+  margin-top: 5px;
+  line-height: 1.2;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cal-header .cal-month-label {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+}
+.cal-header .cal-nav-btn {
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 20px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-faint);
+  padding-bottom: 6px;
+}
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 12.5px;
+  position: relative;
+}
+.cal-cell.empty { visibility: hidden; }
+.cal-cell.today { border-color: var(--gold); font-weight: 700; }
+.cal-cell.selected { background: var(--gold); color: var(--bg); }
+.cal-cell .cal-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-top: 2px;
+}
+.cal-cell.selected .cal-dot { background: var(--bg); }
+.cal-cell.overdue-dot .cal-dot { background: var(--cranberry); }
+.cal-cell.selected.overdue-dot .cal-dot { background: var(--bg); }
+
+.seasonal-tabs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.seasonal-tab-btn {
+  padding: 12px 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+  text-align: center;
+}
+.seasonal-tab-btn.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+
+.filter-scroll-wrap {
+  position: relative;
+  margin-bottom: 6px;
+}
+.filter-scroll-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+}
+.filter-scroll-row::-webkit-scrollbar { display: none; }
+.filter-pill {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+.filter-pill.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+.filter-scroll-fade {
+  position: absolute;
+  top: 0; right: 0; bottom: 10px;
+  width: 36px;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.summary-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+.summary-card .val {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 22px;
+  font-weight: 600;
+}
+.summary-card .lbl {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.summary-card.over .val { color: var(--cranberry); }
+.summary-card.good .val { color: var(--gold); }
+
+.section-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 22px 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-title .count {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-dim);
+  font-family: -apple-system, sans-serif;
+}
+
+.btn-add-inline {
+  width: 100%;
+  background: var(--card);
+  border: 1px dashed var(--border);
+  color: var(--gold);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-family: -apple-system, sans-serif;
+}
+
+.item-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.item-card .status-dot {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  color: var(--bg);
+}
+.item-card.done .status-dot { background: var(--gold); border-color: var(--gold); }
+.item-card .body-text { flex: 1; min-width: 0; }
+.item-card .title-line {
+  font-size: 14.5px;
+  font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.item-card.done .title-line { color: var(--text-faint); text-decoration: line-through; }
+.item-card .sub-line {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.item-card .amount {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-faint);
+}
+.empty-state .big-icon { font-size: 34px; margin-bottom: 10px; }
+.empty-state .msg { font-size: 13.5px; line-height: 1.5; }
+
+.suggestion-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px 20px;
+}
+.suggestion-label {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-bottom: 2px;
+}
+.suggestion-chip {
+  background: var(--card);
+  border: 1px dashed var(--border);
+  color: var(--gold);
+  padding: 9px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+.suggestion-chip:active { transform: scale(0.96); }
+.suggestion-chip:hover { border-color: var(--gold); }
+
+.fab {
+  position: fixed;
+  bottom: 90px;
+  right: calc(50% - 240px + 20px);
+  width: 52px; height: 52px;
+  border-radius: 8px;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  cursor: pointer;
+  z-index: 20;
+}
+@media (max-width: 480px) { .fab { right: 20px; } }
+
+nav.tabbar {
+  flex-shrink: 0;
+  display: flex;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+}
+nav.tabbar button {
+  flex: 1;
+  background: none; border: none;
+  color: var(--text-faint);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 10px;
+  padding: 6px 2px;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+nav.tabbar button svg { width: 20px; height: 20px; }
+nav.tabbar button.active { color: var(--gold); }
+
+.sheet-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 50;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet-backdrop.open { display: flex; }
+.sheet {
+  background: var(--card-raised);
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+  max-height: 86vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+}
+.sheet-backdrop.open .sheet { transform: translateY(0); }
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.sheet h3 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: -apple-system, sans-serif;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.btn-row { display: flex; gap: 10px; margin-top: 18px; }
+.btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+.btn-primary { background: var(--gold); color: var(--bg); }
+.btn-secondary { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); }
+.btn-danger { background: var(--cranberry-soft); color: var(--cranberry); }
+
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--card-raised);
+  border: 1px solid var(--gold);
+  color: var(--text);
+  padding: 10px 18px;
+  border-radius: 18px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 100;
+  pointer-events: none;
+  white-space: normal;
+  text-align: center;
+  max-width: calc(100% - 48px);
+  width: max-content;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.tier-info-card {
+  background: var(--card-raised);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.tier-info-title {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.tier-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row .lbl-main { font-size: 14px; font-weight: 500; }
+.settings-row .lbl-sub { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
+.settings-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.demo-banner {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: var(--gold);
+  color: var(--bg);
+  padding: 9px 16px;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: center;
+}
+.demo-banner-link {
+  color: var(--bg);
+  text-decoration: underline;
+  font-weight: 700;
+  white-space: nowrap;
+}
+#trial-lock {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(26,26,30,0.72);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.trial-lock-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+.trial-lock-card h2 {
+  font-size: 19px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+.trial-lock-card p {
+  font-size: 13.5px;
+  color: var(--text-dim);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+#upsellSection .upsell-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+#upsellSection .upsell-body {
+  font-size: 12.5px;
+  color: var(--text-dim);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div class="demo-banner" id="demoBanner">
+    <span class="demo-banner-text" id="demoBannerText">Free trial — 14 days left</span>
+    <a href="https://www.etsy.com/listing/4554944210/basic-car-maintenance-tracker-oil-change" target="_blank" rel="noopener" class="demo-banner-link">Unlock full version →</a>
+  </div>
+  <div id="trial-lock">
+    <div class="trial-lock-card">
+      <h2>Your free trial has ended</h2>
+      <p>Unlock Basic Car Maintenance Tracker to keep your tasks, mileage intervals, and vehicle details.</p>
+      <a href="https://www.etsy.com/listing/4554944210/basic-car-maintenance-tracker-oil-change" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-decoration:none;">Unlock the full app →</a>
+    </div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand-block">
+      <div class="brand" id="brandText">Lite Car <span class="accent">Maintenance</span></div>
+      <div class="tier-badge tier-badge-lite">LITE</div>
+    </div>
+    <div class="header-icons">
+      <div class="icon-btn icon-btn-accent" onclick="cycleAccent()" title="Change color">&#9673;</div>
+      <div class="icon-btn" onclick="openSettings()">&#9881;</div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section class="tab-panel active" id="tab-home">
+      <div class="summary-row" id="summaryRow"></div>
+
+      <div class="section-title">Overdue <span class="count" id="overdueCount"></span></div>
+      <div id="overdueList"></div>
+
+      <div class="section-title">Due soon <span class="count" id="dueSoonCount"></span></div>
+      <div id="dueSoonList"></div>
+    </section>
+
+    <!-- TASKS -->
+    <section class="tab-panel" id="tab-tasks">
+      <div class="section-title">All tasks <span class="count" id="taskCount"></span></div>
+      <div id="taskFilterRow"></div>
+      <div id="taskList"></div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="tab-panel" id="tab-calendar">
+      <div id="calendarHeader"></div>
+      <div id="calendarGrid" class="cal-grid"></div>
+      <div class="section-title">Tasks this day <span class="count" id="calendarDayCount"></span></div>
+      <div id="calendarDayList"></div>
+    </section>
+
+    <!-- SETUP -->
+    <section class="tab-panel" id="tab-setup">
+      <div class="section-title">Vehicle</div>
+      <div id="vehicleProfileCard"></div>
+    </section>
+  </main>
+
+  <button class="fab" id="fabBtn" onclick="handleFab()">+</button>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="home" onclick="switchTab('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+      Home
+    </button>
+    <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l2 2 4-4"/><rect x="3" y="4" width="18" height="17" rx="2"/></svg>
+      Tasks
+    </button>
+    <button class="tab-btn" data-tab="calendar" onclick="switchTab('calendar')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      Calendar
+    </button>
+    <button class="tab-btn" data-tab="setup" onclick="switchTab('setup')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 21v-6h6v6"/></svg>
+      Setup
+    </button>
+  </nav>
+</div>
+
+
+<!-- Task form sheet -->
+<div class="sheet-backdrop" id="taskSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="taskSheetTitle">Add task</h3>
+    <div class="field">
+      <label>Task</label>
+      <input type="text" id="taskName" placeholder="Oil change, tire rotation, registration...">
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="taskCategory">
+        <option value="engine">Engine</option>
+        <option value="tires">Tires</option>
+        <option value="fluids">Fluids</option>
+        <option value="brakes">Brakes</option>
+        <option value="registration">Registration</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Interval type</label>
+      <select id="taskIntervalType" onchange="onIntervalTypeChange()">
+        <option value="date">By date</option>
+        <option value="mileage">By mileage</option>
+      </select>
+    </div>
+    <div class="field" id="dateFrequencyField">
+      <label>Repeats</label>
+      <select id="taskFrequency" onchange="onFrequencyChange()">
+        <option value="30">Monthly</option>
+        <option value="90">Every 3 months</option>
+        <option value="182">Every 6 months</option>
+        <option value="365">Yearly</option>
+        <option value="custom">Custom (days)</option>
+        <option value="once">One-time (doesn't repeat)</option>
+      </select>
+    </div>
+    <div class="field" id="customDaysField" style="display:none;">
+      <label>Repeat every (days)</label>
+      <input type="number" id="taskCustomDays" placeholder="e.g. 45" inputmode="numeric">
+    </div>
+    <div class="field" id="mileageIntervalField" style="display:none;">
+      <label>Repeat every (miles)</label>
+      <input type="number" id="taskMileageInterval" placeholder="e.g. 5000" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Last done (optional)</label>
+      <input type="date" id="taskLastDone">
+    </div>
+    <div class="field" id="lastDoneMileageField" style="display:none;">
+      <label>Mileage when last done (optional)</label>
+      <input type="number" id="taskLastDoneMileage" placeholder="e.g. 42000" inputmode="numeric">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeTaskSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Save task</button>
+    </div>
+    <div class="btn-row" id="taskDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteTask()">Delete task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Vehicle profile sheet -->
+<div class="sheet-backdrop" id="vehicleProfileSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>Vehicle</h3>
+    <div class="field">
+      <label>Nickname (optional)</label>
+      <input type="text" id="vehicleName" placeholder="My Car, The Truck...">
+    </div>
+    <div class="field">
+      <label>Year</label>
+      <input type="text" id="vehicleYear" placeholder="e.g. 2021" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Make</label>
+      <input type="text" id="vehicleMake" placeholder="e.g. Toyota">
+    </div>
+    <div class="field">
+      <label>Model</label>
+      <input type="text" id="vehicleModel" placeholder="e.g. Camry">
+    </div>
+    <div class="field">
+      <label>License plate (optional)</label>
+      <input type="text" id="vehiclePlate" placeholder="e.g. ABC1234">
+    </div>
+    <div class="field">
+      <label>Current mileage</label>
+      <input type="number" id="vehicleMileage" placeholder="e.g. 42000" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="vehicleNotes" placeholder="Anything worth remembering about this vehicle" style="min-height:90px; resize:vertical;"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeVehicleProfileSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveVehicleProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings sheet -->
+<div class="sheet-backdrop" id="settingsSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>Settings</h3>
+    <div class="tier-info-card">
+      <div class="tier-info-title">Lite Car Maintenance</div>
+      <div class="tier-info-list">
+        <div>&#10003; Maintenance tasks &amp; calendar</div>
+        <div>&#10003; Date or mileage based intervals</div>
+        <div>&#10003; Vehicle profile</div>
+      </div>
+    </div>
+    <div class="tier-info-card" id="upsellSection">
+      <div class="upsell-title">Unlock the full app</div>
+      <div class="upsell-body">Get lifetime access plus optional Google Drive backup, in your own account, no subscription.</div>
+      <a href="https://www.etsy.com/listing/4554944210/basic-car-maintenance-tracker-oil-change" target="_blank" rel="noopener" class="btn btn-primary" style="display:block;text-decoration:none;">Unlock the full app →</a>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Export data</div>
+        <div class="lbl-sub">Save a local backup file</div>
+      </div>
+      <button class="settings-btn" onclick="exportLocal()">Export</button>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Import data</div>
+        <div class="lbl-sub">Load from a local backup file</div>
+      </div>
+      <button class="settings-btn" onclick="document.getElementById('importFileInput').click()">Import</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importLocal(event)">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeSettings()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== Car Maintenance Tracker — Lite tier (free trial demo) ===== */
+
+const STORAGE_KEY = 'carmaint_lite_demo_v1';
+const DEMO_SINCE_KEY = 'carmaint_lite_demo_since';
+const TRIAL_DAYS = 14;
+const ETSY_URL = 'https://www.etsy.com/listing/4554944210/basic-car-maintenance-tracker-oil-change';
+
+function demoTrialDaysLeft() {
+  let since = localStorage.getItem(DEMO_SINCE_KEY);
+  if (!since) {
+    since = String(Date.now());
+    localStorage.setItem(DEMO_SINCE_KEY, since);
+  }
+  const elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
+  return TRIAL_DAYS - elapsedDays;
+}
+
+function enforceDemoTrial() {
+  const left = demoTrialDaysLeft();
+  const lock = document.getElementById('trial-lock');
+  const bannerText = document.getElementById('demoBannerText');
+  if (left <= 0) {
+    if (lock) lock.style.display = 'flex';
+    if (bannerText) bannerText.textContent = 'Free trial ended';
+  } else {
+    if (lock) lock.style.display = 'none';
+    if (bannerText) bannerText.textContent = 'Free trial — ' + left + ' day' + (left === 1 ? '' : 's') + ' left';
+  }
+}
+
+let state = {
+  tasks: [],        // {id, name, category, intervalType:'date'|'mileage', frequencyDays, lastDone, mileageInterval, lastDoneMileage}
+  vehicle: { name: '', year: '', make: '', model: '', plate: '', mileage: '', notes: '' }
+};
+
+let editingTaskId = null;
+let currentTab = 'home';
+let currentTaskFilter = 'all';
+
+/* ---------- date helpers (local-date safe, no UTC boundary bug) ---------- */
+function todayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function daysUntil(dateStr) {
+  const today = new Date(todayStr() + 'T00:00:00');
+  const target = new Date(dateStr + 'T00:00:00');
+  return Math.round((target - today) / 86400000);
+}
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function computeNextDue(task) {
+  // Date-based tasks (existing logic, unchanged)
+  if (task.frequencyDays === 0) {
+    return task.lastDone || todayStr();
+  }
+  const base = task.lastDone || todayStr();
+  return addDays(base, task.frequencyDays);
+}
+
+/* ---------- mileage-aware task status ----------
+   Returns a unified status object so date and mileage tasks can render consistently:
+   { overdue: bool, dueLabel: string, sortValue: number (smaller = more urgent) } */
+function taskStatus(task) {
+  if (task.intervalType === 'mileage') {
+    const currentMileage = parseFloat(state.vehicle.mileage) || 0;
+    const lastDoneMileage = parseFloat(task.lastDoneMileage) || 0;
+    const interval = parseFloat(task.mileageInterval) || 0;
+    const dueAtMileage = lastDoneMileage + interval;
+    const milesRemaining = dueAtMileage - currentMileage;
+    const overdue = milesRemaining < 0;
+    const dueSoon = !overdue && milesRemaining <= 500;
+    const dueLabel = overdue
+      ? `${Math.abs(Math.round(milesRemaining))} mi overdue`
+      : (milesRemaining === 0 ? 'Due now' : `Due in ${Math.round(milesRemaining)} mi`);
+    return { overdue, dueSoon, dueLabel, sortValue: milesRemaining, dueDate: null };
+  }
+  // Date-based
+  const due = computeNextDue(task);
+  const diff = daysUntil(due);
+  const overdue = diff < 0;
+  const dueSoon = !overdue && diff <= 30;
+  const dueLabel = overdue
+    ? `${Math.abs(diff)}d overdue`
+    : (diff === 0 ? 'Due today' : `Due in ${diff}d`);
+  return { overdue, dueSoon, dueLabel, sortValue: diff, dueDate: due };
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+/* ---------- persistence ---------- */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        state.tasks = Array.isArray(parsed.tasks) ? parsed.tasks : [];
+        if (parsed.vehicle && typeof parsed.vehicle === 'object') {
+          state.vehicle = {
+            name: parsed.vehicle.name || '',
+            year: parsed.vehicle.year || '',
+            make: parsed.vehicle.make || '',
+            model: parsed.vehicle.model || '',
+            plate: parsed.vehicle.plate || '',
+            mileage: parsed.vehicle.mileage || '',
+            notes: parsed.vehicle.notes || ''
+          };
+        }
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load local state', e);
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ tasks: state.tasks, vehicle: state.vehicle }));
+  } catch (e) {
+    console.error('Failed to save local state', e);
+    showToast('Could not save — storage may be full');
+  }
+}
+
+/* ---------- rendering ---------- */
+function render() {
+  renderBrand();
+  renderSummary();
+  renderOverdueAndDueSoon();
+  renderTasks();
+  renderCalendar();
+  renderVehicleProfile();
+}
+
+function renderBrand() {
+  const el = document.getElementById('brandText');
+  const name = (state.vehicle.name || '').trim();
+  if (name) {
+    el.innerHTML = `${escapeHtml(name)} <span class="accent">Maintenance</span>`;
+  } else {
+    el.innerHTML = `Lite Car <span class="accent">Maintenance</span>`;
+  }
+}
+
+function taskCategoryLabel(cat) {
+  const labels = { engine: 'Engine', tires: 'Tires', fluids: 'Fluids', brakes: 'Brakes', registration: 'Registration', other: 'Other' };
+  return labels[cat] || 'Other';
+}
+
+function renderSummary() {
+  const total = state.tasks.length;
+  const overdue = state.tasks.filter(t => taskStatus(t).overdue).length;
+  const row = document.getElementById('summaryRow');
+  row.innerHTML = `
+    <div class="summary-card ${overdue > 0 ? 'over' : 'good'}">
+      <div class="val">${overdue}</div>
+      <div class="lbl">Overdue</div>
+    </div>
+    <div class="summary-card">
+      <div class="val">${total}</div>
+      <div class="lbl">Total tasks</div>
+    </div>
+  `;
+}
+
+function renderOverdueAndDueSoon() {
+  const withStatus = state.tasks.map(t => ({ ...t, status: taskStatus(t) }));
+  const overdue = withStatus.filter(t => t.status.overdue).sort((a, b) => a.status.sortValue - b.status.sortValue);
+  // "Due soon" = not overdue, and (for date tasks) within 30 days, or (for mileage tasks) within 500 miles
+  const dueSoon = withStatus.filter(t => {
+    if (t.status.overdue) return false;
+    if (t.intervalType === 'mileage') return t.status.sortValue <= 500;
+    return t.status.sortValue <= 30;
+  }).sort((a, b) => a.status.sortValue - b.status.sortValue);
+
+  document.getElementById('overdueCount').textContent = overdue.length + ' total';
+  const overdueList = document.getElementById('overdueList');
+  if (overdue.length === 0) {
+    overdueList.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No overdue tasks.</div></div>`;
+  } else {
+    overdueList.innerHTML = overdue.map(t => `
+      <div class="item-card" onclick="openTaskSheet('${t.id}')">
+        <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+        <div class="body-text">
+          <div class="title-line">${escapeHtml(t.name)}</div>
+          <div class="sub-line">${taskCategoryLabel(t.category)} &middot; <span style="color:var(--cranberry);">${t.status.dueLabel}</span></div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('dueSoonCount').textContent = dueSoon.length + ' total';
+  const dueSoonList = document.getElementById('dueSoonList');
+  if (dueSoon.length === 0) {
+    dueSoonList.innerHTML = `<div class="empty-state"><div class="big-icon">&#128736;</div><div class="msg">No tasks due soon.<br>Tap + to add a task.</div></div>`;
+  } else {
+    dueSoonList.innerHTML = dueSoon.map(t => `
+      <div class="item-card" onclick="openTaskSheet('${t.id}')">
+        <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+        <div class="body-text">
+          <div class="title-line">${escapeHtml(t.name)}</div>
+          <div class="sub-line">${taskCategoryLabel(t.category)} &middot; <span style="color:var(--cranberry);">${t.status.dueLabel}</span></div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+const TASK_FILTERS = [
+  { key: 'all', label: 'All' },
+  { key: 'engine', label: 'Engine' },
+  { key: 'tires', label: 'Tires' },
+  { key: 'fluids', label: 'Fluids' },
+  { key: 'brakes', label: 'Brakes' },
+  { key: 'registration', label: 'Registration' },
+  { key: 'other', label: 'Other' }
+];
+
+function renderTaskFilterRow() {
+  const row = document.getElementById('taskFilterRow');
+  row.innerHTML = `<div class="filter-scroll-wrap">
+    <div class="filter-scroll-row">
+      ${TASK_FILTERS.map(f => `
+        <button onclick="setTaskFilter('${f.key}')" class="filter-pill ${currentTaskFilter === f.key ? 'active' : ''}">${f.label}</button>
+      `).join('')}
+    </div>
+    <div class="filter-scroll-fade"></div>
+  </div>`;
+}
+
+function setTaskFilter(key) {
+  currentTaskFilter = key;
+  renderTasks();
+}
+
+function renderTasks() {
+  renderTaskFilterRow();
+  const list = document.getElementById('taskList');
+  let tasks = state.tasks.map(t => ({ ...t, status: taskStatus(t) }));
+  if (currentTaskFilter !== 'all') {
+    tasks = tasks.filter(t => t.category === currentTaskFilter);
+  }
+  tasks.sort((a, b) => a.status.sortValue - b.status.sortValue);
+
+  document.getElementById('taskCount').textContent = tasks.length + ' total';
+  if (tasks.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="big-icon">&#128736;</div><div class="msg">No tasks added yet.<br>Tap + to add your first task.</div></div>
+      <div class="suggestion-chips">
+        <div class="suggestion-label">Try one of these to get started:</div>
+        <button class="suggestion-chip" onclick="quickStartTask('Oil change','engine','mileage',5000)">Oil change, every 5,000 mi</button>
+        <button class="suggestion-chip" onclick="quickStartTask('Rotate tires','tires','mileage',6000)">Rotate tires, every 6,000 mi</button>
+        <button class="suggestion-chip" onclick="quickStartTask('Renew registration','registration','date',365)">Registration, yearly</button>
+      </div>`;
+    return;
+  }
+  list.innerHTML = tasks.map(t => {
+    return `
+    <div class="item-card" onclick="openTaskSheet('${t.id}')">
+      <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(t.name)}</div>
+        <div class="sub-line">${taskCategoryLabel(t.category)} &middot; ${frequencyLabel(t)}</div>
+      </div>
+      <div class="amount" style="${t.status.overdue ? 'color:var(--cranberry);' : ''}">${t.status.dueLabel}</div>
+    </div>
+  `;
+  }).join('');
+}
+
+function frequencyLabel(task) {
+  if (task.intervalType === 'mileage') {
+    return `Every ${Number(task.mileageInterval).toLocaleString()} mi`;
+  }
+  const days = task.frequencyDays;
+  if (days === 0) return 'One-time';
+  if (days === 30) return 'Monthly';
+  if (days === 90) return 'Every 3 months';
+  if (days === 182) return 'Every 6 months';
+  if (days === 365) return 'Yearly';
+  return `Every ${days} days`;
+}
+
+/* ---------- calendar (month view) ---------- */
+let calViewYear = new Date().getFullYear();
+let calViewMonth = new Date().getMonth(); // 0-indexed
+let calSelectedDate = todayStr();
+
+function calNav(delta) {
+  calViewMonth += delta;
+  if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+  if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
+  renderCalendar();
+}
+
+function calSelectDay(dateStr) {
+  calSelectedDate = dateStr;
+  renderCalendar();
+}
+
+function tasksDueOn(dateStr) {
+  return state.tasks.filter(t => t.intervalType !== 'mileage' && computeNextDue(t) === dateStr);
+}
+
+function renderCalendar() {
+  const header = document.getElementById('calendarHeader');
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  header.innerHTML = `<div class="cal-header">
+    <button class="cal-nav-btn" onclick="calNav(-1)">&#8249;</button>
+    <div class="cal-month-label">${monthNames[calViewMonth]} ${calViewYear}</div>
+    <button class="cal-nav-btn" onclick="calNav(1)">&#8250;</button>
+  </div>`;
+
+  const grid = document.getElementById('calendarGrid');
+  const firstOfMonth = new Date(calViewYear, calViewMonth, 1);
+  const startDow = firstOfMonth.getDay();
+  const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+  const today = todayStr();
+
+  const dowLabels = ['S','M','T','W','T','F','S'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+  let cells = '';
+  for (let i = 0; i < startDow; i++) cells += `<div class="cal-cell empty"></div>`;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${calViewYear}-${String(calViewMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dueTasks = tasksDueOn(dateStr);
+    const hasOverdue = dueTasks.length > 0 && daysUntil(dateStr) < 0;
+    const classes = ['cal-cell'];
+    if (dateStr === today) classes.push('today');
+    if (dateStr === calSelectedDate) classes.push('selected');
+    if (hasOverdue) classes.push('overdue-dot');
+    cells += `<div class="${classes.join(' ')}" onclick="calSelectDay('${dateStr}')">${day}${dueTasks.length ? '<div class="cal-dot"></div>' : ''}</div>`;
+  }
+  grid.innerHTML = dowLabels + cells;
+
+  const dayTasks = tasksDueOn(calSelectedDate);
+  document.getElementById('calendarDayCount').textContent = dayTasks.length + ' total';
+  const dayList = document.getElementById('calendarDayList');
+  if (dayTasks.length === 0) {
+    dayList.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No tasks due on this day.</div></div>`;
+  } else {
+    dayList.innerHTML = dayTasks.map(t => `
+      <div class="item-card" onclick="openTaskSheet('${t.id}')">
+        <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+        <div class="body-text">
+          <div class="title-line">${escapeHtml(t.name)}</div>
+          <div class="sub-line">${taskCategoryLabel(t.category)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+/* ---------- vehicle profile ---------- */
+function renderVehicleProfile() {
+  const card = document.getElementById('vehicleProfileCard');
+  const v = state.vehicle;
+  const title = v.name ? v.name : [v.year, v.make, v.model].filter(Boolean).join(' ') || 'Add your vehicle';
+  const sub = v.name && (v.year || v.make || v.model) ? [v.year, v.make, v.model].filter(Boolean).join(' ') : (v.mileage ? `${Number(v.mileage).toLocaleString()} mi` : 'Tap to add details');
+  card.innerHTML = `
+    <div class="item-card" onclick="openVehicleProfileSheet()" style="cursor:pointer;">
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(title)}</div>
+        <div class="sub-line">${escapeHtml(sub)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function openVehicleProfileSheet() {
+  const v = state.vehicle;
+  document.getElementById('vehicleName').value = v.name || '';
+  document.getElementById('vehicleYear').value = v.year || '';
+  document.getElementById('vehicleMake').value = v.make || '';
+  document.getElementById('vehicleModel').value = v.model || '';
+  document.getElementById('vehiclePlate').value = v.plate || '';
+  document.getElementById('vehicleMileage').value = v.mileage || '';
+  document.getElementById('vehicleNotes').value = v.notes || '';
+  document.getElementById('vehicleProfileSheetBackdrop').classList.add('open');
+}
+function closeVehicleProfileSheet() {
+  document.getElementById('vehicleProfileSheetBackdrop').classList.remove('open');
+}
+function saveVehicleProfile() {
+  state.vehicle = {
+    name: document.getElementById('vehicleName').value.trim(),
+    year: document.getElementById('vehicleYear').value.trim(),
+    make: document.getElementById('vehicleMake').value.trim(),
+    model: document.getElementById('vehicleModel').value.trim(),
+    plate: document.getElementById('vehiclePlate').value.trim(),
+    mileage: document.getElementById('vehicleMileage').value.trim(),
+    notes: document.getElementById('vehicleNotes').value.trim()
+  };
+  saveState(); render(); closeVehicleProfileSheet();
+  showToast('Saved');
+}
+
+/* ---------- toast ---------- */
+let toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ---------- appearance (accent color) ---------- */
+const ACCENT_STORAGE_KEY = 'carmaint_lite_demo_accent';
+const ACCENT_PALETTE = {
+  blue:    { label: 'Blue',    accent: '#0053BA', soft: 'rgba(0,83,186,0.12)' },
+  red:     { label: 'Red',     accent: '#E1261C', soft: 'rgba(225,38,28,0.12)' },
+  green:   { label: 'Green',   accent: '#00703C', soft: 'rgba(0,112,60,0.12)' },
+  gold:    { label: 'Gold',    accent: '#D4A017', soft: 'rgba(212,160,23,0.14)' },
+  navy:    { label: 'Navy',    accent: '#003D6B', soft: 'rgba(0,61,107,0.12)' },
+  maroon:  { label: 'Maroon',  accent: '#7A1F2B', soft: 'rgba(122,31,43,0.12)' },
+  teal:    { label: 'Teal',    accent: '#005F73', soft: 'rgba(0,95,115,0.12)' },
+  amber:   { label: 'Amber',   accent: '#D2601A', soft: 'rgba(210,96,26,0.13)' },
+  slate:   { label: 'Slate',   accent: '#4A4E69', soft: 'rgba(74,78,105,0.13)' },
+  forest:  { label: 'Forest',  accent: '#2E5C3E', soft: 'rgba(46,92,62,0.12)' }
+};
+const ACCENT_ORDER = ['blue', 'red', 'green', 'gold', 'navy', 'maroon', 'teal', 'amber', 'slate', 'forest'];
+
+function applyAccent(key) {
+  const a = ACCENT_PALETTE[key] || ACCENT_PALETTE.blue;
+  document.documentElement.style.setProperty('--gold', a.accent);
+  document.documentElement.style.setProperty('--gold-soft', a.soft);
+  // Red, Maroon, and Amber all sit too close to the fixed cranberry "overdue" warning color
+  // to stay readable side by side, so shift the warning color to a distinct gold tone whenever
+  // one of those three is active (Lite is light-mode only, so no dark-mode variant needed).
+  if (key === 'red' || key === 'maroon' || key === 'amber') {
+    document.documentElement.style.setProperty('--cranberry', '#B8791A');
+    document.documentElement.style.setProperty('--cranberry-soft', 'rgba(184,121,26,0.15)');
+  } else {
+    document.documentElement.style.removeProperty('--cranberry');
+    document.documentElement.style.removeProperty('--cranberry-soft');
+  }
+}
+function loadAccent() {
+  let saved = null;
+  try { saved = localStorage.getItem(ACCENT_STORAGE_KEY); } catch (e) {}
+  const key = ACCENT_PALETTE[saved] ? saved : 'blue';
+  applyAccent(key);
+  return key;
+}
+function cycleAccent() {
+  let current = 'blue';
+  try { current = localStorage.getItem(ACCENT_STORAGE_KEY) || 'blue'; } catch (e) {}
+  const idx = ACCENT_ORDER.indexOf(current);
+  const next = ACCENT_ORDER[(idx + 1) % ACCENT_ORDER.length];
+  applyAccent(next);
+  try { localStorage.setItem(ACCENT_STORAGE_KEY, next); } catch (e) {}
+  showToast(ACCENT_PALETTE[next].label);
+}
+// Apply saved accent immediately (before DOMContentLoaded) to avoid a flash of the default color
+loadAccent();
+
+/* ---------- settings sheet ---------- */
+function openSettings() {
+  document.getElementById('settingsSheetBackdrop').classList.add('open');
+}
+function closeSettings() {
+  document.getElementById('settingsSheetBackdrop').classList.remove('open');
+}
+
+/* ---------- local export/import ---------- */
+function exportLocal() {
+  const payload = JSON.stringify({ tasks: state.tasks, vehicle: state.vehicle, exportedAt: new Date().toISOString() }, null, 2);
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `car-maintenance-backup-${todayStr()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Exported backup file');
+}
+
+function importLocal(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      const incomingTasks = Array.isArray(data.tasks) ? data.tasks : null;
+      if (incomingTasks === null) {
+        showToast("That file doesn't look like a valid backup");
+        return;
+      }
+      const hasLocalData = state.tasks.length > 0;
+      if (hasLocalData) {
+        const proceed = confirm('This will replace your current data with the imported file. Continue?');
+        if (!proceed) return;
+      }
+      state.tasks = incomingTasks;
+      if (data.vehicle && typeof data.vehicle === 'object') {
+        state.vehicle = {
+          name: data.vehicle.name || '',
+          year: data.vehicle.year || '',
+          make: data.vehicle.make || '',
+          model: data.vehicle.model || '',
+          plate: data.vehicle.plate || '',
+          mileage: data.vehicle.mileage || '',
+          notes: data.vehicle.notes || ''
+        };
+      }
+      saveState(); render();
+      showToast('Data imported');
+    } catch (err) {
+      showToast('Could not read that file');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ---------- init ---------- */
+function onFrequencyChange() {
+  const val = document.getElementById('taskFrequency').value;
+  document.getElementById('customDaysField').style.display = (val === 'custom') ? 'block' : 'none';
+}
+
+function onIntervalTypeChange() {
+  const type = document.getElementById('taskIntervalType').value;
+  const isMileage = type === 'mileage';
+  document.getElementById('dateFrequencyField').style.display = isMileage ? 'none' : 'block';
+  document.getElementById('mileageIntervalField').style.display = isMileage ? 'block' : 'none';
+  document.getElementById('lastDoneMileageField').style.display = isMileage ? 'block' : 'none';
+  if (!isMileage) {
+    document.getElementById('customDaysField').style.display =
+      (document.getElementById('taskFrequency').value === 'custom') ? 'block' : 'none';
+  }
+}
+
+function quickStartTask(name, category, intervalType, intervalValue) {
+  openTaskSheet(null);
+  document.getElementById('taskName').value = name;
+  document.getElementById('taskCategory').value = category;
+  document.getElementById('taskIntervalType').value = intervalType;
+  onIntervalTypeChange();
+  if (intervalType === 'mileage') {
+    document.getElementById('taskMileageInterval').value = intervalValue;
+  } else {
+    const standardValues = { 30: '30', 90: '90', 182: '182', 365: '365' };
+    document.getElementById('taskFrequency').value = standardValues[intervalValue] || 'custom';
+    if (!standardValues[intervalValue]) {
+      document.getElementById('taskCustomDays').value = intervalValue;
+      document.getElementById('customDaysField').style.display = 'block';
+    }
+  }
+}
+
+function openTaskSheet(id) {
+  editingTaskId = id;
+  const backdrop = document.getElementById('taskSheetBackdrop');
+  const deleteRow = document.getElementById('taskDeleteRow');
+  if (id) {
+    const t = state.tasks.find(x => x.id === id);
+    document.getElementById('taskSheetTitle').textContent = 'Edit task';
+    document.getElementById('taskName').value = t.name || '';
+    document.getElementById('taskCategory').value = t.category || 'engine';
+    document.getElementById('taskIntervalType').value = t.intervalType || 'date';
+    onIntervalTypeChange();
+    if (t.intervalType === 'mileage') {
+      document.getElementById('taskMileageInterval').value = t.mileageInterval || '';
+      document.getElementById('taskLastDoneMileage').value = t.lastDoneMileage || '';
+      document.getElementById('taskLastDone').value = t.lastDone || '';
+    } else {
+      const standardValues = ['30', '90', '182', '365'];
+      if (t.frequencyDays === 0) {
+        document.getElementById('taskFrequency').value = 'once';
+        document.getElementById('customDaysField').style.display = 'none';
+      } else if (standardValues.includes(String(t.frequencyDays))) {
+        document.getElementById('taskFrequency').value = String(t.frequencyDays);
+        document.getElementById('customDaysField').style.display = 'none';
+      } else {
+        document.getElementById('taskFrequency').value = 'custom';
+        document.getElementById('taskCustomDays').value = t.frequencyDays;
+        document.getElementById('customDaysField').style.display = 'block';
+      }
+      document.getElementById('taskLastDone').value = t.lastDone || '';
+    }
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('taskSheetTitle').textContent = 'Add task';
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskCategory').value = 'engine';
+    document.getElementById('taskIntervalType').value = 'date';
+    document.getElementById('taskFrequency').value = '90';
+    document.getElementById('customDaysField').style.display = 'none';
+    document.getElementById('taskCustomDays').value = '';
+    document.getElementById('taskMileageInterval').value = '';
+    document.getElementById('taskLastDone').value = '';
+    document.getElementById('taskLastDoneMileage').value = '';
+    onIntervalTypeChange();
+    deleteRow.style.display = 'none';
+  }
+  backdrop.classList.add('open');
+}
+function closeTaskSheet() {
+  document.getElementById('taskSheetBackdrop').classList.remove('open');
+  editingTaskId = null;
+}
+function saveTask() {
+  const name = document.getElementById('taskName').value.trim();
+  const category = document.getElementById('taskCategory').value;
+  const intervalType = document.getElementById('taskIntervalType').value;
+  if (!name) { showToast('Add a task name first'); return; }
+
+  let taskData = { name, category, intervalType };
+
+  if (intervalType === 'mileage') {
+    const mileageInterval = parseInt(document.getElementById('taskMileageInterval').value, 10);
+    if (!mileageInterval || mileageInterval <= 0) { showToast('Enter a valid mileage interval'); return; }
+    taskData.mileageInterval = mileageInterval;
+    taskData.lastDoneMileage = document.getElementById('taskLastDoneMileage').value || '';
+    taskData.lastDone = document.getElementById('taskLastDone').value || '';
+    taskData.frequencyDays = 0;
+  } else {
+    const freqSelect = document.getElementById('taskFrequency').value;
+    let frequencyDays;
+    if (freqSelect === 'once') {
+      frequencyDays = 0;
+    } else if (freqSelect === 'custom') {
+      const customVal = parseInt(document.getElementById('taskCustomDays').value, 10);
+      if (!customVal || customVal <= 0) { showToast('Enter a valid number of days'); return; }
+      frequencyDays = customVal;
+    } else {
+      frequencyDays = parseInt(freqSelect, 10);
+    }
+    taskData.frequencyDays = frequencyDays;
+    taskData.lastDone = document.getElementById('taskLastDone').value;
+    taskData.mileageInterval = '';
+    taskData.lastDoneMileage = '';
+  }
+
+  if (editingTaskId) {
+    const t = state.tasks.find(x => x.id === editingTaskId);
+    Object.assign(t, taskData);
+  } else {
+    state.tasks.push({ id: uid(), ...taskData });
+  }
+  saveState(); render(); closeTaskSheet(); showToast('Task saved');
+}
+function deleteTask() {
+  state.tasks = state.tasks.filter(t => t.id !== editingTaskId);
+  saveState(); render(); closeTaskSheet(); showToast('Task deleted');
+}
+function markTaskDone(id) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  t.lastDone = todayStr();
+  if (t.intervalType === 'mileage') {
+    t.lastDoneMileage = state.vehicle.mileage || t.lastDoneMileage;
+  }
+  saveState(); render();
+  showToast('Marked done');
+}
+
+function handleFab() {
+  if (currentTab === 'setup') openVehicleProfileSheet();
+  else openTaskSheet(null);
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+  currentTab = tab;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+/* ---------- init ---------- */
+function init() {
+  loadState();
+  render();
+
+  document.querySelectorAll('.sheet-backdrop').forEach(bd => {
+    bd.addEventListener('click', (e) => {
+      if (e.target === bd) bd.classList.remove('open');
+    });
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+
+  enforceDemoTrial();
+  setInterval(enforceDemoTrial, 60000);
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
