@@ -264,6 +264,12 @@ nav.tabbar {
   background: linear-gradient(135deg, #E08A4F, var(--clay)); color: #fff;
   font-size: 13px; font-weight: 700;
 }
+
+/* keep the app phone-width on desktop */
+html{background:var(--card-raised);}
+body{max-width:520px;margin:0 auto;box-shadow:0 0 50px rgba(0,0,0,.18);position:relative;}
+nav.tabbar{left:50%;right:auto;width:100%;max-width:520px;transform:translateX(-50%);}
+.fab{right:max(20px,calc(50% - 240px));}
 </style>
 </head>
 <body>
