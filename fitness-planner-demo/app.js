@@ -1062,7 +1062,7 @@ function applyTheme(key){
 }
 function themeCardHTML(key,t,active){
   var swatchesHtml=t.swatches.map(function(c){
-    return '<div style="width:22px;height:22px;border-radius:50%;background:'+c+';border:1px solid rgba(0,0,0,.12);"></div>';
+    return '<div style="width:22px;height:22px;border-radius:50%;background:'+c+';border:1px solid '+(t.isDark?'rgba(255,255,255,.4)':'rgba(0,0,0,.18)')+';"></div>';
   }).join('');
   var btnTextColor=t.isDark?'#000':'#fff';
   return '<div class="theme-card" data-tk="'+key+'" style="cursor:pointer;border-radius:16px;padding:18px;margin-bottom:14px;'
@@ -1165,7 +1165,7 @@ function renderSettingsTheme(el){
 }
 function renderSettingsTools(el){
   el.innerHTML='<div class="section-title" style="margin-top:0;">Cloud Backup</div>'
-    +'<div class="upsell-card"><div class="upsell-title">Want automatic Google Drive backup?</div><div class="upsell-text">The full version of Fitness Planner backs up your workouts, routines, and progress to your own Google Drive automatically, so it\'s never at risk.</div><a class="upsell-btn" href="https://www.etsy.com/listing/4534561739/fitness-tracker-app-live-workout-timer" target="_blank" rel="noopener">Get it on Etsy</a></div>'
+    +'<div class="upsell-card"><div class="upsell-title">Want automatic Google Drive backup?</div><div class="upsell-text">The full version of Fitness Planner backs up your workouts, routines, and progress to your own Google Drive automatically, so it\'s never at risk.</div><a class="upsell-btn" href="https://shop.mobilefirststudio.com/b/Av6VB" target="_blank" rel="noopener">Get the full app</a></div>'
     +'<div class="section-title">Export</div>'
     +'<button class="btn-ghost" onclick="exportPDF()">Export PDF Report</button>'
     +'<button class="btn-ghost" onclick="downloadBackup()">Download Backup File</button>'
@@ -1417,7 +1417,7 @@ function enforceDemoTrial(){
   }
   if(banner){
     var noun=daysLeft===1?'day':'days';
-    banner.innerHTML='<b>Free demo</b> &middot; '+daysLeft+' '+noun+' left &middot; <a href="https://www.etsy.com/listing/4534561739/fitness-tracker-app-live-workout-timer" target="_blank" rel="noopener">Get the full app &rarr;</a>';
+    banner.innerHTML='<b>Free demo</b> &middot; '+daysLeft+' '+noun+' left &middot; <a href="https://shop.mobilefirststudio.com/b/Av6VB" target="_blank" rel="noopener">Get the full app &rarr;</a>';
   }
   return false;
 }
