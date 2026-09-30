@@ -506,6 +506,7 @@
 
 <script>
   const STORE_KEY = "hhh_data_demo_v1";
+  const PRE_RESTORE_KEY = "hhh_demo_pre_restore_snapshot";
   const RESET_FIELDS = {
     reset: ["thought", "truth"],
     somatic: ["action", "response"],
@@ -915,7 +916,7 @@
   }
 
   function applyRestoredData(parsed) {
-    localStorage.setItem(DRIVE_KEYS.preRestoreSnapshot, JSON.stringify({ data: DB, savedAt: new Date().toISOString() }));
+    localStorage.setItem(PRE_RESTORE_KEY, JSON.stringify({ data: DB, savedAt: new Date().toISOString() }));
     DB = Object.assign(defaultDB(), parsed);
     DB.resetDraft = Object.assign(defaultResetDraft(), DB.resetDraft || {});
     sv();
@@ -926,14 +927,14 @@
   }
 
   function undoRestore() {
-    const raw = localStorage.getItem(DRIVE_KEYS.preRestoreSnapshot);
+    const raw = localStorage.getItem(PRE_RESTORE_KEY);
     if (!raw) { showToast("Nothing to undo."); return; }
     try {
       const snap = JSON.parse(raw);
       DB = Object.assign(defaultDB(), snap.data);
       DB.resetDraft = Object.assign(defaultResetDraft(), DB.resetDraft || {});
       sv();
-      localStorage.removeItem(DRIVE_KEYS.preRestoreSnapshot);
+      localStorage.removeItem(PRE_RESTORE_KEY);
       applyTheme();
       loadDailyIntoForm(); loadResetIntoForm();
       renderHome(); renderProgress(); renderHistory(); renderSubtabs();
