@@ -776,6 +776,24 @@
   .drive-backup-row-label { font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
   .drive-backup-row-sub { font-size: 0.68rem; color: var(--text-faint); margin-top: 0.1rem; }
 
+  /* ---------- Forms, custom rituals, coming up ---------- */
+  .field-label { display:block; font-size:0.68rem; color:var(--violet); text-transform:uppercase; letter-spacing:0.07em; margin:0.85rem 0 0.35rem; }
+  .form-input { width:100%; border-radius:0.7rem; border:1px solid var(--border-soft); background:rgba(255,255,255,0.02); color:var(--text-primary); padding:0.6rem 0.7rem; font-family:"Inter", system-ui, sans-serif; font-size:0.82rem; }
+  .form-input:focus-visible { outline:2px solid var(--violet); outline-offset:2px; }
+  select.form-input option { background:#10122a; color:#f3f1ea; }
+  .form-hint { font-size:0.66rem; color:var(--text-faint); margin-top:0.3rem; line-height:1.4; }
+  .form-error { font-size:0.72rem; color:var(--danger); margin-top:0.6rem; min-height:1em; }
+  .add-ritual-btn { width:100%; margin-top:0.8rem; padding:0.7rem; border-radius:999px; border:1px dashed var(--gold); background:transparent; color:var(--gold-bright); font-weight:600; font-size:0.8rem; cursor:pointer; font-family:"Inter", sans-serif; }
+  .add-ritual-btn:focus-visible { outline:2px solid var(--violet); outline-offset:2px; }
+  .yours-badge { font-family:"Inter", sans-serif; font-size:0.56rem; font-weight:500; color:var(--violet); border:1px solid var(--border-violet); padding:0.05rem 0.4rem; border-radius:999px; margin-left:0.4rem; text-transform:uppercase; letter-spacing:0.06em; vertical-align:middle; }
+  .coming-row { display:flex; justify-content:space-between; align-items:center; gap:0.6rem; padding:0.6rem 0.75rem; border-radius:0.75rem; border:1px solid var(--border-soft); background:rgba(255,255,255,0.02); margin-top:0.5rem; }
+  .coming-name { font-family:"Cormorant Garamond", Georgia, serif; font-weight:600; font-size:1.05rem; color:var(--text-primary); }
+  .coming-date { font-size:0.7rem; color:var(--text-muted); margin-top:0.1rem; line-height:1.45; }
+  .coming-days { font-family:"Cormorant Garamond", Georgia, serif; font-size:1.3rem; font-weight:600; color:var(--gold-bright); text-align:right; line-height:1; flex-shrink:0; }
+  .coming-days small { display:block; font-family:"Inter", sans-serif; font-size:0.58rem; font-weight:400; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-top:0.2rem; }
+  .guide-row { display:flex; gap:0.75rem; align-items:flex-start; }
+  .guide-moon { width:30px; height:30px; border-radius:50%; overflow:hidden; flex-shrink:0; margin-top:0.1rem; box-shadow: inset 0 0 0 1px rgba(216,180,120,0.25); }
+
   /* ---------- Toast ---------- */
   .toast {
     position: fixed;
@@ -982,8 +1000,23 @@
           </div>
         </div>
       </section>
+
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">Coming Up</div>
+          <div class="card-subtitle">Your next new and full moon.</div>
+        </div>
+        <div id="coming-up"></div>
+        <div class="backup-actions">
+          <button class="backup-btn" id="remind-new-btn">Remind me: new moons</button>
+          <button class="backup-btn" id="remind-full-btn">Remind me: full moons</button>
+        </div>
+        <button class="backup-link-btn" id="phase-guide-btn">Moon phase guide</button>
+        <div class="note">Reminders download a calendar file with the next 12 months of moons, each with a 9 AM alert. Open it to add them to your phone's calendar. Dates are approximate and can be a day off.</div>
+      </section>
     </section>
 
+    <!-- COMING UP (inside dashboard screen, added below) -->
     <!-- CALENDAR -->
     <section id="screen-calendar" class="screen">
       <section class="card">
@@ -1011,7 +1044,8 @@
           <div class="card-subtitle">Daily · Full Moon · New Moon · Cleansing · Manifestation</div>
         </div>
         <div class="ritual-list" id="ritual-list"></div>
-        <div class="note">Tap a ritual to view materials, steps, and moon alignment. Mark it complete once you're done.</div>
+        <button class="add-ritual-btn" id="add-ritual-btn">+ Add your own ritual</button>
+        <div class="note">Tap a ritual to view materials, steps, and moon alignment. Mark it complete once you're done. Rituals you add are saved on this device and included in your backups.</div>
       </section>
     </section>
 
@@ -1207,15 +1241,24 @@
     return new Date(date);
   }
 
-  // Renders a lit/shadow moon icon into a container element
+  // Renders an accurate moon icon (correct crescent/quarter/gibbous shape,
+  // lit on the right while waxing and on the left while waning)
+  let _moonIconId = 0;
   function renderMoonIcon(container, phase) {
-    const shadowEl = container.querySelector(".shadow");
-    if (!shadowEl) return;
-    const width = container.offsetWidth || 76;
-    const k = (1 - Math.cos(2 * Math.PI * phase)) / 2; // 0 at new/new, 1 at full
-    const offset = k * width * 2;
-    shadowEl.style.setProperty("--moon-shadow-x", `${offset}px`);
-    shadowEl.style.transform = `translateX(${offset}px)`;
+    const waxing = phase <= 0.5;
+    const p = waxing ? phase : 1 - phase;
+    const rx = Math.abs(50 * Math.cos(2 * Math.PI * p)).toFixed(2);
+    const sweep = p > 0.25 ? 1 : 0;
+    const gid = "moonGrad" + (++_moonIconId);
+    const flip = waxing ? "" : ' transform="translate(100,0) scale(-1,1)"';
+    container.innerHTML =
+      '<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true" style="display:block">' +
+      '<defs><radialGradient id="' + gid + '" cx="32%" cy="28%" r="80%">' +
+      '<stop offset="0%" stop-color="#f0d8a6"/><stop offset="55%" stop-color="#d8b478"/><stop offset="100%" stop-color="#b98f4c"/>' +
+      '</radialGradient></defs>' +
+      '<circle cx="50" cy="50" r="50" fill="#1a1c33"/>' +
+      '<path d="M50 0 A50 50 0 0 1 50 100 A' + rx + ' 50 0 0 ' + sweep + ' 50 0 Z" fill="url(#' + gid + ')"' + flip + '/>' +
+      '</svg>';
   }
 
   /* =========================================================
@@ -1284,8 +1327,63 @@
      ========================================================= */
   const STORE_KEYS = {
     journal: "mrp_journal_demo_v1",
-    completions: "mrp_completions_demo_v1"
+    completions: "mrp_completions_demo_v1",
+    customRituals: "mrp_custom_rituals_demo_v1"
   };
+
+  function escapeHtml(str) {
+    return String(str == null ? "" : str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  const CUSTOM_ALIGNMENTS = ["All phases", "New Moon", "Waxing Moon", "Full Moon", "Waning Moon"];
+
+  function sanitizeCustomRituals(list) {
+    if (!Array.isArray(list)) return [];
+    const seen = new Set(Object.keys(rituals).map((n) => n.toLowerCase()));
+    const out = [];
+    list.forEach((r) => {
+      if (!r || typeof r.name !== "string") return;
+      const name = r.name.trim().slice(0, 60);
+      if (!name || seen.has(name.toLowerCase())) return;
+      seen.add(name.toLowerCase());
+      const clean = (arr) => (Array.isArray(arr) ? arr : []).filter((x) => typeof x === "string").map((x) => x.trim().slice(0, 200)).filter(Boolean).slice(0, 20);
+      out.push({
+        name,
+        alignment: CUSTOM_ALIGNMENTS.includes(r.alignment) ? r.alignment : "All phases",
+        tags: typeof r.tags === "string" ? r.tags.trim().slice(0, 80) : "",
+        materials: clean(r.materials),
+        steps: clean(r.steps)
+      });
+    });
+    return out;
+  }
+
+  function loadCustomRituals() {
+    try { return sanitizeCustomRituals(JSON.parse(localStorage.getItem(STORE_KEYS.customRituals))); }
+    catch (e) { return []; }
+  }
+
+  function saveCustomRituals(list) {
+    try { localStorage.setItem(STORE_KEYS.customRituals, JSON.stringify(list)); }
+    catch (e) { showToast("Could not save — storage may be full."); }
+    scheduleAutoBackup();
+  }
+
+  // Built-in rituals first, then the user's own
+  function getAllRituals() {
+    const all = {};
+    Object.keys(rituals).forEach((n) => { all[n] = rituals[n]; });
+    loadCustomRituals().forEach((r) => {
+      all[r.name] = {
+        alignment: r.alignment,
+        tags: r.tags || (r.alignment + " · Your ritual"),
+        materials: r.materials,
+        steps: r.steps,
+        custom: true
+      };
+    });
+    return all;
+  }
 
   function loadJournal() {
     try { return JSON.parse(localStorage.getItem(STORE_KEYS.journal)) || []; }
@@ -1374,14 +1472,14 @@
 
     if (materials && materials.length) {
       materialsSection.style.display = "block";
-      document.getElementById("modal-materials").innerHTML = materials.map((m) => `<li>${m}</li>`).join("");
+      document.getElementById("modal-materials").innerHTML = materials.map((m) => `<li>${escapeHtml(m)}</li>`).join("");
     } else {
       materialsSection.style.display = "none";
     }
 
     if (steps && steps.length) {
       stepsSection.style.display = "block";
-      document.getElementById("modal-steps").innerHTML = steps.map((s) => `<li>${s}</li>`).join("");
+      document.getElementById("modal-steps").innerHTML = steps.map((s) => `<li>${escapeHtml(s)}</li>`).join("");
     } else {
       stepsSection.style.display = "none";
     }
@@ -1427,7 +1525,7 @@
      RITUAL MODAL
      ========================================================= */
   function openRitualModal(name) {
-    const data = rituals[name];
+    const data = getAllRituals()[name];
     if (!data) return;
     renderRitualModalContent(name, data);
   }
@@ -1439,6 +1537,8 @@
       alignment: `Best for: ${data.alignment}`,
       materials: data.materials,
       steps: data.steps,
+      secondaryLabel: data.custom ? "Edit ritual" : null,
+      onSecondary: data.custom ? () => openRitualForm(name) : null,
       ctaLabel: done ? "✓ Completed today — tap to unmark" : "Mark ritual complete",
       onCta: () => {
         toggleRitualCompletion(name);
@@ -1450,6 +1550,210 @@
     });
     const ctaBtn = document.getElementById("modal-cta-btn");
     ctaBtn.classList.toggle("is-done", done);
+  }
+
+  /* =========================================================
+     YOUR OWN RITUALS — add, edit, delete
+     ========================================================= */
+  function openRitualForm(editName) {
+    const existing = editName ? loadCustomRituals().find((r) => r.name === editName) : null;
+    const options = CUSTOM_ALIGNMENTS.map((a) => `<option value="${a}">${a}</option>`).join("");
+    const html = `
+      <label class="field-label" for="rf-name">Ritual name</label>
+      <input id="rf-name" class="form-input" maxlength="60" autocomplete="off" placeholder="e.g. Rose Water Self-Love Ritual" />
+      <label class="field-label" for="rf-align">Best for</label>
+      <select id="rf-align" class="form-input">${options}</select>
+      <label class="field-label" for="rf-tags">Tags (optional)</label>
+      <input id="rf-tags" class="form-input" maxlength="80" autocomplete="off" placeholder="e.g. Self-love · Candle · 10 min" />
+      <label class="field-label" for="rf-materials">Materials (one per line)</label>
+      <textarea id="rf-materials" class="journal-input" style="min-height:80px" placeholder="Candle&#10;Rose water&#10;Journal"></textarea>
+      <label class="field-label" for="rf-steps">Steps (one per line)</label>
+      <textarea id="rf-steps" class="journal-input" style="min-height:120px" placeholder="Light the candle.&#10;Breathe slowly for one minute.&#10;Write your intention."></textarea>
+      <div class="form-error" id="rf-error" role="alert"></div>`;
+    openModal({
+      title: existing ? "Edit your ritual" : "Add your own ritual",
+      extraHtml: html,
+      ctaLabel: "Save ritual",
+      onCta: () => saveRitualForm(editName),
+      secondaryLabel: existing ? "Delete ritual" : "Cancel",
+      onSecondary: existing ? () => confirmDeleteCustomRitual(editName) : closeModal
+    });
+    if (existing) {
+      document.getElementById("rf-name").value = existing.name;
+      document.getElementById("rf-align").value = existing.alignment;
+      document.getElementById("rf-tags").value = existing.tags;
+      document.getElementById("rf-materials").value = existing.materials.join("\n");
+      document.getElementById("rf-steps").value = existing.steps.join("\n");
+    }
+  }
+
+  function linesOf(id) {
+    return document.getElementById(id).value.split("\n").map((l) => l.trim()).filter(Boolean).slice(0, 20).map((l) => l.slice(0, 200));
+  }
+
+  function saveRitualForm(editName) {
+    const errEl = document.getElementById("rf-error");
+    const name = document.getElementById("rf-name").value.trim().slice(0, 60);
+    const alignment = document.getElementById("rf-align").value;
+    const tags = document.getElementById("rf-tags").value.trim().slice(0, 80);
+    const materials = linesOf("rf-materials");
+    const steps = linesOf("rf-steps");
+    if (!name) { errEl.textContent = "Give your ritual a name."; return; }
+    if (!steps.length) { errEl.textContent = "Add at least one step."; return; }
+    const lower = name.toLowerCase();
+    const builtInClash = Object.keys(rituals).some((n) => n.toLowerCase() === lower);
+    const list = loadCustomRituals();
+    const customClash = list.some((r) => r.name.toLowerCase() === lower && r.name !== editName);
+    if (builtInClash || customClash) { errEl.textContent = "You already have a ritual with that name."; return; }
+    const entry = { name, alignment, tags, materials, steps };
+    if (editName) {
+      const idx = list.findIndex((r) => r.name === editName);
+      if (idx >= 0) list[idx] = entry; else list.push(entry);
+      if (editName !== name) {
+        // keep your completion history attached to the renamed ritual
+        const comps = loadCompletions();
+        comps.forEach((c) => { if (c.ritual === editName) c.ritual = name; });
+        saveCompletions(comps);
+      }
+    } else {
+      list.push(entry);
+    }
+    saveCustomRituals(list);
+    closeModal();
+    renderRitualList();
+    refreshAllStats();
+    showToast(editName ? "Ritual updated." : "Ritual added to your library.");
+  }
+
+  function confirmDeleteCustomRitual(name) {
+    openModal({
+      title: `Delete "${name}"?`,
+      bodyText: "This removes the ritual from your library. Your completion history stays in your progress totals.",
+      ctaLabel: "Yes, delete",
+      onCta: () => {
+        saveCustomRituals(loadCustomRituals().filter((r) => r.name !== name));
+        closeModal();
+        renderRitualList();
+        refreshAllStats();
+        showToast("Ritual deleted.");
+      },
+      secondaryLabel: "Keep it",
+      onSecondary: () => openRitualModal(name)
+    });
+  }
+
+  /* =========================================================
+     COMING UP — next new / full moon, calendar reminders, guide
+     Uses the same day rules as the calendar highlights, so the
+     dates here always match the gold and violet calendar borders.
+     ========================================================= */
+  function moonDaysAhead(kind, daysAhead) {
+    const base = new Date();
+    base.setHours(0, 0, 0, 0);
+    const out = [];
+    let prevMatch = false;
+    for (let i = 0; i <= daysAhead; i++) {
+      const d = new Date(base);
+      d.setDate(base.getDate() + i);
+      const p = getMoonPhaseFraction(d);
+      const match = kind === "full" ? (p > 0.47 && p < 0.53) : (p < 0.03 || p > 0.97);
+      if (match && !prevMatch) out.push(d);
+      prevMatch = match;
+    }
+    return out;
+  }
+
+  function daysFromToday(date) {
+    const base = new Date();
+    base.setHours(0, 0, 0, 0);
+    return Math.round((date.getTime() - base.getTime()) / 86400000);
+  }
+
+  function renderComingUp() {
+    const el = document.getElementById("coming-up");
+    if (!el) return;
+    const nextNew = moonDaysAhead("new", 45)[0];
+    const nextFull = moonDaysAhead("full", 45)[0];
+    const rows = [];
+    if (nextNew) rows.push({ name: "New Moon", date: nextNew, ritual: getSuggestedRitual("New Moon") });
+    if (nextFull) rows.push({ name: "Full Moon", date: nextFull, ritual: getSuggestedRitual("Full Moon") });
+    rows.sort((a, b) => a.date - b.date);
+    el.innerHTML = rows.map((r) => {
+      const n = daysFromToday(r.date);
+      const big = n <= 0 ? "Today" : n === 1 ? "Tomorrow" : String(n);
+      const small = n > 1 ? "days away" : "";
+      const label = r.date.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+      return `<div class="coming-row"><div><div class="coming-name">${r.name}</div><div class="coming-date">${label}<br>Try: ${r.ritual}</div></div><div class="coming-days">${big}${small ? "<small>" + small + "</small>" : ""}</div></div>`;
+    }).join("");
+  }
+
+  function icsEscape(text) {
+    return String(text).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  }
+
+  function icsDate(d) {
+    return d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0");
+  }
+
+  function downloadMoonReminders(kind) {
+    const days = moonDaysAhead(kind, 370);
+    if (!days.length) { showToast("No upcoming moons found."); return; }
+    const label = kind === "full" ? "Full Moon" : "New Moon";
+    const ritual = getSuggestedRitual(label);
+    const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
+    const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Mobile First Studio//Moon Ritual Planner//EN", "CALSCALE:GREGORIAN"];
+    days.forEach((d) => {
+      const end = new Date(d); end.setDate(end.getDate() + 1);
+      lines.push(
+        "BEGIN:VEVENT",
+        "UID:mrp-" + kind + "-" + icsDate(d) + "@mobilefirststudio",
+        "DTSTAMP:" + stamp,
+        "DTSTART;VALUE=DATE:" + icsDate(d),
+        "DTEND;VALUE=DATE:" + icsDate(end),
+        "SUMMARY:" + icsEscape(label + " ritual"),
+        "DESCRIPTION:" + icsEscape("Suggested ritual: " + ritual + ". Open Moon Ritual Planner to begin."),
+        "TRANSP:TRANSPARENT",
+        "BEGIN:VALARM",
+        "TRIGGER:PT9H",
+        "ACTION:DISPLAY",
+        "DESCRIPTION:" + icsEscape(label + " today"),
+        "END:VALARM",
+        "END:VEVENT"
+      );
+    });
+    lines.push("END:VCALENDAR");
+    try {
+      const blob = new Blob([lines.join("\r\n")], { type: "text/calendar" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "moon-ritual-planner-" + kind + "-moons.ics";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showToast("Calendar file ready. Open it to add " + days.length + " reminders.");
+    } catch (e) {
+      showToast("Could not create the calendar file.");
+    }
+  }
+
+  function openPhaseGuide() {
+    const phases = [
+      ["New Moon", 0], ["Waxing Crescent", 0.125], ["First Quarter", 0.25], ["Waxing Gibbous", 0.375],
+      ["Full Moon", 0.5], ["Waning Gibbous", 0.625], ["Last Quarter", 0.75], ["Waning Crescent", 0.875]
+    ];
+    const rows = phases.map(([name, p]) =>
+      `<div class="coming-row guide-row"><div class="guide-moon" data-phase="${p}"></div><div style="flex:1"><div class="coming-name">${name}</div><div class="coming-date">${getEnergyNote(name)}</div><div class="form-hint">Try: ${getSuggestedRitual(name)}</div></div></div>`
+    ).join("");
+    openModal({
+      title: "Moon Phase Guide",
+      bodyText: "The moon moves through eight phases every 29.5 days. Here is what each one is good for.",
+      extraHtml: rows,
+      ctaLabel: "Close",
+      onCta: closeModal
+    });
+    document.querySelectorAll("#modal-extra-section .guide-moon").forEach((el) => renderMoonIcon(el, parseFloat(el.dataset.phase)));
   }
 
   /* =========================================================
@@ -1521,6 +1825,7 @@
     renderMoonIcon(document.getElementById("dashboard-dial"), phase);
 
     document.getElementById("dashboard-suggested-ritual").onclick = () => openRitualModal(suggested);
+    renderComingUp();
 
     refreshAllStats();
   }
@@ -1635,16 +1940,16 @@
      ========================================================= */
   function renderRitualList() {
     const listEl = document.getElementById("ritual-list");
-    listEl.innerHTML = Object.entries(rituals).map(([name, data]) => {
+    listEl.innerHTML = Object.entries(getAllRituals()).map(([name, data]) => {
       const done = isRitualCompletedToday(name);
       return `
-        <div class="ritual-card" data-ritual="${name}" tabindex="0" role="button">
+        <div class="ritual-card" data-ritual="${escapeHtml(name)}" tabindex="0" role="button">
           <div>
-            <div class="ritual-name">${name}</div>
-            <div class="ritual-tags">${data.tags}</div>
-            <div class="ritual-align">${data.alignment}</div>
+            <div class="ritual-name">${escapeHtml(name)}${data.custom ? '<span class="yours-badge">Yours</span>' : ""}</div>
+            <div class="ritual-tags">${escapeHtml(data.tags)}</div>
+            <div class="ritual-align">${escapeHtml(data.alignment)}</div>
           </div>
-          <div class="ritual-check ${done ? "done" : ""}" data-toggle="${name}" title="${done ? "Tap to unmark complete" : "Tap to mark complete"}">${done ? "✓" : ""}</div>
+          <div class="ritual-check ${done ? "done" : ""}" data-toggle="${escapeHtml(name)}" title="${done ? "Tap to unmark complete" : "Tap to mark complete"}">${done ? "✓" : ""}</div>
         </div>
       `;
     }).join("");
@@ -1767,7 +2072,8 @@
     if (!payload) return 0;
     const j = Array.isArray(payload.journal) ? payload.journal.length : 0;
     const c = Array.isArray(payload.completions) ? payload.completions.length : 0;
-    return j + c;
+    const r = Array.isArray(payload.customRituals) ? payload.customRituals.length : 0;
+    return j + c + r;
   }
 
   let _pendingRestorePayload = null;
@@ -1775,8 +2081,8 @@
   function openRestoreConfirm(payload, sourceLabel) {
     _pendingRestorePayload = payload;
     const incoming = dataSummary(payload);
-    const current = dataSummary({ journal: loadJournal(), completions: loadCompletions() });
-    let body = `This backup has ${incoming} entries (journal + completions). Your current data has ${current} entries. Restoring replaces what you have now — you can undo it right after if needed.`;
+    const current = dataSummary({ journal: loadJournal(), completions: loadCompletions(), customRituals: loadCustomRituals() });
+    let body = `This backup has ${incoming} entries (journal, completions and your own rituals). Your current data has ${current} entries. Restoring replaces what you have now — you can undo it right after if needed.`;
     if (incoming < current) {
       body = `⚠ This backup has FEWER entries (${incoming}) than your current data (${current}). Double-check this is the right one before continuing.`;
     }
@@ -1796,11 +2102,15 @@
       localStorage.setItem("mrp_pre_restore_snapshot", JSON.stringify({
         journal: loadJournal(),
         completions: loadCompletions(),
+        customRituals: loadCustomRituals(),
         ts: Date.now()
       }));
     } catch (e) {}
     saveJournal(Array.isArray(_pendingRestorePayload.journal) ? _pendingRestorePayload.journal : []);
     saveCompletions(Array.isArray(_pendingRestorePayload.completions) ? _pendingRestorePayload.completions : []);
+    if (Array.isArray(_pendingRestorePayload.customRituals)) {
+      saveCustomRituals(sanitizeCustomRituals(_pendingRestorePayload.customRituals));
+    }
     _pendingRestorePayload = null;
     closeModal();
     renderJournal(); renderRitualList(); renderDashboard(); renderProgress();
@@ -1814,6 +2124,7 @@
       const snap = JSON.parse(raw);
       saveJournal(snap.journal || []);
       saveCompletions(snap.completions || []);
+      if (Array.isArray(snap.customRituals)) saveCustomRituals(snap.customRituals);
       localStorage.removeItem("mrp_pre_restore_snapshot");
       renderJournal(); renderRitualList(); renderDashboard(); renderProgress();
       showToast("Restore undone.");
@@ -1837,6 +2148,7 @@
     return {
       journal: loadJournal(),
       completions: loadCompletions(),
+      customRituals: loadCustomRituals(),
       exportedAt: new Date().toISOString(),
       source: "Moon Ritual Planner"
     };
@@ -1877,7 +2189,7 @@
     reader.onload = (evt) => {
       try {
         const data = JSON.parse(evt.target.result);
-        if (!data || (!Array.isArray(data.journal) && !Array.isArray(data.completions))) {
+        if (!data || (!Array.isArray(data.journal) && !Array.isArray(data.completions) && !Array.isArray(data.customRituals))) {
           showToast("That file doesn't look like a valid backup.");
           return;
         }
@@ -1987,6 +2299,11 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeModal();
     });
+
+    document.getElementById("add-ritual-btn").addEventListener("click", () => openRitualForm(null));
+    document.getElementById("remind-new-btn").addEventListener("click", () => downloadMoonReminders("new"));
+    document.getElementById("remind-full-btn").addEventListener("click", () => downloadMoonReminders("full"));
+    document.getElementById("phase-guide-btn").addEventListener("click", openPhaseGuide);
 
     document.getElementById("export-btn").addEventListener("click", exportBackupFile);
     document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
