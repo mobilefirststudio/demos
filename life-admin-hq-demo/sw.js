@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mfs-lifeadminhq-demo-v1';
+const CACHE_NAME = 'mfs-lifeadminhq-demo-v4';
 const PRECACHE = [
   './',
   'index.html',
