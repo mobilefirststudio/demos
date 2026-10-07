@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mfs-dailyhq-demo-v2';
+const CACHE_NAME = 'mfs-dailyhq-demo-etsy-v2';
 const PRECACHE = [
   './',
   'index.html',
