@@ -6,6 +6,7 @@
 <title>Flow Tracker — Free Trial — Mobile First Studio</title>
 <link rel="manifest" href="manifest.json"/>
 <link rel="apple-touch-icon" href="icons/icon-192.png"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" defer></script>
 <meta name="theme-color" content="#5a4080"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -130,6 +131,8 @@ body{font-family:var(--font-serif);background:var(--bg);color:var(--text);min-he
 .trend-label{flex:1;text-align:center;font-size:9px;color:var(--text-mute);}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(60,30,100,.35);z-index:200;align-items:flex-end;justify-content:center;}
 .modal-overlay.open{display:flex;}
+/* The confirm and text-entry pop-ups must sit above the log sheet they are opened from. */
+#flowInputOverlay,#flowConfirmOverlay{z-index:300;}
 .modal{background:var(--bg-card);border-radius:20px 20px 0 0;border-top:.5px solid var(--border-mid);width:100%;max-width:430px;max-height:90dvh;overflow-y:auto;padding:0 0 max(24px,env(safe-area-inset-bottom));}
 .modal-header{display:flex;justify-content:space-between;align-items:center;padding:18px 18px 14px;border-bottom:.5px solid var(--border);position:sticky;top:0;background:var(--bg-card);}
 .modal-title{font-family:var(--font-serif);font-size:20px;color:var(--text);}
@@ -209,11 +212,11 @@ select option{background:#f8f5ff;color:#2a1a40;}
 <div id="trial-lock">
   <div class="lock-icon">&#128274;</div>
   <div class="lock-title">Your free trial has ended</div>
-  <div class="lock-body">You've had full access to Flow Tracker for 14 days. Your data is still safe on this device, get the full app to keep using it and back it up to your own Google Drive so it's never at risk.</div>
-  <a class="lock-cta" href="https://www.etsy.com/listing/4530222903/period-cycle-digital-tracker-private" target="_blank" rel="noopener">Get the Full App</a>
+  <div class="lock-body">You've had full access to Flow Tracker for 14 days. Your data is still on this device. Get the full app to keep using it, with backup to your own Google Drive included.</div>
+  <a class="lock-cta" href="https://www.etsy.com/listing/4552091703/basic-private-period-tracker-cycle" target="_blank" rel="noopener">Get the Full App</a>
   <div class="lock-sub">Your trial started 14 days ago on this device.</div>
 </div>
-<div class="demo-banner" id="demo-banner"><b>Free demo</b> &middot; <a href="https://www.etsy.com/listing/4530222903/period-cycle-digital-tracker-private" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+<div class="demo-banner" id="demo-banner"><b>Free demo</b> &middot; <a href="https://www.etsy.com/listing/4552091703/basic-private-period-tracker-cycle" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
 <div class="status-bar">MOBILE FIRST STUDIO<button class="status-bar-theme-btn" onclick="cycleTheme()" title="Change color theme">&#127800;</button></div>
 <div class="screen" id="screen-onboard"></div>
 <div class="screen" id="screen-home"></div>
@@ -352,6 +355,24 @@ function load(){
   if(!state.settings.notifications)state.settings.notifications={};
 }
 
+/* ── UNDO FOR RESTORE / IMPORT ── */
+const PRE_RESTORE_KEY='flowtracker_demo_v1_prerestore';
+function snapshotBeforeRestore(){try{localStorage.setItem(PRE_RESTORE_KEY,JSON.stringify({state:state,ts:Date.now()}));}catch(e){}}
+function hasRestoreUndo(){try{return !!localStorage.getItem(PRE_RESTORE_KEY);}catch(e){return false;}}
+function undoLastRestore(){
+  try{
+    const raw=localStorage.getItem(PRE_RESTORE_KEY);
+    if(!raw){showToast('Nothing to undo',true);return;}
+    const snap=JSON.parse(raw);
+    if(!snap||!snap.state||!Array.isArray(snap.state.cycles)){showToast('Could not undo',true);return;}
+    state=snap.state;
+    localStorage.removeItem(PRE_RESTORE_KEY);
+    save();
+    showToast('Restore undone');
+    setTimeout(function(){location.reload();},1200);
+  }catch(e){showToast('Could not undo',true);}
+}
+
 /* ── LOCAL BACKUP (EXPORT / IMPORT) ── */
 function exportLocal(){
   const payload=JSON.stringify({cycles:state.cycles,settings:state.settings,pill:state.pill,customSymptoms:state.customSymptoms,exportedAt:new Date().toISOString()},null,2);
@@ -380,6 +401,7 @@ function importLocal(event){
       }
       const hasLocalData=state.cycles.length>0;
       const doImport=function(){
+        snapshotBeforeRestore();
         state.cycles=incomingCycles;
         if(data.settings&&typeof data.settings==='object')state.settings={...state.settings,...data.settings};
         if(data.pill&&typeof data.pill==='object')state.pill=data.pill;
@@ -448,34 +470,116 @@ function applyFont(fontFamily){
 
 /* ── HELPERS ── */
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function today(){const d=new Date();const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,'0');const day=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+day;}
 function fmtDate(s){if(!s)return'';return new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});}
 function fmtShort(s){if(!s)return'';return new Date(s+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});}
 function fmtMonthYear(y,m){return new Date(y,m,1).toLocaleDateString('en-US',{month:'long',year:'numeric'});}
-function addDays(s,n){const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);}
+function addDays(s,n){const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function daysBetween(a,b){return Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/86400000);}
 
 /* ── CYCLE CALCULATIONS ── */
+// "Active" means the period itself is still going. Logging is allowed on any day of a cycle, period or not.
 function activeCycle(){return state.cycles.find(c=>!c.endDate)||null;}
+// The cycle a given day belongs to: the most recent cycle that started on or before that day.
+function logCycleFor(dateStr){let best=null;for(const c of state.cycles){if(c.startDate<=dateStr&&(!best||c.startDate>best.startDate))best=c;}return best;}
+// A cycle's length runs from its first day to the first day of the next cycle.
+function cycleLen(c){let next=null;for(const o of state.cycles){if(o.startDate>c.startDate&&(!next||o.startDate<next.startDate))next=o;}if(next)return daysBetween(c.startDate,next.startDate);if(c.past&&c.endDate){const n=daysBetween(c.startDate,c.endDate);if(n>=15)return n;}return null;}
+// Start a cycle on a date. Days already logged on or after that date move into the new cycle.
+function startCycleOn(dateStr){
+  if(!dateStr||state.cycles.some(c=>c.startDate===dateStr))return;
+  const pl=state.settings.periodLength||5;
+  const prev=logCycleFor(dateStr);
+  let moved=[];
+  if(prev){
+    if(!prev.days)prev.days=[];
+    moved=prev.days.filter(d=>d.date>=dateStr);
+    prev.days=prev.days.filter(d=>d.date<dateStr);
+    if(!prev.endDate){const guess=addDays(prev.startDate,pl-1),dayBefore=addDays(dateStr,-1);prev.endDate=guess<dayBefore?guess:dayBefore;}
+  }
+  const isLatest=!state.cycles.some(c=>c.startDate>dateStr);
+  const stillOn=isLatest&&daysBetween(dateStr,today())<pl;
+  state.cycles.push({id:uid(),startDate:dateStr,endDate:stillOn?null:addDays(dateStr,pl-1),days:moved});
+  state.cycles.sort((a,b)=>a.startDate.localeCompare(b.startDate));
+}
+function nextCycleAfter(dateStr){let n=null;for(const c of state.cycles){if(c.startDate>dateStr&&(!n||c.startDate<n.startDate))n=c;}return n;}
+// What tapping "First day of period" on a date should do: add a period, or move the first day of one that is close by.
+function periodStartPlan(dateStr){
+  const cur=logCycleFor(dateStr),nxt=nextCycleAfter(dateStr);
+  if(cur&&cur.startDate===dateStr)return{kind:'none',cycle:cur};
+  if(cur&&daysBetween(cur.startDate,dateStr)<10)return{kind:'move',cycle:cur};
+  if(nxt&&daysBetween(dateStr,nxt.startDate)<10)return{kind:'move',cycle:nxt};
+  return{kind:'add'};
+}
+// Move the first day of a period. Logged days follow the cycle they now fall in, nothing is deleted.
+function moveCycleStart(c,dateStr){
+  const old=c.startDate,pl=state.settings.periodLength||5;
+  if(!c.days)c.days=[];
+  if(dateStr<old){
+    const prev=logCycleFor(dateStr);
+    if(prev&&prev!==c){
+      if(!prev.days)prev.days=[];
+      c.days=c.days.concat(prev.days.filter(d=>d.date>=dateStr));
+      prev.days=prev.days.filter(d=>d.date<dateStr);
+      if(prev.endDate&&prev.endDate>=dateStr)prev.endDate=addDays(dateStr,-1);
+    }
+  }else{
+    const prev=logCycleFor(addDays(old,-1));
+    if(prev&&prev!==c){
+      if(!prev.days)prev.days=[];
+      prev.days=prev.days.concat(c.days.filter(d=>d.date<dateStr));
+      c.days=c.days.filter(d=>d.date>=dateStr);
+    }
+    if(c.endDate&&c.endDate<dateStr){
+      const isLatest=!state.cycles.some(x=>x.startDate>old);
+      c.endDate=(isLatest&&daysBetween(dateStr,today())<pl)?null:addDays(dateStr,pl-1);
+    }
+  }
+  c.startDate=dateStr;
+  state.cycles.sort((a,b)=>a.startDate.localeCompare(b.startDate));
+}
+// Take a period off the calendar. Its logged days go back to the cycle before it.
+function removeCycleKeepDays(c){
+  const prev=logCycleFor(addDays(c.startDate,-1));
+  if(prev&&prev!==c){prev.days=(prev.days||[]).concat(c.days||[]);}
+  state.cycles=state.cycles.filter(x=>x!==c);
+}
 function completedCycles(){return state.cycles.filter(c=>c.endDate).sort((a,b)=>b.startDate.localeCompare(a.startDate));}
 function allCyclesSorted(){return[...state.cycles].sort((a,b)=>b.startDate.localeCompare(a.startDate));}
 function mostRecentStart(){const ac=activeCycle();if(ac)return ac.startDate;const cc=completedCycles()[0];if(cc)return cc.startDate;return state.settings.lastPeriodStart||null;}
-function avgCycleLength(){const comp=completedCycles();if(comp.length<2)return state.settings.cycleLength;const pairs=[];const sorted=[...comp].sort((a,b)=>a.startDate.localeCompare(b.startDate));for(let i=1;i<sorted.length;i++)pairs.push(daysBetween(sorted[i-1].startDate,sorted[i].startDate));return Math.round(pairs.reduce((a,b)=>a+b,0)/pairs.length);}
-function avgPeriodLength(){const all=state.cycles.filter(c=>c.days&&c.days.length);if(!all.length)return state.settings.periodLength;const lens=all.map(c=>c.days.filter(d=>d.flow&&d.flow!=='').length).filter(n=>n>0);if(!lens.length)return state.settings.periodLength;return Math.round(lens.reduce((a,b)=>a+b,0)/lens.length);}
+function avgCycleLength(){const comp=state.cycles;if(comp.length<2)return state.settings.cycleLength;const pairs=[];const sorted=[...comp].sort((a,b)=>a.startDate.localeCompare(b.startDate));for(let i=1;i<sorted.length;i++)pairs.push(daysBetween(sorted[i-1].startDate,sorted[i].startDate));return Math.round(pairs.reduce((a,b)=>a+b,0)/pairs.length);}
+// A period's real length: from its first day to the day it was marked as ended.
+// (Older saves sometimes stored the end of the whole cycle there, so anything over 14 days is ignored.)
+function periodLenOf(c){if(c&&c.endDate){const n=daysBetween(c.startDate,c.endDate)+1;if(n>=1&&n<=14)return n;}return null;}
+function avgPeriodLength(){const lens=state.cycles.map(c=>{const ended=periodLenOf(c);if(ended)return ended;return (c.days||[]).filter(d=>d.flow&&d.flow!=='').length;}).filter(n=>n>0);if(!lens.length)return state.settings.periodLength;return Math.round(lens.reduce((a,b)=>a+b,0)/lens.length);}
 function cycleRegularity(){const comp=completedCycles();if(comp.length<3)return null;const sorted=[...comp].sort((a,b)=>a.startDate.localeCompare(b.startDate));const lengths=[];for(let i=1;i<sorted.length;i++)lengths.push(daysBetween(sorted[i-1].startDate,sorted[i].startDate));const avg=lengths.reduce((a,b)=>a+b,0)/lengths.length;const variance=lengths.reduce((a,b)=>a+Math.abs(b-avg),0)/lengths.length;if(variance<=2)return'Regular';if(variance<=5)return'Slightly irregular';return'Irregular';}
 function currentCycleDay(){const s=mostRecentStart();if(!s)return null;return daysBetween(s,today())+1;}
 function nextPeriodDate(){const s=mostRecentStart();if(!s)return null;return addDays(s,avgCycleLength());}
 function ovulationDate(){const s=mostRecentStart();if(!s)return null;return addDays(s,avgCycleLength()-14);}
 function fertileStart(){const o=ovulationDate();return o?addDays(o,-5):null;}
 function fertileEnd(){return ovulationDate();}
-function currentPhase(){const day=currentCycleDay();const cl=avgCycleLength();const pl=avgPeriodLength();if(!day||day<1)return null;if(day<=pl)return'Period';const ovDay=cl-14;if(day>=ovDay-5&&day<=ovDay+1)return'Fertile window';if(day<ovDay-5)return'Follicular';return'Luteal';}
+function currentPhase(){const day=currentCycleDay();const cl=avgCycleLength();const pl=avgPeriodLength();if(!day||day<1)return null;if(day<=pl)return'Period';const ovDay=cl-13;if(day>=ovDay-5&&day<=ovDay)return'Fertile window';if(day<ovDay-5)return'Follicular';return'Luteal';}
 function isLate(){const np=nextPeriodDate();if(!np||activeCycle())return false;return today()>np;}
 function predictedFlow(cycleDay){const allWithFlow=state.cycles.filter(c=>c.days&&c.days.length);if(allWithFlow.length<2)return null;const onDay=allWithFlow.map(c=>{const entry=c.days.find(d=>{const s=c.startDate;return daysBetween(s,d.date)+1===cycleDay;});return entry?entry.flow:null;}).filter(Boolean);if(!onDay.length)return null;const counts={};onDay.forEach(f=>{counts[f]=(counts[f]||0)+1;});return Object.entries(counts).sort((a,b)=>b[1]-a[1])[0][0];}
 function symptomPatterns(){const allCycles=state.cycles.filter(c=>c.days&&c.days.length);if(allCycles.length<2)return[];const symDays={};allCycles.forEach(c=>{c.days.forEach(d=>{const cd=daysBetween(c.startDate,d.date)+1;(d.symptoms||[]).forEach(s=>{if(!symDays[s])symDays[s]=[];symDays[s].push(cd);});});});return Object.entries(symDays).filter(([,days])=>days.length>=2).map(([sym,days])=>{const avg=Math.round(days.reduce((a,b)=>a+b,0)/days.length);const min=Math.min(...days);const max=Math.max(...days);return{sym,avg,min,max,count:days.length};}).sort((a,b)=>b.count-a.count).slice(0,6);}
 function calDaysInMonth(y,m){return new Date(y,m+1,0).getDate();}
 function calFirstDay(y,m){return new Date(y,m,1).getDay();}
-function datePhase(dateStr){const s=mostRecentStart();if(!s)return null;const cl=avgCycleLength();const pl=avgPeriodLength();for(let i=0;i<allCyclesSorted().length;i++){const cyc=allCyclesSorted()[i];const cd=daysBetween(cyc.startDate,dateStr)+1;if(cd>=1&&cd<=pl)return'period';const ovDay=cl-14;if(cd>=ovDay-5&&cd<=ovDay+1)return'fertile';if(cd>pl&&cd<ovDay-5)return'follicular';if(cd>ovDay+1&&cd<=cl)return'luteal';}const np=nextPeriodDate();if(np){const daysToNext=daysBetween(today(),dateStr);const daysUntilNP=daysBetween(today(),np);if(daysToNext>=daysUntilNP&&daysToNext<daysUntilNP+pl)return'predicted-period';const nextOv=addDays(np,cl-14);const nextFS=addDays(nextOv,-5);if(dateStr>=nextFS&&dateStr<=nextOv)return'predicted-fertile';}return null;}
-function isPeriodDay(dateStr){return allCyclesSorted().some(c=>{const cd=daysBetween(c.startDate,dateStr)+1;const pl=avgPeriodLength();return cd>=1&&cd<=pl&&(!c.endDate||dateStr<=c.endDate);});}
+function datePhase(dateStr){const s=mostRecentStart();if(!s)return null;const cl=avgCycleLength();const pl=avgPeriodLength();
+  const cyc=logCycleFor(dateStr);
+  if(cyc){
+    const cd=daysBetween(cyc.startDate,dateStr)+1;
+    // Period days come from the cycle itself: up to the day it was ended, or, while it is still going, through today.
+    let pLen=periodLenOf(cyc);
+    if(!pLen)pLen=cyc.endDate?pl:Math.max(pl,Math.min(14,daysBetween(cyc.startDate,today())+1));
+    if(cd>=1&&cd<=pLen)return'period';
+    // Same estimate as the Home screen: ovulation 14 days before the next period, fertile window = that day and the 5 days before it.
+    const ovDay=cl-13;
+    if(cd>=ovDay-5&&cd<=ovDay)return'fertile';
+    if(cd>pLen&&cd<ovDay-5)return'follicular';
+    if(cd>ovDay&&cd<=cl)return'luteal';
+  }
+  const np=nextPeriodDate();if(np){const daysToNext=daysBetween(today(),dateStr);const daysUntilNP=daysBetween(today(),np);if(daysToNext>=daysUntilNP&&daysToNext<daysUntilNP+pl)return'predicted-period';const nextOv=addDays(np,cl-14);const nextFS=addDays(nextOv,-5);if(dateStr>=nextFS&&dateStr<=nextOv)return'predicted-fertile';}return null;}
+function isPeriodDay(dateStr){return datePhase(dateStr)==='period';}
 function getLogForDate(dateStr){for(const c of state.cycles){const entry=c.days&&c.days.find(d=>d.date===dateStr);if(entry)return{entry,cycle:c};}return null;}
 function getFlowForDate(dateStr){const r=getLogForDate(dateStr);return r?r.entry.flow:null;}
 
@@ -549,6 +653,7 @@ function finishOnboard(){
   state.settings.lastPeriodStart=onboardLastPeriod;
   state.settings.mode=onboardMode;
   state.settings.onboarded=true;
+  if(onboardLastPeriod&&onboardLastPeriod<=today()&&!state.cycles.length)startCycleOn(onboardLastPeriod);
   save();
   document.getElementById('screen-onboard').classList.remove('active');
   document.getElementById('screen-home').classList.add('active');
@@ -625,8 +730,8 @@ function getDailyTip(){
 function renderHome(){
   const el=document.getElementById('screen-home');
   const hasSetup=!!mostRecentStart();
-  if(!hasSetup){el.innerHTML=`<div class="empty-state" style="padding-top:60px"><div class="empty-state-text">Welcome to Flow Tracker</div><div class="empty-state-sub">Private period tracking — no account, no cloud, no data sharing. Set up your cycle to begin.</div><button class="btn-primary" style="margin-top:24px;max-width:220px;margin-left:auto;margin-right:auto;display:block" onclick="switchTab('setup')">Get started</button></div>`;return;}
-  const cycleDay=currentCycleDay();const phase=currentPhase();const cl=avgCycleLength();const np=nextPeriodDate();const daysUntilNP=np?daysBetween(today(),np):null;const active=activeCycle();const te=active?active.days.find(d=>d.date===today()):null;const late=isLate();const phaseClass=phase==='Fertile window'?'gold':phase==='Luteal'?'plum':phase==='Follicular'?'muted':'';const tomorrowPred=predictedFlow(cycleDay?cycleDay+1:null);const reg=cycleRegularity();
+  if(!hasSetup){el.innerHTML=`<div class="empty-state" style="padding-top:60px"><div class="empty-state-text">Welcome to Flow Tracker</div><div class="empty-state-sub">Private period tracking — no account, no ads, no data sharing. Set up your cycle to begin.</div><button class="btn-primary" style="margin-top:24px;max-width:220px;margin-left:auto;margin-right:auto;display:block" onclick="switchTab('setup')">Get started</button></div>`;return;}
+  const cycleDay=currentCycleDay();const phase=currentPhase();const cl=avgCycleLength();const np=nextPeriodDate();const daysUntilNP=np?daysBetween(today(),np):null;const active=activeCycle();const tl=getLogForDate(today());const te=tl?tl.entry:null;const late=isLate();const phaseClass=phase==='Fertile window'?'gold':phase==='Luteal'?'plum':phase==='Follicular'?'muted':'';const tomorrowPred=predictedFlow(cycleDay?cycleDay+1:null);const reg=cycleRegularity();
   el.innerHTML=`<div class="hero-card"><div class="hero-day">${cycleDay??'—'}</div><div class="hero-label">Cycle day${cycleDay?` of ${cl}`:''}</div>${phase?`<div class="hero-phase ${phaseClass}">${phase}</div>`:''}<div class="hero-stats"><div class="hero-stat"><div class="hero-stat-label">Next period</div><div class="hero-stat-val">${daysUntilNP!==null?(daysUntilNP===0?'Today':daysUntilNP<0?'Late':`In ${daysUntilNP}d`):'—'}</div></div><div class="hero-stat"><div class="hero-stat-label">Avg cycle</div><div class="hero-stat-val">${avgCycleLength()} days</div></div><div class="hero-stat"><div class="hero-stat-label">Period length</div><div class="hero-stat-val">${avgPeriodLength()} days</div></div><div class="hero-stat"><div class="hero-stat-label">Ovulation</div><div class="hero-stat-val">${ovulationDate()?fmtShort(ovulationDate()):'—'}</div></div></div></div>${(()=>{
     const np2=nextPeriodDate();
     if(!np2||activeCycle())return'';
@@ -634,7 +739,7 @@ function renderHome(){
     if(daysUntil>=0&&daysUntil<=3)return`<div class="banner rose" style="margin-bottom:12px"><span class="banner-text">🌙 PMS window — period expected in ${daysUntil===0?'less than a day':daysUntil+' day'+(daysUntil!==1?'s':'')}. Take it easy.</span></div>`;
     return'';
   })()}
-  ${late?`<div class="banner alert"><span class="banner-text">Period is late by ${Math.abs(daysUntilNP)} day${Math.abs(daysUntilNP)!==1?'s':''}. Cycles can vary — this may be normal.</span><button class="banner-btn" onclick="startPeriod()">Start now</button></div>`:''}${active?`<div class="banner rose"><span class="banner-text">Period active — day ${cycleDay}</span><button class="banner-btn" onclick="endPeriod()">End period</button></div>`:`<button class="btn-primary" style="margin-bottom:12px" onclick="startPeriod()">Period started today</button>`}${tomorrowPred&&active?`<div class="banner gold"><span class="banner-text">Tomorrow predicted: <strong>${tomorrowPred}</strong> flow based on past cycles</span></div>`:''}${reg?`<div class="card" style="margin-bottom:12px"><div class="card-label">Cycle regularity</div><div class="card-value">${reg}</div></div>`:''}${te?`<div class="section-title">Today</div><div class="log-entry" style="margin-top:8px" onclick="openLogModal('${today()}')"><div class="log-entry-top"><div class="log-entry-title">Today's log ${te.flow?`<span class="flow-badge ${te.flow.toLowerCase()}">${te.flow}</span>`:''}</div><div class="log-entry-date">Edit</div></div>${te.mood?`<div class="log-entry-sub">Mood: ${te.mood}</div>`:''}${te.symptoms&&te.symptoms.length?`<div class="log-entry-sub">${te.symptoms.slice(0,4).join(' · ')}</div>`:''}${te.notes?`<div class="log-entry-sub" style="font-style:italic">"${te.notes.slice(0,80)}${te.notes.length>80?'…':''}"</div>`:''}</div>`:active?`<button class="btn-primary" style="margin-bottom:12px" onclick="openLogModal('${today()}')">+ Log today</button>`:''}
+  ${late?`<div class="banner alert"><span class="banner-text">Period is late by ${Math.abs(daysUntilNP)} day${Math.abs(daysUntilNP)!==1?'s':''}. Cycles can vary — this may be normal.</span><button class="banner-btn" onclick="startPeriod()">Start now</button></div>`:''}${active?`<div class="banner rose"><span class="banner-text">Period active — day ${cycleDay}</span><button class="banner-btn" onclick="endPeriod()">End period</button></div>`:`<button class="btn-primary" style="margin-bottom:12px" onclick="startPeriod()">Period started today</button>`}${tomorrowPred&&active?`<div class="banner gold"><span class="banner-text">Tomorrow predicted: <strong>${tomorrowPred}</strong> flow based on past cycles</span></div>`:''}${reg?`<div class="card" style="margin-bottom:12px"><div class="card-label">Cycle regularity</div><div class="card-value">${reg}</div></div>`:''}${te?`<div class="section-title">Today</div><div class="log-entry" style="margin-top:8px" onclick="openLogModal('${today()}')"><div class="log-entry-top"><div class="log-entry-title">Today's log ${te.flow?`<span class="flow-badge ${te.flow.toLowerCase()}">${te.flow}</span>`:''}</div><div class="log-entry-date">Edit</div></div>${te.mood?`<div class="log-entry-sub">Mood: ${te.mood}</div>`:''}${te.symptoms&&te.symptoms.length?`<div class="log-entry-sub">${esc(te.symptoms.slice(0,4).join(' · '))}</div>`:''}${te.notes?`<div class="log-entry-sub" style="font-style:italic">"${esc(te.notes.slice(0,80))}${te.notes.length>80?'…':''}"</div>`:''}</div>`:logCycleFor(today())?`<button class="btn-primary" style="margin-bottom:12px" onclick="openLogModal('${today()}')">+ Log today</button>`:''}
   ${state.settings.pillReminder?(state.pill&&state.pill.lastTaken===today()?
     `<div class="banner rose" style="margin-bottom:12px">
       <span class="banner-text">💊 Pill taken today ✓</span>
@@ -659,7 +764,7 @@ function renderHome(){
   ${state.settings.mode==='ttc'?`<div class="card" style="background:var(--gold-pale);border-color:var(--gold-mute)"><div class="card-label" style="color:var(--gold)">TTC Mode</div><div class="card-value">Fertile window: ${fertileStart()?fmtShort(fertileStart())+' – '+fmtShort(fertileEnd()):'—'}</div><div class="card-sub">Best days to try. Egg white mucus is a strong fertility sign.</div></div>`:''}
   ${state.settings.mode==='avoid'?`<div class="card" style="background:var(--rose-pale);border-color:var(--rose-mute)"><div class="card-label" style="color:var(--rose)">Avoiding Pregnancy</div><div class="card-value">Fertile window: ${fertileStart()?fmtShort(fertileStart())+' – '+fmtShort(fertileEnd()):'—'}</div><div class="card-sub">Use protection during this window. This app does not replace medical contraception.</div></div>`:''}`;
 }
-function startPeriod(){if(activeCycle())return;state.cycles.push({id:uid(),startDate:today(),endDate:null,days:[]});save();renderHome();}
+function startPeriod(){if(activeCycle())return;startCycleOn(today());save();renderHome();}
 function logPillTaken(){
   if(!state.pill)state.pill={lastTaken:''};
   if(!state.customSymptoms)state.customSymptoms=[];
@@ -670,32 +775,25 @@ function logPillTaken(){
   state.pill.lastTaken=state.pill.lastTaken===today()?'':today();
   save();renderHome();
 }
-function endPeriod(){const c=activeCycle();if(!c)return;c.endDate=today();save();renderHome();}
+function endPeriod(){const c=activeCycle();if(!c)return;c.endDate=today();save();renderHome();showToast('Period ended. Keep logging any day.');}
 
 /* ── LOG + CALENDAR ── */
 let calYear=new Date().getFullYear();
 let calMonth=new Date().getMonth();
-function renderLog(){const el=document.getElementById('screen-log');el.innerHTML=`<div class="section-title">Log</div><div class="section-sub">Tap any day to log symptoms and flow</div><div id="calendarWrap"></div><div id="logList"></div>`;renderCalendar();renderLogList();}
+function renderLog(){const el=document.getElementById('screen-log');el.innerHTML=`<div class="section-title">Log</div><div class="section-sub">Tap any day to log. To add a past period, tap its first day, then its last day.</div><div id="calendarWrap"></div><div id="logList"></div>`;renderCalendar();renderLogList();}
 function renderCalendar(){const wrap=document.getElementById('calendarWrap');if(!wrap)return;const y=calYear,m=calMonth;const daysInMonth=calDaysInMonth(y,m);const firstDay=calFirstDay(y,m);const todayStr=today();let html=`<div class="cal-nav"><button class="cal-nav-btn" onclick="calPrev()">‹</button><span class="cal-month">${fmtMonthYear(y,m)}</span><button class="cal-nav-btn" onclick="calNext()">›</button></div><div class="cal-grid">${DOW.map(d=>`<div class="cal-dow">${d}</div>`).join('')}`;const prevDays=calDaysInMonth(y,m===0?11:m-1);for(let i=0;i<firstDay;i++){const day=prevDays-firstDay+i+1;html+=`<div class="cal-day other-month">${day}</div>`;}for(let d=1;d<=daysInMonth;d++){const ds=`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const phase=datePhase(ds);const hasLog=!!getLogForDate(ds);const flow=getFlowForDate(ds);const isToday=ds===todayStr;const isFuture=ds>todayStr;let cls='cal-day';if(isToday)cls+=' today';if(phase==='period')cls+=flow==='Heavy'?' period heavy':' period';else if(phase==='fertile'||phase==='predicted-fertile')cls+=' fertile';else if(phase==='luteal')cls+=' luteal';else if(phase==='predicted-period')cls+=' predicted-period';if(hasLog)cls+=' has-log';html+=`<div class="${cls}" onclick="calDayTap('${ds}',${isFuture})">${d}</div>`;}const totalCells=Math.ceil((firstDay+daysInMonth)/7)*7;const remaining=totalCells-firstDay-daysInMonth;for(let i=1;i<=remaining;i++)html+=`<div class="cal-day other-month">${i}</div>`;html+=`</div><div class="cal-legend"><div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--rose-pale);border:.5px solid var(--rose-mute)"></div>Period</div><div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--gold-pale);border:.5px solid var(--gold-mute)"></div>Fertile</div><div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--plum-pale);border:.5px solid var(--plum-mute)"></div>Luteal</div><div class="cal-legend-item"><div class="cal-legend-dot" style="border:1px dashed var(--rose-mute)"></div>Predicted</div></div>`;wrap.innerHTML=html;}
 function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
 function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();}
 function calDayTap(dateStr,isFuture){
-  const active=activeCycle();
-  if(!active){
-    if(!isFuture){
-      flowConfirm('Start a new cycle?', 'Start tracking a period from '+fmtDate(dateStr)+'.', function(){
-        state.cycles.push({id:uid(),startDate:dateStr,endDate:null,days:[]});save();renderLog();
-      }, 'Start', false);
-    }
-    return;
-  }
+  if(isFuture){showToast('You can log this day once it arrives');return;}
+  if(!logCycleFor(dateStr)){_logDate=dateStr;_logCycle=null;markPeriodStart();return;}
   openLogModal(dateStr);
 }
-function renderLogList(){const el=document.getElementById('logList');if(!el)return;const active=activeCycle();if(!active){el.innerHTML=`<div class="empty-state"><div class="empty-state-text">No active period</div><div class="empty-state-sub">Tap a past date on the calendar to start a cycle, or use the Home tab.</div></div>`;return;}const sorted=[...active.days].sort((a,b)=>b.date.localeCompare(a.date));el.innerHTML=`<div class="section-title" style="margin-bottom:8px">This cycle</div><button class="btn-primary" style="margin-bottom:10px" onclick="openLogModal('${today()}')">+ Log today</button>${sorted.length?sorted.map(d=>`<div class="log-entry" onclick="openLogModal('${d.date}')"><div class="log-entry-top"><div class="log-entry-title">${fmtShort(d.date)}<span style="font-size:11px;color:var(--text-mute);margin-left:6px">Day ${daysBetween(active.startDate,d.date)+1}</span>${d.flow?`<span class="flow-badge ${d.flow.toLowerCase()}">${d.flow}</span>`:''}</div></div>${d.mood?`<div class="log-entry-sub">Mood: ${d.mood}</div>`:''}${d.symptoms&&d.symptoms.length?`<div class="log-entry-sub">${d.symptoms.join(' · ')}</div>`:''}${d.notes?`<div class="log-entry-sub" style="font-style:italic">"${d.notes.slice(0,80)}${d.notes.length>80?'…':''}"</div>`:''}</div>`).join(''):`<div class="empty-state"><div class="empty-state-text">No days logged yet</div></div>`}`;}
+function renderLogList(){const el=document.getElementById('logList');if(!el)return;const active=logCycleFor(today());if(!active){el.innerHTML=`<div class="empty-state"><div class="empty-state-text">No cycle yet</div><div class="empty-state-sub">Tap the first day of your last period on the calendar, or use the Home tab.</div></div>`;return;}if(!active.days)active.days=[];const sorted=[...active.days].sort((a,b)=>b.date.localeCompare(a.date));el.innerHTML=`<div class="section-title" style="margin-bottom:8px">This cycle</div><button class="btn-primary" style="margin-bottom:10px" onclick="openLogModal('${today()}')">+ Log today</button>${sorted.length?sorted.map(d=>`<div class="log-entry" onclick="openLogModal('${d.date}')"><div class="log-entry-top"><div class="log-entry-title">${fmtShort(d.date)}<span style="font-size:11px;color:var(--text-mute);margin-left:6px">Day ${daysBetween(active.startDate,d.date)+1}</span>${d.flow?`<span class="flow-badge ${d.flow.toLowerCase()}">${d.flow}</span>`:''}</div></div>${d.mood?`<div class="log-entry-sub">Mood: ${d.mood}</div>`:''}${d.symptoms&&d.symptoms.length?`<div class="log-entry-sub">${esc(d.symptoms.join(' · '))}</div>`:''}${d.notes?`<div class="log-entry-sub" style="font-style:italic">"${esc(d.notes.slice(0,80))}${d.notes.length>80?'…':''}"</div>`:''}</div>`).join(''):`<div class="empty-state"><div class="empty-state-text">No days logged yet</div></div>`}`;}
 
 /* ── INSIGHTS ── */
-function renderInsights(){const el=document.getElementById('screen-insights');const all=state.cycles;if(!all.length){el.innerHTML=`<div class="empty-state" style="padding-top:60px"><div class="empty-state-text">No data yet</div><div class="empty-state-sub">Track a few cycles to unlock patterns and predictions.</div></div>`;return;}const cl=avgCycleLength(),pl=avgPeriodLength();const comp=completedCycles();const lengths=comp.length>=2?comp.map((c,i,arr)=>i<arr.length-1?daysBetween(c.startDate,arr[i+1]?.startDate||c.startDate):null).filter(n=>n&&n>0):[];const shortest=lengths.length?Math.min(...lengths):null;const longest=lengths.length?Math.max(...lengths):null;const reg=cycleRegularity();const patterns=symptomPatterns();const cycleDay=currentCycleDay()||1;const cycleBarPct=Math.min(100,Math.round((cycleDay/cl)*100));const allMoods=all.flatMap(c=>c.days?c.days.map(d=>d.mood).filter(Boolean):[]);const moodCount={};allMoods.forEach(m=>{moodCount[m]=(moodCount[m]||0)+1;});const topMood=Object.entries(moodCount).sort((a,b)=>b[1]-a[1])[0];const recentLengths=comp.slice(0,6).map((c,i,arr)=>{if(i===arr.length-1)return null;return daysBetween(c.startDate,arr[i+1]?.startDate||c.startDate);}).filter(Boolean).reverse();
-  el.innerHTML=`<div class="section-title">Insights</div><div class="section-sub">Based on ${all.length} cycle${all.length!==1?'s':''} tracked</div><div class="insight-grid"><div class="insight-card"><div class="insight-num">${cl}</div><div class="insight-label">Avg cycle days</div></div><div class="insight-card"><div class="insight-num">${pl}</div><div class="insight-label">Avg period days</div></div>${shortest?`<div class="insight-card"><div class="insight-num gold">${shortest}</div><div class="insight-label">Shortest cycle</div></div>`:''} ${longest?`<div class="insight-card"><div class="insight-num gold">${longest}</div><div class="insight-label">Longest cycle</div></div>`:''}</div>${reg?`<div class="card"><div class="card-label">Cycle regularity</div><div class="card-value">${reg}</div><div class="card-sub">${reg==='Regular'?'Your cycles are consistent — predictions are reliable.':reg==='Slightly irregular'?'Minor variation is normal. Predictions are approximate.':'Cycles vary significantly. Predictions may be off by several days.'}</div></div>`:''}<div class="card"><div class="card-label">Current cycle progress</div><div style="margin-top:10px"><div class="cycle-bar-label"><span>Day ${cycleDay}</span><span>${cl} days</span></div><div class="cycle-bar-track"><div class="cycle-bar-fill" style="width:${cycleBarPct}%"></div></div><div style="display:flex;gap:6px;margin-top:8px"><div style="flex:${pl};background:var(--rose-pale);border-radius:3px;height:6px"></div><div style="flex:${Math.max(1,cl-14-pl-5)};background:var(--bg-card2);border-radius:3px;height:6px"></div><div style="flex:6;background:var(--gold-pale);border-radius:3px;height:6px"></div><div style="flex:${Math.max(1,13)};background:var(--plum-pale);border-radius:3px;height:6px"></div></div><div style="display:flex;gap:6px;margin-top:4px;font-size:9px;color:var(--text-mute)"><div style="flex:${pl}">Period</div><div style="flex:${Math.max(1,cl-14-pl-5)}">Follicular</div><div style="flex:6">Fertile</div><div style="flex:13">Luteal</div></div></div></div>${recentLengths.length>=2?`<div class="card"><div class="card-label">Cycle length trend (last ${recentLengths.length})</div><div style="margin-top:12px"><div class="trend-row">${recentLengths.map(l=>{const h=Math.round(((l-20)/(45-20))*100);return`<div class="trend-bar" style="height:${Math.max(8,h)}%"></div>`;}).join('')}</div><div class="trend-labels">${recentLengths.map(l=>`<div class="trend-label">${l}d</div>`).join('')}</div></div></div>`:''} ${patterns.length?`<div class="card"><div class="card-label">Symptom patterns</div><div style="margin-top:8px">${patterns.map(p=>`<div class="pattern-row"><div class="pattern-sym">${p.sym}</div><div class="pattern-days">Usually day ${p.min}${p.min!==p.max?'–'+p.max:''} <span style="color:var(--text-mute)">(${p.count}×)</span></div></div>`).join('')}</div></div>`:''} ${topMood?`<div class="card"><div class="card-label">Most frequent mood</div><div class="card-value">${topMood[0]}</div><div class="card-sub">Logged ${topMood[1]} time${topMood[1]!==1?'s':''}</div></div>`:''}<div class="card"><div class="card-label">Phase guide</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px"><div style="display:flex;gap:10px;align-items:flex-start"><div style="width:10px;height:10px;border-radius:50%;background:var(--rose);flex-shrink:0;margin-top:3px"></div><div style="font-size:13px;color:var(--text-mid)"><span style="color:var(--text)">Period</span> — days 1–${pl}. Uterine lining sheds.</div></div><div style="display:flex;gap:10px;align-items:flex-start"><div style="width:10px;height:10px;border-radius:50%;background:var(--bg-card2);border:.5px solid var(--border-mid);flex-shrink:0;margin-top:3px"></div><div style="font-size:13px;color:var(--text-mid)"><span style="color:var(--text)">Follicular</span> — days ${pl+1}–${cl-19}. Energy rises, mood improves.</div></div><div style="display:flex;gap:10px;align-items:flex-start"><div style="width:10px;height:10px;border-radius:50%;background:var(--gold-pale);border:.5px solid var(--gold-mute);flex-shrink:0;margin-top:3px"></div><div style="font-size:13px;color:var(--text-mid)"><span style="color:var(--text)">Fertile window</span> — approx. days ${cl-19}–${cl-13}. Highest chance of conception.</div></div><div style="display:flex;gap:10px;align-items:flex-start"><div style="width:10px;height:10px;border-radius:50%;background:var(--plum-pale);border:.5px solid var(--plum-mute);flex-shrink:0;margin-top:3px"></div><div style="font-size:13px;color:var(--text-mid)"><span style="color:var(--text)">Luteal</span> — days ${cl-13}–${cl}. PMS symptoms may appear.</div></div></div></div>${(()=>{
+function renderInsights(){const el=document.getElementById('screen-insights');const all=state.cycles;if(!all.length){el.innerHTML=`<div class="empty-state" style="padding-top:60px"><div class="empty-state-text">No data yet</div><div class="empty-state-sub">Track a few cycles to unlock patterns and predictions.</div></div>`;return;}const cl=avgCycleLength(),pl=avgPeriodLength();const comp=completedCycles();const lengths=comp.length>=2?comp.map((c,i,arr)=>i<arr.length-1?daysBetween(arr[i+1].startDate,c.startDate):null).filter(n=>n&&n>0):[];const shortest=lengths.length?Math.min(...lengths):null;const longest=lengths.length?Math.max(...lengths):null;const reg=cycleRegularity();const patterns=symptomPatterns();const cycleDay=currentCycleDay()||1;const cycleBarPct=Math.min(100,Math.round((cycleDay/cl)*100));const allMoods=all.flatMap(c=>c.days?c.days.map(d=>d.mood).filter(Boolean):[]);const moodCount={};allMoods.forEach(m=>{moodCount[m]=(moodCount[m]||0)+1;});const topMood=Object.entries(moodCount).sort((a,b)=>b[1]-a[1])[0];const recentLengths=comp.slice(0,6).map((c,i,arr)=>{if(i===arr.length-1)return null;return daysBetween(arr[i+1].startDate,c.startDate);}).filter(n=>n&&n>0).reverse();
+  el.innerHTML=`<div class="section-title">Insights</div><div class="section-sub">Based on ${all.length} cycle${all.length!==1?'s':''} tracked</div><div class="insight-grid"><div class="insight-card"><div class="insight-num">${cl}</div><div class="insight-label">Avg cycle days</div></div><div class="insight-card"><div class="insight-num">${pl}</div><div class="insight-label">Avg period days</div></div>${shortest?`<div class="insight-card"><div class="insight-num gold">${shortest}</div><div class="insight-label">Shortest cycle</div></div>`:''} ${longest?`<div class="insight-card"><div class="insight-num gold">${longest}</div><div class="insight-label">Longest cycle</div></div>`:''}</div>${reg?`<div class="card"><div class="card-label">Cycle regularity</div><div class="card-value">${reg}</div><div class="card-sub">${reg==='Regular'?'Your cycles are consistent — predictions are reliable.':reg==='Slightly irregular'?'Minor variation is normal. Predictions are approximate.':'Cycles vary significantly. Predictions may be off by several days.'}</div></div>`:''}<div class="card"><div class="card-label">Current cycle progress</div><div style="margin-top:10px"><div class="cycle-bar-label"><span>Day ${cycleDay}</span><span>${cl} days</span></div><div class="cycle-bar-track"><div class="cycle-bar-fill" style="width:${cycleBarPct}%"></div></div><div style="display:flex;gap:6px;margin-top:8px"><div style="flex:${pl};background:var(--rose-pale);border-radius:3px;height:6px"></div><div style="flex:${Math.max(1,cl-14-pl-5)};background:var(--bg-card2);border-radius:3px;height:6px"></div><div style="flex:6;background:var(--gold-pale);border-radius:3px;height:6px"></div><div style="flex:${Math.max(1,13)};background:var(--plum-pale);border-radius:3px;height:6px"></div></div><div style="display:flex;gap:6px;margin-top:4px;font-size:9px;color:var(--text-mute)"><div style="flex:${pl}">Period</div><div style="flex:${Math.max(1,cl-14-pl-5)}">Follicular</div><div style="flex:6">Fertile</div><div style="flex:13">Luteal</div></div></div></div>${recentLengths.length>=2?`<div class="card"><div class="card-label">Cycle length trend (last ${recentLengths.length})</div><div style="margin-top:12px"><div class="trend-row">${recentLengths.map(l=>{const h=Math.round(((l-20)/(45-20))*100);return`<div class="trend-bar" style="height:${Math.max(8,h)}%"></div>`;}).join('')}</div><div class="trend-labels">${recentLengths.map(l=>`<div class="trend-label">${l}d</div>`).join('')}</div></div></div>`:''} ${patterns.length?`<div class="card"><div class="card-label">Symptom patterns</div><div style="margin-top:8px">${patterns.map(p=>`<div class="pattern-row"><div class="pattern-sym">${esc(p.sym)}</div><div class="pattern-days">Usually day ${p.min}${p.min!==p.max?'–'+p.max:''} <span style="color:var(--text-mute)">(${p.count}×)</span></div></div>`).join('')}</div></div>`:''} ${topMood?`<div class="card"><div class="card-label">Most frequent mood</div><div class="card-value">${topMood[0]}</div><div class="card-sub">Logged ${topMood[1]} time${topMood[1]!==1?'s':''}</div></div>`:''}<div class="card"><div class="card-label">Phase guide</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px"><div style="display:flex;gap:10px;align-items:flex-start"><div style="width:10px;height:10px;border-radius:50%;background:var(--rose);flex-shrink:0;margin-top:3px"></div><div style="font-size:13px;color:var(--text-mid)"><span style="color:var(--text)">Period</span> — days 1–${pl}. Uterine lining sheds.</div></div><div style="display:flex;gap:10px;align-items:flex-start"><div style="width:10px;height:10px;border-radius:50%;background:var(--bg-card2);border:.5px solid var(--border-mid);flex-shrink:0;margin-top:3px"></div><div style="font-size:13px;color:var(--text-mid)"><span style="color:var(--text)">Follicular</span> — days ${pl+1}–${cl-19}. Energy rises, mood improves.</div></div><div style="display:flex;gap:10px;align-items:flex-start"><div style="width:10px;height:10px;border-radius:50%;background:var(--gold-pale);border:.5px solid var(--gold-mute);flex-shrink:0;margin-top:3px"></div><div style="font-size:13px;color:var(--text-mid)"><span style="color:var(--text)">Fertile window</span> — approx. days ${cl-18}–${cl-13}. Highest chance of conception.</div></div><div style="display:flex;gap:10px;align-items:flex-start"><div style="width:10px;height:10px;border-radius:50%;background:var(--plum-pale);border:.5px solid var(--plum-mute);flex-shrink:0;margin-top:3px"></div><div style="font-size:13px;color:var(--text-mid)"><span style="color:var(--text)">Luteal</span> — days ${cl-12}–${cl}. PMS symptoms may appear.</div></div></div></div>${(()=>{
     const bbtData=all.flatMap(c=>(c.days||[]).filter(d=>d.bbt).map(d=>({date:d.date,bbt:parseFloat(d.bbt),cd:daysBetween(c.startDate,d.date)+1})));
     if(bbtData.length<3)return'';
     const recent=bbtData.slice(-14);
@@ -714,15 +812,15 @@ function renderInsights(){const el=document.getElementById('screen-insights');co
     return`<div class="card"><div class="card-label">Weight Trend</div><div class="card-value" style="margin-top:4px">${latest.w} lbs</div><div class="card-sub">${diff>0?'+'+diff:diff} lbs over last ${recent.length} logs</div></div>`;
   })()}
   <div class="card"><div class="card-label">Export summary</div><div class="card-sub" style="margin-bottom:10px">Copy and share with your doctor</div><button class="btn-ghost" onclick="openExport()">Generate export</button></div>`;}
-function openExport(){const comp=completedCycles().slice(0,6);if(!comp.length){showToast('No completed cycles to export', true);return;}let txt=`FLOW TRACKER — CYCLE SUMMARY\nGenerated: ${new Date().toLocaleDateString()}\n\n`;txt+=`Average cycle: ${avgCycleLength()} days\nAverage period: ${avgPeriodLength()} days\nRegularity: ${cycleRegularity()||'Insufficient data'}\n\n`;txt+=`CYCLE HISTORY\n`;comp.forEach((c,i)=>{const len=daysBetween(c.startDate,c.endDate);txt+=`\nCycle ${i+1}: ${fmtDate(c.startDate)} (${len} days)\n`;if(c.days&&c.days.length){const syms=[...new Set(c.days.flatMap(d=>d.symptoms||[]))];if(syms.length)txt+=`  Symptoms: ${syms.join(', ')}\n`;}});modalTitle.textContent='Export summary';modalBody.innerHTML=`<div class="export-box" id="exportBox">${txt}</div><button class="btn-primary" onclick="copyExport()">Copy to clipboard</button>`;overlay.classList.add('open');}
+function openExport(){const comp=allCyclesSorted().filter(c=>cycleLen(c)).slice(0,6);if(!comp.length){showToast('No completed cycles to export', true);return;}let txt=`FLOW TRACKER — CYCLE SUMMARY\nGenerated: ${new Date().toLocaleDateString()}\n\n`;txt+=`Average cycle: ${avgCycleLength()} days\nAverage period: ${avgPeriodLength()} days\nRegularity: ${cycleRegularity()||'Insufficient data'}\n\n`;txt+=`CYCLE HISTORY\n`;comp.forEach((c,i)=>{const len=cycleLen(c);txt+=`\nCycle ${i+1}: ${fmtDate(c.startDate)} (${len} days)\n`;if(c.days&&c.days.length){const syms=[...new Set(c.days.flatMap(d=>d.symptoms||[]))];if(syms.length)txt+=`  Symptoms: ${syms.join(', ')}\n`;}});modalTitle.textContent='Export summary';modalBody.innerHTML=`<div class="export-box" id="exportBox">${esc(txt)}</div><button class="btn-primary" onclick="copyExport()">Copy to clipboard</button>`;overlay.classList.add('open');}
 function copyExport(){const txt=document.getElementById('exportBox').textContent;navigator.clipboard.writeText(txt).then(()=>showToast('Copied to clipboard ✓')).catch(()=>showToast('Copy the text above manually'));}
 
 /* ── HISTORY ── */
-function renderHistory(){const el=document.getElementById('screen-history');const all=allCyclesSorted();el.innerHTML=`<div class="section-title">Cycle history</div><div class="section-sub">${all.length} cycle${all.length!==1?'s':''} recorded</div><button class="btn-ghost" onclick="openAddPastCycle()">+ Add past cycle</button>${all.length?all.map(c=>{const len=c.endDate?daysBetween(c.startDate,c.endDate):null;const periodDays=c.days?c.days.filter(d=>d.flow).length:0;const syms=[...new Set((c.days||[]).flatMap(d=>d.symptoms||[]))].slice(0,3);const isActive=!c.endDate;return`<div class="history-entry" onclick="openCycleDetail('${c.id}')"><div class="history-entry-top"><div class="history-entry-title">${fmtShort(c.startDate)}${isActive?' <span style="font-size:11px;color:var(--rose);margin-left:6px">Active</span>':''}</div><div class="history-entry-len">${len?len+' days':'—'}</div></div><div class="history-entry-sub">${periodDays?periodDays+' period days logged':'No flow logged'}${syms.length?' · '+syms.join(', '):''}${len&&state.settings.cycleLength?` · ${len===state.settings.cycleLength?'On time':len<state.settings.cycleLength?`${state.settings.cycleLength-len}d early`:`${len-state.settings.cycleLength}d late`}`:''}
+function renderHistory(){const el=document.getElementById('screen-history');const all=allCyclesSorted();el.innerHTML=`<div class="section-title">Cycle history</div><div class="section-sub">${all.length} cycle${all.length!==1?'s':''} recorded</div><button class="btn-ghost" onclick="openAddPastCycle()">+ Add past cycle</button>${all.length?all.map(c=>{const len=cycleLen(c);const periodDays=c.days?c.days.filter(d=>d.flow).length:0;const syms=[...new Set((c.days||[]).flatMap(d=>d.symptoms||[]))].slice(0,3);const isActive=!c.endDate;return`<div class="history-entry" onclick="openCycleDetail('${c.id}')"><div class="history-entry-top"><div class="history-entry-title">${fmtShort(c.startDate)}${isActive?' <span style="font-size:11px;color:var(--rose);margin-left:6px">Active</span>':''}</div><div class="history-entry-len">${len?len+' days':'—'}</div></div><div class="history-entry-sub">${periodDays?periodDays+' period days logged':'No flow logged'}${syms.length?' · '+esc(syms.join(', ')):''}${len&&state.settings.cycleLength?` · ${len===state.settings.cycleLength?'On time':len<state.settings.cycleLength?`${state.settings.cycleLength-len}d early`:`${len-state.settings.cycleLength}d late`}`:''}
         </div></div>`;}).join(''):`<div class="empty-state"><div class="empty-state-text">No cycles yet</div><div class="empty-state-sub">Add past cycles to improve predictions, or start tracking from the Home tab.</div></div>`}`;}
 function openAddPastCycle(){modalTitle.textContent='Add past cycle';modalBody.innerHTML=`<div class="form-group"><label class="form-label">Period start date</label><input class="form-input" id="pStart" type="date"/></div><div class="form-group"><label class="form-label">Period end date (optional)</label><input class="form-input" id="pEnd" type="date"/></div><div class="form-group"><label class="form-label">Cycle end date (when next period started — optional)</label><input class="form-input" id="pCycleEnd" type="date"/></div><div style="font-size:12px;color:var(--text-mute);margin-bottom:14px;line-height:1.5">Adding past cycles helps the tracker calculate your average cycle length and improve predictions.</div><button class="btn-primary" onclick="savePastCycle()">Add cycle</button>`;overlay.classList.add('open');}
-function savePastCycle(){const start=document.getElementById('pStart').value;const end=document.getElementById('pEnd').value;const cycleEnd=document.getElementById('pCycleEnd').value;if(!start){showToast('Please enter a start date', true);return;}if(end&&end<start){showToast('End date must be after start date', true);return;}const newCycle={id:uid(),startDate:start,endDate:cycleEnd||end||null,days:[],past:true};state.cycles.push(newCycle);state.cycles.sort((a,b)=>a.startDate.localeCompare(b.startDate));save();closeModal();renderHistory();}
-function openCycleDetail(id){const c=state.cycles.find(x=>x.id===id);if(!c)return;const len=c.endDate?daysBetween(c.startDate,c.endDate):null;modalTitle.textContent=fmtDate(c.startDate);const days=[...(c.days||[])].sort((a,b)=>a.date.localeCompare(b.date));modalBody.innerHTML=`<div class="card" style="margin-bottom:10px"><div class="card-label">Duration</div><div class="card-value">${len?len+' days':'Active'}</div></div>${days.length?`<div class="form-label" style="margin-bottom:8px">Daily log</div>${days.map(d=>`<div class="log-entry" style="cursor:default"><div class="log-entry-top"><div class="log-entry-title">${fmtShort(d.date)}${d.flow?`<span class="flow-badge ${d.flow.toLowerCase()}">${d.flow}</span>`:''}</div></div>${d.mood?`<div class="log-entry-sub">Mood: ${d.mood}</div>`:''}${d.symptoms&&d.symptoms.length?`<div class="log-entry-sub">${d.symptoms.join(' · ')}</div>`:''}${d.notes?`<div class="log-entry-sub" style="font-style:italic">"${d.notes}"</div>`:''}</div>`).join('')}`:`<div class="empty-state" style="padding:20px 0"><div class="empty-state-text">No days logged</div></div>`}<button class="btn-delete" onclick="deleteCycle('${c.id}')">Delete this cycle</button>`;overlay.classList.add('open');}
+function savePastCycle(){const start=document.getElementById('pStart').value;const end=document.getElementById('pEnd').value;const cycleEnd=document.getElementById('pCycleEnd').value;if(!start){showToast('Please enter a start date', true);return;}if(end&&end<start){showToast('End date must be after start date', true);return;}const newCycle={id:uid(),startDate:start,endDate:cycleEnd||end||addDays(start,(state.settings.periodLength||5)-1),days:[],past:true};state.cycles.push(newCycle);state.cycles.sort((a,b)=>a.startDate.localeCompare(b.startDate));save();closeModal();renderHistory();}
+function openCycleDetail(id){const c=state.cycles.find(x=>x.id===id);if(!c)return;const len=cycleLen(c);modalTitle.textContent=fmtDate(c.startDate);const days=[...(c.days||[])].sort((a,b)=>a.date.localeCompare(b.date));modalBody.innerHTML=`<div class="card" style="margin-bottom:10px"><div class="card-label">Cycle length</div><div class="card-value">${len?len+' days':(c.endDate?'Current cycle':'Period active')}</div></div>${days.length?`<div class="form-label" style="margin-bottom:8px">Daily log</div>${days.map(d=>`<div class="log-entry" style="cursor:default"><div class="log-entry-top"><div class="log-entry-title">${fmtShort(d.date)}${d.flow?`<span class="flow-badge ${d.flow.toLowerCase()}">${d.flow}</span>`:''}</div></div>${d.mood?`<div class="log-entry-sub">Mood: ${d.mood}</div>`:''}${d.symptoms&&d.symptoms.length?`<div class="log-entry-sub">${esc(d.symptoms.join(' · '))}</div>`:''}${d.notes?`<div class="log-entry-sub" style="font-style:italic">"${esc(d.notes)}"</div>`:''}</div>`).join('')}`:`<div class="empty-state" style="padding:20px 0"><div class="empty-state-text">No days logged</div></div>`}<button class="btn-delete" onclick="deleteCycle('${c.id}')">Delete this cycle</button>`;overlay.classList.add('open');}
 function deleteCycle(id){
   flowConfirm('Delete this cycle?', 'This will permanently delete the cycle and all its data.', function(){
     state.cycles=state.cycles.filter(c=>c.id!==id);save();closeModal();renderHistory();
@@ -750,11 +848,12 @@ function renderSetup(){
     </div>
     <div class="form-group">
       <label class="form-label" style="display:flex;align-items:center;gap:10px;text-transform:none;font-size:14px;letter-spacing:0">
-        <input type="checkbox" id="sPill" ${s.pillReminder?'checked':''} onchange="document.getElementById('pillTimeWrap').style.display=this.checked?'block':'none'" style="width:18px;height:18px;cursor:pointer;accent-color:var(--dark)"/>
-        Birth control pill reminder
+        <input type="checkbox" id="sPill" ${s.pillReminder?'checked':''} style="width:18px;height:18px;cursor:pointer;accent-color:var(--dark)"/>
+        Daily pill check-in
       </label>
+      <div style="font-size:12px;color:var(--text-mute);line-height:1.5;margin-top:6px">Shows a "Have you taken your pill today?" check-in on your Home screen. It does not send a notification, so keep your usual alarm.</div>
     </div>
-    <div class="form-group" id="pillTimeWrap" style="display:${s.pillReminder?'block':'none'}">
+    <div class="form-group" id="pillTimeWrap" style="display:none">
       <label class="form-label">Reminder time</label>
       <input class="form-input" id="sPillTime" type="time" value="${s.pillTime||'08:00'}"/>
     </div>
@@ -784,13 +883,22 @@ function renderSetup(){
     <button class="btn-primary" onclick="saveTheme()" style="margin-bottom:20px">Save Theme</button>
 
     <div class="section-div"></div>
+    <div class="section-title">Printables</div>
+    <div style="font-size:14px;color:var(--text-mid);line-height:1.6;margin-bottom:14px;">Print a cycle report for your doctor, or blank trackers to fill in by hand.</div>
+    <button class="btn-primary" onclick="makeFlowPdf('report')" style="margin-bottom:10px">Cycle Report (PDF)</button>
+    <button class="btn-ghost" onclick="makeFlowPdf('year')" style="margin-bottom:8px">Blank Year at a Glance</button>
+    <button class="btn-ghost" onclick="makeFlowPdf('daily')" style="margin-bottom:8px">Blank Daily Symptom Log</button>
+    <button class="btn-ghost" onclick="makeFlowPdf('bbt')" style="margin-bottom:20px">Blank BBT Chart</button>
+
+    <div class="section-div"></div>
     <div class="section-title">Cloud Backup (Google Drive)</div>
-    <div style="margin-bottom:16px" class="upsell-card"><div class="upsell-title">Want automatic Google Drive backup?</div><div class="upsell-text">The full version of Flow Tracker backs up your cycle data to your own Google Drive automatically, so it's never at risk.</div><a class="upsell-btn" href="https://www.etsy.com/listing/4530222903/period-cycle-digital-tracker-private" target="_blank" rel="noopener">Get it on Etsy</a></div>
+    <div style="margin-bottom:16px" class="upsell-card"><div class="upsell-title">Want Google Drive backup?</div><div class="upsell-text">The full version of Flow Tracker can back up your cycle data to your own Google Drive.</div><a class="upsell-btn" href="https://www.etsy.com/listing/4552091703/basic-private-period-tracker-cycle" target="_blank" rel="noopener">Get it on Etsy</a></div>
     <div class="section-div"></div>
     <div class="section-title">Local Backup</div>
     <div style="font-size:14px;color:var(--text-mid);line-height:1.6;margin-bottom:14px;">Save a backup file to your device, or restore from one you saved earlier.</div>
     <button class="btn-primary" onclick="exportLocal()" style="margin-bottom:10px">Export backup file</button>
-    <button class="btn-ghost" onclick="document.getElementById('localImportInput').click()" style="margin-bottom:20px">Import backup file</button>
+    <button class="btn-ghost" onclick="document.getElementById('localImportInput').click()" style="margin-bottom:${hasRestoreUndo()?'10':'20'}px">Import backup file</button>
+    ${hasRestoreUndo()?`<button class="btn-ghost" style="color:#c04040;margin-bottom:20px" onclick="undoLastRestore()">Undo last restore</button>`:''}
     <input type="file" id="localImportInput" accept="application/json,.json" style="display:none" onchange="importLocal(event)"/>
     <div class="section-div"></div>
     <div class="section-title">Privacy & Security</div>
@@ -836,13 +944,14 @@ function saveSetup(){const cl=parseInt(document.getElementById('sCl').value);con
   showToast('Settings saved ✓');}
 
 /* ── LOG MODAL ── */
-let _logDate='',_logFlow='',_logSymptoms=[],_logMood='',_logMucus='',_logSleep='',_logSex='',_logBBT='',_logWeight='';
+let _logDate='',_logFlow='',_logSymptoms=[],_logMood='',_logMucus='',_logSleep='',_logSex='',_logBBT='',_logWeight='',_logNotes='',_logLive=false,_logCycle=null;
+function _logEntry(){return (_logCycle&&_logCycle.days.find(d=>d.date===_logDate))||{};}
 const overlay=document.getElementById('modalOverlay');
 const modalTitle=document.getElementById('modalTitle');
 const modalBody=document.getElementById('modalBody');
 document.getElementById('modalClose').addEventListener('click',closeModal);
 overlay.addEventListener('click',e=>{if(e.target===overlay)closeModal();});
-function closeModal(){overlay.classList.remove('open');}
+function closeModal(){overlay.classList.remove('open');_logLive=false;}
 
 function showToast(msg, isError){
   const t=document.getElementById('toast');
@@ -895,14 +1004,23 @@ function flowConfirmOk() {
 }
 
 
-function openLogModal(dateStr){_logDate=dateStr;const active=activeCycle();if(!active)return;let entry=active.days.find(d=>d.date===dateStr)||{date:dateStr,flow:'',symptoms:[],mood:'',notes:''};_logFlow=entry.flow||'';_logSymptoms=[...(entry.symptoms||[])];_logMood=entry.mood||'';const active2=activeCycle();
-  const cycDay=active2?daysBetween(active2.startDate,dateStr)+1:null;
-  modalTitle.textContent=fmtDate(dateStr)+(cycDay?' — Day '+cycDay:'');_renderLogModal(entry);overlay.classList.add('open');}
-function _renderLogModal(entry){modalBody.innerHTML=`
+function openLogModal(dateStr){_logDate=dateStr;_logCycle=logCycleFor(dateStr);if(!_logCycle){showToast('Mark the first day of your period first',true);return;}if(!_logCycle.days)_logCycle.days=[];const active=_logCycle;let entry=active.days.find(d=>d.date===dateStr)||{date:dateStr,flow:'',symptoms:[],mood:'',notes:''};_logFlow=entry.flow||'';_logSymptoms=[...(entry.symptoms||[])];_logMood=entry.mood||'';_logMucus=entry.mucus||'';_logSleep=entry.sleep||'';_logSex=entry.sex||'';_logBBT=entry.bbt||'';_logWeight=entry.weight||'';_logNotes=entry.notes||'';_logLive=false;const cycDay=daysBetween(_logCycle.startDate,dateStr)+1;
+  modalTitle.textContent=fmtDate(dateStr)+(cycDay?' — Day '+cycDay:'');_renderLogModal(entry);_logLive=true;overlay.classList.add('open');}
+function _renderLogModal(entry){
+  // Tapping a chip redraws this form, so anything typed so far is kept first.
+  if(_logLive){const nEl=document.getElementById('logNotes'),bEl=document.getElementById('logBBT'),wEl=document.getElementById('logWeight');if(nEl)_logNotes=nEl.value;if(bEl)_logBBT=bEl.value;if(wEl)_logWeight=wEl.value;}
+  const _cd=_logCycle?daysBetween(_logCycle.startDate,_logDate)+1:0;
+  const _isStart=!!_logCycle&&_logCycle.startDate===_logDate,_isEnd=!!_logCycle&&_logCycle.endDate===_logDate&&_cd<=14,_canEnd=_cd>=1&&_cd<=14;
+  modalBody.innerHTML=`
+  <div class="form-label" style="margin-bottom:8px">Period</div>
+  <div class="flow-row">
+    <div class="flow-btn ${_isStart?'active':''}" id="btnPeriodFirst" onclick="markPeriodStart()">${_isStart?'✓ ':''}First day of period</div>
+    <div class="flow-btn ${_isEnd?'active':''}" id="btnPeriodLast" style="${_canEnd?'':'opacity:.45'}" onclick="markPeriodEnd()">${_isEnd?'✓ ':''}Last day of period</div>
+  </div>
   <div class="form-label" style="margin-bottom:8px">Flow</div>
   <div class="flow-row">${FLOW_LEVELS.map(f=>`<div class="flow-btn ${_logFlow===f?'active':''}" onclick="setFlow('${f}')"><span class="flow-dot" style="background:${f==='Spotting'?'#7a5068':f==='Light'?'#a06080':f==='Medium'?'#c87a8a':'#e05070'}"></span>${f}</div>`).join('')}</div>
   <div class="form-label" style="margin-bottom:8px">Symptoms</div>
-  <div class="chip-grid">${[...SYMPTOMS,...(state.customSymptoms||[])].map(s=>`<span class="chip ${_logSymptoms.includes(s)?'active':''}" onclick="toggleSym('${s}')">${s}</span>`).join('')}<span class="chip" onclick="addCustomSymptom()" style="border-style:dashed">+ Add</span></div>
+  <div class="chip-grid">${[...SYMPTOMS,...(state.customSymptoms||[])].map(s=>`<span class="chip ${_logSymptoms.includes(s)?'active':''}" data-s="${esc(s)}" onclick="toggleSym(this.dataset.s)">${esc(s)}</span>`).join('')}<span class="chip" onclick="addCustomSymptom()" style="border-style:dashed">+ Add</span></div>
   <div class="form-label" style="margin-bottom:8px">Mood</div>
   <div class="chip-grid">${MOODS.map(m=>`<span class="chip gold ${_logMood===m?'active':''}" onclick="setMood('${m}')">${m}</span>`).join('')}</div>
   <div class="form-label" style="margin-bottom:8px">Cervical Mucus</div>
@@ -914,41 +1032,77 @@ function _renderLogModal(entry){modalBody.innerHTML=`
   <div class="form-row" style="margin-bottom:14px">
     <div class="form-group" style="margin-bottom:0">
       <label class="form-label">BBT (°F)</label>
-      <input class="form-input" id="logBBT" type="number" step="0.01" min="96" max="100" placeholder="e.g. 97.8" value="${_logBBT}"/>
+      <input class="form-input" id="logBBT" type="number" step="0.01" min="96" max="100" placeholder="e.g. 97.8" value="${esc(_logBBT)}"/>
     </div>
     <div class="form-group" style="margin-bottom:0">
       <label class="form-label">Weight (lbs)</label>
-      <input class="form-input" id="logWeight" type="number" step="0.1" placeholder="e.g. 135.0" value="${_logWeight}"/>
+      <input class="form-input" id="logWeight" type="number" step="0.1" placeholder="e.g. 135.0" value="${esc(_logWeight)}"/>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Notes</label>
-    <textarea class="form-textarea" id="logNotes" placeholder="How are you feeling today?">${entry.notes||''}</textarea>
+    <textarea class="form-textarea" id="logNotes" placeholder="How are you feeling today?">${esc(_logNotes)}</textarea>
   </div>
   <button class="btn-primary" onclick="saveLog()">Save</button>
-  ${entry.flow||(entry.symptoms&&entry.symptoms.length)||entry.notes?`<button class="btn-delete" onclick="deleteLog()">Delete this entry</button>`:''}
+  ${entry.flow||(entry.symptoms&&entry.symptoms.length)||entry.notes||entry.bbt||entry.weight||entry.mucus||entry.sleep||entry.sex||entry.mood?`<button class="btn-delete" onclick="deleteLog()">Delete this entry</button>`:''}
 `;}
-function setFlow(f){_logFlow=_logFlow===f?'':f;const e=activeCycle()?.days.find(d=>d.date===_logDate)||{};_renderLogModal(e);}
-function toggleSym(s){if(_logSymptoms.includes(s))_logSymptoms=_logSymptoms.filter(x=>x!==s);else _logSymptoms.push(s);const e=activeCycle()?.days.find(d=>d.date===_logDate)||{};_renderLogModal(e);}
-function setMood(m){_logMood=_logMood===m?'':m;const e=activeCycle()?.days.find(d=>d.date===_logDate)||{};_renderLogModal(e);}
+function markPeriodEnd(){
+  if(!_logCycle)return;
+  const cd=daysBetween(_logCycle.startDate,_logDate)+1;
+  if(cd>14){showToast('The last day has to be within 14 days of the first day ('+fmtShort(_logCycle.startDate)+')',true);return;}
+  if(_logCycle.endDate===_logDate){showToast('Already the last day. Tap a different day to move it.');return;}
+  _logCycle.endDate=_logDate;
+  save();
+  _renderLogModal(_logEntry());
+  renderTab(currentTab);
+  showToast('Period: '+fmtShort(_logCycle.startDate)+' to '+fmtShort(_logDate));
+}
+function markPeriodStart(){
+  const d=_logDate;
+  if(!d||d>today())return;
+  const plan=periodStartPlan(d);
+  if(plan.kind==='none'){
+    const c=plan.cycle,prev=logCycleFor(addDays(c.startDate,-1)),n=(c.days||[]).length;
+    const sub=(prev||!n)?'The period starting '+fmtShort(c.startDate)+' comes off the calendar. Anything you logged stays saved.':'The period starting '+fmtShort(c.startDate)+' and its '+n+' logged day'+(n!==1?'s':'')+' will be deleted.';
+    flowConfirm('Remove this period?', sub, function(){
+      removeCycleKeepDays(c);save();closeModal();renderTab(currentTab);showToast('Period removed');
+    }, 'Remove', true);
+    return;
+  }
+  if(plan.kind==='move'){
+    const c=plan.cycle;
+    flowConfirm('Move the first day?', 'Change the first day of this period from '+fmtShort(c.startDate)+' to '+fmtShort(d)+'.', function(){
+      moveCycleStart(c,d);save();closeModal();renderTab(currentTab);showToast('First day moved to '+fmtShort(d));
+    }, 'Move', false);
+    return;
+  }
+  flowConfirm('Add a period?', 'Mark '+fmtDate(d)+' as the first day of a period.', function(){
+    closeModal();startCycleOn(d);save();renderTab(currentTab);
+    const c=state.cycles.find(x=>x.startDate===d);
+    showToast(c&&c.endDate?'Period added. Tap its last day to set the end.':'Period started');
+  }, 'Add', false);
+}
+function setFlow(f){_logFlow=_logFlow===f?'':f;const e=_logEntry();_renderLogModal(e);}
+function toggleSym(s){if(_logSymptoms.includes(s))_logSymptoms=_logSymptoms.filter(x=>x!==s);else _logSymptoms.push(s);const e=_logEntry();_renderLogModal(e);}
+function setMood(m){_logMood=_logMood===m?'':m;const e=_logEntry();_renderLogModal(e);}
 function addCustomSymptom(){
   flowInput(function(val){
     const sym=val.trim();
     if(!state.customSymptoms)state.customSymptoms=[];
     if(!state.customSymptoms.includes(sym))state.customSymptoms.push(sym);
     save();
-    const e=activeCycle()?.days.find(d=>d.date===_logDate)||{};
+    const e=_logEntry();
     _renderLogModal(e);
   }, 'e.g. Headache');
 }
-function setMucus(m){_logMucus=_logMucus===m?'':m;const e=activeCycle()?.days.find(d=>d.date===_logDate)||{};_renderLogModal(e);}
-function setSleep(s){_logSleep=_logSleep===s?'':s;const e=activeCycle()?.days.find(d=>d.date===_logDate)||{};_renderLogModal(e);}
-function setSex(s){_logSex=_logSex===s?'':s;const e=activeCycle()?.days.find(d=>d.date===_logDate)||{};_renderLogModal(e);}
-function saveLog(){const cycle=activeCycle();if(!cycle)return;const notes=document.getElementById('logNotes')?.value?.trim()||'';const bbt=document.getElementById('logBBT')?.value?.trim()||'';
+function setMucus(m){_logMucus=_logMucus===m?'':m;const e=_logEntry();_renderLogModal(e);}
+function setSleep(s){_logSleep=_logSleep===s?'':s;const e=_logEntry();_renderLogModal(e);}
+function setSex(s){_logSex=_logSex===s?'':s;const e=_logEntry();_renderLogModal(e);}
+function saveLog(){const cycle=_logCycle;if(!cycle)return;const notes=document.getElementById('logNotes')?.value?.trim()||'';const bbt=document.getElementById('logBBT')?.value?.trim()||'';
   const weight=document.getElementById('logWeight')?.value?.trim()||'';
   const entry={date:_logDate,flow:_logFlow,symptoms:_logSymptoms,mood:_logMood,notes,mucus:_logMucus,sleep:_logSleep,sex:_logSex,bbt,weight};const idx=cycle.days.findIndex(d=>d.date===_logDate);if(idx>-1)cycle.days[idx]=entry;else cycle.days.push(entry);save();closeModal();renderTab(currentTab);}
 function deleteLog(){
-  const cycle=activeCycle();if(!cycle)return;
+  const cycle=_logCycle;if(!cycle)return;
   flowConfirm('Delete this entry?', 'This cannot be undone.', function(){
     cycle.days=cycle.days.filter(d=>d.date!==_logDate);save();closeModal();renderTab(currentTab);
   });
@@ -1042,9 +1196,307 @@ function checkPin(){
   }
 }
 
+/* ── PRINTABLE PDFs (made on the device with pdf-lib: a cycle report + blank forms) ── */
+// The built-in PDF fonts can draw basic Latin letters but not emoji or other scripts.
+// Anything they cannot draw is removed so the export never fails.
+function pdfSafe(s){
+  return String(s==null?'':s)
+    .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[\r\n\t]+/g,' ')
+    .replace(/ ?[^\x20-\x7E\xA0-\xFF–—•…]+/g,'')
+    .trim();
+}
+function pdfHexRgb(hex){
+  const m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex||'');
+  if(!m)return PDFLib.rgb(.55,.33,.42);
+  return PDFLib.rgb(parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255);
+}
+async function pdfKit(){
+  const doc=await PDFLib.PDFDocument.create();
+  const font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+  const bold=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+  const theme=THEMES[state.settings.theme]||THEMES.sensitive;
+  const k={doc,font,bold,W:612,H:792,M:50,CW:512,BOTTOM:66,page:null,y:0,title:'',
+    ink:PDFLib.rgb(.16,.16,.16),soft:PDFLib.rgb(.42,.42,.42),line:PDFLib.rgb(.70,.70,.70),faint:PDFLib.rgb(.86,.86,.86),
+    fill:PDFLib.rgb(.95,.95,.94),shade:PDFLib.rgb(.88,.88,.87),accent:pdfHexRgb(theme.darkDeep)};
+  // Shrink text a little to fit its space, then shorten it if it still does not fit.
+  k.fit=function(f,text,size,maxW,minSize){
+    let s=pdfSafe(text),sz=size;const min=minSize||Math.max(6,size-2);
+    while(sz>min&&f.widthOfTextAtSize(s,sz)>maxW)sz-=0.25;
+    if(f.widthOfTextAtSize(s,sz)>maxW){
+      while(s.length>1&&f.widthOfTextAtSize(s+'...',sz)>maxW)s=s.slice(0,-1);
+      s=s.replace(/\s+$/,'')+'...';
+    }
+    return {text:s,size:sz};
+  };
+  k.text=function(text,x,y,size,o){
+    o=o||{};const f=o.bold?bold:font;
+    const r=k.fit(f,text,size,o.maxW||(k.W-k.M-x),o.minSize);
+    const w=f.widthOfTextAtSize(r.text,r.size);
+    const dx=o.align==='right'?(o.maxW-w):o.align==='center'?((o.maxW-w)/2):0;
+    k.page.drawText(r.text,{x:x+dx,y:y,size:r.size,font:f,color:o.color||k.ink});
+  };
+  k.hline=function(x1,x2,y,color,t){k.page.drawLine({start:{x:x1,y:y},end:{x:x2,y:y},thickness:t||.7,color:color||k.line});};
+  k.vline=function(x,y1,y2,color,t){k.page.drawLine({start:{x:x,y:y1},end:{x:x,y:y2},thickness:t||.7,color:color||k.line});};
+  k.newPage=function(title,sub){
+    k.page=doc.addPage([k.W,k.H]);k.title=title;
+    let y=k.H-k.M;
+    k.text(title,k.M,y-6,19,{bold:true,maxW:k.CW});
+    y-=24;
+    if(sub){k.text(sub,k.M,y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});y-=12;}
+    k.hline(k.M,k.M+k.CW,y,k.accent,1.2);
+    k.y=y-20;
+  };
+  k.contTitle=function(){return k.title.indexOf('(continued)')>-1?k.title:k.title+' (continued)';};
+  k.room=function(h){if(k.y-h<k.BOTTOM){k.newPage(k.contTitle());return true;}return false;};
+  k.section=function(text,x,w){k.text(text,x===undefined?k.M:x,k.y,11.5,{bold:true,color:k.accent,maxW:w||k.CW});k.y-=9;};
+  k.note=function(text){k.text(text,k.M,k.y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});k.y-=16;};
+  k.field=function(label,x,y,w){
+    const r=k.fit(font,label,9.5,w*0.6);
+    k.page.drawText(r.text,{x:x,y:y,size:r.size,font:font,color:k.soft});
+    k.hline(x+font.widthOfTextAtSize(r.text,r.size)+6,x+w,y-2);
+  };
+  k.fieldRow=function(labels){
+    const gap=24,w=(k.CW-gap*(labels.length-1))/labels.length;
+    labels.forEach(function(l,i){k.field(l,k.M+i*(w+gap),k.y,w);});
+    k.y-=26;
+  };
+  k.box=function(x,y,s){k.page.drawRectangle({x:x,y:y,width:s,height:s,borderColor:k.soft,borderWidth:.8});};
+  // cols: [{label,w,pick,align,soft,wrap}] · rows: a number (blank rows) or an array of rows.
+  // Tables continue onto a new page when they run out of room.
+  k.table=function(x,cols,rows,rowH,o){
+    o=o||{};
+    const totalW=cols.reduce(function(s,c){return s+c.w;},0),headH=19;
+    const n=typeof rows==='number'?rows:rows.length;
+    function sides(top,h){let cx=x;for(let i=0;i<=cols.length;i++){k.vline(cx,top,top-h);if(i<cols.length)cx+=cols[i].w;}}
+    function head(){
+      k.page.drawRectangle({x:x,y:k.y-headH,width:totalW,height:headH,color:k.fill});
+      let cx=x;
+      cols.forEach(function(c){
+        if(c.label)k.text(c.label,cx+5,k.y-13,8.5,{bold:true,maxW:c.w-10,minSize:6.5,align:c.align==='center'?'center':undefined});
+        cx+=c.w;
+      });
+      k.hline(x,x+totalW,k.y);k.hline(x,x+totalW,k.y-headH);sides(k.y,headH);
+      k.y-=headH;
+    }
+    head();
+    for(let r=0;r<n;r++){
+      if(!o.noBreak&&k.y-rowH<k.BOTTOM){k.newPage(k.contTitle());head();}
+      const row=typeof rows==='number'?null:rows[r];let cx=x;
+      cols.forEach(function(c,i){
+        const v=row?row[i]:undefined,bs=Math.min(10,rowH-8),by=k.y-rowH+(rowH-bs)/2;
+        if(c.pick){
+          let px=cx+6;
+          c.pick.forEach(function(lbl){
+            k.box(px,by,bs);
+            k.page.drawText(lbl,{x:px+bs+3,y:by+1.5,size:8,font:font,color:k.soft});
+            px+=bs+3+font.widthOfTextAtSize(lbl,8)+9;
+          });
+        }else if(c.wrap&&v&&font.widthOfTextAtSize(pdfSafe(v),8.5)>c.w-10){
+          let l1='';const rest=[];
+          pdfSafe(v).split(' ').forEach(function(w){if(!rest.length&&font.widthOfTextAtSize((l1?l1+' ':'')+w,8.5)<=c.w-10)l1=(l1?l1+' ':'')+w;else rest.push(w);});
+          k.text(l1,cx+5,k.y-rowH/2+1.5,8.5,{maxW:c.w-10,minSize:8.5});
+          k.text(rest.join(' '),cx+5,k.y-rowH/2-8,8.5,{maxW:c.w-10,minSize:7.5});
+        }else if(v!==undefined&&v!==null&&v!==''){
+          k.text(String(v),cx+5,k.y-rowH/2-3,9,{maxW:c.w-10,minSize:7,color:c.soft?k.soft:k.ink,align:c.align==='center'?'center':undefined});
+        }
+        cx+=c.w;
+      });
+      k.hline(x,x+totalW,k.y-rowH);sides(k.y,rowH);
+      k.y-=rowH;
+    }
+  };
+  k.fillRows=function(rowH){return Math.max(0,Math.floor((k.y-k.BOTTOM-19)/rowH));};
+  k.lines=function(gap){k.y-=gap-6;while(k.y>k.BOTTOM){k.hline(k.M,k.M+k.CW,k.y);k.y-=gap;}};
+  k.finish=async function(){
+    const pages=doc.getPages();
+    pages.forEach(function(pg,i){
+      pg.drawText('Flow Tracker  ·  Mobile First Studio',{x:k.M,y:34,size:8,font:font,color:k.soft});
+      const lbl='Page '+(i+1)+' of '+pages.length;
+      pg.drawText(lbl,{x:k.M+k.CW-font.widthOfTextAtSize(lbl,8),y:34,size:8,font:font,color:k.soft});
+    });
+    return await doc.save();
+  };
+  return k;
+}
+
+/* Blank form 1: a whole year on one page */
+function pdfPageYear(k){
+  k.newPage('Period Tracker: Year at a Glance','Shade each day of your period. Write S, L, M or H in the box to note how heavy it was.');
+  k.fieldRow(['Year','Usual cycle length']);
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dim=[31,29,31,30,31,30,31,31,30,31,30,31];
+  const labelW=62,cw=(k.CW-labelW)/31,rowH=25,headH=17,x0=k.M,top=k.y,gridW=k.CW;
+  k.page.drawRectangle({x:x0,y:top-headH,width:gridW,height:headH,color:k.fill});
+  for(let d=1;d<=31;d++)k.text(String(d),x0+labelW+(d-1)*cw,top-12,7,{bold:true,maxW:cw,align:'center'});
+  months.forEach(function(name,m){
+    const yTop=top-headH-m*rowH;
+    k.text(name,x0+5,yTop-rowH/2-3,8.5,{bold:true,maxW:labelW-8});
+    if(dim[m]<31)k.page.drawRectangle({x:x0+labelW+dim[m]*cw,y:yTop-rowH,width:(31-dim[m])*cw,height:rowH,color:k.shade});
+  });
+  const bottom=top-headH-12*rowH;
+  k.hline(x0,x0+gridW,top);
+  for(let r=0;r<=12;r++)k.hline(x0,x0+gridW,top-headH-r*rowH);
+  k.vline(x0,top,bottom);
+  for(let c=0;c<=31;c++)k.vline(x0+labelW+c*cw,top,bottom);
+  k.y=bottom-18;
+  let kx=k.M;
+  [['S','Spotting'],['L','Light'],['M','Medium'],['H','Heavy']].forEach(function(p){
+    k.box(kx,k.y-2,11);k.text(p[0],kx,k.y+1,7.5,{bold:true,maxW:11,align:'center'});
+    k.text(p[1],kx+16,k.y,9,{color:k.soft,maxW:70});kx+=92;
+  });
+  k.y-=28;
+  k.section('Cycle notes');
+  k.table(k.M,[{label:'Month',w:74},{label:'Period started',w:98},{label:'Period length',w:86},{label:'Cycle length',w:86},{label:'Notes',w:168}],Math.min(12,k.fillRows(19)),19,{noBreak:true});
+}
+
+/* Blank form 2: one row per day for a month */
+function pdfPageSymptomLog(k){
+  k.newPage('Daily Symptom Log','One row per day. Tick your flow (S spotting, L light, M medium, H heavy), then note how you felt.');
+  k.fieldRow(['Month','Cycle started on']);
+  const rows=31,rowH=Math.min(20,(k.y-k.BOTTOM-19)/rows);
+  k.table(k.M,[{label:'Date',w:48},{label:'Day',w:34},{label:'Flow',w:120,pick:['S','L','M','H']},{label:'Symptoms',w:130},{label:'Mood',w:62},{label:'BBT',w:42},{label:'Notes',w:76}],rows,rowH,{noBreak:true});
+}
+
+/* Blank form 3: basal body temperature chart */
+function pdfPageBbt(k){
+  k.newPage('BBT Chart','Take your temperature at the same time each morning, before getting up. Mark a dot each day and join the dots.');
+  k.fieldRow(['Cycle started on','Usual wake time']);
+  k.section('Temperature (°F) by cycle day');
+  k.y-=2;
+  const days=40,labelW=38,cw=(k.CW-labelW)/days,rowH=18.5,headH=15,x0=k.M,top=k.y;
+  const temps=[];for(let t=990;t>=970;t--)temps.push(t/10);
+  const extras=['Flow','Mucus'];
+  const gridBottom=top-headH-temps.length*rowH,bottom=gridBottom-extras.length*rowH;
+  k.page.drawRectangle({x:x0,y:top-headH,width:k.CW,height:headH,color:k.fill});
+  k.text('Day',x0+4,top-11,7,{bold:true,maxW:labelW-6});
+  for(let d=1;d<=days;d++)k.text(String(d),x0+labelW+(d-1)*cw,top-10.5,6.2,{bold:true,maxW:cw,align:'center',minSize:5});
+  temps.forEach(function(t,i){
+    const yTop=top-headH-i*rowH,major=Math.round(t*10)%5===0;
+    k.text(t.toFixed(1),x0+4,yTop-rowH/2-3,7.5,{bold:major,maxW:labelW-6,color:major?k.ink:k.soft});
+    k.hline(x0,x0+k.CW,yTop,major?k.line:k.faint,major?.8:.5);
+  });
+  extras.forEach(function(lbl,i){
+    const yTop=gridBottom-i*rowH;
+    k.page.drawRectangle({x:x0,y:yTop-rowH,width:labelW,height:rowH,color:k.fill});
+    k.text(lbl,x0+4,yTop-rowH/2-3,7.5,{bold:true,maxW:labelW-6});
+    k.hline(x0,x0+k.CW,yTop,k.line,.8);
+  });
+  k.hline(x0,x0+k.CW,top);k.hline(x0,x0+k.CW,bottom);
+  k.vline(x0,top,bottom);k.vline(x0+labelW,top,bottom);
+  for(let c=1;c<=days;c++)k.vline(x0+labelW+c*cw,top,bottom,c%5===0||c===days?k.line:k.faint,c%5===0||c===days?.7:.5);
+  k.y=bottom-22;
+  k.section('Notes');
+  k.lines(22);
+}
+
+/* Filled-in report */
+function pdfPagesCycleReport(k){
+  k.newPage('Cycle Report','Generated '+fmtDate(today()));
+  const cl=avgCycleLength(),pl=avgPeriodLength(),np=nextPeriodDate();
+  k.section('Summary');
+  k.table(k.M,[{label:'Measure',w:200},{label:'Value',w:312}],[
+    ['Average cycle length',cl+' days'],
+    ['Average period length',pl+' days'],
+    ['Regularity',cycleRegularity()||'Not enough cycles logged yet'],
+    ['Cycles recorded',String(state.cycles.length)],
+    ['Next period (estimate)',np?fmtDate(np):'Not set'],
+    ['Fertile window (estimate)',fertileStart()?fmtShort(fertileStart())+' to '+fmtShort(fertileEnd()):'Not set']
+  ],18);
+  k.y-=22;
+
+  const asc=[...state.cycles].sort((a,b)=>a.startDate.localeCompare(b.startDate));
+  k.room(70);k.section('Cycle history');
+  if(!asc.length){k.y-=8;k.note('No cycles recorded yet.');}
+  else{
+    const rows=asc.map(function(c,i){
+      const next=asc[i+1];
+      const periodDays=(c.days||[]).filter(d=>d.flow).length;
+      const syms=[...new Set((c.days||[]).flatMap(d=>d.symptoms||[]))].slice(0,5).join(', ');
+      return [fmtDate(c.startDate),periodDays?String(periodDays):'',next?daysBetween(c.startDate,next.startDate)+' days':'Current',syms];
+    }).reverse().slice(0,12);
+    k.table(k.M,[{label:'Period started',w:118},{label:'Flow days logged',w:92,align:'center'},{label:'Cycle length',w:82,align:'center'},{label:'Symptoms logged',w:220,wrap:true}],rows,24);
+  }
+  k.y-=22;
+
+  const patterns=symptomPatterns();
+  if(patterns.length){
+    k.room(70);k.section('Symptom patterns');
+    k.table(k.M,[{label:'Symptom',w:220},{label:'Usual cycle days',w:160},{label:'Times logged',w:132,align:'center'}],
+      patterns.map(p=>[p.sym,'Day '+p.min+(p.min!==p.max?' to '+p.max:''),String(p.count)]),18);
+    k.y-=22;
+  }
+
+  const logs=state.cycles.flatMap(c=>(c.days||[]).map(d=>({d,cd:daysBetween(c.startDate,d.date)+1}))).sort((a,b)=>b.d.date.localeCompare(a.d.date)).slice(0,45);
+  k.room(70);k.section(logs.length?'Daily log (most recent '+logs.length+' days)':'Daily log');
+  if(!logs.length){k.y-=8;k.note('No days logged yet.');}
+  else{
+    k.table(k.M,[{label:'Date',w:58},{label:'Day',w:32,align:'center'},{label:'Flow',w:52},{label:'Mood',w:62},{label:'BBT',w:40,align:'center'},{label:'Mucus',w:58},{label:'Symptoms and notes',w:210,wrap:true}],
+      logs.map(function(x){
+        const d=x.d,bits=[];
+        if(d.symptoms&&d.symptoms.length)bits.push(d.symptoms.join(', '));
+        if(d.sleep)bits.push('Sleep: '+d.sleep);
+        if(d.weight)bits.push('Weight: '+d.weight+' lbs');
+        if(d.notes)bits.push(d.notes);
+        return [fmtShort(d.date),String(x.cd),d.flow||'',d.mood||'',d.bbt||'',d.mucus||'',bits.join(' · ')];
+      }),24);
+  }
+  k.y-=20;
+  k.room(30);
+  k.note('Predictions are estimates based on the cycles you logged. This report is not medical advice.');
+}
+
+// Hand the finished PDF to the person. On iPhone and iPad the share sheet (Print, Save to Files)
+// is the dependable route from a home screen app, so it is tried first there.
+function pdfDeliver(bytes,filename){
+  const blob=new Blob([bytes],{type:'application/pdf'});
+  const download=function(){
+    const url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+    setTimeout(function(){URL.revokeObjectURL(url);},4000);
+  };
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  if(isIOS&&navigator.canShare&&typeof File!=='undefined'){
+    try{
+      const file=new File([blob],filename,{type:'application/pdf'});
+      if(navigator.canShare({files:[file]})){
+        return navigator.share({files:[file],title:filename}).catch(function(err){
+          if(err&&err.name==='AbortError')return; // the person closed the share sheet
+          download();
+        });
+      }
+    }catch(e){}
+  }
+  download();
+}
+let _pdfBusy=false;
+async function makeFlowPdf(kind){
+  if(typeof PDFLib==='undefined'){showToast('PDF tool is still loading. Check your connection and try again.',true);return;}
+  if(_pdfBusy)return;
+  _pdfBusy=true;showToast('Creating PDF...');
+  try{
+    const k=await pdfKit();let filename;
+    if(kind==='report'){pdfPagesCycleReport(k);filename='cycle-report-'+today()+'.pdf';}
+    else if(kind==='year'){pdfPageYear(k);filename='period-tracker-year-at-a-glance.pdf';}
+    else if(kind==='daily'){pdfPageSymptomLog(k);filename='daily-symptom-log.pdf';}
+    else if(kind==='bbt'){pdfPageBbt(k);filename='bbt-chart.pdf';}
+    else{pdfPageYear(k);pdfPageSymptomLog(k);pdfPageBbt(k);filename='period-tracker-printables.pdf';}
+    const bytes=await k.finish();
+    await pdfDeliver(bytes,filename);
+    showToast('PDF ready!');
+  }catch(e){
+    console.error(e);showToast('Could not create the PDF. Try again.',true);
+  }
+  _pdfBusy=false;
+}
+window.makeFlowPdf=makeFlowPdf;
+
 /* ── SW ── */
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').then(reg=>{reg.update();}).catch(()=>{});});}
 
+/* ── INIT ── */
+load();
+applyTheme(state.settings.theme||'sensitive');
+applyFont(state.settings.font||'EB Garamond');
 var DEMO_TRIAL_DAYS=14;
 function demoTrialDaysLeft(){
   var KEY='mfs_flow_demo_since';
@@ -1065,15 +1517,11 @@ function enforceDemoTrial(){
   }
   if(banner){
     var noun=daysLeft===1?'day':'days';
-    banner.innerHTML='<b>Free demo</b> &middot; '+daysLeft+' '+noun+' left &middot; <a href="https://www.etsy.com/listing/4530222903/period-cycle-digital-tracker-private" target="_blank" rel="noopener">Get the full app &rarr;</a>';
+    banner.innerHTML='<b>Free demo</b> &middot; '+daysLeft+' '+noun+' left &middot; <a href="https://www.etsy.com/listing/4552091703/basic-private-period-tracker-cycle" target="_blank" rel="noopener">Get the full app &rarr;</a>';
   }
   return false;
 }
 
-/* ── INIT ── */
-load();
-applyTheme(state.settings.theme||'sensitive');
-applyFont(state.settings.font||'EB Garamond');
 enforceDemoTrial();
 // Hide all screens first
 document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
