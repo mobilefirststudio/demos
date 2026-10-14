@@ -141,6 +141,29 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;height:100
 .qa-chip.on{background:var(--green);border-color:var(--green);color:#fff;}
 .qa-sep{width:1px;height:18px;background:var(--border);margin:0 2px;}
 .qa-date{background:var(--bg3);border:.5px solid var(--border);border-radius:8px;padding:5px 8px;color:var(--text);font-family:'EB Garamond',serif;font-size:var(--fs-xs);min-height:32px;}
+html.dark{color-scheme:dark;}
+html.dark .chk{background:var(--bg3);}
+html.dark .ni.active i,html.dark .ni.active span,html.dark .stat-value,html.dark .cal-day.today .cal-num,html.dark .cat-Reminder,html.dark .add-mini{color:var(--green-t);}
+html.dark .btn-delete{color:var(--burg-t);}
+html.dark .cat-Appointment{color:var(--blue-t);}
+html.dark .cat-Holiday{color:var(--gold-t);}
+html.dark [style*="color:var(--green)"]{color:var(--green-t)!important;}
+html.dark [style*="color:var(--gold)"]{color:var(--gold-t)!important;}
+html.dark [style*="color:var(--burg)"]{color:var(--burg-t)!important;}
+html.dark .card-tinted,html.dark .card-gold{border-color:var(--border);}
+html.dark .cat-Birthday{background:#3a2430;color:#f2a7c3;}
+html.dark .cat-Medical{background:#33263d;color:#d3a6ec;}
+html.dark .modal-bg,html.dark .mfs-confirm{background:rgba(0,0,0,.65);}
+.color-btn{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation;}
+.dk-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 0 6px;}
+.dk-row .dk-l{font-size:var(--fs-base);color:var(--text);}
+.dk-row .dk-s{font-size:var(--fs-xs);color:var(--text2);font-style:italic;margin-top:2px;}
+.dk-sw{position:relative;width:50px;height:30px;flex-shrink:0;}
+.dk-sw input{opacity:0;width:100%;height:100%;position:absolute;inset:0;margin:0;cursor:pointer;z-index:1;}
+.dk-sw span{position:absolute;inset:0;border-radius:15px;background:var(--bg4);border:.5px solid var(--border);transition:background .2s;}
+.dk-sw span:after{content:'';position:absolute;width:24px;height:24px;border-radius:50%;background:#fff;top:2.5px;left:3px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s;}
+.dk-sw input:checked+span{background:var(--green);border-color:var(--green);}
+.dk-sw input:checked+span:after{transform:translateX(19px);}
 </style>
 </head>
 <body>
@@ -199,7 +222,8 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;height:100
 <div class="cal-legend-item"><div class="cal-dot" style="background:#2c5282;"></div>Appt</div>
 <div class="cal-legend-item"><div class="cal-dot" style="background:#6a1b9a;"></div>Medical</div>
 <div class="cal-legend-item"><div class="cal-dot" style="background:#9c7c38;"></div>Holiday</div>
-<div class="cal-legend-item"><div class="cal-dot" style="background:#4a6741;"></div>Other</div>
+<div class="cal-legend-item"><div class="cal-dot" style="background:#4a6741;"></div>Reminder</div>
+<div class="cal-legend-item"><div class="cal-dot" style="background:#7a7268;"></div>Other</div>
 </div>
 <div style="height:20px;"></div>
 </div>
@@ -216,6 +240,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;height:100
 <div class="section-div"></div>
 <div class="sl">Color Theme</div>
 <div class="theme-grid" id="theme-grid"></div>
+<div class="dk-row"><div><div class="dk-l">Dark mode</div><div class="dk-s">Tip: press and hold the color dot on Home</div></div><label class="dk-sw"><input type="checkbox" id="dk-toggle" onchange="setDarkMode(this.checked)" aria-label="Dark mode"/><span></span></label></div>
 <div class="section-div"></div>
 <div class="sl">Cloud Backup</div>
 <div class="card" style="margin-bottom:10px">
@@ -611,7 +636,63 @@ function renderDash(){
   document.getElementById('dash-week').innerHTML=dwHtml;
 }
 
+/* ===== Dark mode (long press the color dot, or Setup toggle) ===== */
+var DK_BASE={bg:'#1c1a17',bg2:'#262420',bg3:'#2f2c27',bg4:'#38342e',text:'#ece6dc',text2:'#b3aa9d',text3:'#80786c',border:'#46413a',border2:'#36322c'};
+function dkHex(h){h=h.replace('#','');return[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];}
+function dkToHex(c){return'#'+c.map(function(v){v=Math.round(Math.max(0,Math.min(255,v)));return(v<16?'0':'')+v.toString(16);}).join('');}
+function dkMix(a,b,t){a=dkHex(a);b=dkHex(b);return dkToHex([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]);}
+function dkLum(h){return dkHex(h).map(function(v){v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);}).reduce(function(s,v,i){return s+v*[.2126,.7152,.0722][i];},0);}
+function dkCon(a,b){var x=dkLum(a),y=dkLum(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+/* text version of an accent: lightened just enough to read on dark cards */
+function dkAccent(c){for(var t=0;t<=.8;t+=.02){var m=dkMix(c,'#ffffff',t);if(dkCon(m,DK_BASE.bg2)>=4.8)return m;}return dkMix(c,'#ffffff',.8);}
+function dkApply(){
+  var on=!!DB.dark,root=document.documentElement;
+  root.classList.toggle('dark',on);
+  if(!on)return;
+  var t=THEMES[DB.theme]||THEMES.sage,r=root.style,k;
+  for(k in DK_BASE)r.setProperty('--'+k,DK_BASE[k]);
+  var g=dkAccent(t.green),gold=dkAccent(t.gold),blue=dkAccent(t.blue),burg=dkAccent(t.burg);
+  /* solid accents (headers, buttons) keep the theme color; text accents use the lighter version */
+  r.setProperty('--green-t',g);r.setProperty('--gold-t',gold);r.setProperty('--blue-t',blue);r.setProperty('--burg-t',burg);
+  r.setProperty('--green3',dkMix(DK_BASE.bg2,t.green,.3));
+  r.setProperty('--gold2',dkMix(DK_BASE.bg2,t.gold,.18));
+  r.setProperty('--blue2',dkMix(DK_BASE.bg2,t.blue,.25));
+  r.setProperty('--burg2',dkMix(DK_BASE.bg2,t.burg,.18));
+  r.setProperty('--burg3',dkMix(DK_BASE.bg2,t.burg,.28));
+  r.setProperty('--shadow','0 1px 2px rgba(0,0,0,.3), 0 6px 16px rgba(0,0,0,.35)');
+  var mc=document.getElementById('meta-theme-color');if(mc)mc.setAttribute('content',t.green);
+}
+var dkOrigApply=applyTheme;
+applyTheme=function(key){document.documentElement.style.removeProperty('--shadow');dkOrigApply(key);dkApply();};
+window.applyTheme=applyTheme;
+function setDarkMode(on){
+  DB.dark=!!on;
+  applyTheme(DB.theme||'sage');
+  var sw=document.getElementById('dk-toggle');if(sw)sw.checked=!!on;
+}
+window.setDarkMode=setDarkMode;
+function toggleDarkMode(){setDarkMode(!DB.dark);showToast(DB.dark?'Dark mode on':'Dark mode off');}
+window.toggleDarkMode=toggleDarkMode;
+/* long press on the color dot: dark mode; a normal tap still changes the color */
+(function(){
+  var btn=document.querySelector('.color-btn');if(!btn)return;
+  var timer=null,fired=false,sx=0,sy=0;
+  function cancel(){if(timer){clearTimeout(timer);timer=null;}}
+  btn.addEventListener('pointerdown',function(e){
+    fired=false;sx=e.clientX;sy=e.clientY;cancel();
+    timer=setTimeout(function(){timer=null;fired=true;if(navigator.vibrate)try{navigator.vibrate(15);}catch(x){}toggleDarkMode();},550);
+  });
+  btn.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10)cancel();});
+  ['pointerup','pointerleave','pointercancel'].forEach(function(ev){btn.addEventListener(ev,cancel);});
+  btn.addEventListener('contextmenu',function(e){e.preventDefault();});
+  btn.removeAttribute('onclick');
+  btn.addEventListener('click',function(e){e.preventDefault();if(fired){fired=false;return;}cycleTheme();});
+  btn.setAttribute('aria-label','Change color. Press and hold for dark mode');
+})();
+dkApply();
+
 renderDash();renderSetup();
+var dkT=document.getElementById('dk-toggle');if(dkT)dkT.checked=!!DB.dark;
 </script>
 
 </body>
