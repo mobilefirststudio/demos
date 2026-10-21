@@ -9,11 +9,12 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<link rel="manifest" href="manifest.json"/>
+<link rel="manifest" href="./manifest.json"/>
 <meta name="theme-color" id="meta-theme" content="#0f4c75"/>
+<script src="https://apis.google.com/js/api.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<title>Sinking Funds Planner — Mobile First Studio</title>
+<title>Sinking Funds Planner | Free Trial</title>
 <script>(function(){function setAppHeight(){document.documentElement.style.setProperty('--app-height',window.innerHeight+'px');}setAppHeight();window.addEventListener('resize',setAppHeight);window.addEventListener('orientationchange',setAppHeight);})();</script>
 <style>
 :root{--navy:#0f4c75;--navy-dark:#0a3554;--navy-light:#1a6ba0;--teal:#1ecbe1;--teal-dark:#17a8bb;--amount-color:var(--navy);--nav-active-color:var(--navy);--bg:#fff;--bg-soft:#f5f7fa;--bg-card:#fff;--ink:#1a1e2e;--ink-muted:#5a6070;--ink-faint:#9aa0b0;--border:#e4e8f0;--border-strong:#c8d2de;--success:#12b76a;--success-soft:#ecfdf3;--danger:#f04438;--danger-soft:#fef3f2;--warning:#f79009;--warning-soft:#fffaeb;--blue:#2c5282;--blue-soft:#ebf0fa;--shadow:0 2px 8px rgba(15,76,117,0.07),0 4px 16px rgba(15,76,117,0.05);}
@@ -137,24 +138,128 @@ body{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;background:var
 .calc-key.del{background:var(--bg-soft);color:var(--ink-muted);border:1px solid var(--border);}
 .calc-close-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
 .calc-close-btn{background:none;border:none;color:var(--ink-faint);font-size:1.4rem;cursor:pointer;padding:4px 8px;line-height:1;}
-.demo-banner{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;text-align:center;padding:9px 14px;font-size:0.74rem;font-weight:600;flex-shrink:0;line-height:1.5;}
-.demo-banner a{color:#fff;text-decoration:underline;font-weight:700;}
-.upsell-card{background:linear-gradient(135deg,rgba(15,76,117,0.08),rgba(30,203,225,0.06));border:1px solid rgba(15,76,117,0.18);border-radius:14px;padding:16px 18px;}
-.upsell-card .upsell-title{font-size:0.94rem;font-weight:800;color:var(--ink);margin-bottom:6px;}
-.upsell-card p{font-size:0.82rem;line-height:1.55;color:var(--ink-muted);margin-bottom:12px;}
-.upsell-card a.upsell-link{display:inline-block;background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;text-decoration:none;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.86rem;font-weight:700;padding:11px 18px;border-radius:10px;}
-#trial-lock{display:none;position:fixed;inset:0;z-index:999;background:rgba(10,20,35,0.72);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:24px;}
-#trial-lock.show{display:flex;}
-#trial-lock .lock-box{background:var(--bg-card);border-radius:20px;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.3);}
-#trial-lock .lock-box .lock-emoji{font-size:2.2rem;margin-bottom:10px;}
-#trial-lock .lock-box h2{font-family:"Plus Jakarta Sans",sans-serif;font-size:1.15rem;font-weight:800;color:var(--ink);margin-bottom:8px;}
-#trial-lock .lock-box p{font-size:0.86rem;line-height:1.55;color:var(--ink-muted);margin-bottom:18px;}
-#trial-lock .lock-box a{display:block;background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;text-decoration:none;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;padding:13px;border-radius:10px;}
+
+/* ===== Desktop layout (900px and wider) ===== */
+.dsk-side,#pg-dash{display:none}
+@media(min-width:900px){
+  body{justify-content:stretch;background:var(--bg-soft)}
+  .app{max-width:none;display:grid;grid-template-columns:248px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);height:100dvh}
+  .dsk-side{display:flex;flex-direction:column;grid-row:1 / span 2;grid-column:1;background:var(--bg-card);border-right:1px solid var(--border);padding:22px 14px;overflow-y:auto;gap:2px}
+  .dsk-brand{padding:4px 12px 20px}
+  .dsk-brand .e{font-size:.62rem;letter-spacing:.14em;font-weight:700;color:var(--ink-faint)}
+  .dsk-brand .t{font-size:1.15rem;font-weight:800;color:var(--navy);line-height:1.2;margin-top:4px}
+  .dsk-item{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border:none;background:none;border-radius:10px;font:inherit;font-size:.9rem;font-weight:600;color:var(--ink-muted);cursor:pointer;text-align:left}
+  .dsk-item i{font-size:1.2rem;width:22px;text-align:center}
+  .dsk-item:hover{background:var(--bg-soft);color:var(--ink)}
+  .dsk-item.on{background:var(--blue-soft);color:var(--navy);font-weight:700}
+  .dsk-item .bdg{margin-left:auto;background:var(--danger);color:#fff;font-size:.66rem;font-weight:800;border-radius:10px;padding:1px 7px}
+  .dsk-sep{height:1px;background:var(--border);margin:12px 10px}
+  .app-header{grid-column:2;grid-row:1;display:flex;align-items:center;gap:18px;padding:16px 32px;flex-wrap:wrap}
+  .app-header .header-top{order:2;margin:0 0 0 auto}
+  .app-header .header-top>div:first-child{display:none}
+  .app-header .header-chips{order:1;display:flex;gap:14px;margin:0}
+  .app-header .header-chip{min-width:230px}
+  #pg-main,#pg-settings,#pg-simple,#pg-dash{grid-column:2;grid-row:2;min-height:0}
+  .tab-bar,.bottom-nav,.settings-subtab-bar{}
+  .tab-bar,.bottom-nav{display:none!important}
+  .content{padding:26px 32px 48px}
+  #main-content{max-width:1180px;margin:0 auto;width:100%}
+  #pg-settings .content,#hs-content{max-width:780px;margin:0 auto;width:100%}
+  .settings-subtab-bar{padding-left:32px}
+  .fab{right:36px;bottom:32px;width:56px;height:56px}
+  .modal-bg{left:0;transform:none;max-width:none;align-items:center}
+  .modal{max-width:560px;border-radius:20px;border:1px solid var(--border);animation:none}
+  /* overview page */
+  .dsk-wrap{max-width:1180px;margin:0 auto}
+  .dsk-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .dsk-bar h2{font-size:1.35rem;font-weight:800;color:var(--ink);margin-right:auto}
+  .dsk-bar h2 small{display:block;font-size:.8rem;font-weight:600;color:var(--ink-faint);margin-top:2px}
+  .dsk-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border-strong);background:var(--bg-card);color:var(--ink);font:inherit;font-size:.84rem;font-weight:700;padding:10px 15px;border-radius:10px;cursor:pointer}
+  .dsk-btn.pri{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border-color:transparent}
+  .dsk-btn:hover{filter:brightness(.97)}
+  .kpi4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:18px}
+  .kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow)}
+  .kpi .l{font-size:.64rem;letter-spacing:.1em;font-weight:700;color:var(--ink-faint);text-transform:uppercase}
+  .kpi .v{font-size:1.55rem;font-weight:800;margin-top:4px;font-family:Inter,sans-serif;color:var(--ink)}
+  .kpi .s{font-size:.74rem;color:var(--ink-faint);margin-top:2px}
+  .dgrid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:18px;align-items:start}
+  .dcol{display:flex;flex-direction:column;gap:18px;min-width:0}
+  .dcard{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow)}
+  .dcard h3{font-size:.95rem;font-weight:800;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .dcard h3 a{margin-left:auto;font-size:.78rem;font-weight:700;color:var(--navy);cursor:pointer}
+  .drow{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border)}
+  .drow:first-of-type{border-top:none}
+  .drow .n{flex:1;min-width:0;font-weight:700;color:var(--ink);font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .drow .n small{display:block;font-weight:500;color:var(--ink-faint);font-size:.74rem}
+  .drow .a{font-weight:800;font-family:Inter,sans-serif;font-size:.9rem;white-space:nowrap}
+  .dpaid{border:none;background:var(--success);color:#fff;font:inherit;font-size:.74rem;font-weight:800;padding:6px 11px;border-radius:8px;cursor:pointer}
+  .dbarw{height:8px;border-radius:5px;background:var(--bg-soft);overflow:hidden;margin-top:6px}
+  .dbarw span{display:block;height:100%;border-radius:5px}
+  table.dt{width:100%;border-collapse:collapse;font-size:.85rem}
+  table.dt th{text-align:left;font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;padding:0 8px 8px}
+  table.dt td{padding:10px 8px;border-top:1px solid var(--border);color:var(--ink);white-space:nowrap}
+  table.dt td.r,table.dt th.r{text-align:right}
+  table.dt tr{cursor:pointer}
+  table.dt tr:hover td{background:var(--bg-soft)}
+  .dchart{width:100%;height:auto;display:block}
+  .dchart text{font-family:Inter,sans-serif;font-size:11px;fill:var(--ink-faint)}
+  .dleg{display:flex;gap:16px;font-size:.76rem;color:var(--ink-muted);font-weight:600;margin:-4px 0 6px}
+  .dleg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .dempty{color:var(--ink-faint);font-size:.84rem;padding:8px 0}
+}
+@media(min-width:1200px){
+  #main-content{columns:2 480px;column-gap:22px}
+  #main-content>*{break-inside:avoid;-webkit-column-break-inside:avoid}
+  #main-content>.empty{column-span:all}
+}
+@media(min-width:900px) and (max-width:1199px){
+  #main-content{max-width:780px}
+  .kpi4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dgrid{grid-template-columns:minmax(0,1fr)}
+  .app-header .header-chip{min-width:190px}
+}
+.sl-popt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 13px;margin-bottom:8px;border-radius:12px;border:1px solid var(--border);background:var(--bg-soft);color:var(--ink);cursor:pointer;font:inherit}
+.sl-popt b{display:block;font-size:.88rem}.sl-popt small{display:block;font-size:.72rem;color:var(--ink-muted);margin-top:2px}
+.sl-pico{width:38px;height:38px;border-radius:10px;background:var(--bg-card);border:1px solid var(--border);color:var(--navy);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:19px}
+@media(min-width:900px){
+  .confirm-modal-bg,.calc-modal-bg{left:0!important;transform:none!important;max-width:none!important;align-items:center!important}
+  .calc-modal{max-width:380px;border-radius:20px}
+  .sl-bar{padding:8px 0}.sl-bn{display:flex;justify-content:space-between;font-size:.86rem;font-weight:700;color:var(--ink)}.sl-bn span{color:var(--ink-faint);font-weight:600;font-size:.78rem}
+  .sl-bt{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--bg-soft);margin-top:6px}.sl-bt span{display:block;height:100%}
+  .sl-hero{text-align:center;background:linear-gradient(135deg,var(--success-soft),var(--bg-card))}
+  .sl-hero .l{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--ink-faint)}
+  .sl-hero .v{font-size:2rem;font-weight:800;color:var(--success);font-family:Inter,sans-serif;margin:4px 0}
+  .sl-hero .s{font-size:.8rem;color:var(--ink-muted);line-height:1.5}.sl-hero .s b{color:var(--ink)}
+  .fab{right:36px!important;bottom:32px!important}
+}
+
+/* ===== Free trial ===== */
+.demo-banner{flex-shrink:0;background:linear-gradient(135deg,var(--navy-dark,#0a3554),var(--navy));color:#fff;text-align:center;padding:8px 16px;font-size:0.76rem;font-weight:600;line-height:1.4;border-bottom:1px solid rgba(255,255,255,0.15);}
+.demo-banner b{color:var(--teal);}
+.demo-banner a{color:#fff;text-decoration:underline;font-weight:700;white-space:nowrap;}
+#trial-lock{display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,20,35,0.82);align-items:center;justify-content:center;padding:24px;}
+.lock-card{background:var(--bg-card);border-radius:20px;padding:30px 24px;max-width:360px;text-align:center;box-shadow:var(--shadow);}
+.lock-icon{width:58px;height:58px;border-radius:50%;background:var(--bg-soft);color:var(--navy);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.lock-title{font-size:1.2rem;font-weight:800;color:var(--ink);margin-bottom:10px;}
+.lock-text{font-size:0.88rem;color:var(--ink-muted);line-height:1.55;margin-bottom:20px;}
+.lock-cta{display:inline-block;background:linear-gradient(135deg,var(--navy-dark,#0a3554),var(--navy));color:#fff;padding:13px 26px;border-radius:12px;text-decoration:none;font-weight:700;font-size:0.9rem;}
+.upsell-card{border:1.5px solid var(--navy);}
+.upsell-btn{display:block;text-align:center;text-decoration:none;margin-bottom:0;}
+.sample-link{display:block;margin:0 auto 20px;background:none;border:none;color:var(--navy);font-family:inherit;font-weight:700;font-size:0.86rem;text-decoration:underline;cursor:pointer;}
+[data-mode="dark"] .sample-link,[data-mode="dark"] .lock-icon{color:var(--teal);}
+@media(min-width:900px){
+  .app{grid-template-rows:auto auto minmax(0,1fr)!important;}
+  .demo-banner{grid-column:1/-1;grid-row:1;}
+  .dsk-side{grid-row:2 / span 2!important;}
+  .app-header{grid-row:2!important;}
+  #pg-main,#pg-settings,#pg-simple,#pg-dash{grid-row:3!important;}
+}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 </head>
 <body>
 <div class="app">
-  <div class="demo-banner" id="demo-banner">Free trial &middot; <span id="demo-days-left">14 days</span> left &middot; <a href="https://www.etsy.com/listing/4567009468/sinking-funds-planner-app-save-for" target="_blank" rel="noopener">Unlock the full app →</a></div>
+  <div class="demo-banner" id="demo-banner"><b>Free trial</b>: try every feature for 14 days. <a href="https://www.etsy.com/listing/4567009468" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
   <div class="app-header">
     <div class="header-top">
       <div><div class="header-eyebrow">MOBILE FIRST STUDIO</div><div class="header-title" id="app-title">Sinking Funds Planner</div></div>
@@ -191,7 +296,8 @@ body{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;background:var
       </div>
       <div class="settings-panel" id="settings-panel-backup">
         <div class="card"><div class="card-title">Local backup</div><p class="field-hint" style="margin-bottom:12px;">Download a backup file to your device.</p><div id="local-backup-section"></div><input type="file" id="restore-file-input" accept="application/json" style="display:none;"/></div>
-        <div class="upsell-card"><div class="upsell-title">Want automatic backups?</div><p>The full version backs up your sinking funds to your own Google Drive automatically, so you never have to think about it.</p><a class="upsell-link" href="https://www.etsy.com/listing/4567009468/sinking-funds-planner-app-save-for" target="_blank" rel="noopener">Unlock the full app →</a></div>
+        <div class="card upsell-card"><div class="card-title">Google Drive backup is in the full app</div><p class="field-hint" style="margin-bottom:12px;line-height:1.5;">The full Sinking Funds Planner backs up your funds and deposits to your own Google Drive, so your records follow you to a new phone. This free trial skips it, since trial data is not meant to be permanent.</p><a class="btn-full upsell-btn" href="https://www.etsy.com/listing/4567009468" target="_blank" rel="noopener">Unlock the full app &rarr;</a></div>
+        <div class="card"><div class="card-title">Sample data</div><p class="field-hint" style="margin-bottom:12px;">Fill the trial with five example funds and five months of deposits to see every screen in action.</p><button class="btn-full" onclick="loadSampleData()" style="margin-bottom:0;">Load sample data</button></div>
       </div>
     </div>
   </div>
@@ -233,6 +339,7 @@ body{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;background:var
 
 <div class="confirm-modal-bg" id="confirm-modal"><div class="confirm-box"><div class="confirm-title" id="confirm-title">Are you sure?</div><div class="confirm-body" id="confirm-body">This cannot be undone.</div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('confirm-modal')">Cancel</button><button class="confirm-yes" id="confirm-yes-btn">Delete</button></div></div></div>
 <div class="confirm-modal-bg" id="restore-confirm-modal"><div class="confirm-box"><div class="confirm-title" id="restore-confirm-title">Restore?</div><div class="confirm-body" id="restore-confirm-body"></div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('restore-confirm-modal')">Cancel</button><button class="confirm-yes" id="restore-confirm-yes">Restore</button></div></div></div>
+
 <div class="calc-modal-bg" id="calc-modal"><div class="calc-modal">
   <div class="calc-close-row"><button class="calc-close-btn" onclick="closeModal('calc-modal')">✕</button></div>
   <div class="calc-display"><div class="calc-expr" id="calc-expr"></div><div class="calc-result" id="calc-result">0</div></div>
@@ -260,53 +367,50 @@ body{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;background:var
 </div></div>
 
 <div class="toast" id="toast"></div>
-
-<div id="trial-lock"><div class="lock-box">
-  <div class="lock-emoji">⏳</div>
-  <h2>Your free trial has ended</h2>
-  <p>Your 14 day trial of Sinking Funds Planner is over, but your data is still saved. Unlock the full app to keep using it, no time limit, no subscription.</p>
-  <a href="https://www.etsy.com/listing/4567009468/sinking-funds-planner-app-save-for" target="_blank" rel="noopener">Unlock the full app →</a>
+<div id="trial-lock"><div class="lock-card">
+  <div class="lock-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+  <div class="lock-title">Your free trial has ended</div>
+  <div class="lock-text">You've had 14 days with Sinking Funds Planner. Get the full app to keep saving for every goal, with Google Drive backup so your records are never at risk.</div>
+  <a class="lock-cta" href="https://www.etsy.com/listing/4567009468" target="_blank" rel="noopener">Get the full app</a>
 </div></div>
 
 <script>
 const STORE="mfs_sfp_demo_v1";
 const PRERESTORE_KEY="mfs_sfp_demo_prerestore";
-const DEMO_SINCE_KEY="mfs_sfp_demo_since";
-const TRIAL_DAYS=14;
-const ETSY_URL="https://www.etsy.com/listing/4567009468/sinking-funds-planner-app-save-for";
 const PALETTE=[{key:"navy",navy:"#0f4c75",teal:"#1ecbe1"},{key:"forest",navy:"#1a5c3a",teal:"#2dd4a0"},{key:"violet",navy:"#4c1d95",teal:"#a78bfa"},{key:"rose",navy:"#881337",teal:"#fb7185"},{key:"slate",navy:"#1e293b",teal:"#38bdf8"},{key:"amber",navy:"#78350f",teal:"#fbbf24"}];
 
 let DB,curTab="funds",eId={};
 let pendingRestore=null,pendingFundId=null,_editingFundTxId=null,pressTimer=null;
 let calcCurrent="0",calcExpr="",calcJustEvaled=false;
 
-// ── DEMO TRIAL ──
-function demoTrialDaysLeft(){
-  let since=localStorage.getItem(DEMO_SINCE_KEY);
-  if(!since){since=Date.now().toString();try{localStorage.setItem(DEMO_SINCE_KEY,since);}catch(e){}}
-  const elapsedDays=(Date.now()-parseInt(since))/86400000;
-  return Math.max(0,Math.ceil(TRIAL_DAYS-elapsedDays));
-}
-function enforceDemoTrial(){
-  const daysLeft=demoTrialDaysLeft();
-  const banner=g("demo-days-left");
-  if(banner)banner.textContent=daysLeft===1?"1 day":daysLeft+" days";
-  if(daysLeft<=0){
-    g("trial-lock").classList.add("show");
-    document.body.style.overflow="hidden";
-  }
-}
-
 // ── DATA ──
 function defDB(){return{appName:"Sinking Funds Planner",funds:[],contributions:[],accent:"navy",mode:"light"};}
 function load(){
   try{const r=localStorage.getItem(STORE);if(r){DB=Object.assign(defDB(),JSON.parse(r));if(!DB.funds)DB.funds=[];if(!DB.contributions)DB.contributions=[];}else DB=defDB();}catch(e){DB=defDB();}
 }
-function save(){try{localStorage.setItem(STORE,JSON.stringify(DB));}catch(e){}scheduleAutoBackup();}
-function scheduleAutoBackup(){}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(DB));}catch(e){}}
 
+
+/* ---------- sample data for the trial (dates follow today) ---------- */
+function demoSampleDB(){const t=new Date(),y=t.getFullYear(),m=t.getMonth();const d=(dd,mo)=>{const x=new Date(y,mo,dd);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');};
+const F=[{id:'f1',name:'Holiday gifts',category:'Holiday Gifts',targetAmount:800,targetDate:d(15,11),balance:200,createdAt:1},
+{id:'f2',name:'Car repairs',category:'Car Repairs',targetAmount:1200,targetDate:d(1,m+8),balance:150,createdAt:1},
+{id:'f3',name:'Car insurance',category:'Annual Insurance',targetAmount:960,targetDate:d(1,m+5),balance:320,createdAt:1},
+{id:'f4',name:'Vet bills',category:'Vet Bills',targetAmount:500,targetDate:'',balance:100,createdAt:1},
+{id:'f5',name:'Summer trip',category:'Travel',targetAmount:1500,targetDate:d(1,m+9),balance:0,createdAt:1}];
+const C=[];let n=0;for(let k=4;k>=0;k--){C.push({id:'c'+(++n),fundId:'f1',amount:100,date:d(1,m-k),note:'',txType:'deposit'});C.push({id:'c'+(++n),fundId:'f2',amount:75,date:d(1,m-k),note:'',txType:'deposit'});C.push({id:'c'+(++n),fundId:'f3',amount:80,date:d(15,m-k),note:'',txType:'deposit'});C.push({id:'c'+(++n),fundId:'f5',amount:50,date:d(15,m-k),note:'',txType:'deposit'});}
+C.push({id:'c'+(++n),fundId:'f2',amount:120,date:d(9,m-1),note:'Oil change',txType:'withdrawal'});C.push({id:'c'+(++n),fundId:'f4',amount:150,date:d(3,m),note:'',txType:'deposit'});
+return ({appName:'Sinking Funds Planner',funds:F,contributions:C,accent:'navy',mode:'light'});}
+function loadSampleData(){
+  const go=()=>{const d=demoSampleDB();d.accent=DB.accent||d.accent;d.mode=DB.mode||d.mode;DB=Object.assign(defDB(),d);save();toast("Sample data loaded. Explore every tab.");setTimeout(()=>location.reload(),900);};
+  if((DB.funds||[]).length)confirmAction("Load sample data?","This replaces what you have entered in the trial with example data.",go);else go();
+}
+const DEMO_TRIAL_DAYS=14;
+function demoTrialDaysLeft(){const KEY="mfs_sfp_demo_since";let since=null;try{since=localStorage.getItem(KEY);}catch(e){}if(!since){since=String(Date.now());try{localStorage.setItem(KEY,since);}catch(e){}}return DEMO_TRIAL_DAYS-Math.floor((Date.now()-parseInt(since,10))/86400000);}
+function enforceDemoTrial(){const left=demoTrialDaysLeft(),banner=document.getElementById("demo-banner");if(left<=0){document.getElementById("trial-lock").style.display="flex";if(banner)banner.style.display="none";return true;}if(banner)banner.innerHTML="<b>Free trial</b>: "+left+" day"+(left===1?"":"s")+' left. <a href="https://www.etsy.com/listing/4567009468" target="_blank" rel="noopener">Get the full app &rarr;</a>';return false;}
+document.addEventListener("DOMContentLoaded",()=>{enforceDemoTrial();setInterval(enforceDemoTrial,60000);});
 // ── LOCAL BACKUP ──
-function downloadBackup(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="sinking-funds-planner-backup-"+todayKey()+".json";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup downloaded!");}
+function downloadBackup(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="sinking-funds-planner-demo-backup-"+todayKey()+".json";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup downloaded!");}
 function renderLocalBackupSection(){const e=g("local-backup-section");if(!e)return;const hasUndo=!!localStorage.getItem(PRERESTORE_KEY);e.innerHTML=`<button class="btn-full" onclick="downloadBackup()" style="margin-bottom:8px;">⬇ Download backup</button><button class="btn-ghost" onclick="g('restore-file-input').click()" style="margin-bottom:${hasUndo?6:0}px;">⬆ Restore from file</button>${hasUndo?'<button class="btn-ghost" onclick="undoRestore()" style="color:var(--danger);">Undo last restore</button>':""}`;}
 function handleRestoreFile(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=evt=>{try{const data=JSON.parse(evt.target.result);if(!data||!data.funds){toast("Invalid backup.");return;}openRestoreConfirm(data,'"'+file.name+'"');}catch(err){toast("Could not read file.");}};r.readAsText(file);e.target.value="";}
 function openRestoreConfirm(data,source){pendingRestore=data;g("restore-confirm-title").textContent="Restore from "+source+"?";g("restore-confirm-body").textContent="This replaces all your current data. You can undo right after.";g("restore-confirm-yes").onclick=confirmRestoreNow;openModal("restore-confirm-modal");}
@@ -421,7 +525,7 @@ function renderContent(){
 }
 
 function renderFundsTab(c){
-  if(!DB.funds.length){c.innerHTML='<div class="empty">No sinking funds yet.<br>Tap + to start saving for a car repair, holiday gifts, or anything else you plan for.</div>';return;}
+  if(!DB.funds.length){c.innerHTML='<div class="empty">No sinking funds yet.<br>Tap + to start saving for a car repair, holiday gifts, or anything else you plan for.</div><button class="sample-link" onclick="loadSampleData()">Just looking? See it with sample data</button>';return;}
   const totalSaved=DB.funds.reduce((s,f)=>s+fundCurrentBal(f.id),0);
   const totalTarget=DB.funds.reduce((s,f)=>s+(parseFloat(f.targetAmount)||0),0);
   const pct=totalTarget>0?Math.min(100,Math.round((totalSaved/totalTarget)*100)):0;
@@ -467,16 +571,361 @@ function calcDel(){if(calcJustEvaled){calcClear();return;}if(calcCurrent.length>
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){["fund-modal","fund-tx-modal","calc-modal","confirm-modal","restore-confirm-modal"].forEach(id=>closeModal(id));}});
 document.addEventListener("DOMContentLoaded",()=>{
   load();applyAccent(DB.accent||"navy");applyMode(DB.mode||"light");
-  updateHeader();renderContent();enforceDemoTrial();
-  setInterval(enforceDemoTrial,60000);
+  updateHeader();renderContent();
   g("calc-btn").addEventListener("click",()=>{openModal("calc-modal");});
   g("appearance-btn").addEventListener("click",()=>{const keys=PALETTE.map(p=>p.key);const next=keys[(keys.indexOf(DB.accent||"navy")+1)%keys.length];setAccent(next);toast(next.charAt(0).toUpperCase()+next.slice(1));});
   g("appearance-btn").addEventListener("pointerdown",()=>{pressTimer=setTimeout(()=>{const m=DB.mode==="dark"?"light":"dark";setMode(m);toast(m==="dark"?"Dark mode":"Light mode");},600);});
   g("appearance-btn").addEventListener("pointerup",()=>clearTimeout(pressTimer));
   g("appearance-btn").addEventListener("pointerleave",()=>clearTimeout(pressTimer));
   g("restore-file-input").addEventListener("change",handleRestoreFile);
-  if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});}
+  if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("./sw.js").catch(()=>{});});}
 });
+/* ── PRINTABLE PAGES (PDF made on the device with pdf-lib, same method as Life Admin HQ) ── */
+var MFSPrint=(function(){
+  // The built-in PDF fonts draw basic Latin letters only. Anything else is removed so the PDF never fails.
+  function safe(s){
+    return String(s==null?'':s)
+      .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[\r\n\t]+/g,' ')
+      .replace(/ ?[^\x20-\x7E\xA0-\xFF–—•…]+/g,'')
+      .trim();
+  }
+  function rgbHex(hex){
+    var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex||'');
+    if(!m)return PDFLib.rgb(.30,.40,.35);
+    return PDFLib.rgb(parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255);
+  }
+  var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function pd(ds){if(!ds)return new Date(NaN);var p=String(ds).split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+  function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function longDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+  function shortDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return MON[d.getMonth()].slice(0,3)+' '+d.getDate()+', '+d.getFullYear();}
+  function money(n){var v=parseFloat(n)||0;return(v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  async function create(opts){
+    opts=opts||{};
+    var doc=await PDFLib.PDFDocument.create();
+    var font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var bold=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    var k={doc:doc,font:font,bold:bold,W:612,H:792,M:46,CW:520,BOTTOM:62,page:null,y:0,title:'',landscape:false,
+      ink:PDFLib.rgb(.16,.16,.16),soft:PDFLib.rgb(.42,.42,.42),line:PDFLib.rgb(.66,.66,.66),faint:PDFLib.rgb(.84,.84,.84),
+      fill:PDFLib.rgb(.95,.95,.94),accent:rgbHex(opts.accent),footer:opts.footer||''};
+    // Shrink text a little to fit its space, then shorten it if it still does not fit.
+    k.fit=function(f,text,size,maxW,minSize){
+      var s=safe(text),sz=size,min=minSize||Math.max(6,size-2);
+      while(sz>min&&f.widthOfTextAtSize(s,sz)>maxW)sz-=0.25;
+      if(f.widthOfTextAtSize(s,sz)>maxW){
+        while(s.length>1&&f.widthOfTextAtSize(s+'...',sz)>maxW)s=s.slice(0,-1);
+        s=s.replace(/\s+$/,'')+'...';
+      }
+      return {text:s,size:sz};
+    };
+    k.text=function(text,x,y,size,o){
+      o=o||{};var f=o.bold?bold:font;
+      var r=k.fit(f,text,size,o.maxW||(k.W-k.M-x),o.minSize);
+      if(!r.text)return;
+      var w=f.widthOfTextAtSize(r.text,r.size);
+      var dx=o.align==='right'?(o.maxW-w):o.align==='center'?((o.maxW-w)/2):0;
+      k.page.drawText(r.text,{x:x+dx,y:y,size:r.size,font:f,color:o.color||k.ink});
+    };
+    k.hline=function(x1,x2,y,color,t){k.page.drawLine({start:{x:x1,y:y},end:{x:x2,y:y},thickness:t||.7,color:color||k.line});};
+    k.vline=function(x,y1,y2,color,t){k.page.drawLine({start:{x:x,y:y1},end:{x:x,y:y2},thickness:t||.7,color:color||k.line});};
+    k.rect=function(x,y,w,h,o){o=o||{};var r={x:x,y:y,width:w,height:h};if(o.fill)r.color=o.fill;if(o.border!==false){r.borderColor=o.border||k.line;r.borderWidth=o.bw||.7;}k.page.drawRectangle(r);};
+    k.newPage=function(title,sub,landscape){
+      var ls=landscape===undefined?k.landscape:!!landscape;k.landscape=ls;
+      k.W=ls?792:612;k.H=ls?612:792;k.CW=k.W-2*k.M;
+      k.page=doc.addPage([k.W,k.H]);k.title=title;
+      var y=k.H-k.M;
+      k.text(title,k.M,y-6,19,{bold:true,maxW:k.CW});
+      y-=24;
+      if(sub){k.text(sub,k.M,y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});y-=12;}
+      k.hline(k.M,k.M+k.CW,y,k.accent,1.2);
+      k.y=y-22;
+    };
+    k.contTitle=function(){return k.title.indexOf('(continued)')>-1?k.title:k.title+' (continued)';};
+    k.room=function(h){if(k.y-h<k.BOTTOM){k.newPage(k.contTitle());return true;}return false;};
+    k.section=function(text){k.room(48);k.text(text,k.M,k.y,11.5,{bold:true,color:k.accent,maxW:k.CW});k.y-=20;};
+    k.field=function(label,x,y,w,value){
+      var r=k.fit(font,label,9.5,w*0.6);
+      k.page.drawText(r.text,{x:x,y:y,size:r.size,font:font,color:k.soft});
+      var lx=x+font.widthOfTextAtSize(r.text,r.size)+6;
+      if(value)k.text(value,lx+2,y,10,{maxW:x+w-lx-4,minSize:7.5});
+      k.hline(lx,x+w,y-2);
+    };
+    // fields: array of label strings or [label,value]
+    k.fieldRow=function(fields){
+      var gap=24,w=(k.CW-gap*(fields.length-1))/fields.length;
+      fields.forEach(function(f,i){var l=Array.isArray(f)?f[0]:f,v=Array.isArray(f)?f[1]:'';k.field(l,k.M+i*(w+gap),k.y,w,v);});
+      k.y-=28;
+    };
+    k.box=function(x,y,s,on){
+      k.page.drawRectangle({x:x,y:y,width:s,height:s,borderColor:k.soft,borderWidth:.8});
+      if(on){k.page.drawLine({start:{x:x+2,y:y+s/2},end:{x:x+s*0.42,y:y+2},thickness:1.2,color:k.ink});k.page.drawLine({start:{x:x+s*0.42,y:y+2},end:{x:x+s-1.5,y:y+s-1.5},thickness:1.2,color:k.ink});}
+    };
+    // A tick list. items: a number (blank lines to write on) or an array of text / {t,on}.
+    k.checks=function(items,ncols){
+      ncols=ncols||1;
+      var n=typeof items==='number'?items:items.length,rows=Math.ceil(n/ncols),gap=20,w=(k.CW-gap*(ncols-1))/ncols;
+      for(var r=0;r<rows;r++){
+        if(k.y-20<k.BOTTOM)k.newPage(k.contTitle());
+        for(var c=0;c<ncols;c++){
+          var i=r+c*rows;if(i>=n)continue;
+          var x=k.M+c*(w+gap),it=typeof items==='number'?null:items[i];
+          k.box(x,k.y-3,10,!!(it&&it.on));
+          if(it!==null)k.text(typeof it==='string'?it:it.t,x+16,k.y-1,10,{maxW:w-18,minSize:7.5});
+          else k.hline(x+16,x+w,k.y-3,k.faint);
+        }
+        k.y-=20;
+      }
+    };
+    k.lines=function(n,gap){gap=gap||20;for(var i=0;i<n;i++){if(k.y-gap<k.BOTTOM)k.newPage(k.contTitle());k.hline(k.M,k.M+k.CW,k.y-4,k.faint);k.y-=gap;}};
+    // cols: [{label,w,align,soft,bold,box}] · rows: a number (blank rows) or an array of rows.
+    // A cell can be text or {box:true,on:bool}. A column with box:true draws an empty tick box in blank rows.
+    k.table=function(cols,rows,rowH,o){
+      o=o||{};var x=o.x||k.M;
+      var sum=cols.reduce(function(s,c){return s+c.w;},0);
+      if(o.stretch!==false&&Math.abs(sum-k.CW)>0.5){var f=k.CW/sum;cols=cols.map(function(c){var d={};for(var p in c)d[p]=c[p];d.w=c.w*f;return d;});sum=k.CW;}
+      var headH=19,n=typeof rows==='number'?rows:rows.length;
+      function sides(top,h){var cx=x;for(var i=0;i<=cols.length;i++){k.vline(cx,top,top-h);if(i<cols.length)cx+=cols[i].w;}}
+      function head(){
+        k.page.drawRectangle({x:x,y:k.y-headH,width:sum,height:headH,color:k.fill});
+        var cx=x;
+        cols.forEach(function(c){
+          if(c.label)k.text(c.label,cx+(c.w<34?2:5),k.y-13,8.5,{bold:true,maxW:c.w-(c.w<34?4:10),minSize:6,align:c.align==='center'||c.box?'center':undefined});
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y);k.hline(x,x+sum,k.y-headH);sides(k.y,headH);
+        k.y-=headH;
+      }
+      if(k.y-headH-rowH<k.BOTTOM)k.newPage(k.contTitle());
+      head();
+      for(var r=0;r<n;r++){
+        if(k.y-rowH<k.BOTTOM){k.newPage(k.contTitle());head();}
+        var row=typeof rows==='number'?null:rows[r],cx=x;
+        cols.forEach(function(c,i){
+          var v=row?row[i]:undefined,bs=Math.min(10,rowH-8),by=k.y-rowH+(rowH-bs)/2;
+          if(v&&typeof v==='object'&&v.box){k.box(cx+(c.w-bs)/2,by,bs,!!v.on);}
+          else if(c.box&&(v===undefined||v===null)){k.box(cx+(c.w-bs)/2,by,bs,false);}
+          else if(v!==undefined&&v!==null&&v!==''){
+            k.text(String(v),cx+5,k.y-rowH/2-3,9,{maxW:c.w-10,minSize:6.5,bold:!!c.bold,color:c.soft?k.soft:k.ink,align:c.align==='center'?'center':c.align==='right'?'right':undefined});
+          }
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y-rowH);sides(k.y,rowH);
+        k.y-=rowH;
+      }
+      k.y-=14;
+    };
+    k.fillRows=function(rowH){return Math.max(0,Math.floor((k.y-k.BOTTOM-19)/rowH));};
+    k.finish=async function(){
+      var pages=doc.getPages();
+      pages.forEach(function(pg,i){
+        var sz=pg.getSize();
+        pg.drawText(safe(k.footer),{x:k.M,y:30,size:8,font:font,color:k.soft});
+        var lbl='Page '+(i+1)+' of '+pages.length;
+        pg.drawText(lbl,{x:sz.width-k.M-font.widthOfTextAtSize(lbl,8),y:30,size:8,font:font,color:k.soft});
+      });
+      return await doc.save();
+    };
+    // Month grid, Monday first. cellText(dateStr) returns an array of short lines for that day.
+    // With numbered=false the grid has no dates, for an undated month to fill in by hand.
+    k.month=function(year,month,o){
+      o=o||{};var top=k.y,heads=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],cw=k.CW/7,hh=18;
+      var first=new Date(year,month,1).getDay(),off=(first+6)%7,dim=new Date(year,month+1,0).getDate();
+      var weeks=o.numbered===false?5:Math.ceil((off+dim)/7);
+      var gridH=(o.height||(k.y-k.BOTTOM-8))-hh,ch=gridH/weeks;
+      k.page.drawRectangle({x:k.M,y:top-hh,width:k.CW,height:hh,color:k.fill});
+      heads.forEach(function(h,i){k.text(h,k.M+i*cw,top-12.5,8.5,{bold:true,maxW:cw,align:'center'});});
+      for(var w=0;w<weeks;w++)for(var d=0;d<7;d++){
+        var x=k.M+d*cw,y=top-hh-(w+1)*ch,n=w*7+d-off+1;
+        k.rect(x,y,cw,ch,{border:k.line});
+        if(o.numbered===false||n<1||n>dim)continue;
+        k.text(String(n),x+4,y+ch-11,9,{bold:true,maxW:cw-8});
+        if(o.cellText){
+          var ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+          var lines=o.cellText(ds)||[],ly=y+ch-22;
+          for(var li=0;li<lines.length&&ly>y+3;li++){k.text(lines[li],x+4,ly,7,{maxW:cw-8,minSize:6});ly-=8.5;}
+        }
+      }
+      k.y=top-hh-gridH-14;
+    };
+    // Twelve small month calendars on one page.
+    k.yearGrid=function(year){
+      var cols=3,rows=4,gap=16,bw=(k.CW-gap*(cols-1))/cols,top=k.y,bh=(top-k.BOTTOM-gap*(rows-1))/rows;
+      for(var m=0;m<12;m++){
+        var c=m%cols,r=Math.floor(m/cols),x=k.M+c*(bw+gap),y=top-r*(bh+gap);
+        k.text(MON[m],x,y-10,10.5,{bold:true,color:k.accent,maxW:bw});
+        var cw=bw/7,heads=['M','T','W','T','F','S','S'];
+        heads.forEach(function(h,i){k.text(h,x+i*cw,y-26,7.5,{bold:true,color:k.soft,maxW:cw,align:'center'});});
+        var first=new Date(year,m,1).getDay(),off=(first+6)%7,dim=new Date(year,m+1,0).getDate(),lh=(bh-38)/6;
+        for(var d=1;d<=dim;d++){var p=off+d-1,cc=p%7,rr=Math.floor(p/7);k.text(String(d),x+cc*cw,y-40-rr*lh,8,{maxW:cw,align:'center'});}
+      }
+      k.y=k.BOTTOM;
+    };
+    return k;
+  }
+  // Hand the finished PDF to the person. On iPhone and iPad the share sheet (Print, Save to Files)
+  // is the dependable route from a home screen app, so it is tried first there.
+  function deliver(bytes,filename){
+    var blob=new Blob([bytes],{type:'application/pdf'});
+    var download=function(){
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+    };
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&navigator.canShare&&typeof File!=='undefined'){
+      try{
+        var file=new File([blob],filename,{type:'application/pdf'});
+        if(navigator.canShare({files:[file]})){
+          return navigator.share({files:[file],title:filename}).catch(function(err){
+            if(err&&err.name==='AbortError')return;
+            download();
+          });
+        }
+      }catch(e){}
+    }
+    download();
+  }
+  var busy=false;
+  // Runs a page builder and hands over the PDF. say(msg,isErr) shows the app's own message.
+  async function run(build,filename,opts,say){
+    if(typeof PDFLib==='undefined'){say('The PDF tool is still loading. Check your connection and try again.',true);return;}
+    if(busy)return;busy=true;say('Creating your PDF...');
+    try{var k=await create(opts);await build(k);var bytes=await k.finish();await deliver(bytes,filename);say('Your PDF is ready!');}
+    catch(e){console.error(e);say('Could not create the PDF. Try again.',true);}
+    busy=false;
+  }
+  return {safe:safe,create:create,deliver:deliver,run:run,MON:MON,DOW:DOW,pd:pd,ymd:ymd,longDate:longDate,shortDate:shortDate,money:money};
+})();
+
+
+/* ===== Printable pages + desktop layout ===== */
+/* A target date later this month counts as 1 month to go, not "date has passed". */
+var _sfMonthsUntil=monthsUntil;
+monthsUntil=function(d){var m=_sfMonthsUntil(d);if(m===null)return null;if(m<1&&d>=todayKey())return 1;return m;};
+function slEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function slAccent(){var v=getComputedStyle(document.documentElement).getPropertyValue('--navy').trim();return /^#[0-9a-f]{6}$/i.test(v)?v:'#0f4c75';}
+function slName(){return DB.appName||'Sinking Funds Planner';}
+function slSlug(){return slName().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
+function slOpts(blank){return {accent:blank?'#0f4c75':slAccent(),footer:slName()+'  ·  Mobile First Studio'};}
+function sfTotals(){var saved=0,target=0,monthly=0;DB.funds.forEach(function(f){saved+=fundCurrentBal(f.id);target+=parseFloat(f.targetAmount)||0;var n=monthlyNeeded(f);if(n.status==='ontrack')monthly+=n.amount;});return {saved:saved,target:target,monthly:monthly,pct:target>0?Math.min(100,Math.round(saved/target*100)):0};}
+function sfSorted(){return DB.funds.slice().sort(function(a,b){return (a.targetDate||'9999').localeCompare(b.targetDate||'9999');});}
+function sfNeedText(f){var n=monthlyNeeded(f);if(n.status==='reached')return 'Fully funded';if(n.status==='overdue')return MFSPrint.money(n.amount)+' still needed, date passed';if(n.status==='nodate')return MFSPrint.money(n.amount)+' still needed';return MFSPrint.money(n.amount)+' a month, '+n.months+' month'+(n.months===1?'':'s')+' left';}
+function sfPct(f){var t=parseFloat(f.targetAmount)||0;return t>0?Math.min(100,Math.round(fundCurrentBal(f.id)/t*100)):0;}
+
+/* ---- filled pages ---- */
+function slPrintSummary(k){
+  var P=MFSPrint,t=sfTotals();
+  k.newPage('My Sinking Funds',P.longDate(today()),false);
+  k.fieldRow([['Total saved',P.money(t.saved)],['Of all targets',t.pct+'%']]);
+  k.fieldRow([['Set aside each month',P.money(t.monthly)],['Total of all targets',P.money(t.target)]]);
+  k.section('Funds');
+  var rows=sfSorted().map(function(f){return [f.name,f.category||'',P.money(fundCurrentBal(f.id)),P.money(parseFloat(f.targetAmount)||0),sfPct(f)+'%',f.targetDate?P.shortDate(f.targetDate):'No date',sfNeedText(f)];});
+  rows.push(['Total','',P.money(t.saved),P.money(t.target),t.pct+'%','','']);
+  k.table([{label:'Fund',w:115,bold:true},{label:'Category',w:80},{label:'Saved',w:70,align:'right'},{label:'Target',w:70,align:'right'},{label:'Done',w:38,align:'right'},{label:'Target date',w:72},{label:'To stay on track',w:140}],rows,22);
+}
+function slPrintHistory(k){
+  var P=MFSPrint,all=(DB.contributions||[]).slice().sort(function(a,b){return (a.date||'').localeCompare(b.date||'');});
+  k.newPage('Sinking Funds Deposit History',all.length+' entries  ·  printed '+P.shortDate(today()),false);
+  var dep=0,wd=0;
+  var rows=all.map(function(c){var f=DB.funds.find(function(x){return x.id===c.fundId;});var a=parseFloat(c.amount)||0;if(c.txType==='withdrawal')wd+=a;else dep+=a;return [P.shortDate(c.date),f?f.name:'Deleted fund',c.txType==='withdrawal'?'Withdrawal':'Deposit',c.note||'',(c.txType==='withdrawal'?'-':'+')+P.money(a)];});
+  if(!rows.length)rows=[['Nothing logged yet','','','','']];
+  k.table([{label:'Date',w:85},{label:'Fund',w:150,bold:true},{label:'Type',w:85},{label:'Note',w:135},{label:'Amount',w:85,align:'right'}],rows,20);
+  k.fieldRow([['Total deposited',P.money(dep)],['Total withdrawn',P.money(wd)]]);
+}
+/* ---- blank pages ---- */
+function slBlankInfo(k){k.newPage('My Sinking Funds List','One row per fund. Divide the target by the months left to get your monthly amount.',true);
+  k.table([{label:'Fund',w:140},{label:'What it is for',w:150},{label:'Target amount',w:90},{label:'Target date',w:85},{label:'Months left',w:70},{label:'Per month',w:85},{label:'Saved so far',w:90}],10,30);
+  k.section('Notes');k.lines(4,22);}
+function slBlankLog(k){k.newPage('Sinking Funds Deposit Log','Write each deposit or withdrawal the day you make it.',false);
+  k.table([{label:'Date',w:80},{label:'Fund',w:140},{label:'Deposit',w:80},{label:'Withdrawal',w:80},{label:'Balance after',w:90},{label:'Note',w:85}],26,22);}
+function slBlankYear(k){var P=MFSPrint;k.newPage('Monthly Deposit Checklist','Year: ____________    Check each fund as you add to it.',true);
+  var cols=[{label:'Fund',w:132}].concat(P.MON.map(function(m){return {label:m.slice(0,3),w:46,box:true};}));
+  k.table(cols,9,26);}
+function slBlankTracker(k){k.newPage('Savings Tracker','Color in one square for every $10 you save. Write your goal at the top.',false);
+  k.fieldRow(['Fund','Goal amount']);
+  var s=24,cols=Math.floor(k.CW/s),rows=Math.min(20,Math.floor((k.y-k.BOTTOM-40)/s));
+  for(var r=0;r<rows;r++)for(var c=0;c<cols;c++)k.rect(k.M+c*s,k.y-(r+1)*s,s,s,{});
+  k.y-=rows*s+18;k.text(cols*rows+' squares = $'+(cols*rows*10).toLocaleString('en-US')+'. Need more? Print another page.',k.M,k.y,9,{color:k.soft});}
+function slBlankAll(k){slBlankInfo(k);slBlankLog(k);slBlankYear(k);slBlankTracker(k);}
+
+var SL_PRINT=[
+  ['summary','ti-pig-money','My sinking funds','Every fund, what is saved, and what to set aside each month'],
+  ['history','ti-list-details','Deposit history','Every deposit and withdrawal you logged'],
+  ['csv','ti-file-spreadsheet','Export to Excel','A spreadsheet file (CSV) of your funds and deposits'],
+  ['blank','ti-file-text','Blank forms','Funds list, deposit log, monthly checklist and savings tracker']];
+function slPrint(kind){
+  closeModal('sl-print-modal');
+  if(kind==='csv'){slExport();return;}
+  if(kind!=='blank'&&!DB.funds.length){toast('Add a fund first, or print the blank forms.');return;}
+  var b={summary:slPrintSummary,history:slPrintHistory,blank:slBlankAll}[kind];
+  var nm={summary:'-funds',history:'-deposit-history',blank:'-printable-forms'}[kind];
+  MFSPrint.run(function(k){b(k);},slSlug()+nm+(kind==='blank'?'':'-'+today())+'.pdf',slOpts(kind==='blank'),function(m){toast(m);});
+}
+function openSlPrint(){g('sl-print-opts').innerHTML=SL_PRINT.map(function(o){return '<button class="sl-popt" onclick="slPrint(\''+o[0]+'\')"><span class="sl-pico"><i class="ti '+o[1]+'"></i></span><span><b>'+o[2]+'</b><small>'+o[3]+'</small></span></button>';}).join('');openModal('sl-print-modal');}
+function slCSV(v){v=v==null?'':String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function slExport(){
+  var R=[],row=function(a){R.push(a.map(slCSV).join(','));};
+  row(['FUNDS']);row(['Fund','Category','Saved','Target','Target date','Per month to stay on track']);
+  sfSorted().forEach(function(f){var n=monthlyNeeded(f);row([f.name,f.category||'',fundCurrentBal(f.id).toFixed(2),parseFloat(f.targetAmount)||0,f.targetDate||'',n.status==='ontrack'?n.amount.toFixed(2):'']);});
+  row([]);row(['DEPOSITS AND WITHDRAWALS']);row(['Date','Fund','Type','Amount','Note']);
+  (DB.contributions||[]).slice().sort(function(a,b){return (a.date||'').localeCompare(b.date||'');}).forEach(function(c){var f=DB.funds.find(function(x){return x.id===c.fundId;});row([c.date,f?f.name:'',c.txType==='withdrawal'?'Withdrawal':'Deposit',(c.txType==='withdrawal'?-1:1)*(parseFloat(c.amount)||0),c.note||'']);});
+  var name=slSlug()+'-'+today()+'.csv',blob=new Blob(['﻿'+R.join('\r\n')],{type:'text/csv;charset=utf-8'});
+  try{var f=new File([blob],name,{type:'text/csv'});if(/iPhone|iPad|iPod/.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:name}).catch(function(){});return;}}catch(e){}
+  var u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},1500);toast('Excel file downloaded ✓');
+}
+
+/* ---- desktop: sidebar + overview ---- */
+var slCur='dash';
+function slIsDesk(){return window.matchMedia('(min-width:900px)').matches;}
+var SL_ITEMS=[['dash','ti-layout-dashboard','Overview'],['sep'],['funds','ti-pig-money','Funds'],['history','ti-history','History'],['sep'],['print','ti-printer','Printable pages'],['settings','ti-settings','Settings']];
+function slNav(){var s=document.querySelector('.dsk-side');if(!s)return;
+  s.innerHTML='<div class="dsk-brand"><div class="e">MOBILE FIRST STUDIO</div><div class="t">'+slEsc(slName())+'</div></div>'+SL_ITEMS.map(function(it){if(it[0]==='sep')return '<div class="dsk-sep"></div>';return '<button class="dsk-item'+(slCur===it[0]?' on':'')+'" onclick="slGo(\''+it[0]+'\')"><i class="ti '+it[1]+'"></i>'+it[2]+'</button>';}).join('');}
+function slNavBtn(p){return Array.prototype.find.call(document.querySelectorAll('.bottom-nav .nav-btn'),function(b){return (b.getAttribute('onclick')||'').indexOf("'"+p+"'")>-1;});}
+function slGo(k){
+  if(k==='print'){openSlPrint();return;}
+  slCur=k;
+  if(k==='dash'){['main','settings'].forEach(function(p){g('pg-'+p).style.display='none';});g('pg-dash').style.display='flex';slRender();}
+  else if(k==='settings')showPage('settings',slNavBtn('settings'));
+  else{showPage('main',slNavBtn('main'));var tb=Array.prototype.find.call(document.querySelectorAll('.tab-btn'),function(b){return (b.getAttribute('onclick')||'').indexOf("'"+k+"'")>-1;});if(tb)switchTab(k,tb);}
+  slCur=k;slNav();
+}
+function slChart(){
+  var fs=sfSorted();if(!fs.length)return '';
+  return '<div class="dcard"><h3>Each fund, saved vs target</h3><div class="dleg"><span><i style="background:var(--success)"></i>Saved</span><span><i style="background:var(--border-strong)"></i>Still to save</span></div>'+fs.map(function(f){var p=sfPct(f),t=parseFloat(f.targetAmount)||0,b=fundCurrentBal(f.id);return '<div class="sl-bar"><div class="sl-bn">'+slEsc(f.name)+'<span>'+fmt$(b)+' of '+fmt$(t)+'</span></div><div class="sl-bt"><span style="width:'+p+'%;background:var(--success)"></span></div></div>';}).join('')+'</div>';
+}
+function slRender(){
+  var c=g('dash-content');if(!c||g('pg-dash').style.display==='none')return;
+  var t=sfTotals(),now=new Date();
+  var head='<div class="dsk-bar"><h2>Your sinking funds<small>'+now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})+'</small></h2><button class="dsk-btn" onclick="openSlPrint()"><i class="ti ti-printer"></i>Printable pages</button><button class="dsk-btn pri" onclick="openFundModal(null)"><i class="ti ti-plus"></i>Add a fund</button></div>';
+  if(!DB.funds.length){c.innerHTML='<div class="dsk-wrap">'+head+'<div class="dcard"><div class="dempty">No funds yet. Add your first sinking fund to see what to set aside each month.</div><button class="sample-link" style="margin:8px 0 0" onclick="loadSampleData()">Just looking? See it with sample data</button></div></div>';return;}
+  var next=sfSorted().find(function(f){var n=monthlyNeeded(f);return f.targetDate&&n.status!=='reached';});
+  var kpi='<div class="kpi4"><div class="kpi"><div class="l">Total saved</div><div class="v" style="color:var(--success)">'+fmt$(t.saved)+'</div><div class="s">'+DB.funds.length+' fund'+(DB.funds.length===1?'':'s')+'</div></div>'
+    +'<div class="kpi"><div class="l">Of all targets</div><div class="v">'+t.pct+'%</div><div class="s">'+fmt$(t.target)+' in total</div></div>'
+    +'<div class="kpi"><div class="l">Set aside each month</div><div class="v">'+fmt$(t.monthly)+'</div><div class="s">to hit every target date</div></div>'
+    +'<div class="kpi"><div class="l">Next target</div><div class="v" style="font-size:1.25rem">'+(next?slEsc(next.name):'None')+'</div><div class="s">'+(next?fmtDate(next.targetDate):'all funded or no dates')+'</div></div></div>';
+  var plan='<div class="dcard"><h3>This month\'s plan<a onclick="slGo(\'funds\')">Funds &rarr;</a></h3>'+sfSorted().map(function(f){var n=monthlyNeeded(f),txt=n.status==='ontrack'?fmt$(n.amount):(n.status==='reached'?'Funded 🎉':(n.status==='overdue'?'Date passed':'No date'));return '<div class="drow"><div class="n">'+slEsc(f.name)+'<small>'+(f.targetDate?'by '+fmtDate(f.targetDate):'no target date')+'</small></div><div class="a" style="font-weight:800;color:'+(n.status==='ontrack'?'var(--ink)':(n.status==='reached'?'var(--success)':'var(--ink-faint)'))+'">'+txt+'</div><button class="dpaid" style="margin-left:10px" onclick="openFundTxModal(\''+f.id+'\',\'deposit\')">+ Deposit</button></div>';}).join('')+'</div>';
+  var recent=(DB.contributions||[]).slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');}).slice(0,8);
+  var hist='<div class="dcard"><h3>Recent activity<a onclick="slGo(\'history\')">All &rarr;</a></h3>'+(recent.length?'<table class="dt"><thead><tr><th>Date</th><th>Fund</th><th>Type</th><th class="r">Amount</th></tr></thead><tbody>'+recent.map(function(x){var f=DB.funds.find(function(y){return y.id===x.fundId;});var w=x.txType==='withdrawal';return '<tr onclick="openFundTxModal(\''+x.fundId+'\',\''+(x.txType||'deposit')+'\',\''+x.id+'\')"><td>'+fmtDate(x.date)+'</td><td>'+slEsc(f?f.name:'')+'</td><td style="color:var(--ink-faint)">'+(w?'Withdrawal':'Deposit')+'</td><td class="r" style="font-weight:800;color:'+(w?'var(--danger)':'var(--success)')+'">'+(w?'-':'+')+fmt$(x.amount)+'</td></tr>';}).join('')+'</tbody></table>':'<div class="dempty">No deposits logged yet.</div>')+'</div>';
+  var hero='<div class="dcard sl-hero"><div class="l">Set aside this month</div><div class="v">'+fmt$(t.monthly)+'</div><div class="s">Split across your funds so every one is ready on its target date.</div></div>';
+  c.innerHTML='<div class="dsk-wrap">'+head+kpi+'<div class="dgrid"><div class="dcol">'+slChart()+hist+'</div><div class="dcol">'+hero+plan+'</div></div></div>';
+}
+function slInit(){
+  var app=document.querySelector('.app');if(!app||document.querySelector('.dsk-side'))return;
+  app.insertAdjacentHTML('afterbegin','<aside class="dsk-side"></aside>');
+  g('pg-main').insertAdjacentHTML('beforebegin','<div id="pg-dash" style="display:none;flex-direction:column;flex:1;min-height:0;"><div class="content" id="dash-content"></div></div>');
+  var hb=document.querySelector('.header-btns');if(hb)hb.insertAdjacentHTML('afterbegin','<button class="hdr-btn" title="Printable pages" onclick="openSlPrint()"><i class="ti ti-printer"></i></button>');
+  var gen=g('settings-panel-general');if(gen){var dz=Array.prototype.find.call(gen.querySelectorAll('.card'),function(c){return /Danger zone/.test(c.textContent);});var d=document.createElement('div');d.innerHTML='<div class="card"><div class="card-title">Printable pages</div><p class="field-hint" style="margin-bottom:12px;">Your funds and monthly plan, your deposit history, an Excel export, and blank forms to fill in by hand. Made on your device. Nothing is uploaded.</p><button class="btn-full" onclick="openSlPrint()" style="margin-bottom:0;">Open printable pages</button></div>';gen.insertBefore(d.firstChild,dz||null);}
+  document.body.insertAdjacentHTML('beforeend','<div class="modal-bg" id="sl-print-modal"><div class="modal"><h2>Printable pages</h2><p class="field-hint" style="margin:-8px 0 12px">Pick a page. You get a PDF you can print or save. It is made on your device, and nothing is uploaded.</p><div id="sl-print-opts"></div><button class="btn-ghost" style="width:100%" onclick="closeModal(\'sl-print-modal\')">Close</button></div></div>');
+  g('sl-print-modal').addEventListener('click',function(e){if(e.target===this)closeModal('sl-print-modal');});
+  var _sp=window.showPage;window.showPage=function(id,btn){var d=g('pg-dash');if(d)d.style.display='none';_sp(id,btn);slCur=id==='settings'?'settings':(typeof curTab!=='undefined'?curTab:'funds');slNav();};
+  var _st=window.switchTab;window.switchTab=function(t,b){_st(t,b);slCur=t;slNav();};
+  var _uh=window.updateHeader;window.updateHeader=function(){_uh();slNav();slRender();};
+  slNav();if(slIsDesk())slGo('dash');
+  window.addEventListener('resize',function(){if(!slIsDesk()&&g('pg-dash').style.display!=='none')showPage('main',slNavBtn('main'));});
+}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(slInit,40);});
 </script>
 </body>
 </html>
