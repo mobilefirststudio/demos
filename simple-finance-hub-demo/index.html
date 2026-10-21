@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<link rel="icon" href="/icon-192.png" type="image/png"/>
+<link rel="icon" href="data:,"/>
+<meta property="og:image" content="/icon-192.png"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<link rel="manifest" href="./manifest.json"/>
+<meta name="theme-color" id="meta-theme" content="#0f4c75"/>
+<script src="https://apis.google.com/js/api.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<title>Simple Finance Hub | Free Trial</title>
+<style>
+:root{--navy:#0f4c75;--navy-dark:#0a3554;--navy-light:#1a6ba0;--teal:#1ecbe1;--teal-dark:#17a8bb;--bg:#fff;--bg-soft:#f5f7fa;--bg-card:#fff;--ink:#1a1e2e;--ink-muted:#5a6070;--ink-faint:#9aa0b0;--border:#e4e8f0;--border-strong:#c8d2de;--success:#12b76a;--success-soft:#ecfdf3;--danger:#f04438;--danger-soft:#fef3f2;--warning:#f79009;--warning-soft:#fffaeb;--blue:#2c5282;--blue-soft:#ebf0fa;--shadow:0 2px 8px rgba(15,76,117,0.07),0 4px 16px rgba(15,76,117,0.05);}
+[data-mode="dark"]{--bg:#0f1117;--bg-soft:#181b24;--bg-card:#1e2230;--ink:#e8edf5;--ink-muted:#8b95a8;--ink-faint:#4a5060;--border:#252b38;--border-strong:#323a4a;--shadow:0 2px 8px rgba(0,0,0,0.4),0 4px 16px rgba(0,0,0,0.3);--success-soft:rgba(18,183,106,0.12);--danger-soft:rgba(240,68,56,0.12);--warning-soft:rgba(247,144,9,0.12);--blue-soft:rgba(44,82,130,0.2);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;background:var(--bg-soft);color:var(--ink);height:100dvh;overflow:hidden;display:flex;justify-content:center;-webkit-font-smoothing:antialiased;}
+.app{width:100%;max-width:480px;height:100dvh;display:flex;flex-direction:column;}
+.app-header{background:linear-gradient(160deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-light) 100%);padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 14px;flex-shrink:0;}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.header-eyebrow{font-size:0.62rem;letter-spacing:0.12em;color:rgba(255,255,255,0.45);font-weight:600;text-transform:uppercase;}
+.header-title{font-size:1.25rem;font-weight:800;color:#fff;letter-spacing:-0.02em;margin-top:2px;}
+.header-btns{display:flex;gap:8px;}
+.hdr-btn{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;}
+.header-chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.header-chip{background:rgba(255,255,255,0.1);border-radius:10px;padding:9px 12px;border:1px solid rgba(255,255,255,0.12);}
+.header-chip-label{font-size:0.62rem;color:rgba(255,255,255,0.5);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;}
+.header-chip-val{font-size:1.3rem;font-weight:800;color:#fff;font-family:"Inter",sans-serif;letter-spacing:-0.02em;margin-top:1px;}
+.header-chip-val.danger{color:#fca5a5;}
+.header-chip-val.success-light{color:#86efac;}
+.header-chip-sub{font-size:0.62rem;color:rgba(255,255,255,0.45);margin-top:1px;}
+.tab-bar{background:var(--bg-card);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;flex-shrink:0;}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{flex:0 0 auto;padding:10px 14px;border:none;background:transparent;font-size:0.78rem;font-weight:600;color:var(--ink-faint);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all 0.15s;}
+.tab-btn.active{color:var(--navy);border-bottom-color:var(--navy);}
+.content{flex:1;overflow-y:auto;padding:14px 14px calc(80px + env(safe-area-inset-bottom,0px));background:var(--bg-soft);-webkit-overflow-scrolling:touch;}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);}
+.card-title{font-size:0.88rem;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.sl{font-size:0.67rem;letter-spacing:0.1em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-bottom:8px;margin-top:4px;}
+
+/* ── ACCOUNT CARDS (shared with income) ── */
+.acct-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.acct-card{background:var(--bg-card);border-radius:12px;padding:13px 14px;border:1px solid var(--border);cursor:pointer;box-shadow:var(--shadow);}
+.acct-card.main-acct{border-color:var(--navy);border-width:1.5px;}
+.acct-type-badge{font-size:0.62rem;letter-spacing:0.08em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+.acct-name{font-size:0.84rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.acct-bal{font-size:1.3rem;font-weight:800;color:var(--ink);font-family:"Inter",sans-serif;letter-spacing:-0.02em;margin-top:4px;}
+.acct-bal.negative{color:var(--danger);}
+.acct-bal.income-color{color:var(--success);}
+.acct-main-star{font-size:0.68rem;font-weight:700;color:var(--navy);margin-top:4px;}
+.acct-tap{font-size:0.65rem;color:var(--ink-faint);margin-top:3px;}
+.acct-ledger-btn{width:100%;margin-top:8px;padding:5px 0;border:none;background:rgba(15,76,117,0.07);border-radius:7px;color:var(--navy);font-size:0.72rem;font-weight:700;cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;letter-spacing:0.03em;}
+
+.summary-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.summary-chip{background:var(--bg-card);border-radius:10px;padding:11px 13px;border:1px solid var(--border);}
+.summary-chip-label{font-size:0.65rem;letter-spacing:0.08em;color:var(--ink-faint);text-transform:uppercase;font-weight:600;}
+.summary-chip-val{font-size:1.1rem;font-weight:800;font-family:"Inter",sans-serif;margin-top:3px;}
+.summary-chip-val.pos{color:var(--success);}
+.summary-chip-val.neg{color:var(--danger);}
+.summary-chip-val.neutral{color:var(--ink);}
+.summary-chip-val.navy{color:var(--navy);}
+
+.bill-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);}
+.bill-row:last-child{border-bottom:none;}
+.bill-info{flex:1;min-width:0;}
+.bill-name{font-size:0.88rem;font-weight:600;color:var(--ink);cursor:pointer;}
+.bill-sub{font-size:0.72rem;color:var(--ink-muted);margin-top:2px;font-style:italic;}
+.bill-amt{font-size:0.88rem;font-weight:700;color:var(--ink);font-family:"Inter",sans-serif;white-space:nowrap;}
+.bill-status{font-size:0.68rem;padding:3px 9px;border-radius:20px;font-weight:700;cursor:pointer;white-space:nowrap;letter-spacing:0.04em;flex-shrink:0;}
+.bs-P{background:var(--success-soft);color:var(--success);}
+.bs-A{background:var(--blue-soft);color:var(--blue);}
+.bs-D{background:var(--danger-soft);color:var(--danger);}
+.bs-N{background:var(--bg-soft);color:var(--ink-faint);}
+.bill-post-btn{font-size:0.65rem;padding:3px 7px;border-radius:6px;border:1px solid var(--border-strong);background:transparent;color:var(--ink-muted);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;white-space:nowrap;flex-shrink:0;}
+
+.ledger-row{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.ledger-row:last-child{border-bottom:none;}
+.ledger-info{flex:1;min-width:0;}
+.ledger-desc{font-size:0.86rem;font-weight:600;color:var(--ink);}
+.ledger-date{font-size:0.7rem;color:var(--ink-muted);margin-top:2px;font-style:italic;}
+.ledger-right{text-align:right;flex-shrink:0;}
+.ledger-amt{font-size:0.9rem;font-weight:700;font-family:"Inter",sans-serif;}
+.ledger-amt.pos{color:var(--success);}
+.ledger-amt.neg{color:var(--danger);}
+.ledger-bal{font-size:0.68rem;color:var(--ink-faint);margin-top:2px;font-family:"Inter",sans-serif;}
+
+.row-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.row-item:last-child{border-bottom:none;}
+.row-info{flex:1;min-width:0;}
+.row-title{font-size:0.88rem;font-weight:600;color:var(--ink);}
+.row-sub{font-size:0.72rem;color:var(--ink-muted);margin-top:2px;font-style:italic;}
+.row-amt-pos{font-size:0.92rem;font-weight:700;color:var(--success);font-family:"Inter",sans-serif;}
+.row-amt-neg{font-size:0.92rem;font-weight:700;color:var(--danger);font-family:"Inter",sans-serif;}
+.edit-hint{font-size:0.65rem;color:var(--ink-faint);}
+
+.month-nav{display:flex;align-items:center;justify-content:space-between;background:var(--bg-card);border-radius:10px;padding:8px 12px;margin-bottom:12px;border:1px solid var(--border);}
+.month-nav-btn{background:none;border:none;color:var(--navy);font-size:1.2rem;cursor:pointer;padding:2px 8px;border-radius:6px;line-height:1;}
+.month-nav-label{font-size:0.86rem;font-weight:700;color:var(--ink);}
+
+.cat-bar-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);}
+.cat-bar-row:last-child{border-bottom:none;}
+.cat-bar-label{font-size:0.8rem;font-weight:600;color:var(--ink);width:90px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cat-bar-track{flex:1;height:7px;background:var(--bg-soft);border-radius:999px;overflow:hidden;border:1px solid var(--border);}
+.cat-bar-fill{height:100%;border-radius:999px;transition:width 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+.cat-bar-val{font-size:0.78rem;font-weight:700;color:var(--ink);font-family:"Inter",sans-serif;min-width:52px;text-align:right;flex-shrink:0;}
+
+.fab{position:fixed;bottom:calc(68px + env(safe-area-inset-bottom,0px));right:calc(50% - 220px + 14px);width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 4px 14px rgba(15,76,117,0.4);}
+@media(max-width:480px){.fab{right:14px;}}
+.fab i{font-size:22px;color:white;}
+.bottom-nav{background:var(--bg-card);border-top:1px solid var(--border);padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-around;flex-shrink:0;box-shadow:0 -2px 10px rgba(15,76,117,0.05);}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 8px;border-radius:8px;background:none;border:none;min-width:44px;}
+.nav-btn i{font-size:20px;color:var(--ink-faint);}
+.nav-btn span{font-size:0.6rem;font-weight:600;color:var(--ink-faint);letter-spacing:0.04em;text-transform:uppercase;font-family:"Plus Jakarta Sans",sans-serif;}
+.nav-btn.active i,.nav-btn.active span{color:var(--navy);}
+
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:0.72rem;letter-spacing:0.1em;color:var(--ink-muted);text-transform:uppercase;font-weight:600;margin-bottom:5px;}
+.field input,.field select{width:100%;background:var(--bg-soft);border:1px solid var(--border-strong);border-radius:10px;padding:10px 13px;color:var(--ink);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;outline:none;-webkit-appearance:none;}
+.field input::placeholder{color:var(--ink-faint);font-style:italic;}
+.field input:focus,.field select:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(15,76,117,0.1);}
+.field-hint{font-size:0.7rem;color:var(--ink-faint);font-style:italic;margin-top:4px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-row{display:flex;gap:10px;margin-top:14px;}
+.btn-save{flex:1;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:10px;padding:13px;color:white;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;}
+.btn-cancel{flex:1;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:13px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;cursor:pointer;}
+.btn-delete{width:100%;background:var(--danger-soft);border:1px solid rgba(240,68,56,0.3);border-radius:10px;padding:12px;color:var(--danger);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:600;cursor:pointer;margin-top:8px;}
+.btn-ghost{width:100%;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:11px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;cursor:pointer;margin-top:6px;}
+.btn-full{width:100%;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border:none;border-radius:10px;padding:13px;color:white;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;margin-bottom:10px;}
+
+.modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;background:rgba(10,20,35,0.5);z-index:20;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg-card);border-radius:20px 20px 0 0;padding:20px;width:100%;max-height:90dvh;overflow-y:auto;border-top:1px solid var(--border);padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.modal h2{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:16px;}
+.empty{text-align:center;padding:28px 0;color:var(--ink-muted);font-size:0.9rem;line-height:1.8;font-style:italic;}
+.toast{position:fixed;bottom:calc(76px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%) translateY(8px);background:#1a1e2e;color:#fff;font-size:0.82rem;padding:8px 16px;border-radius:20px;opacity:0;pointer-events:none;z-index:100;transition:opacity 0.2s,transform 0.2s;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.settings-subtab-bar{display:flex;background:var(--bg-card);border-bottom:1px solid var(--border);flex-shrink:0;}
+.settings-subtab{flex:1;padding:10px 4px;border:none;background:transparent;font-size:0.76rem;font-weight:700;color:var(--ink-faint);cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;border-bottom:2.5px solid transparent;transition:all 0.15s;text-align:center;}
+.settings-subtab.active{color:var(--navy);border-bottom-color:var(--navy);}
+.settings-panel{display:none;}
+.settings-panel.active{display:block;}
+.swatch-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;}
+.swatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:transform 0.15s;position:relative;}
+.swatch.selected{border-color:var(--ink);}
+.swatch.selected::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.8rem;font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,0.3);}
+.mode-row{display:flex;gap:8px;margin-top:6px;}
+.mode-btn{flex:1;padding:10px;border-radius:10px;border:1px solid var(--border-strong);background:transparent;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;}
+.mode-btn.active{background:var(--ink);color:var(--bg-card);border-color:var(--ink);}
+.share-code-box{background:rgba(15,76,117,0.08);border-radius:10px;padding:12px 14px;margin-bottom:10px;}
+.share-code-val{font-size:2rem;font-family:monospace;letter-spacing:0.2em;color:var(--navy);font-weight:700;}
+.share-code-hint{font-size:0.72rem;color:var(--ink-muted);margin-top:4px;}
+.confirm-modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;background:rgba(10,20,35,0.5);z-index:30;display:none;align-items:center;justify-content:center;}
+.confirm-modal-bg.open{display:flex;}
+.confirm-box{background:var(--bg-card);border-radius:16px;padding:20px;width:calc(100% - 32px);max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.confirm-title{font-size:1rem;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.confirm-body{font-size:0.84rem;color:var(--ink-muted);line-height:1.6;margin-bottom:16px;}
+.confirm-btns{display:flex;gap:8px;}
+.confirm-yes{flex:1;background:var(--danger);border:none;border-radius:10px;padding:11px;color:#fff;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;}
+.confirm-no{flex:1;background:transparent;border:1px solid var(--border-strong);border-radius:10px;padding:11px;color:var(--ink-muted);font-family:"Plus Jakarta Sans",sans-serif;font-size:0.88rem;cursor:pointer;}
+
+.ledger-sheet-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;background:rgba(10,20,35,0.5);z-index:15;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.ledger-sheet-bg.open{display:flex;}
+.ledger-sheet{background:var(--bg-card);border-radius:20px 20px 0 0;width:100%;max-height:85dvh;display:flex;flex-direction:column;border-top:1px solid var(--border);animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+.ledger-sheet-header{display:flex;justify-content:space-between;align-items:center;padding:16px 18px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.ledger-sheet-title{font-size:1rem;font-weight:700;color:var(--ink);}
+.ledger-sheet-close{background:var(--bg-soft);border:none;width:28px;height:28px;border-radius:50%;font-size:1.1rem;color:var(--ink-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.ledger-sheet-body{overflow-y:auto;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));flex:1;}
+
+.calc-modal-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;height:100dvh;background:rgba(10,20,35,0.5);z-index:25;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.calc-modal-bg.open{display:flex;}
+.calc-modal{background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));width:100%;border-top:1px solid var(--border);animation:slideUp 0.25s cubic-bezier(0.22,1,0.36,1);}
+.calc-display{background:var(--bg-soft);border-radius:12px;padding:12px 16px;margin-bottom:12px;text-align:right;border:1px solid var(--border);}
+.calc-expr{font-size:0.78rem;color:var(--ink-faint);font-family:"Inter",sans-serif;min-height:1.2em;}
+.calc-result{font-size:2.2rem;font-weight:800;color:var(--ink);font-family:"Inter",sans-serif;letter-spacing:-0.03em;line-height:1.1;margin-top:2px;}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.calc-key{height:60px;border-radius:12px;border:none;font-size:1.1rem;font-weight:700;cursor:pointer;font-family:"Inter",sans-serif;transition:opacity 0.1s,transform 0.08s;}
+.calc-key:active{opacity:0.75;transform:scale(0.95);}
+.calc-key.num{background:var(--bg-soft);color:var(--ink);border:1px solid var(--border);}
+.calc-key.op{background:rgba(15,76,117,0.1);color:var(--navy);border:1px solid rgba(15,76,117,0.15);}
+.calc-key.eq{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border:none;}
+.calc-key.clear{background:var(--danger-soft);color:var(--danger);border:1px solid rgba(240,68,56,0.2);}
+.calc-key.del{background:var(--bg-soft);color:var(--ink-muted);border:1px solid var(--border);}
+.calc-close-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
+.calc-close-btn{background:none;border:none;color:var(--ink-faint);font-size:1.4rem;cursor:pointer;padding:4px 8px;line-height:1;}
+
+  /* ── BILL BADGE ── */
+  .tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;border-radius:999px;background:var(--danger);color:#fff;font-size:0.58rem;font-weight:800;margin-left:4px;vertical-align:middle;line-height:1;}
+  .bill-recur-badge{font-size:0.62rem;color:var(--navy);font-weight:700;background:var(--blue-soft);border-radius:6px;padding:1px 5px;margin-left:4px;white-space:nowrap;}
+  .bill-remind-badge{font-size:0.62rem;color:var(--warning);font-weight:700;background:var(--warning-soft);border-radius:6px;padding:1px 5px;white-space:nowrap;}
+  .bill-overdue-badge{font-size:0.62rem;color:var(--danger);font-weight:700;background:var(--danger-soft);border-radius:6px;padding:1px 5px;white-space:nowrap;}
+
+/* ===== Desktop layout (900px and wider) ===== */
+.dsk-side,#pg-dash{display:none}
+@media(min-width:900px){
+  body{justify-content:stretch;background:var(--bg-soft)}
+  .app{max-width:none;display:grid;grid-template-columns:248px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);height:100dvh}
+  .dsk-side{display:flex;flex-direction:column;grid-row:1 / span 2;grid-column:1;background:var(--bg-card);border-right:1px solid var(--border);padding:22px 14px;overflow-y:auto;gap:2px}
+  .dsk-brand{padding:4px 12px 20px}
+  .dsk-brand .e{font-size:.62rem;letter-spacing:.14em;font-weight:700;color:var(--ink-faint)}
+  .dsk-brand .t{font-size:1.15rem;font-weight:800;color:var(--navy);line-height:1.2;margin-top:4px}
+  .dsk-item{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border:none;background:none;border-radius:10px;font:inherit;font-size:.9rem;font-weight:600;color:var(--ink-muted);cursor:pointer;text-align:left}
+  .dsk-item i{font-size:1.2rem;width:22px;text-align:center}
+  .dsk-item:hover{background:var(--bg-soft);color:var(--ink)}
+  .dsk-item.on{background:var(--blue-soft);color:var(--navy);font-weight:700}
+  .dsk-item .bdg{margin-left:auto;background:var(--danger);color:#fff;font-size:.66rem;font-weight:800;border-radius:10px;padding:1px 7px}
+  .dsk-sep{height:1px;background:var(--border);margin:12px 10px}
+  .app-header{grid-column:2;grid-row:1;display:flex;align-items:center;gap:18px;padding:16px 32px;flex-wrap:wrap}
+  .app-header .header-top{order:2;margin:0 0 0 auto}
+  .app-header .header-top>div:first-child{display:none}
+  .app-header .header-chips{order:1;display:flex;gap:14px;margin:0}
+  .app-header .header-chip{min-width:230px}
+  #pg-finance,#pg-settings,#pg-simple,#pg-dash{grid-column:2;grid-row:2;min-height:0}
+  .tab-bar,.bottom-nav,.settings-subtab-bar{}
+  .tab-bar,.bottom-nav{display:none!important}
+  .content{padding:26px 32px 48px}
+  #finance-content{max-width:1180px;margin:0 auto;width:100%}
+  #pg-settings .content,#hs-content{max-width:780px;margin:0 auto;width:100%}
+  .settings-subtab-bar{padding-left:32px}
+  .fab{right:36px;bottom:32px;width:56px;height:56px}
+  .modal-bg{left:0;transform:none;max-width:none;align-items:center}
+  .modal{max-width:560px;border-radius:20px;border:1px solid var(--border);animation:none}
+  /* overview page */
+  .dsk-wrap{max-width:1180px;margin:0 auto}
+  .dsk-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+  .dsk-bar h2{font-size:1.35rem;font-weight:800;color:var(--ink);margin-right:auto}
+  .dsk-bar h2 small{display:block;font-size:.8rem;font-weight:600;color:var(--ink-faint);margin-top:2px}
+  .dsk-btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border-strong);background:var(--bg-card);color:var(--ink);font:inherit;font-size:.84rem;font-weight:700;padding:10px 15px;border-radius:10px;cursor:pointer}
+  .dsk-btn.pri{background:linear-gradient(135deg,var(--navy-dark),var(--navy));color:#fff;border-color:transparent}
+  .dsk-btn:hover{filter:brightness(.97)}
+  .kpi4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:18px}
+  .kpi{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow)}
+  .kpi .l{font-size:.64rem;letter-spacing:.1em;font-weight:700;color:var(--ink-faint);text-transform:uppercase}
+  .kpi .v{font-size:1.55rem;font-weight:800;margin-top:4px;font-family:Inter,sans-serif;color:var(--ink)}
+  .kpi .s{font-size:.74rem;color:var(--ink-faint);margin-top:2px}
+  .dgrid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:18px;align-items:start}
+  .dcol{display:flex;flex-direction:column;gap:18px;min-width:0}
+  .dcard{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;box-shadow:var(--shadow)}
+  .dcard h3{font-size:.95rem;font-weight:800;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .dcard h3 a{margin-left:auto;font-size:.78rem;font-weight:700;color:var(--navy);cursor:pointer}
+  .drow{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border)}
+  .drow:first-of-type{border-top:none}
+  .drow .n{flex:1;min-width:0;font-weight:700;color:var(--ink);font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .drow .n small{display:block;font-weight:500;color:var(--ink-faint);font-size:.74rem}
+  .drow .a{font-weight:800;font-family:Inter,sans-serif;font-size:.9rem;white-space:nowrap}
+  .dpaid{border:none;background:var(--success);color:#fff;font:inherit;font-size:.74rem;font-weight:800;padding:6px 11px;border-radius:8px;cursor:pointer}
+  .dbarw{height:8px;border-radius:5px;background:var(--bg-soft);overflow:hidden;margin-top:6px}
+  .dbarw span{display:block;height:100%;border-radius:5px}
+  table.dt{width:100%;border-collapse:collapse;font-size:.85rem}
+  table.dt th{text-align:left;font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);font-weight:700;padding:0 8px 8px}
+  table.dt td{padding:10px 8px;border-top:1px solid var(--border);color:var(--ink);white-space:nowrap}
+  table.dt td.r,table.dt th.r{text-align:right}
+  table.dt tr{cursor:pointer}
+  table.dt tr:hover td{background:var(--bg-soft)}
+  .dchart{width:100%;height:auto;display:block}
+  .dchart text{font-family:Inter,sans-serif;font-size:11px;fill:var(--ink-faint)}
+  .dleg{display:flex;gap:16px;font-size:.76rem;color:var(--ink-muted);font-weight:600;margin:-4px 0 6px}
+  .dleg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .dempty{color:var(--ink-faint);font-size:.84rem;padding:8px 0}
+}
+@media(min-width:1200px){
+  #finance-content{columns:2 480px;column-gap:22px}
+  #finance-content>*{break-inside:avoid;-webkit-column-break-inside:avoid}
+  #finance-content>.empty{column-span:all}
+}
+@media(min-width:900px) and (max-width:1199px){
+  #finance-content{max-width:780px}
+  .kpi4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dgrid{grid-template-columns:minmax(0,1fr)}
+  .app-header .header-chip{min-width:190px}
+}
+
+/* ===== Free trial ===== */
+.demo-banner{flex-shrink:0;background:linear-gradient(135deg,var(--navy-dark,#0a3554),var(--navy));color:#fff;text-align:center;padding:8px 16px;font-size:0.76rem;font-weight:600;line-height:1.4;border-bottom:1px solid rgba(255,255,255,0.15);}
+.demo-banner b{color:var(--teal);}
+.demo-banner a{color:#fff;text-decoration:underline;font-weight:700;white-space:nowrap;}
+#trial-lock{display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,20,35,0.82);align-items:center;justify-content:center;padding:24px;}
+.lock-card{background:var(--bg-card);border-radius:20px;padding:30px 24px;max-width:360px;text-align:center;box-shadow:var(--shadow);}
+.lock-icon{width:58px;height:58px;border-radius:50%;background:var(--bg-soft);color:var(--navy);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;}
+.lock-title{font-size:1.2rem;font-weight:800;color:var(--ink);margin-bottom:10px;}
+.lock-text{font-size:0.88rem;color:var(--ink-muted);line-height:1.55;margin-bottom:20px;}
+.lock-cta{display:inline-block;background:linear-gradient(135deg,var(--navy-dark,#0a3554),var(--navy));color:#fff;padding:13px 26px;border-radius:12px;text-decoration:none;font-weight:700;font-size:0.9rem;}
+.upsell-card{border:1.5px solid var(--navy);}
+.upsell-btn{display:block;text-align:center;text-decoration:none;margin-bottom:0;}
+.sample-link{display:block;margin:0 auto 20px;background:none;border:none;color:var(--navy);font-family:inherit;font-weight:700;font-size:0.86rem;text-decoration:underline;cursor:pointer;}
+[data-mode="dark"] .sample-link,[data-mode="dark"] .lock-icon{color:var(--teal);}
+@media(min-width:900px){
+  .app{grid-template-rows:auto auto minmax(0,1fr)!important;}
+  .demo-banner{grid-column:1/-1;grid-row:1;}
+  .dsk-side{grid-row:2 / span 2!important;}
+  .app-header{grid-row:2!important;}
+  #pg-finance,#pg-settings,#pg-simple,#pg-dash{grid-row:3!important;}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" defer></script>
+</head>
+<body>
+<div class="app">
+  <div class="demo-banner" id="demo-banner"><b>Free trial</b>: try every feature for 14 days. <a href="https://www.etsy.com/listing/4541892597" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+  <div class="app-header">
+    <div class="header-top">
+      <div><div class="header-eyebrow">MOBILE FIRST STUDIO</div><div class="header-title" id="app-title">Simple Finance Hub</div></div>
+      <div class="header-btns">
+        <button class="hdr-btn" id="calc-btn" title="Calculator"><i class="ti ti-calculator"></i></button>
+        <button class="hdr-btn" id="appearance-btn" title="Change color"><i class="ti ti-palette"></i></button>
+      </div>
+    </div>
+    <div class="header-chips">
+      <div class="header-chip"><div class="header-chip-label">Total Funds</div><div class="header-chip-val" id="header-available">$0.00</div><div class="header-chip-sub">All accounts</div></div>
+      <div class="header-chip"><div class="header-chip-label">Safe to spend</div><div class="header-chip-val success-light" id="header-safe">$0.00</div><div class="header-chip-sub" id="header-safe-sub">Main account</div></div>
+    </div>
+  </div>
+
+  <div id="pg-finance" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('accounts',this)">Accounts</button>
+      <button class="tab-btn" onclick="switchTab('bills',this)">Bills</button>
+      <button class="tab-btn" onclick="switchTab('pending',this)">Pending</button>
+    </div>
+    <div class="content" id="finance-content"></div>
+    <button class="fab" id="main-fab" onclick="openAdd()"><i class="ti ti-plus"></i></button>
+  </div>
+
+  <div id="pg-settings" style="display:none;flex-direction:column;flex:1;min-height:0;">
+    <div class="settings-subtab-bar">
+      <button class="settings-subtab active" data-panel="general" onclick="switchSettingsPanel('general',this)">General</button>
+      <button class="settings-subtab" data-panel="profile" onclick="switchSettingsPanel('profile',this)">Profile</button>
+      <button class="settings-subtab" data-panel="backup" onclick="switchSettingsPanel('backup',this)">Backup</button>
+    </div>
+    <div class="content">
+      <div class="settings-panel active" id="settings-panel-general">
+        <div class="card"><div class="card-title">App name</div><div class="field"><input type="text" id="s-app-name" placeholder="Simple Finance Hub" maxlength="40"/></div><button class="btn-full" onclick="saveAppName()" style="margin-bottom:0;">Save name</button></div>
+        <div class="card"><div class="card-title">Appearance</div><div class="sl">Mode</div><div class="mode-row"><button class="mode-btn active" data-mode="light" onclick="setMode('light')">☀ Light</button><button class="mode-btn" data-mode="dark" onclick="setMode('dark')">☾ Dark</button></div><div class="sl" style="margin-top:12px;">Color</div><div class="swatch-row" id="swatch-row"></div></div>
+        <div class="card"><div class="card-title" style="color:var(--danger);">Danger zone</div><button class="btn-delete" onclick="confirmReset()" style="margin-top:0;">Reset all data</button></div>
+      </div>
+      <div class="settings-panel" id="settings-panel-profile">
+        <div class="card">
+          <div class="card-title">Household members</div>
+          <div class="field-hint" style="margin-bottom:12px;">Names used throughout the app.</div>
+          <div class="field"><label>Person 1 name</label><input type="text" id="s-p1-name" placeholder="e.g. Jessica" maxlength="20"/></div>
+          <div class="field"><label>Person 2 name</label><input type="text" id="s-p2-name" placeholder="e.g. Larry" maxlength="20"/></div>
+          <button class="btn-full" onclick="saveProfile()" style="margin-bottom:0;">Save names</button>
+        </div>
+      </div>
+      <div class="settings-panel" id="settings-panel-backup">
+        <div class="card"><div class="card-title">Local backup</div><p class="field-hint" style="margin-bottom:12px;">Download a backup file to your device.</p><div id="local-backup-section"></div><input type="file" id="restore-file-input" accept="application/json" style="display:none;"/></div>
+        <div class="card upsell-card"><div class="card-title">Google Drive backup is in the full app</div><p class="field-hint" style="margin-bottom:12px;line-height:1.5;">The full Simple Finance Hub backs up your accounts, bills and pending charges to your own Google Drive, so your records follow you to a new phone. This free trial skips it, since trial data is not meant to be permanent.</p><a class="btn-full upsell-btn" href="https://www.etsy.com/listing/4541892597" target="_blank" rel="noopener">Unlock the full app &rarr;</a></div>
+        <div class="card"><div class="card-title">Sample data</div><p class="field-hint" style="margin-bottom:12px;">Fill the trial with example accounts, bills, debts and goals to see every screen in action.</p><button class="btn-full" onclick="loadSampleData()" style="margin-bottom:0;">Load sample data</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('finance',this)"><i class="ti ti-currency-dollar"></i><span>Finance</span></button>
+    <button class="nav-btn" onclick="showPage('settings',this)"><i class="ti ti-settings"></i><span>Settings</span></button>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="account-modal"><div class="modal">
+  <h2 id="acct-modal-title">Add Account</h2>
+  <div class="field"><label>Account Name</label><input id="acct-name" placeholder="e.g. Chase Checking"/></div>
+  <div class="field"><label>Account Type</label><select id="acct-type"><option value="Checking">Checking</option><option value="Savings">Savings</option><option value="Cash">Cash</option><option value="Investment">Investment</option><option value="Other">Other</option></select></div>
+  <div class="field"><label>Current Balance</label><input type="number" id="acct-bal" placeholder="e.g. 2500.00" step="0.01"/><div class="field-hint">Your actual current balance. Ledger transactions add on top.</div></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('account-modal')">Cancel</button><button class="btn-save" onclick="saveAccount()">Save</button></div>
+  <button class="btn-ghost" id="acct-main-btn" style="display:none;" onclick="setMainAcctFromModal()">★ Set as Main Account</button>
+  <button class="btn-delete" id="acct-del-btn" style="display:none;" onclick="deleteAccount()">Delete Account</button>
+</div></div>
+
+<div class="modal-bg" id="bill-modal"><div class="modal">
+  <h2 id="bill-modal-title">Add Bill</h2>
+  <div class="field"><label>Bill Name</label><input id="b-name" placeholder="e.g. Rent, Netflix"/></div>
+  <div class="field-row"><div class="field"><label>Amount</label><input type="number" id="b-amt" placeholder="e.g. 1200.00" step="0.01"/></div><div class="field"><label>Due Date</label><input type="date" id="b-due"/></div></div>
+  <div class="field-row">
+    <div class="field"><label>Status</label><select id="b-status"><option value="N">N/A</option><option value="P">Paid (P)</option><option value="A">Auto (A)</option><option value="D">Due (D)</option></select></div>
+    <div class="field"><label>Account</label><select id="b-acct"></select></div>
+  </div>
+  <div id="bill-edit-hint" style="font-size:0.72rem;color:var(--ink-faint);font-style:italic;margin-bottom:8px;min-height:1em;"></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('bill-modal')">Cancel</button><button class="btn-save" onclick="saveBill()">Save</button></div>
+  <button class="btn-delete" id="bill-del-btn" style="display:none;" onclick="deleteBill()">Delete Bill</button>
+</div></div>
+
+<div class="modal-bg" id="pending-modal"><div class="modal">
+  <h2 id="pend-modal-title">Add Pending Item</h2>
+  <div class="field"><label>Description</label><input id="pend-desc" placeholder="e.g. Groceries, upcoming vet bill"/></div>
+  <div class="field-row"><div class="field"><label>Amount</label><input type="number" id="pend-amt" placeholder="e.g. 300.00" step="0.01"/></div><div class="field"><label>Date</label><input type="date" id="pend-date"/></div></div>
+  <div class="field"><label>Type</label><select id="pend-type"><option value="out">Expense (out)</option><option value="in">Income (in)</option></select></div>
+  <div class="field-hint" style="margin-bottom:12px;">Pending items are planned but not yet paid. Tap "Post to ledger" when the payment clears.</div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('pending-modal')">Cancel</button><button class="btn-save" onclick="savePending()">Save</button></div>
+  <button class="btn-delete" id="pend-del-btn" style="display:none;" onclick="deletePending()">Delete</button>
+</div></div>
+
+<div class="modal-bg" id="ledger-modal"><div class="modal">
+  <h2 id="led-modal-title">Add Transaction</h2>
+  <div class="field"><label>Account</label><select id="led-acct"></select></div>
+  <div class="field-row"><div class="field"><label>Date</label><input type="date" id="led-date"/></div><div class="field"><label>Type</label><select id="led-type"><option value="out">Expense (out)</option><option value="in">Deposit (in)</option></select></div></div>
+  <div class="field"><label>Description</label><input id="led-desc" placeholder="e.g. Grocery run"/></div>
+  <div class="field"><label>Amount</label><input type="number" id="led-amt" placeholder="e.g. 85.50" step="0.01"/></div>
+  <div class="btn-row"><button class="btn-cancel" onclick="closeModal('ledger-modal')">Cancel</button><button class="btn-save" onclick="saveLedger()">Save</button></div>
+  <button class="btn-delete" id="led-del-btn" style="display:none;" onclick="deleteLedger()">Delete</button>
+</div></div>
+
+<div class="ledger-sheet-bg" id="ledger-sheet">
+  <div class="ledger-sheet">
+    <div class="ledger-sheet-header">
+      <div>
+        <div class="ledger-sheet-title" id="ledger-sheet-title">Ledger</div>
+        <div style="font-size:0.7rem;color:var(--ink-muted);margin-top:2px;" id="ledger-sheet-bal"></div>
+      </div>
+      <button class="ledger-sheet-close" onclick="closeModal('ledger-sheet')">×</button>
+    </div>
+    <div class="ledger-sheet-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <button onclick="changeLedgerSheetMonth(-1)" style="background:none;border:none;color:var(--navy);font-size:1.2rem;cursor:pointer;padding:0 8px;">‹</button>
+        <span style="font-size:0.84rem;font-weight:700;color:var(--ink);" id="ledger-sheet-month-label"></span>
+        <button onclick="changeLedgerSheetMonth(1)" style="background:none;border:none;color:var(--navy);font-size:1.2rem;cursor:pointer;padding:0 8px;">›</button>
+      </div>
+      <div id="ledger-sheet-content"></div>
+      <button class="btn-full" style="margin-top:12px;margin-bottom:0;" onclick="openAddLedgerFromSheet()">+ Add transaction</button>
+    </div>
+  </div>
+</div>
+
+<div class="calc-modal-bg" id="calc-modal"><div class="calc-modal">
+  <div class="calc-close-row"><button class="calc-close-btn" onclick="closeModal('calc-modal')">×</button></div>
+  <div class="calc-display"><div class="calc-expr" id="calc-expr"></div><div class="calc-result" id="calc-result">0</div></div>
+  <div class="calc-grid">
+    <button class="calc-key clear" onclick="calcClear()">AC</button>
+    <button class="calc-key del" onclick="calcDel()"><i class="ti ti-backspace"></i></button>
+    <button class="calc-key op" onclick="calcOp('%')">%</button>
+    <button class="calc-key op" onclick="calcOp('÷')">÷</button>
+    <button class="calc-key num" onclick="calcNum('7')">7</button>
+    <button class="calc-key num" onclick="calcNum('8')">8</button>
+    <button class="calc-key num" onclick="calcNum('9')">9</button>
+    <button class="calc-key op" onclick="calcOp('×')">×</button>
+    <button class="calc-key num" onclick="calcNum('4')">4</button>
+    <button class="calc-key num" onclick="calcNum('5')">5</button>
+    <button class="calc-key num" onclick="calcNum('6')">6</button>
+    <button class="calc-key op" onclick="calcOp('−')">−</button>
+    <button class="calc-key num" onclick="calcNum('1')">1</button>
+    <button class="calc-key num" onclick="calcNum('2')">2</button>
+    <button class="calc-key num" onclick="calcNum('3')">3</button>
+    <button class="calc-key op" onclick="calcOp('+')">+</button>
+    <button class="calc-key num" onclick="calcNum('0')" style="grid-column:span 2;">0</button>
+    <button class="calc-key num" onclick="calcNum('.')">.</button>
+    <button class="calc-key eq" onclick="calcEquals()">=</button>
+  </div>
+</div></div>
+
+<div class="confirm-modal-bg" id="confirm-modal"><div class="confirm-box"><div class="confirm-title" id="confirm-title">Are you sure?</div><div class="confirm-body" id="confirm-body">This cannot be undone.</div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('confirm-modal')">Cancel</button><button class="confirm-yes" id="confirm-yes-btn">Delete</button></div></div></div>
+<div class="confirm-modal-bg" id="restore-confirm-modal"><div class="confirm-box"><div class="confirm-title" id="restore-confirm-title">Restore?</div><div class="confirm-body" id="restore-confirm-body"></div><div class="confirm-btns"><button class="confirm-no" onclick="closeModal('restore-confirm-modal')">Cancel</button><button class="confirm-yes" id="restore-confirm-yes">Restore</button></div></div></div>
+
+<!-- POST TO ACCOUNT PICKER -->
+<div class="ledger-sheet-bg" id="post-acct-sheet">
+  <div class="ledger-sheet">
+    <div class="ledger-sheet-header">
+      <div>
+        <div class="ledger-sheet-title">Post to account</div>
+        <div style="font-size:0.7rem;color:var(--ink-muted);margin-top:2px;" id="post-acct-desc"></div>
+      </div>
+      <button class="ledger-sheet-close" onclick="closeModal('post-acct-sheet')">×</button>
+    </div>
+    <div class="ledger-sheet-body">
+      <div id="post-acct-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="trial-lock"><div class="lock-card">
+  <div class="lock-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+  <div class="lock-title">Your free trial has ended</div>
+  <div class="lock-text">You've had 14 days with Simple Finance Hub. Get the full app to keep tracking your accounts, bills and Safe to Spend, with Google Drive backup so your records are never at risk.</div>
+  <a class="lock-cta" href="https://www.etsy.com/listing/4541892597" target="_blank" rel="noopener">Get the full app</a>
+</div></div>
+
+<script>
+const STORE="mfs_sf_demo_v1";
+const PALETTE=[{key:"navy",navy:"#0f4c75",teal:"#1ecbe1"},{key:"forest",navy:"#1a5c3a",teal:"#2dd4a0"},{key:"violet",navy:"#4c1d95",teal:"#a78bfa"},{key:"rose",navy:"#881337",teal:"#fb7185"},{key:"slate",navy:"#1e293b",teal:"#38bdf8"},{key:"amber",navy:"#78350f",teal:"#fbbf24"}];
+const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+let DB,curTab="accounts",eId={},pendingRestore=null;
+let billMonth=null,summaryMonth=null;
+
+function nowYM(){const d=new Date();return{y:d.getFullYear(),m:d.getMonth()};}
+function defDB(){return{appName:"Simple Finance Hub",accounts:[],bills:[],pending:[],ledger:[],profile:{mainAcctId:null,p1Name:"Person 1",p2Name:"Person 2"},accent:"navy",mode:"light",shareCode:null};}
+
+function load(){
+  try{const r=localStorage.getItem(STORE);if(r){DB=Object.assign(defDB(),JSON.parse(r));if(DB.appName==="Lite Finance Hub"||DB.appName==="Finance Hub"||DB.appName==="Finance Hub Lite")DB.appName="Simple Finance Hub";if(!DB.pending)DB.pending=[];if(!DB.profile)DB.profile={mainAcctId:null,p1Name:"Person 1",p2Name:"Person 2"};if(!DB.profile.p1Name)DB.profile.p1Name="Person 1";if(!DB.profile.p2Name)DB.profile.p2Name="Person 2";}else DB=defDB();}catch(e){DB=defDB();}
+  const nm=nowYM();billMonth={...nm};summaryMonth={...nm};
+}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(DB));}catch(e){}}
+
+
+/* ---------- sample data for the trial (dates follow today) ---------- */
+function demoSampleDB(){
+const t=new Date(), y=t.getFullYear(), m=t.getMonth(); const d=(dd,mo=m)=>{const x=new Date(y,mo,dd);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');};
+const A=[{id:'a1',name:'Everyday Checking',type:'Checking',balance:1850},{id:'a2',name:'Savings',type:'Savings',balance:8400},{id:'a3',name:'Cash',type:'Cash',balance:120}];
+const L=[]; let n=0; const add=(acct,dd,desc,amt,type,mo)=>L.push({id:'l'+(++n),acctId:acct,acctName:A.find(a=>a.id===acct).name,date:d(dd,mo),desc,amount:amt,type});
+for(let k=5;k>=0;k--){const mo=m-k; add('a1',1,'Paycheck',1650,'in',mo); add('a1',15,'Paycheck',1650,'in',mo); add('a1',2,'Rent',1450,'out',mo); add('a1',6,'Groceries',140+k*9,'out',mo); add('a1',13,'Groceries',122+k*4,'out',mo); add('a1',20,'Gas',58+k*3,'out',mo); add('a1',9,'Electric',96+k*6,'out',mo); add('a1',12,'Phone',85,'out',mo); add('a1',18,'Car payment',310,'out',mo); add('a1',22,'Visa payment',150,'out',mo); add('a1',8,'Starbucks',6.5+k,'out',mo); add('a1',11,'Pizza night',32+k*2,'out',mo); add('a1',17,'Amazon',45-k*3,'out',mo); add('a1',19,'CVS',18,'out',mo); add('a1',24,'Target',38+k*5,'out',mo); }
+const B=[{id:'b1',name:'Rent',amount:1450,due:d(1,m+1),status:'D',acctId:'a1',acctName:'Everyday Checking',billType:'recurring',recurFreq:'monthly'},
+{id:'b2',name:'Electric',amount:112,due:d(Math.min(t.getDate()+3,28)),status:'D',acctId:'a1',acctName:'Everyday Checking'},
+{id:'b3',name:'Car insurance',amount:138,due:d(Math.min(t.getDate()+6,28)),status:'D',acctId:'a1',acctName:'Everyday Checking'},
+{id:'b4',name:'Internet',amount:70,due:d(Math.min(t.getDate()+9,28)),status:'A',acctId:'a1',acctName:'Everyday Checking'},
+{id:'b5',name:'Phone',amount:85,due:d(12),status:'P',acctId:'a1',acctName:'Everyday Checking'},
+{id:'b6',name:'Streaming',amount:15.49,due:d(Math.min(t.getDate()+12,28)),status:'D',acctId:'a1',acctName:'Everyday Checking'}];
+const D=[{id:'d1',name:'Visa card',type:'Credit Card',balance:3240,originalBalance:4800,apr:22.9,minPayment:95,extraPayment:55},{id:'d2',name:'Car loan',type:'Auto Loan',balance:9800,originalBalance:16500,apr:6.5,minPayment:310,extraPayment:0}];
+const P=[{id:'p1',date:d(Math.max(t.getDate()-1,1)),desc:'Target run',amount:64.18,type:'out'},{id:'p2',date:d(t.getDate()),desc:'Refund from return',amount:24.99,type:'in'}];
+const S=[{id:'s1',name:'Paycheck',type:'Job',freq:'biweekly',amount:1650,monthly:3575,owner:'p1'},{id:'s2',name:'Weekend gig',type:'Side income',freq:'monthly',amount:300,monthly:300,owner:'p2'}];
+const IE=[]; for(let k=2;k>=0;k--){IE.push({id:'ie'+k+'a',sourceId:'s1',sourceName:'Paycheck',sourceOwner:'p1',amount:1650,date:d(1,m-k),note:'',posted:true,acctId:'a1',acctName:'Everyday Checking',ledgerRef:null});IE.push({id:'ie'+k+'b',sourceId:'s1',sourceName:'Paycheck',sourceOwner:'p1',amount:1650,date:d(15,m-k),note:'',posted:true,acctId:'a1',acctName:'Everyday Checking',ledgerRef:null});IE.push({id:'ie'+k+'c',sourceId:'s2',sourceName:'Weekend gig',sourceOwner:'p2',amount:300,date:d(25,m-k),note:'',posted:false,acctId:null,acctName:'',ledgerRef:null});}
+const G=[{id:'g1',name:'Emergency fund',target:6000,saved:2600,targetDate:(y+1)+'-06-30'},{id:'g2',name:'Summer trip',target:1500,saved:640,targetDate:(y+1)+'-07-01'}];
+const DP=[{id:'dp1',debtId:'d1',amount:150,date:d(22,m-1),note:'',txType:'payment'},{id:'dp2',debtId:'d2',amount:310,date:d(18,m-1),note:'',txType:'payment'}];
+return ({appName:'Simple Finance Hub',accounts:A,incomeSources:[],incomeEntries:[],debts:[],bills:B,pending:P,ledger:L,debtPayments:[],goals:[],profile:{mainAcctId:'a1',p1Name:'Jasmine',p2Name:'Mark'},accent:'navy',mode:'light',shareCode:null,simple:{done:true,on:false,autoDue:true}});}
+function loadSampleData(){
+  const go=()=>{const d=demoSampleDB();d.accent=DB.accent||d.accent;d.mode=DB.mode||d.mode;DB=Object.assign(defDB(),d);save();toast("Sample data loaded. Explore every tab.");setTimeout(()=>location.reload(),900);};
+  if((DB.accounts||[]).length||(DB.bills||[]).length||(DB.debts||[]).length)confirmAction("Load sample data?","This replaces what you have entered in the trial with example data.",go);else go();
+}
+/* ---------- free trial window ---------- */
+const DEMO_TRIAL_DAYS=14;
+function demoTrialDaysLeft(){const KEY="mfs_lfh_demo_since";let since=null;try{since=localStorage.getItem(KEY);}catch(e){}if(!since){since=String(Date.now());try{localStorage.setItem(KEY,since);}catch(e){}}return DEMO_TRIAL_DAYS-Math.floor((Date.now()-parseInt(since,10))/86400000);}
+function enforceDemoTrial(){const left=demoTrialDaysLeft(),banner=document.getElementById("demo-banner");if(left<=0){document.getElementById("trial-lock").style.display="flex";if(banner)banner.style.display="none";return true;}if(banner)banner.innerHTML="<b>Free trial</b>: "+left+" day"+(left===1?"":"s")+' left. <a href="https://www.etsy.com/listing/4541892597" target="_blank" rel="noopener">Get the full app &rarr;</a>';return false;}
+document.addEventListener("DOMContentLoaded",()=>{enforceDemoTrial();setInterval(enforceDemoTrial,60000);});
+// ── LOCAL BACKUP ──
+function downloadBackup(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="finance-hub-lite-demo-backup-"+todayKey()+".json";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1000);toast("Backup downloaded!");}
+function renderLocalBackupSection(){const e=g("local-backup-section");if(!e)return;const hasUndo=!!localStorage.getItem("mfs_lfh_demo_prerestore");e.innerHTML=`<button class="btn-full" onclick="downloadBackup()" style="margin-bottom:8px;">⬇ Download backup</button><button class="btn-ghost" onclick="g('restore-file-input').click()" style="margin-bottom:${hasUndo?6:0}px;">⬆ Restore from file</button>${hasUndo?'<button class="btn-ghost" onclick="undoRestore()" style="color:var(--danger);">Undo last restore</button>':""}`;}
+function handleRestoreFile(e){const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=evt=>{try{const data=JSON.parse(evt.target.result);if(!data||!data.accounts){toast("Invalid backup.");return;}openRestoreConfirm(data,'"'+file.name+'"');}catch(err){toast("Could not read file.");}};r.readAsText(file);e.target.value="";}
+function openRestoreConfirm(data,source){pendingRestore=data;g("restore-confirm-title").textContent="Restore from "+source+"?";g("restore-confirm-body").textContent="This replaces all your current data. You can undo right after.";g("restore-confirm-yes").onclick=confirmRestoreNow;openModal("restore-confirm-modal");}
+function confirmRestoreNow(){if(!pendingRestore){closeModal("restore-confirm-modal");return;}try{localStorage.setItem("mfs_lfh_demo_prerestore",JSON.stringify({db:DB,ts:Date.now()}));}catch(e){}DB=pendingRestore;pendingRestore=null;save();closeModal("restore-confirm-modal");toast("Restored!");setTimeout(()=>location.reload(),1200);}
+function undoRestore(){try{const raw=localStorage.getItem("mfs_lfh_demo_prerestore");if(!raw){toast("Nothing to undo.");return;}DB=JSON.parse(raw).db;localStorage.removeItem("mfs_lfh_demo_prerestore");save();toast("Undo done!");setTimeout(()=>location.reload(),1200);}catch(e){toast("Could not undo.");}}
+
+// ── UTILS ──
+function uid(){return Date.now()+Math.floor(Math.random()*1000);}
+function todayKey(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function today(){return todayKey();}
+function fmt$(n){const v=parseFloat(n)||0;return(v<0?"-$":"$")+Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function fmtDate(d){if(!d)return"";try{const p=d.split("-");return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});}catch(e){return d;}}
+function g(id){return document.getElementById(id);}
+function toast(msg){const t=g("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400);}
+function openModal(id){g(id).classList.add("open");}
+function closeModal(id){g(id).classList.remove("open");}
+function popSelect(sid,val){const s=g(sid);if(!s)return;s.innerHTML='<option value="">Select account…</option>';DB.accounts.forEach(a=>{const o=document.createElement("option");o.value=a.id;o.textContent=a.name+" ("+a.type+")";s.appendChild(o);});if(val)s.value=val;}
+function confirmAction(title,body,cb){g("confirm-title").textContent=title;g("confirm-body").textContent=body;g("confirm-yes-btn").onclick=()=>{closeModal("confirm-modal");cb();};openModal("confirm-modal");}
+
+// ── ACCENT / MODE ──
+function shade(hex,p){const n=parseInt(hex.replace("#",""),16);const r=Math.min(255,Math.max(0,((n>>16)&0xff)+Math.round(255*p/100)));const gg=Math.min(255,Math.max(0,((n>>8)&0xff)+Math.round(255*p/100)));const b=Math.min(255,Math.max(0,(n&0xff)+Math.round(255*p/100)));return"#"+[r,gg,b].map(x=>x.toString(16).padStart(2,"0")).join("");}
+function applyAccent(key){const p=PALETTE.find(a=>a.key===key)||PALETTE[0];const r=document.documentElement;r.style.setProperty("--navy",p.navy);r.style.setProperty("--navy-dark",shade(p.navy,-15));r.style.setProperty("--navy-light",shade(p.navy,20));r.style.setProperty("--teal",p.teal);r.style.setProperty("--teal-dark",shade(p.teal,-15));g("meta-theme").setAttribute("content",p.navy);}
+function applyMode(mode){document.documentElement.setAttribute("data-mode",mode);document.querySelectorAll(".mode-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));}
+function setMode(mode){DB.mode=mode;applyMode(mode);save();}
+function renderSwatches(){const row=g("swatch-row");if(!row)return;row.innerHTML=PALETTE.map(p=>`<div class="swatch ${DB.accent===p.key?"selected":""}" data-key="${p.key}" style="background:linear-gradient(135deg,${p.navy} 50%,${p.teal} 50%)" onclick="setAccent('${p.key}')"></div>`).join("");}
+function setAccent(key){DB.accent=key;applyAccent(key);save();renderSwatches();}
+
+// ── ACCOUNT CALCS ──
+function acctBal(acctId){const a=DB.accounts.find(x=>x.id===acctId);if(!a)return 0;let bal=parseFloat(a.balance)||0;DB.ledger.filter(l=>l.acctId===acctId).forEach(l=>{const amt=parseFloat(l.amount)||0;if(l.type==="in")bal+=amt;else bal-=amt;});return bal;}
+
+// ── HEADER ──
+function updateHeader(){
+  g("app-title").textContent=DB.appName||"Simple Finance Hub";
+  const available=DB.accounts.reduce((s,a)=>s+acctBal(a.id),0);
+  const mainAcct=DB.accounts.find(a=>a.id===DB.profile?.mainAcctId)||DB.accounts[0];
+  const mainBal=mainAcct?acctBal(mainAcct.id):0;
+  const dueAmt=DB.bills.filter(b=>b.status==="D"||b.status==="A").reduce((s,b)=>s+(parseFloat(b.amount)||0),0);
+  const pendingAmt=DB.pending.filter(v=>v.type==="out").reduce((s,v)=>s+(parseFloat(v.amount)||0),0);
+  const safe=mainBal-dueAmt-pendingAmt;
+  g("header-available").textContent=fmt$(available);
+  g("header-safe").textContent=fmt$(safe);
+  const sub=g("header-safe-sub");if(sub)sub.textContent=mainAcct?mainAcct.name:"Set main account";
+}
+
+// ── PAGES / TABS ──
+function showPage(id,btn){["finance","settings"].forEach(p=>{const el=g("pg-"+p);if(el)el.style.display="none";});const pg=g("pg-"+id);if(pg)pg.style.display="flex";document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");if(id==="settings"){renderSwatches();renderLocalBackupSection();g("s-app-name").value=DB.appName||"";g("s-p1-name").value=DB.profile?.p1Name||"";g("s-p2-name").value=DB.profile?.p2Name||"";}}
+function switchTab(tab,btn){curTab=tab;document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderFinance();}
+
+function monthNavHTML(mo,tabName){return`<div class="month-nav"><button class="month-nav-btn" onclick="changeMonth('${tabName}',-1)">‹</button><span class="month-nav-label">${MONTHS[mo.m]} ${mo.y}</span><button class="month-nav-btn" onclick="changeMonth('${tabName}',1)">›</button></div>`;}
+function changeMonth(tab,dir){
+  function shift(mo){mo.m+=dir;if(mo.m>11){mo.m=0;mo.y++;}if(mo.m<0){mo.m=11;mo.y--;}}
+  if(tab==="bills")shift(billMonth);
+  else if(tab==="summary")shift(summaryMonth);
+  renderFinance();
+}
+function isInMonth(dateStr,mo){if(!dateStr)return false;const p=dateStr.split("-");return parseInt(p[0])===mo.y&&parseInt(p[1])-1===mo.m;}
+
+// ── FAB / OPEN ADD ──
+function openAdd(){
+  if(curTab==="accounts"){openAccountModal(null);}
+  else if(curTab==="bills"){eId.bill=null;g("bill-modal-title").textContent="Add Bill";const bh=document.getElementById('bill-edit-hint');if(bh)bh.textContent='';["b-name","b-amt"].forEach(id=>{g(id).value="";});g("b-due").value="";g("b-status").value="N";popSelect("b-acct","");g("bill-del-btn").style.display="none";openModal("bill-modal");}
+  else if(curTab==="pending"){eId.pend=null;g("pend-modal-title").textContent="Add Pending Item";["pend-desc","pend-amt"].forEach(id=>{g(id).value="";});g("pend-date").value=today();g("pend-type").value="out";g("pend-del-btn").style.display="none";openModal("pending-modal");}
+}
+
+// ── ACCOUNTS ──
+function openAccountModal(id){eId.acct=id;const a=id?DB.accounts.find(x=>x.id===id):null;g("acct-modal-title").textContent=id?"Edit Account":"Add Account";g("acct-name").value=a?a.name:"";g("acct-type").value=a?a.type:"Checking";g("acct-bal").value=a?a.balance:"";g("acct-del-btn").style.display=id?"block":"none";const smb=g("acct-main-btn");if(smb)smb.style.display=(id&&id!==DB.profile?.mainAcctId)?"block":"none";openModal("account-modal");}
+function saveAccount(){const name=g("acct-name").value.trim();if(!name){toast("Enter an account name.");return;}if(!eId.acct&&DB.accounts.length>=8){toast("Maximum 8 accounts.");return;}const entry={id:eId.acct||("a"+uid()),name,type:g("acct-type").value,balance:parseFloat(g("acct-bal").value)||0};if(eId.acct){const i=DB.accounts.findIndex(x=>x.id===eId.acct);if(i>-1)DB.accounts[i]=entry;}else DB.accounts.push(entry);if(!DB.profile.mainAcctId&&DB.accounts.length===1)DB.profile.mainAcctId=entry.id;save();closeModal("account-modal");renderFinance();updateHeader();}
+function deleteAccount(){confirmAction("Delete this account?","All ledger entries will also be removed.",()=>{DB.ledger=DB.ledger.filter(l=>l.acctId!==eId.acct);DB.accounts=DB.accounts.filter(a=>a.id!==eId.acct);if(DB.profile.mainAcctId===eId.acct)DB.profile.mainAcctId=DB.accounts[0]?.id||null;save();closeModal("account-modal");renderFinance();updateHeader();});}
+function setMainAcctFromModal(){if(eId.acct){DB.profile.mainAcctId=eId.acct;save();closeModal("account-modal");renderFinance();updateHeader();}}
+
+// ── BILLS ──
+function openBillEdit(id){const b=DB.bills.find(x=>x.id===id);if(!b)return;eId.bill=id;g("bill-modal-title").textContent="Edit Bill";g("b-name").value=b.name;g("b-amt").value=b.amount;g("b-due").value=b.due||"";g("b-status").value=b.status||"N";popSelect("b-acct",b.acctId);g("bill-del-btn").style.display="block";openModal("bill-modal");}
+function saveBill(){const name=g("b-name").value.trim();if(!name)return;const aid=g("b-acct").value;const a=DB.accounts.find(x=>x.id===aid);const entry={id:eId.bill||("b"+uid()),name,amount:parseFloat(g("b-amt").value)||0,due:g("b-due").value,status:g("b-status").value,acctId:aid,acctName:a?a.name:""};if(eId.bill){const i=DB.bills.findIndex(x=>x.id===eId.bill);if(i>-1)DB.bills[i]=entry;}else DB.bills.push(entry);save();closeModal("bill-modal");renderFinance();updateHeader();}
+function deleteBill(){confirmAction("Delete this bill?","This cannot be undone.",()=>{DB.bills=DB.bills.filter(x=>x.id!==eId.bill);save();closeModal("bill-modal");renderFinance();updateHeader();});}
+function cycleBillStatus(id){const b=DB.bills.find(x=>x.id===id);if(!b)return;const cycle=["N","P","A","D"];b.status=cycle[(cycle.indexOf(b.status||"N")+1)%cycle.length];save();renderFinance();updateHeader();}
+function postBillToLedger(id){const b=DB.bills.find(x=>x.id===id);if(!b){toast("Bill not found.");return;}if(!b.acctId){toast("Set an account on this bill first.");return;}DB.ledger.push({id:"l"+uid(),acctId:b.acctId,acctName:b.acctName||"",date:b.due||today(),desc:b.name,amount:parseFloat(b.amount)||0,type:"out"});b.status="P";save();renderFinance();updateHeader();toast(b.name+" posted to ledger ✓");}
+
+// ── PENDING ──
+function openPendingEdit(id){const v=DB.pending.find(x=>x.id===id);if(!v)return;eId.pend=id;g("pend-modal-title").textContent="Edit Pending Item";g("pend-desc").value=v.desc;g("pend-amt").value=v.amount;g("pend-date").value=v.date||"";g("pend-type").value=v.type;g("pend-del-btn").style.display="block";openModal("pending-modal");}
+function savePending(){const desc=g("pend-desc").value.trim();if(!desc)return;const entry={id:eId.pend||("p"+uid()),date:g("pend-date").value||today(),desc,amount:parseFloat(g("pend-amt").value)||0,type:g("pend-type").value};if(eId.pend){const i=DB.pending.findIndex(x=>x.id===eId.pend);if(i>-1)DB.pending[i]=entry;}else DB.pending.push(entry);save();closeModal("pending-modal");renderFinance();updateHeader();}
+function deletePending(){confirmAction("Delete this pending item?","This cannot be undone.",()=>{DB.pending=DB.pending.filter(x=>x.id!==eId.pend);save();closeModal("pending-modal");renderFinance();updateHeader();});}
+function postPendingToLedger(id){openPostPicker("pending",id);}
+
+// ── LEDGER ──
+function saveLedger(){const desc=g("led-desc").value.trim();if(!desc)return;const aid=g("led-acct").value;const a=DB.accounts.find(x=>x.id===aid);const entry={id:eId.led||("l"+uid()),acctId:aid,acctName:a?a.name:"",date:g("led-date").value,desc,amount:parseFloat(g("led-amt").value)||0,type:g("led-type").value};if(eId.led){const i=DB.ledger.findIndex(x=>x.id===eId.led);if(i>-1)DB.ledger[i]=entry;}else DB.ledger.push(entry);save();closeModal("ledger-modal");if(g("ledger-sheet").classList.contains("open"))renderLedgerSheet();renderFinance();updateHeader();}
+function deleteLedger(){confirmAction("Delete this transaction?","This cannot be undone.",()=>{DB.ledger=DB.ledger.filter(x=>x.id!==eId.led);save();closeModal("ledger-modal");if(g("ledger-sheet").classList.contains("open"))renderLedgerSheet();renderFinance();updateHeader();});}
+
+// ── RENDER ──
+function renderFinance(){renderBillTabBadge();
+  const c=g("finance-content");if(!c)return;
+
+  // ── ACCOUNTS TAB ──
+  if(curTab==="accounts"){
+    const mo=summaryMonth;
+    const moPrefix=`${mo.y}-${String(mo.m+1).padStart(2,"0")}`;
+    const mainAcct=DB.accounts.find(a=>a.id===DB.profile?.mainAcctId)||DB.accounts[0];
+    const mainBal=mainAcct?acctBal(mainAcct.id):0;
+    const dueAmt=DB.bills.filter(b=>b.status==="D"||b.status==="A").reduce((s,b)=>s+(parseFloat(b.amount)||0),0);
+    const pendingAmt=DB.pending.filter(v=>v.type==="out").reduce((s,v)=>s+(parseFloat(v.amount)||0),0);
+    const safe=mainBal-dueAmt-pendingAmt;
+    const available=DB.accounts.reduce((s,a)=>s+acctBal(a.id),0);
+    const moLedgerIn=DB.ledger.filter(l=>l.date&&l.date.startsWith(moPrefix)&&l.type==="in").reduce((s,l)=>s+(parseFloat(l.amount)||0),0);
+    const moLedgerOut=DB.ledger.filter(l=>l.date&&l.date.startsWith(moPrefix)&&l.type==="out").reduce((s,l)=>s+(parseFloat(l.amount)||0),0);
+
+    if(!DB.accounts.length){c.innerHTML='<div class="empty">No accounts yet.<br>Tap + to add your first account.</div><button class="sample-link" onclick="loadSampleData()">Just looking? See it with sample data</button>';return;}
+
+    let h='<div class="acct-grid">'+DB.accounts.map(a=>{const bal=acctBal(a.id);const isMain=a.id===DB.profile?.mainAcctId;return`<div class="acct-card${isMain?" main-acct":""}"><div onclick="openAccountModal('${a.id}')"><div class="acct-type-badge">${a.type}</div><div class="acct-name">${a.name}</div><div class="acct-bal${bal<0?" negative":""}">${fmt$(bal)}</div>${isMain?'<div class="acct-main-star">★ Main</div>':'<div class="acct-tap">tap to edit</div>'}</div><button class="acct-ledger-btn" onclick="openLedgerSheet('${a.id}')">Ledger →</button></div>`;}).join("")+"</div>";
+
+    h+=`<div class="card" style="padding-right:64px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border);">
+        <div><div style="font-size:0.65rem;letter-spacing:0.08em;color:var(--ink-faint);font-weight:600;text-transform:uppercase;margin-bottom:3px;">Total Funds</div><div style="font-size:0.7rem;color:var(--ink-faint);">All accounts combined</div></div>
+        <span style="font-size:1.3rem;font-weight:800;color:var(--navy);font-family:'Inter',sans-serif;">${fmt$(available)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div><div style="font-size:0.65rem;letter-spacing:0.08em;color:var(--ink-faint);font-weight:600;text-transform:uppercase;margin-bottom:3px;">Safe to Spend</div><div style="font-size:0.7rem;color:var(--ink-faint);">${mainAcct?mainAcct.name:''} minus due bills & pending</div></div>
+        <span style="font-size:1.3rem;font-weight:800;color:var(--success);font-family:'Inter',sans-serif;">${fmt$(safe)}</span>
+      </div>
+    </div>`;
+
+    h+=`<div class="card" onclick="toggleMonthDetail()" style="cursor:pointer;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><span style="font-size:0.82rem;font-weight:700;color:var(--ink);">${MONTHS[mo.m]} ${mo.y}</span><span style="font-size:0.72rem;color:var(--navy);font-weight:600;" id="month-toggle-label">View breakdown ›</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="text-align:center;"><div style="font-size:0.62rem;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.07em;font-weight:600;margin-bottom:3px;">Deposits in</div><div style="font-size:0.9rem;font-weight:800;color:var(--success);font-family:'Inter',sans-serif;">${fmt$(moLedgerIn)}</div></div>
+        <div style="text-align:center;"><div style="font-size:0.62rem;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.07em;font-weight:600;margin-bottom:3px;">Spending</div><div style="font-size:0.9rem;font-weight:800;color:var(--danger);font-family:'Inter',sans-serif;">${fmt$(moLedgerOut)}</div></div>
+      </div>
+      <div id="month-detail-panel" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <button onclick="event.stopPropagation();changeMonth('summary',-1)" style="background:none;border:none;color:var(--navy);font-size:1.2rem;cursor:pointer;padding:0 8px;line-height:1;">‹</button>
+          <span style="font-size:0.84rem;font-weight:700;color:var(--ink);">${MONTHS[mo.m]} ${mo.y}</span>
+          <button onclick="event.stopPropagation();changeMonth('summary',1)" style="background:none;border:none;color:var(--navy);font-size:1.2rem;cursor:pointer;padding:0 8px;line-height:1;">›</button>
+        </div>
+        ${(()=>{const cats={};DB.ledger.filter(l=>l.date&&l.date.startsWith(moPrefix)&&l.type==="out").forEach(l=>{const cat=l.desc||"Other";cats[cat]=(cats[cat]||0)+(parseFloat(l.amount)||0);});const arr=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,6);if(!arr.length)return'<div style="font-size:0.8rem;color:var(--ink-muted);text-align:center;padding:8px 0;">No spending recorded yet.</div>';const max=arr[0][1];return arr.map(([cat,amt])=>`<div class="cat-bar-row"><div class="cat-bar-label">${cat}</div><div class="cat-bar-track"><div class="cat-bar-fill" style="width:${Math.round((amt/max)*100)}%;background:var(--navy);"></div></div><div class="cat-bar-val">${fmt$(amt)}</div></div>`).join("");})()}
+      </div>
+    </div>`;
+    c.innerHTML=h;
+
+  // ── BILLS TAB ──
+  } else if(curTab==="bills"){
+    const mo=billMonth;
+    const filtered=DB.bills.filter(b=>!b.due||isInMonth(b.due,mo));
+    const totals={P:0,A:0,D:0,N:0};DB.bills.forEach(b=>{totals[b.status||"N"]+=(parseFloat(b.amount)||0);});
+    let h=monthNavHTML(mo,"bills");
+    h+=`<div class="summary-row"><div class="summary-chip"><div class="summary-chip-label">Paid</div><div class="summary-chip-val pos">${fmt$(totals.P)}</div></div><div class="summary-chip"><div class="summary-chip-label">Auto</div><div class="summary-chip-val navy">${fmt$(totals.A)}</div></div><div class="summary-chip"><div class="summary-chip-label">Due</div><div class="summary-chip-val neg">${fmt$(totals.D)}</div></div><div class="summary-chip"><div class="summary-chip-label">N/A</div><div class="summary-chip-val neutral">${fmt$(totals.N)}</div></div></div>`;
+    h+=filtered.length?`<div class="card">`+filtered.sort((a,b)=>(a.due||"").localeCompare(b.due||"")).map(b=>{
+      const days=daysUntil(b.due);
+      const overdue=days!==null&&days<0&&b.status!=='P';
+      const dueSoon=days!==null&&days>=0&&days<=3&&b.status!=='P';
+      const dayLabel=b.status==='P'||b.status==='A'?'':days===null?'':overdue?`<span class="bill-overdue-badge">${Math.abs(days)}d overdue</span>`:days===0?'<span class="bill-overdue-badge">Due today</span>':days===1?'<span class="bill-remind-badge">Due tomorrow</span>':dueSoon?`<span class="bill-remind-badge">Due in ${days}d</span>`:'';
+      return`<div class="bill-row"><div class="bill-info"><div class="bill-name" onclick="openBillEdit('${b.id}')">${b.name}</div><div class="bill-sub">${b.due?fmtDate(b.due):''}${b.acctName?' · '+b.acctName:''} ${dayLabel}</div></div><div class="bill-amt">${fmt$(b.amount)}</div><div class="bill-status bs-${b.status||'N'}" onclick="cycleBillStatus('${b.id}')" title="Tap to cycle status">${b.status||'N'}</div>${b.status!=='P'?`<button class="bill-post-btn" onclick="postBillToLedger('${b.id}')">Post</button>`:''}</div>`;
+    }).join("")+"</div>":`<div class="empty">No bills due in ${MONTHS[mo.m]} ${mo.y}.</div>`;
+    c.innerHTML=h;
+
+  // ── PENDING TAB ──
+  } else if(curTab==="pending"){
+    const total=DB.pending.filter(v=>v.type==="out").reduce((s,v)=>s+(parseFloat(v.amount)||0),0);
+    let h=`<div class="card" style="margin-bottom:10px;"><div style="font-size:0.78rem;color:var(--ink-muted);">Pending expenses total</div><div style="font-size:1.4rem;font-weight:800;color:var(--danger);font-family:'Inter',sans-serif;margin-top:2px;">${fmt$(total)}</div><div style="font-size:0.7rem;color:var(--ink-faint);font-style:italic;margin-top:4px;">Planned but not yet paid — tap "Post" when the payment clears</div></div>`;
+    h+=DB.pending.length?`<div class="card">`+DB.pending.sort((a,b)=>(a.date||"").localeCompare(b.date||"")).map(v=>`<div class="bill-row"><div class="bill-info"><div class="bill-name" onclick="openPendingEdit('${v.id}')">${v.desc}</div><div class="bill-sub">${v.date?fmtDate(v.date):""} · ${v.type==="in"?"Incoming":"Outgoing"}</div></div><div class="bill-amt">${v.type==="in"?"+":""}${fmt$(v.amount)}</div><button class="bill-post-btn" onclick="postPendingToLedger('${v.id}')">Post</button></div>`).join("")+"</div>":'<div class="empty">No pending items. Tap + to add.</div>';
+    c.innerHTML=h;
+  }
+}
+
+// ── LEDGER SHEET ──
+let ledgerSheetAcctId=null,ledgerSheetMonth=null;
+function openLedgerSheet(acctId){ledgerSheetAcctId=acctId;if(!ledgerSheetMonth)ledgerSheetMonth={...nowYM()};renderLedgerSheet();openModal("ledger-sheet");}
+function changeLedgerSheetMonth(dir){if(!ledgerSheetMonth)ledgerSheetMonth={...nowYM()};ledgerSheetMonth.m+=dir;if(ledgerSheetMonth.m>11){ledgerSheetMonth.m=0;ledgerSheetMonth.y++;}if(ledgerSheetMonth.m<0){ledgerSheetMonth.m=11;ledgerSheetMonth.y--;}renderLedgerSheet();}
+function renderLedgerSheet(){
+  const acctId=ledgerSheetAcctId;const mo=ledgerSheetMonth||nowYM();
+  const a=DB.accounts.find(x=>x.id===acctId);if(!a)return;
+  g("ledger-sheet-title").textContent=a.name+" Ledger";
+  const allRows=DB.ledger.filter(l=>l.acctId===acctId).sort((a,b)=>(a.date||"").localeCompare(b.date||""));
+  let running=parseFloat(a.balance)||0;
+  const rr=[];allRows.forEach(r=>{const amt=parseFloat(r.amount)||0;if(r.type==="in")running+=amt;else running-=amt;rr.push({r,bal:running});});
+  g("ledger-sheet-bal").textContent="Current balance: "+fmt$(running);
+  g("ledger-sheet-month-label").textContent=MONTHS[mo.m]+" "+mo.y;
+  const filtered=rr.filter(x=>isInMonth(x.r.date,mo));
+  const monthIn=filtered.filter(x=>x.r.type==="in").reduce((s,x)=>s+(parseFloat(x.r.amount)||0),0);
+  const monthOut=filtered.filter(x=>x.r.type==="out").reduce((s,x)=>s+(parseFloat(x.r.amount)||0),0);
+  let h=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;"><div class="summary-chip"><div class="summary-chip-label">In</div><div class="summary-chip-val pos">${fmt$(monthIn)}</div></div><div class="summary-chip"><div class="summary-chip-label">Out</div><div class="summary-chip-val neg">${fmt$(monthOut)}</div></div></div>`;
+  h+=filtered.length?`<div class="card" style="padding:0 14px;">`+[...filtered].reverse().map(x=>`<div class="ledger-row" onclick="openLedgerEditFromSheet('${x.r.id}')"><div class="ledger-info"><div class="ledger-desc">${x.r.desc}</div><div class="ledger-date">${x.r.date?fmtDate(x.r.date):""}</div></div><div class="ledger-right"><div class="ledger-amt ${x.r.type==="in"?"pos":"neg"}">${x.r.type==="in"?"+":"-"}${fmt$(x.r.amount)}</div><div class="ledger-bal">${fmt$(x.bal)}</div></div></div>`).join("")+"</div>":`<div class="empty">No transactions in ${MONTHS[mo.m]} ${mo.y}.</div>`;
+  g("ledger-sheet-content").innerHTML=h;
+}
+function openLedgerEditFromSheet(id){const l=DB.ledger.find(x=>x.id===id);if(!l)return;eId.led=id;g("led-modal-title").textContent="Edit Transaction";popSelect("led-acct",l.acctId);g("led-date").value=l.date||today();g("led-desc").value=l.desc;g("led-amt").value=l.amount;g("led-type").value=l.type;g("led-del-btn").style.display="block";openModal("ledger-modal");}
+function openAddLedgerFromSheet(){eId.led=null;g("led-modal-title").textContent="Add Transaction";g("led-date").value=today();["led-desc","led-amt"].forEach(id=>{g(id).value="";});g("led-type").value="out";popSelect("led-acct",ledgerSheetAcctId);g("led-del-btn").style.display="none";openModal("ledger-modal");}
+
+function toggleMonthDetail(){const panel=g("month-detail-panel");const label=g("month-toggle-label");if(!panel)return;const open=panel.style.display==="block";panel.style.display=open?"none":"block";if(label)label.textContent=open?"View breakdown ›":"Hide breakdown ↑";}
+
+// ── SETTINGS ──
+function saveAppName(){const n=g("s-app-name").value.trim();if(!n)return;DB.appName=n;save();updateHeader();toast("Name saved.");}
+function saveProfile(){const p1=g("s-p1-name").value.trim();const p2=g("s-p2-name").value.trim();if(!p1||!p2){toast("Enter both names.");return;}if(!DB.profile)DB.profile={mainAcctId:null};DB.profile.p1Name=p1||"Person 1";DB.profile.p2Name=p2||"Person 2";save();toast("Names saved.");}
+function confirmReset(){confirmAction("Reset all data?","This permanently deletes everything.",()=>{DB=defDB();save();location.reload();});}
+function switchSettingsPanel(panel,btn){document.querySelectorAll(".settings-panel").forEach(p=>p.classList.remove("active"));document.querySelectorAll(".settings-subtab").forEach(t=>t.classList.remove("active"));g("settings-panel-"+panel).classList.add("active");btn.classList.add("active");}
+
+// ── CALCULATOR ──
+let calcExpr="",calcCurrent="0",calcJustEvaled=false;
+function calcUpdateDisplay(){g("calc-result").textContent=calcCurrent;g("calc-expr").textContent=calcExpr;}
+function calcNum(n){if(calcJustEvaled){calcCurrent=n==="."?"0.":n;calcExpr="";calcJustEvaled=false;}else if(n==="."&&calcCurrent.includes("."))return;else if(calcCurrent==="0"&&n!==".")calcCurrent=n;else calcCurrent+=n;calcUpdateDisplay();}
+function calcOp(op){calcJustEvaled=false;if(calcExpr&&!["÷","×","−","+","%"].includes(calcExpr.slice(-1))){calcExpr+=calcCurrent+op;calcCurrent="0";}else if(!calcExpr){calcExpr=calcCurrent+op;calcCurrent="0";}else{calcExpr=calcExpr.slice(0,-1)+op;}calcUpdateDisplay();}
+function calcEquals(){if(!calcExpr)return;const full=calcExpr+calcCurrent;const safe=full.replace(/÷/g,"/").replace(/×/g,"*").replace(/−/g,"-").replace(/%/g,"/100");try{const result=Function('"use strict";return ('+safe+')')();calcExpr=full+"=";calcCurrent=String(parseFloat(result.toFixed(10)));calcJustEvaled=true;calcUpdateDisplay();}catch(e){calcCurrent="Error";calcUpdateDisplay();}}
+function calcClear(){calcExpr="";calcCurrent="0";calcJustEvaled=false;calcUpdateDisplay();}
+function calcDel(){if(calcJustEvaled){calcClear();return;}if(calcCurrent.length>1)calcCurrent=calcCurrent.slice(0,-1);else calcCurrent="0";calcUpdateDisplay();}
+
+// ── BILL BADGES & HELPERS ──
+function getDueSoonCount(){return DB.bills.filter(b=>b.status==='D').length;}
+function renderBillTabBadge(){const count=getDueSoonCount();document.querySelectorAll('.tab-btn').forEach(btn=>{if(btn.textContent.replace(/\d+/,'').trim()==='Bills'){const existing=btn.querySelector('.tab-badge');if(existing)existing.remove();if(count>0){const badge=document.createElement('span');badge.className='tab-badge';badge.textContent=count;btn.appendChild(badge);}}});}
+function daysUntil(dateStr){if(!dateStr)return null;const today=new Date();today.setHours(0,0,0,0);const due=new Date(dateStr+'T00:00:00');return Math.round((due-today)/(1000*60*60*24));}
+function scheduleBillNotifications(){if(!('Notification' in window)||Notification.permission!=='granted')return;const today=new Date();today.setHours(0,0,0,0);DB.bills.forEach(b=>{if(!b.due||b.status==='P')return;const remind=parseInt(b.remind??3);if(isNaN(remind))return;const due=new Date(b.due+'T00:00:00');const diff=Math.round((due-today)/(1000*60*60*24));if(diff===remind){const label=diff===0?'due today':diff===1?'due tomorrow':'due in '+diff+' days';new Notification('Bill reminder — '+b.name,{body:fmt$(b.amount)+' '+label,icon:'/favicon.ico',tag:'bill-'+b.id});}});}
+
+// ── POST TO ACCOUNT PICKER ──
+let _postPending=null;
+function openPostPicker(type,id){
+  if(!DB.accounts.length){toast('Add an account first.');return;}
+  let desc='',amount=0,date='',txType='out';
+  if(type==='pending'){const v=DB.pending.find(x=>x.id===id);if(!v){toast('Item not found.');return;}desc=v.desc;amount=parseFloat(v.amount)||0;date=v.date||today();txType=v.type;}
+  _postPending={type,id,desc,amount,date,txType};
+  g('post-acct-desc').textContent=(txType==='in'?'+':'-')+fmt$(amount)+' · '+desc;
+  const list=g('post-acct-list');
+  let pickerHTML='';
+  pickerHTML+=DB.accounts.map(a=>{const bal=acctBal(a.id);const isMain=a.id===(DB.profile?.mainAcctId);return`<div onclick="confirmPost('${a.id}')" style="display:flex;align-items:center;justify-content:space-between;padding:12px 4px;border-bottom:1px solid var(--border);cursor:pointer;"><div><div style="font-size:0.9rem;font-weight:700;color:var(--ink);">${a.name}${isMain?' <span style="font-size:0.65rem;color:var(--navy);font-weight:700;">★</span>':''}</div><div style="font-size:0.72rem;color:var(--ink-muted);margin-top:1px;">${a.type}</div></div><div style="text-align:right;"><div style="font-size:0.92rem;font-weight:800;color:var(--ink);font-family:'Inter',sans-serif;">${fmt$(bal)}</div><div style="font-size:0.68rem;color:var(--ink-faint);">balance</div></div></div>`;}).join('');
+  list.innerHTML=pickerHTML;
+  openModal('post-acct-sheet');
+}
+function confirmPost(targetId){
+  if(!_postPending)return;
+  const{type,id,desc,amount,date,txType}=_postPending;
+  const a=DB.accounts.find(x=>x.id===targetId);if(!a){toast('Account not found.');return;}
+  DB.ledger.push({id:'l'+uid(),acctId:targetId,acctName:a.name,date,desc,amount,type:txType});
+  if(type==='pending')DB.pending=DB.pending.filter(x=>x.id!==id);
+  _postPending=null;
+  save();closeModal('post-acct-sheet');renderFinance();updateHeader();
+  toast('Posted to '+a.name+' ✓');
+}
+
+// ── INIT ──
+document.addEventListener("DOMContentLoaded",()=>{
+  load();applyAccent(DB.accent||"navy");applyMode(DB.mode||"light");
+  updateHeader();renderFinance();renderBillTabBadge();scheduleBillNotifications();
+  g("calc-btn").addEventListener("click",()=>{calcClear();openModal("calc-modal");});
+  let pressTimer=null;
+  g("appearance-btn").addEventListener("click",()=>{const keys=PALETTE.map(p=>p.key);const next=keys[(keys.indexOf(DB.accent||"navy")+1)%keys.length];setAccent(next);toast(next.charAt(0).toUpperCase()+next.slice(1));});
+  g("appearance-btn").addEventListener("pointerdown",()=>{pressTimer=setTimeout(()=>{const m=DB.mode==="dark"?"light":"dark";setMode(m);toast(m==="dark"?"Dark mode":"Light mode");},600);});
+  g("appearance-btn").addEventListener("pointerup",()=>clearTimeout(pressTimer));
+  g("appearance-btn").addEventListener("pointerleave",()=>clearTimeout(pressTimer));
+  g("restore-file-input").addEventListener("change",handleRestoreFile);
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"){["account-modal","bill-modal","pending-modal","ledger-modal","calc-modal","confirm-modal","restore-confirm-modal","ledger-sheet","post-acct-sheet"].forEach(id=>closeModal(id));}});
+});
+</script>
+<script>
+if("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(r => console.log("SW registered:", r.scope))
+      .catch(e => console.log("SW error:", e));
+  });
+}
+</script>
+<script>
+/* ── PRINTABLE PAGES (PDF made on the device with pdf-lib, same method as Life Admin HQ) ── */
+var MFSPrint=(function(){
+  // The built-in PDF fonts draw basic Latin letters only. Anything else is removed so the PDF never fails.
+  function safe(s){
+    return String(s==null?'':s)
+      .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[\r\n\t]+/g,' ')
+      .replace(/ ?[^\x20-\x7E\xA0-\xFF–—•…]+/g,'')
+      .trim();
+  }
+  function rgbHex(hex){
+    var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex||'');
+    if(!m)return PDFLib.rgb(.30,.40,.35);
+    return PDFLib.rgb(parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255);
+  }
+  var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function pd(ds){if(!ds)return new Date(NaN);var p=String(ds).split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+  function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function longDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+  function shortDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return MON[d.getMonth()].slice(0,3)+' '+d.getDate()+', '+d.getFullYear();}
+  function money(n){var v=parseFloat(n)||0;return(v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  async function create(opts){
+    opts=opts||{};
+    var doc=await PDFLib.PDFDocument.create();
+    var font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var bold=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    var k={doc:doc,font:font,bold:bold,W:612,H:792,M:46,CW:520,BOTTOM:62,page:null,y:0,title:'',landscape:false,
+      ink:PDFLib.rgb(.16,.16,.16),soft:PDFLib.rgb(.42,.42,.42),line:PDFLib.rgb(.66,.66,.66),faint:PDFLib.rgb(.84,.84,.84),
+      fill:PDFLib.rgb(.95,.95,.94),accent:rgbHex(opts.accent),footer:opts.footer||''};
+    // Shrink text a little to fit its space, then shorten it if it still does not fit.
+    k.fit=function(f,text,size,maxW,minSize){
+      var s=safe(text),sz=size,min=minSize||Math.max(6,size-2);
+      while(sz>min&&f.widthOfTextAtSize(s,sz)>maxW)sz-=0.25;
+      if(f.widthOfTextAtSize(s,sz)>maxW){
+        while(s.length>1&&f.widthOfTextAtSize(s+'...',sz)>maxW)s=s.slice(0,-1);
+        s=s.replace(/\s+$/,'')+'...';
+      }
+      return {text:s,size:sz};
+    };
+    k.text=function(text,x,y,size,o){
+      o=o||{};var f=o.bold?bold:font;
+      var r=k.fit(f,text,size,o.maxW||(k.W-k.M-x),o.minSize);
+      if(!r.text)return;
+      var w=f.widthOfTextAtSize(r.text,r.size);
+      var dx=o.align==='right'?(o.maxW-w):o.align==='center'?((o.maxW-w)/2):0;
+      k.page.drawText(r.text,{x:x+dx,y:y,size:r.size,font:f,color:o.color||k.ink});
+    };
+    k.hline=function(x1,x2,y,color,t){k.page.drawLine({start:{x:x1,y:y},end:{x:x2,y:y},thickness:t||.7,color:color||k.line});};
+    k.vline=function(x,y1,y2,color,t){k.page.drawLine({start:{x:x,y:y1},end:{x:x,y:y2},thickness:t||.7,color:color||k.line});};
+    k.rect=function(x,y,w,h,o){o=o||{};var r={x:x,y:y,width:w,height:h};if(o.fill)r.color=o.fill;if(o.border!==false){r.borderColor=o.border||k.line;r.borderWidth=o.bw||.7;}k.page.drawRectangle(r);};
+    k.newPage=function(title,sub,landscape){
+      var ls=landscape===undefined?k.landscape:!!landscape;k.landscape=ls;
+      k.W=ls?792:612;k.H=ls?612:792;k.CW=k.W-2*k.M;
+      k.page=doc.addPage([k.W,k.H]);k.title=title;
+      var y=k.H-k.M;
+      k.text(title,k.M,y-6,19,{bold:true,maxW:k.CW});
+      y-=24;
+      if(sub){k.text(sub,k.M,y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});y-=12;}
+      k.hline(k.M,k.M+k.CW,y,k.accent,1.2);
+      k.y=y-22;
+    };
+    k.contTitle=function(){return k.title.indexOf('(continued)')>-1?k.title:k.title+' (continued)';};
+    k.room=function(h){if(k.y-h<k.BOTTOM){k.newPage(k.contTitle());return true;}return false;};
+    k.section=function(text){k.room(48);k.text(text,k.M,k.y,11.5,{bold:true,color:k.accent,maxW:k.CW});k.y-=20;};
+    k.field=function(label,x,y,w,value){
+      var r=k.fit(font,label,9.5,w*0.6);
+      k.page.drawText(r.text,{x:x,y:y,size:r.size,font:font,color:k.soft});
+      var lx=x+font.widthOfTextAtSize(r.text,r.size)+6;
+      if(value)k.text(value,lx+2,y,10,{maxW:x+w-lx-4,minSize:7.5});
+      k.hline(lx,x+w,y-2);
+    };
+    // fields: array of label strings or [label,value]
+    k.fieldRow=function(fields){
+      var gap=24,w=(k.CW-gap*(fields.length-1))/fields.length;
+      fields.forEach(function(f,i){var l=Array.isArray(f)?f[0]:f,v=Array.isArray(f)?f[1]:'';k.field(l,k.M+i*(w+gap),k.y,w,v);});
+      k.y-=28;
+    };
+    k.box=function(x,y,s,on){
+      k.page.drawRectangle({x:x,y:y,width:s,height:s,borderColor:k.soft,borderWidth:.8});
+      if(on){k.page.drawLine({start:{x:x+2,y:y+s/2},end:{x:x+s*0.42,y:y+2},thickness:1.2,color:k.ink});k.page.drawLine({start:{x:x+s*0.42,y:y+2},end:{x:x+s-1.5,y:y+s-1.5},thickness:1.2,color:k.ink});}
+    };
+    // A tick list. items: a number (blank lines to write on) or an array of text / {t,on}.
+    k.checks=function(items,ncols){
+      ncols=ncols||1;
+      var n=typeof items==='number'?items:items.length,rows=Math.ceil(n/ncols),gap=20,w=(k.CW-gap*(ncols-1))/ncols;
+      for(var r=0;r<rows;r++){
+        if(k.y-20<k.BOTTOM)k.newPage(k.contTitle());
+        for(var c=0;c<ncols;c++){
+          var i=r+c*rows;if(i>=n)continue;
+          var x=k.M+c*(w+gap),it=typeof items==='number'?null:items[i];
+          k.box(x,k.y-3,10,!!(it&&it.on));
+          if(it!==null)k.text(typeof it==='string'?it:it.t,x+16,k.y-1,10,{maxW:w-18,minSize:7.5});
+          else k.hline(x+16,x+w,k.y-3,k.faint);
+        }
+        k.y-=20;
+      }
+    };
+    k.lines=function(n,gap){gap=gap||20;for(var i=0;i<n;i++){if(k.y-gap<k.BOTTOM)k.newPage(k.contTitle());k.hline(k.M,k.M+k.CW,k.y-4,k.faint);k.y-=gap;}};
+    // cols: [{label,w,align,soft,bold,box}] · rows: a number (blank rows) or an array of rows.
+    // A cell can be text or {box:true,on:bool}. A column with box:true draws an empty tick box in blank rows.
+    k.table=function(cols,rows,rowH,o){
+      o=o||{};var x=o.x||k.M;
+      var sum=cols.reduce(function(s,c){return s+c.w;},0);
+      if(o.stretch!==false&&Math.abs(sum-k.CW)>0.5){var f=k.CW/sum;cols=cols.map(function(c){var d={};for(var p in c)d[p]=c[p];d.w=c.w*f;return d;});sum=k.CW;}
+      var headH=19,n=typeof rows==='number'?rows:rows.length;
+      function sides(top,h){var cx=x;for(var i=0;i<=cols.length;i++){k.vline(cx,top,top-h);if(i<cols.length)cx+=cols[i].w;}}
+      function head(){
+        k.page.drawRectangle({x:x,y:k.y-headH,width:sum,height:headH,color:k.fill});
+        var cx=x;
+        cols.forEach(function(c){
+          if(c.label)k.text(c.label,cx+(c.w<34?2:5),k.y-13,8.5,{bold:true,maxW:c.w-(c.w<34?4:10),minSize:6,align:c.align==='center'||c.box?'center':undefined});
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y);k.hline(x,x+sum,k.y-headH);sides(k.y,headH);
+        k.y-=headH;
+      }
+      if(k.y-headH-rowH<k.BOTTOM)k.newPage(k.contTitle());
+      head();
+      for(var r=0;r<n;r++){
+        if(k.y-rowH<k.BOTTOM){k.newPage(k.contTitle());head();}
+        var row=typeof rows==='number'?null:rows[r],cx=x;
+        cols.forEach(function(c,i){
+          var v=row?row[i]:undefined,bs=Math.min(10,rowH-8),by=k.y-rowH+(rowH-bs)/2;
+          if(v&&typeof v==='object'&&v.box){k.box(cx+(c.w-bs)/2,by,bs,!!v.on);}
+          else if(c.box&&(v===undefined||v===null)){k.box(cx+(c.w-bs)/2,by,bs,false);}
+          else if(v!==undefined&&v!==null&&v!==''){
+            k.text(String(v),cx+5,k.y-rowH/2-3,9,{maxW:c.w-10,minSize:6.5,bold:!!c.bold,color:c.soft?k.soft:k.ink,align:c.align==='center'?'center':c.align==='right'?'right':undefined});
+          }
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y-rowH);sides(k.y,rowH);
+        k.y-=rowH;
+      }
+      k.y-=14;
+    };
+    k.fillRows=function(rowH){return Math.max(0,Math.floor((k.y-k.BOTTOM-19)/rowH));};
+    k.finish=async function(){
+      var pages=doc.getPages();
+      pages.forEach(function(pg,i){
+        var sz=pg.getSize();
+        pg.drawText(safe(k.footer),{x:k.M,y:30,size:8,font:font,color:k.soft});
+        var lbl='Page '+(i+1)+' of '+pages.length;
+        pg.drawText(lbl,{x:sz.width-k.M-font.widthOfTextAtSize(lbl,8),y:30,size:8,font:font,color:k.soft});
+      });
+      return await doc.save();
+    };
+    // Month grid, Monday first. cellText(dateStr) returns an array of short lines for that day.
+    // With numbered=false the grid has no dates, for an undated month to fill in by hand.
+    k.month=function(year,month,o){
+      o=o||{};var top=k.y,heads=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],cw=k.CW/7,hh=18;
+      var first=new Date(year,month,1).getDay(),off=(first+6)%7,dim=new Date(year,month+1,0).getDate();
+      var weeks=o.numbered===false?5:Math.ceil((off+dim)/7);
+      var gridH=(o.height||(k.y-k.BOTTOM-8))-hh,ch=gridH/weeks;
+      k.page.drawRectangle({x:k.M,y:top-hh,width:k.CW,height:hh,color:k.fill});
+      heads.forEach(function(h,i){k.text(h,k.M+i*cw,top-12.5,8.5,{bold:true,maxW:cw,align:'center'});});
+      for(var w=0;w<weeks;w++)for(var d=0;d<7;d++){
+        var x=k.M+d*cw,y=top-hh-(w+1)*ch,n=w*7+d-off+1;
+        k.rect(x,y,cw,ch,{border:k.line});
+        if(o.numbered===false||n<1||n>dim)continue;
+        k.text(String(n),x+4,y+ch-11,9,{bold:true,maxW:cw-8});
+        if(o.cellText){
+          var ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+          var lines=o.cellText(ds)||[],ly=y+ch-22;
+          for(var li=0;li<lines.length&&ly>y+3;li++){k.text(lines[li],x+4,ly,7,{maxW:cw-8,minSize:6});ly-=8.5;}
+        }
+      }
+      k.y=top-hh-gridH-14;
+    };
+    // Twelve small month calendars on one page.
+    k.yearGrid=function(year){
+      var cols=3,rows=4,gap=16,bw=(k.CW-gap*(cols-1))/cols,top=k.y,bh=(top-k.BOTTOM-gap*(rows-1))/rows;
+      for(var m=0;m<12;m++){
+        var c=m%cols,r=Math.floor(m/cols),x=k.M+c*(bw+gap),y=top-r*(bh+gap);
+        k.text(MON[m],x,y-10,10.5,{bold:true,color:k.accent,maxW:bw});
+        var cw=bw/7,heads=['M','T','W','T','F','S','S'];
+        heads.forEach(function(h,i){k.text(h,x+i*cw,y-26,7.5,{bold:true,color:k.soft,maxW:cw,align:'center'});});
+        var first=new Date(year,m,1).getDay(),off=(first+6)%7,dim=new Date(year,m+1,0).getDate(),lh=(bh-38)/6;
+        for(var d=1;d<=dim;d++){var p=off+d-1,cc=p%7,rr=Math.floor(p/7);k.text(String(d),x+cc*cw,y-40-rr*lh,8,{maxW:cw,align:'center'});}
+      }
+      k.y=k.BOTTOM;
+    };
+    return k;
+  }
+  // Hand the finished PDF to the person. On iPhone and iPad the share sheet (Print, Save to Files)
+  // is the dependable route from a home screen app, so it is tried first there.
+  function deliver(bytes,filename){
+    var blob=new Blob([bytes],{type:'application/pdf'});
+    var download=function(){
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+    };
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&navigator.canShare&&typeof File!=='undefined'){
+      try{
+        var file=new File([blob],filename,{type:'application/pdf'});
+        if(navigator.canShare({files:[file]})){
+          return navigator.share({files:[file],title:filename}).catch(function(err){
+            if(err&&err.name==='AbortError')return;
+            download();
+          });
+        }
+      }catch(e){}
+    }
+    download();
+  }
+  var busy=false;
+  // Runs a page builder and hands over the PDF. say(msg,isErr) shows the app's own message.
+  async function run(build,filename,opts,say){
+    if(typeof PDFLib==='undefined'){say('The PDF tool is still loading. Check your connection and try again.',true);return;}
+    if(busy)return;busy=true;say('Creating your PDF...');
+    try{var k=await create(opts);await build(k);var bytes=await k.finish();await deliver(bytes,filename);say('Your PDF is ready!');}
+    catch(e){console.error(e);say('Could not create the PDF. Try again.',true);}
+    busy=false;
+  }
+  return {safe:safe,create:create,deliver:deliver,run:run,MON:MON,DOW:DOW,pd:pd,ymd:ymd,longDate:longDate,shortDate:shortDate,money:money};
+})();
+
+/* ── PRINTABLE BUDGET PAGES (blank pages to fill in by hand, or a filled copy of what is saved) ── */
+function hpFull(){return Array.isArray(DB.debts)&&Array.isArray(DB.goals);}
+function hpAccent(){var v=getComputedStyle(document.documentElement).getPropertyValue('--navy').trim();return /^#[0-9a-f]{6}$/i.test(v)?v:'#0f4c75';}
+function hpName(){return DB.appName||document.title.split(' — ')[0]||'Finance Hub';}
+var HP_CATS=['Groceries','Gas and transportation','Eating out','Household','Kids','Personal care','Fun','Other'];
+
+function hpMonthlyBudget(k){
+  k.newPage('Monthly Budget','Money in, bills, then spending. What is left over is yours to save or spend.',false);
+  k.fieldRow(['Month','Year','Starting balance']);
+  k.section('Money coming in');
+  k.table([{label:'Paycheck or source',w:220},{label:'Date',w:90},{label:'Amount',w:110,align:'right'},{label:'Got it',w:60,box:true}],4,21);
+  k.section('Bills');
+  k.table([{label:'Bill',w:200},{label:'Due',w:80},{label:'Amount',w:100,align:'right'},{label:'Autopay',w:70,box:true},{label:'Paid',w:60,box:true}],8,21);
+  k.section('Spending');
+  k.table([{label:'Category',w:200},{label:'Budget',w:110,align:'right'},{label:'Spent',w:110,align:'right'},{label:'Left',w:110,align:'right'}],HP_CATS.map(function(c){return [c,'','',''];}),21);
+  k.fieldRow(['Money in','Bills','Spending','Left over']);
+}
+function hpPaycheck(k){
+  k.newPage('Paycheck Budget','Plan each paycheck: bills first, then savings, then what is safe to spend.',false);
+  for(var i=0;i<2;i++){
+    k.room(300);
+    k.section('Paycheck '+(i+1));
+    k.fieldRow(['Pay date','Amount','Next payday']);
+    k.table([{label:'Paid from this check',w:260},{label:'Due',w:90},{label:'Amount',w:110,align:'right'},{label:'Paid',w:60,box:true}],6,21);
+    k.fieldRow(['Bills total','Savings','Safe to spend']);
+    k.fieldRow(['Days until next payday','Safe to spend per day']);
+  }
+}
+function hpBillYear(k){
+  k.newPage('Yearly Bill Tracker','Tick each month when the bill is paid.',true);
+  k.fieldRow(['Year']);
+  var cols=[{label:'Bill',w:150},{label:'Due day',w:46,align:'center'},{label:'Amount',w:64,align:'right'}];
+  MFSPrint.MON.forEach(function(m){cols.push({label:m.slice(0,3),w:30,box:true});});
+  k.table(cols,k.fillRows(24),24);
+}
+function hpSpendLog(k){
+  k.newPage('Spending Log','Write it down when you spend. Subtract it from what is safe to spend.',false);
+  k.fieldRow(['Month','Safe to spend at the start']);
+  k.table([{label:'Date',w:70},{label:'What for',w:200},{label:'Category',w:110},{label:'Amount',w:70,align:'right'},{label:'Left',w:70,align:'right'}],k.fillRows(22),22);
+}
+function hpDebtBlank(k){
+  k.newPage('Debt Payoff Tracker','List your debts, pick an order, and color in a box for every payment.',false);
+  k.fieldRow(['Method: smallest balance first or highest interest first']);
+  k.table([{label:'Order',w:44,align:'center'},{label:'Debt',w:170},{label:'Balance',w:90,align:'right'},{label:'Interest %',w:70,align:'right'},{label:'Minimum',w:80,align:'right'},{label:'Paid off',w:66,box:true}],6,22);
+  k.section('Payments');
+  k.table([{label:'Date',w:80},{label:'Debt',w:200},{label:'Paid',w:110,align:'right'},{label:'New balance',w:130,align:'right'}],8,21);
+  k.section('Debt free chart');
+  k.text('Each box is $______. Color one in every time you pay that much.',k.M,k.y,9,{color:k.soft,maxW:k.CW});k.y-=12;
+  var cols=15,rows=Math.max(2,Math.min(5,Math.floor((k.y-k.BOTTOM)/26))),cw=k.CW/cols;
+  for(var r=0;r<rows;r++)for(var c=0;c<cols;c++)k.rect(k.M+c*cw,k.y-(r+1)*24,cw,24,{border:k.line});
+  k.y-=rows*24+14;
+}
+function hpSavingsBlank(k){
+  k.newPage('Savings Goals','One box for every 5 percent. Color them in as you save.',false);
+  for(var i=0;i<2;i++){
+    k.room(240);
+    k.section('Goal '+(i+1));
+    k.fieldRow(['Saving for','Goal amount','By']);
+    var cols=10,cw=k.CW/cols,ch=30;
+    for(var j=0;j<20;j++){var c=j%cols,r=Math.floor(j/cols),x=k.M+c*cw,y=k.y-(r+1)*ch;k.rect(x,y,cw,ch,{border:k.line});k.text((j+1)*5+'%',x,y+ch/2-3,8,{color:k.soft,maxW:cw,align:'center'});}
+    k.y-=2*ch+16;
+    k.table([{label:'Date',w:110},{label:'Added',w:130,align:'right'},{label:'Total saved',w:140,align:'right'},{label:'Note',w:140}],4,21);
+  }
+}
+function hpBlankSet(k){hpMonthlyBudget(k);hpPaycheck(k);hpBillYear(k);hpSpendLog(k);if(hpFull()){hpDebtBlank(k);hpSavingsBlank(k);}}
+
+function hpStatus(s){return {P:'Paid',A:'Autopay',D:'Due',N:''}[s||'N']||'';}
+function hpBillsFor(y,m){
+  var pre=y+'-'+String(m+1).padStart(2,'0');
+  return DB.bills.filter(function(b){return b.due&&b.due.indexOf(pre)===0;}).sort(function(a,b){return a.due.localeCompare(b.due);});
+}
+function hpBillTable(k,list){
+  var rows=list.map(function(b){return [b.name,MFSPrint.shortDate(b.due),MFSPrint.money(b.amount),hpStatus(b.status),{box:true,on:b.status==='P'}];});
+  var tot=list.reduce(function(s,b){return s+(parseFloat(b.amount)||0);},0);
+  if(rows.length)rows.push(['Total','',MFSPrint.money(tot),'','']);
+  else rows.push(['No bills saved for this month','','','','']);
+  k.table([{label:'Bill',w:210,bold:true},{label:'Due',w:100},{label:'Amount',w:90,align:'right'},{label:'Status',w:70},{label:'Paid',w:50,box:true}],rows,21);
+}
+function hpSnapshot(k){
+  var P=MFSPrint,now=new Date();
+  var main=DB.accounts.find(function(a){return a.id===(DB.profile&&DB.profile.mainAcctId);})||DB.accounts[0];
+  var mainBal=main?acctBal(main.id):0;
+  var due=DB.bills.filter(function(b){return b.status==='D'||b.status==='A';}).reduce(function(s,b){return s+(parseFloat(b.amount)||0);},0);
+  var pend=(DB.pending||[]).filter(function(v){return v.type==='out';}).reduce(function(s,v){return s+(parseFloat(v.amount)||0);},0);
+  var total=DB.accounts.reduce(function(s,a){return s+acctBal(a.id);},0);
+  k.newPage('My Money Snapshot',P.longDate(today()),false);
+  k.fieldRow([['Safe to spend',P.money(mainBal-due-pend)],['Total in all accounts',P.money(total)]]);
+  if(typeof hsNextPayday==='function'){var np=hsNextPayday();if(np){var dd=Math.round((np-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/86400000);k.fieldRow([['Next payday',P.shortDate(P.ymd(np))],['Days to go',String(dd)]]);}}
+  k.text('Safe to spend = '+(main?main.name:'main account')+' '+P.money(mainBal)+' minus '+P.money(due)+' in bills still due and '+P.money(pend)+' waiting to clear.',k.M,k.y,9,{color:k.soft,maxW:k.CW,minSize:7});k.y-=22;
+  k.section('Accounts');
+  k.table([{label:'Account',w:240,bold:true},{label:'Type',w:120},{label:'Balance',w:160,align:'right'}],DB.accounts.length?DB.accounts.map(function(a){return [a.name+(main&&a.id===main.id?'  (main)':''),a.type||'',P.money(acctBal(a.id))];}):3,21);
+  k.section('Bills for '+P.MON[now.getMonth()]+' '+now.getFullYear());
+  hpBillTable(k,hpBillsFor(now.getFullYear(),now.getMonth()));
+  var nx=new Date(now.getFullYear(),now.getMonth()+1,1);
+  k.section('Bills for '+P.MON[nx.getMonth()]+' '+nx.getFullYear());
+  hpBillTable(k,hpBillsFor(nx.getFullYear(),nx.getMonth()));
+  var pl=(DB.pending||[]);
+  if(pl.length){k.section('Waiting to clear');k.table([{label:'Date',w:100},{label:'What',w:280},{label:'Amount',w:140,align:'right'}],pl.map(function(v){return [P.shortDate(v.date),v.desc,(v.type==='in'?'+':'-')+P.money(v.amount)];}),21);}
+}
+function hpDebtsFilled(k){
+  var P=MFSPrint;if(!hpFull()||!DB.debts.length)return;
+  k.section('Debts: balances and payoff dates at your current payments');
+  var tot=0;
+  var rows=DB.debts.map(function(d){var bal=debtCurrentBal(d.id);tot+=bal;var pay=(parseFloat(d.minPayment)||0)+(parseFloat(d.extraPayment)||0);var mo=calcPayoffMonths(bal,d.apr,pay);return [d.name,P.money(bal),(parseFloat(d.apr)||0)+'%',P.money(pay),mo?payoffDateStr(mo):'Not set'];});
+  rows.push(['Total',P.money(tot),'','','']);
+  k.table([{label:'Debt',w:180,bold:true},{label:'Balance',w:90,align:'right'},{label:'Interest',w:70,align:'right'},{label:'Paying',w:80,align:'right'},{label:'Paid off by',w:100}],rows,22);
+}
+function hpGoalsFilled(k){
+  var P=MFSPrint;if(!hpFull()||!DB.goals.length)return;
+  k.section('Savings goals');
+  k.table([{label:'Goal',w:180,bold:true},{label:'Saved',w:90,align:'right'},{label:'Goal',w:90,align:'right'},{label:'Done',w:60,align:'right'},{label:'By',w:100}],DB.goals.map(function(gl){var t=parseFloat(gl.target)||0,s=parseFloat(gl.saved)||0;return [gl.name,P.money(s),P.money(t),(t>0?Math.min(100,Math.round(s/t*100)):0)+'%',gl.targetDate?P.shortDate(gl.targetDate):''];}),22);
+}
+function hpFilledSet(k){hpSnapshot(k);hpDebtsFilled(k);hpGoalsFilled(k);hpMonthlyBudget(k);hpSpendLog(k);}
+function hpPrint(mode){
+  var blank=mode==='blank',slug=hpName().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  MFSPrint.run(function(k){if(blank)hpBlankSet(k);else hpFilledSet(k);},
+    blank?slug+'-printable-budget-planner.pdf':slug+'-my-budget-'+today()+'.pdf',
+    {accent:blank?'#0f4c75':hpAccent(),footer:hpName()+'  ·  Mobile First Studio'},function(m){toast(m);});
+}
+window.hpPrint=hpPrint;
+function hpSettingsHTML(){
+  return '<div class="card"><div class="card-title">Printable pages</div><p class="field-hint" style="margin-bottom:12px;">Print your bills, balances'+(hpFull()?', debts and goals':'')+' as they are now, or get blank budget pages to fill in by hand. The PDF is made on your phone. Nothing is uploaded.</p>'
+   +'<button class="btn-full" onclick="hpPrint(\'filled\')" style="margin-bottom:8px;">Print My Budget (PDF)</button>'
+   +'<button class="btn-ghost" onclick="hpPrint(\'blank\')" style="margin-top:0;">Get Blank Budget Pages (PDF)</button></div>';
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var gen=g('settings-panel-general');if(!gen)return;
+  var dz=Array.prototype.find.call(gen.querySelectorAll('.card'),function(c){return /Danger zone/.test(c.textContent);});
+  var d=document.createElement('div');d.innerHTML=hpSettingsHTML();
+  gen.insertBefore(d.firstChild,dz||null);
+});
+
+/* ── START HERE + TODAY SCREEN (simple view) ──
+   Start here: three short steps for a new user (main balance, payday, bills still due).
+   Today: one screen with Safe to Spend, days to payday, the bills still due with a one tap Paid,
+   "I spent money" and "Update my balance" for catching up after missed days. */
+(function(){
+var css=`
+.hs-wrap{padding:14px 14px calc(80px + env(safe-area-inset-bottom,0px));}
+.hs-hero{background:var(--bg-card);border:1px solid var(--border);border-radius:18px;padding:18px 18px 16px;box-shadow:var(--shadow);margin-bottom:12px;text-align:center;}
+.hs-label{font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;color:var(--ink-faint);}
+.hs-big{font-size:2.6rem;font-weight:800;font-family:"Inter",sans-serif;letter-spacing:-0.03em;color:var(--success);line-height:1.1;margin:4px 0 6px;}
+.hs-big.neg{color:var(--danger);}
+.hs-explain{font-size:0.8rem;color:var(--ink-muted);line-height:1.5;}
+.hs-pay{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:0.86rem;color:var(--ink);font-weight:600;}
+.hs-pay small{display:block;font-weight:500;color:var(--ink-muted);font-size:0.78rem;margin-top:2px;}
+.hs-link{background:none;border:none;color:var(--navy);font-weight:700;font-size:0.82rem;cursor:pointer;font-family:"Plus Jakarta Sans",sans-serif;padding:6px 4px;}
+.hs-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.hs-act{background:var(--bg-card);border:1px solid var(--border-strong);border-radius:14px;padding:14px 8px;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.86rem;font-weight:700;color:var(--ink);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.hs-act i{font-size:24px;color:var(--navy);}
+.hs-bill{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);}
+.hs-bill:last-child{border-bottom:none;}
+.hs-bill-info{flex:1;min-width:0;}
+.hs-bill-name{font-size:0.92rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hs-bill-when{font-size:0.74rem;color:var(--ink-muted);margin-top:2px;}
+.hs-bill-when.late{color:var(--danger);font-weight:700;}
+.hs-bill-when.soon{color:var(--warning);font-weight:700;}
+.hs-bill-amt{font-size:0.92rem;font-weight:800;font-family:"Inter",sans-serif;color:var(--ink);}
+.hs-paid{background:linear-gradient(135deg,var(--success),#0e9c5a);color:#fff;border:none;border-radius:9px;padding:8px 12px;font-family:"Plus Jakarta Sans",sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;white-space:nowrap;}
+.hs-payday{display:flex;align-items:center;gap:12px;background:var(--success-soft);border:1px solid rgba(18,183,106,0.35);border-radius:14px;padding:12px 14px;margin-bottom:12px;}
+.hs-payday i{font-size:26px;color:var(--success);}
+.hs-payday-info{flex:1;font-size:0.92rem;color:var(--ink);}
+.hs-payday-info small{display:block;font-size:0.76rem;color:var(--ink-muted);margin-top:2px;}
+.hs-note{font-size:0.76rem;color:var(--ink-faint);text-align:center;line-height:1.6;margin:10px 4px 0;}
+.hs-start-bg{position:fixed;inset:0;z-index:40;background:var(--bg-soft);display:none;justify-content:center;}
+.hs-start-bg.open{display:flex;}
+.hs-start{width:100%;max-width:480px;height:100dvh;height:var(--app-height,100dvh);overflow-y:auto;padding:calc(env(safe-area-inset-top,0px) + 22px) 20px calc(24px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;}
+.hs-dots{display:flex;gap:6px;margin-bottom:18px;}
+.hs-dot{flex:1;height:5px;border-radius:3px;background:var(--border);}
+.hs-dot.on{background:var(--navy);}
+.hs-step-num{font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;color:var(--ink-faint);}
+.hs-q{font-size:1.35rem;font-weight:800;color:var(--ink);letter-spacing:-0.02em;margin:6px 0 6px;line-height:1.25;}
+.hs-why{font-size:0.86rem;color:var(--ink-muted);line-height:1.55;margin-bottom:18px;}
+.hs-start .field input,.hs-start .field select{font-size:1rem;padding:12px 13px;}
+.hs-billrow{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:12px 12px 2px;margin-bottom:10px;}
+.hs-foot{margin-top:auto;padding-top:16px;}
+.hs-skip{display:block;width:100%;text-align:center;margin-top:10px;}
+.hs-toggle{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;}
+.hs-toggle span{font-size:0.86rem;color:var(--ink);font-weight:600;line-height:1.4;}
+.hs-toggle small{display:block;font-weight:500;color:var(--ink-muted);font-size:0.74rem;}
+.hs-toggle input{width:22px;height:22px;flex-shrink:0;accent-color:var(--navy);}
+`;
+var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+})();
+
+var HS_STEPS=3,hsStep=1;
+function hsCfg(){if(!DB.simple)DB.simple={};if(!DB.simple.since)DB.simple.since=hsYmd(hsToday());return DB.simple;}
+function hsMain(){return DB.accounts.find(function(a){return a.id===(DB.profile&&DB.profile.mainAcctId);})||DB.accounts[0]||null;}
+function hsYmd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function hsParse(s){if(!s)return null;var p=String(s).split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);return isNaN(d)?null:d;}
+function hsToday(){var t=new Date();t.setHours(0,0,0,0);return t;}
+function hsEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function hsDays(d){return Math.round((d-hsToday())/86400000);}
+function hsNice(d){return d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});}
+// ── PAYDAYS ──
+// Budget Planner and Standard keep paychecks as income sources (the Income tab), so the Today screen
+// reads those. Lite has no Income tab, so its one paycheck lives in DB.simple.pay.
+var HS_FREQS=['weekly','biweekly','semimonthly','monthly'];
+function hsHasIncome(){return Array.isArray(DB.incomeSources)&&typeof getPayDates==='function';}
+function hsMonthDates(src,y,m){
+  if(typeof getPayDates==='function')return getPayDates(src,y,m).map(function(x){return x.date;});
+  var out=[],dim=new Date(y,m+1,0).getDate(),pre=y+'-'+String(m+1).padStart(2,'0')+'-',pad=function(n){return pre+String(n).padStart(2,'0');};
+  if(src.freq==='monthly')out.push(pad(Math.min(src.payDay||1,dim)));
+  else if(src.freq==='semimonthly'){out.push(pad(Math.min(src.payDay||1,dim)));out.push(pad(Math.min(src.payDay2||15,dim)));}
+  else{
+    var dow=src.payDow!=null?src.payDow:5,first=new Date(y,m,1),d=1+((dow-first.getDay()+7)%7),anc=hsParse(src.payAnchor);
+    for(;d<=dim;d+=7){if(src.freq==='biweekly'&&anc){var diff=Math.round((new Date(y,m,d)-anc)/86400000);if(((diff%14)+14)%14!==0)continue;}out.push(pad(d));}
+  }
+  return out.sort();
+}
+function hsSources(){
+  var c=hsCfg();
+  if(hsHasIncome())return DB.incomeSources.filter(function(s){return HS_FREQS.indexOf(s.freq)>-1;});
+  return c.pay?[Object.assign({id:'simple',name:'Paycheck'},c.pay)]:[];
+}
+function hsDatesBetween(src,from,to){
+  var out=[],y=from.getFullYear(),m=from.getMonth(),f=hsYmd(from),t=hsYmd(to),guard=0;
+  while(guard<6){var ds=hsMonthDates(src,y,m);ds.forEach(function(d){if(d>=f&&d<=t)out.push(d);});if(y*12+m>=to.getFullYear()*12+to.getMonth())break;m++;if(m>11){m=0;y++;}guard++;}
+  return out;
+}
+function hsLogged(src,date){
+  var c=hsCfg(),key=src.id+'|'+date;
+  if((c.skipped||[]).indexOf(key)>-1)return true;
+  if(src.id==='simple')return (c.paid||[]).indexOf(date)>-1;
+  return (DB.incomeEntries||[]).some(function(e){return e.sourceId===src.id&&e.date===date;});
+}
+// Paydays that have arrived (last 14 days) but are not added yet. Only dates after the Today screen was
+// first used, and after the paycheck was set up, so nobody is asked about old paydays.
+function hsPaysWaiting(){
+  var c=hsCfg(),t=hsToday(),from=new Date(t.getTime());from.setDate(from.getDate()-14);
+  var since=c.since||hsYmd(t),out=[];
+  hsSources().forEach(function(src){
+    hsDatesBetween(src,from,t).forEach(function(d){
+      if(d<since||(src.payAnchor&&src.fromStart&&d<src.payAnchor))return;
+      if(!hsLogged(src,d))out.push({src:src,date:d});
+    });
+  });
+  return out.sort(function(a,b){return a.date.localeCompare(b.date);});
+}
+function hsNextPay(){
+  var t=hsToday(),to=new Date(t.getTime());to.setDate(to.getDate()+66);var best=null;
+  hsSources().forEach(function(src){
+    var ds=hsDatesBetween(src,t,to).filter(function(d){return !(src.fromStart&&src.payAnchor&&d<src.payAnchor);});
+    var d=ds.filter(function(x){return !hsLogged(src,x);})[0];
+    if(d&&(!best||d<best.date))best={src:src,date:d};
+  });
+  return best;
+}
+function hsNextPayday(){var n=hsNextPay();return n?hsParse(n.date):null;}
+function hsPaySource(id){return hsSources().find(function(s){return s.id===id;});}
+function hsDueBills(){return DB.bills.filter(function(b){return b.status==='D'||b.status==='A';});}
+function hsNumbers(){
+  var m=hsMain(),bal=m?acctBal(m.id):0;
+  var due=hsDueBills().reduce(function(s,b){return s+(parseFloat(b.amount)||0);},0);
+  var pend=(DB.pending||[]).filter(function(v){return v.type==='out';}).reduce(function(s,v){return s+(parseFloat(v.amount)||0);},0);
+  return {main:m,bal:bal,due:due,pend:pend,safe:bal-due-pend};
+}
+// Recurring copies are made ahead of time as "N/A". With this on, a copy switches to Due once its
+// date comes close (before the next payday, or within 14 days), so it counts against Safe to Spend.
+function hsAutoDue(){
+  var c=hsCfg();if(!c.autoDue)return false;
+  var t=hsToday(),lim=new Date(t.getTime());lim.setDate(lim.getDate()+14);
+  var np=hsNextPayday();if(np&&np>lim)lim=np;
+  var from=new Date(t.getTime());from.setDate(from.getDate()-45);
+  var limS=hsYmd(lim),fromS=hsYmd(from),changed=false;
+  DB.bills.forEach(function(b){if(b.isGenerated&&(b.status||'N')==='N'&&b.due&&b.due<=limS&&b.due>=fromS){b.status='D';changed=true;}});
+  return changed;
+}
+
+// ── TODAY SCREEN ──
+function hsRender(){
+  var c=g('hs-content');if(!c)return;
+  var n=hsNumbers(),h='';
+  if(!DB.accounts.length){
+    c.innerHTML='<div class="hs-hero"><div class="hs-label">Safe to spend</div><div class="hs-big">$0.00</div><div class="hs-explain">Add your main account to see what is safe to spend.</div><button class="btn-full" style="margin:14px 0 0;" onclick="hsOpenStart()">Start here</button></div>';
+    return;
+  }
+  hsPaysWaiting().forEach(function(w){
+    h+='<div class="hs-payday"><i class="ti ti-cash"></i><div class="hs-payday-info"><b>Payday!</b> '+hsEsc(w.src.name)+'<small>'+hsNice(hsParse(w.date))+(parseFloat(w.src.amount)?' · usually '+fmt$(w.src.amount):'')+'</small></div><button class="hs-paid" onclick="hsOpenGotPaid(\''+w.src.id+'\',\''+w.date+'\')">Add it</button></div>';
+  });
+  h+='<div class="hs-hero"><div class="hs-label">Safe to spend</div><div class="hs-big'+(n.safe<0?' neg':'')+'">'+fmt$(n.safe)+'</div>';
+  h+='<div class="hs-explain">'+hsEsc(n.main?n.main.name:'Main account')+' '+fmt$(n.bal)+(n.due?', minus '+fmt$(n.due)+' in bills still due':'')+(n.pend?', minus '+fmt$(n.pend)+' waiting to clear':'')+'</div>';
+  var nx=hsNextPay();
+  if(nx){
+    var npd=hsParse(nx.date),dd=hsDays(npd);
+    h+='<div class="hs-pay">'+(dd===0?'Payday is today':'Next payday in '+dd+' day'+(dd===1?'':'s')+' · '+hsNice(npd))+'<small>'+hsEsc(nx.src.name)+(parseFloat(nx.src.amount)?' · about '+fmt$(nx.src.amount):'')+'</small>';
+    if(dd>0&&n.safe>0)h+='<small>Safe to spend works out to about '+fmt$(n.safe/dd)+' a day until then</small>';
+    h+='</div>';
+  }else h+='<div class="hs-pay"><button class="hs-link" onclick="hsOpenPayday()">+ Add your payday</button></div>';
+  h+='</div>';
+  h+='<div class="hs-actions"><button class="hs-act" onclick="hsOpenSpend()"><i class="ti ti-shopping-bag"></i>I spent money</button><button class="hs-act" onclick="hsOpenBalance()"><i class="ti ti-refresh"></i>Update my balance</button></div>';
+  var bills=hsDueBills().slice().sort(function(a,b){return (a.due||'9999').localeCompare(b.due||'9999');});
+  h+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><div class="card-title" style="margin-bottom:0;">Bills still due</div><button class="hs-link" onclick="hsOpenBill()">+ Add</button></div>';
+  if(!bills.length)h+='<div class="empty" style="padding:16px 0;">Nothing due right now.</div>';
+  bills.forEach(function(b){
+    var d=hsParse(b.due),when='No due date',cls='';
+    if(d){var x=hsDays(d);if(x<0){when='Overdue by '+(-x)+' day'+(x===-1?'':'s');cls='late';}else if(x===0){when='Due today';cls='soon';}else if(x===1){when='Due tomorrow';cls='soon';}else{when='Due '+hsNice(d);if(x<=3)cls='soon';}}
+    if(b.status==='A')when+=' · autopay';
+    h+='<div class="hs-bill"><div class="hs-bill-info"><div class="hs-bill-name">'+hsEsc(b.name)+'</div><div class="hs-bill-when '+cls+'">'+when+'</div></div><div class="hs-bill-amt">'+fmt$(b.amount)+'</div><button class="hs-paid" onclick="hsPaid(\''+b.id+'\')">✓ Paid</button></div>';
+  });
+  h+='</div>';
+  h+='<div class="hs-note">Missed a few days? Tap <b>Update my balance</b> and type what your bank app shows. No need to go back and log everything.</div>';
+  if(typeof hpPrint==='function')h+='<div style="text-align:center;margin-top:8px;"><button class="hs-link" onclick="hpPrint(\'filled\')"><i class="ti ti-printer"></i> Print my bills and balances</button></div>';
+  h+='<div class="hs-note" style="margin-top:4px;">Want every detail? Tap <b>Finance</b> below.</div>';
+  c.innerHTML=h;
+}
+function hsShow(){
+  ['finance','settings'].forEach(function(p){var el=g('pg-'+p);if(el)el.style.display='none';});
+  var pg=g('pg-simple');if(pg)pg.style.display='flex';
+  document.querySelectorAll('.bottom-nav .nav-btn').forEach(function(b){b.classList.toggle('active',b.id==='hs-nav');});
+  if(hsAutoDue()){save();updateHeader();}
+  hsRender();
+}
+function hsPaid(id){
+  var b=DB.bills.find(function(x){return x.id===id;});if(!b)return;
+  var m=hsMain();
+  if(!b.acctId&&m){b.acctId=m.id;b.acctName=m.name;}
+  if(b.acctId&&DB.accounts.some(function(a){return a.id===b.acctId;})){postBillToLedger(id);toast(b.name+' paid ✓');}
+  else{b.status='P';save();renderFinance();updateHeader();toast(b.name+' marked paid ✓');}
+  hsRender();
+}
+
+// ── SMALL SHEETS (spend, balance, bill, payday) ──
+function hsSheet(title,body,onSave,saveLabel){
+  var bg=g('hs-sheet');
+  bg.innerHTML='<div class="modal"><h2>'+title+'</h2>'+body+'<div class="btn-row"><button class="btn-cancel" onclick="closeModal(\'hs-sheet\')">Cancel</button><button class="btn-save" id="hs-sheet-save">'+(saveLabel||'Save')+'</button></div></div>';
+  g('hs-sheet-save').onclick=onSave;openModal('hs-sheet');
+  setTimeout(function(){var f=bg.querySelector('input');if(f)f.focus();},150);
+}
+function hsOpenSpend(){
+  var m=hsMain();if(!m){toast('Add your main account first.');return;}
+  hsSheet('I spent money','<div class="field"><label>How much?</label><input type="number" inputmode="decimal" id="hs-sp-amt" placeholder="0.00" step="0.01"/></div><div class="field"><label>What for? (optional)</label><input id="hs-sp-what" placeholder="e.g. Groceries"/></div><div class="field-hint" style="margin:-4px 0 4px;">Comes out of '+hsEsc(m.name)+'.</div>',function(){
+    var amt=parseFloat(g('hs-sp-amt').value)||0;if(amt<=0){toast('Enter an amount.');return;}
+    DB.ledger.push({id:'l'+uid(),acctId:m.id,acctName:m.name,date:today(),desc:g('hs-sp-what').value.trim()||'Spending',amount:amt,type:'out'});
+    save();closeModal('hs-sheet');renderFinance();updateHeader();hsRender();toast(fmt$(amt)+' logged ✓');
+  });
+}
+function hsOpenBalance(){
+  var m=hsMain();if(!m){toast('Add your main account first.');return;}
+  var due=hsDueBills().filter(function(b){return b.status!=='P';});
+  var list=due.length?'<div class="sl" style="margin-top:6px;">Did any of these already come out?</div>'+due.map(function(b){return '<label class="hs-toggle" style="cursor:pointer;"><span>'+hsEsc(b.name)+' <small>'+fmt$(b.amount)+'</small></span><input type="checkbox" class="hs-bal-bill" value="'+b.id+'"/></label>';}).join(''):'';
+  hsSheet('Update my balance','<div class="field"><label>What does your bank app show for '+hsEsc(m.name)+'?</label><input type="number" inputmode="decimal" id="hs-bal-amt" placeholder="'+acctBal(m.id).toFixed(2)+'" step="0.01"/></div><div class="field-hint" style="margin:-4px 0 6px;">The app adds one "Balance check" line so the numbers match. Nothing else changes.</div>'+list,function(){
+    var raw=g('hs-bal-amt').value;if(raw===''){toast('Enter your balance.');return;}
+    var want=parseFloat(raw)||0;
+    document.querySelectorAll('.hs-bal-bill:checked').forEach(function(cb){var b=DB.bills.find(function(x){return x.id===cb.value;});if(b)b.status='P';});
+    var diff=Math.round((want-acctBal(m.id))*100)/100;
+    if(diff!==0)DB.ledger.push({id:'l'+uid(),acctId:m.id,acctName:m.name,date:today(),desc:'Balance check',amount:Math.abs(diff),type:diff>0?'in':'out'});
+    save();closeModal('hs-sheet');renderFinance();updateHeader();hsRender();toast('Balance updated ✓');
+  },'Update');
+}
+function hsHasRecurring(){return typeof autoGenerateRecurringBills==='function';}
+function hsMakeBill(name,amt,due,m){
+  var b={id:'b'+uid(),name:name,amount:amt,due:due,status:'D',acctId:m?m.id:'',acctName:m?m.name:''};
+  if(hsHasRecurring()){b.billType='recurring';b.recurFreq='monthly';b.remind='3';b.isGenerated=false;b.sourceId=null;}
+  return b;
+}
+function hsOpenBill(){
+  var rec=hsHasRecurring();
+  hsSheet('Add a bill','<div class="field"><label>Bill name</label><input id="hs-b-name" placeholder="e.g. Rent, Phone"/></div><div class="field-row"><div class="field"><label>Amount</label><input type="number" inputmode="decimal" id="hs-b-amt" placeholder="0.00" step="0.01"/></div><div class="field"><label>Due date</label><input type="date" id="hs-b-due" value="'+today()+'"/></div></div>'+(rec?'<label class="hs-toggle"><span>Every month</span><input type="checkbox" id="hs-b-rec" checked/></label>':''),function(){
+    var name=g('hs-b-name').value.trim();if(!name){toast('Enter a bill name.');return;}
+    var b=hsMakeBill(name,parseFloat(g('hs-b-amt').value)||0,g('hs-b-due').value||today(),hsMain());
+    if(rec&&!g('hs-b-rec').checked){b.billType='onetime';b.recurFreq=null;}
+    DB.bills.push(b);if(rec)autoGenerateRecurringBills();
+    save();closeModal('hs-sheet');renderFinance();updateHeader();hsRender();toast('Bill added ✓');
+  });
+}
+function hsPayFields(){
+  var src=hsSources()[0]||{},np=hsNextPay();
+  var nd=np&&np.src.id===src.id?np.date:'';
+  return '<div class="field"><label>How much is a usual paycheck?</label><input type="number" inputmode="decimal" id="hs-pay-amt" placeholder="0.00" step="0.01" value="'+(parseFloat(src.amount)||'')+'"/><div class="field-hint">You can change it each payday.</div></div>'
+   +'<div class="field"><label>How often?</label><select id="hs-pay-freq" onchange="hsPayFreqChange()"><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option><option value="semimonthly">Twice a month</option><option value="monthly">Once a month</option></select></div>'
+   +'<div class="field"><label>Next payday</label><input type="date" id="hs-pay-date" value="'+nd+'" onchange="hsPayFreqChange()"/></div>'
+   +'<div class="field" id="hs-pay-d2-wrap" style="display:none;"><label>Other payday each month (day)</label><input type="number" inputmode="numeric" id="hs-pay-d2" min="1" max="31" placeholder="e.g. 30"/></div>';
+}
+function hsPayFreqChange(){
+  var f=g('hs-pay-freq').value,w=g('hs-pay-d2-wrap');if(!w)return;
+  w.style.display=f==='semimonthly'?'block':'none';
+  var d=hsParse(g('hs-pay-date').value),i=g('hs-pay-d2');
+  if(f==='semimonthly'&&d&&!i.value)i.value=d.getDate()<=15?Math.min(31,d.getDate()+15):d.getDate()-15;
+}
+function hsPayFill(){
+  var src=hsSources()[0];if(!src)return;
+  g('hs-pay-freq').value=src.freq||'biweekly';
+  if(src.freq==='semimonthly'){g('hs-pay-d2').value=src.payDay2||'';}
+  hsPayFreqChange();
+}
+// Saves the paycheck schedule. Returns false if something is missing.
+function hsSavePay(){
+  var ds=g('hs-pay-date').value,d=hsParse(ds);if(!d){toast('Pick your next payday.');return false;}
+  var amt=parseFloat(g('hs-pay-amt').value)||0,freq=g('hs-pay-freq').value,c=hsCfg();
+  var d2=parseInt(g('hs-pay-d2').value)||(d.getDate()<=15?Math.min(31,d.getDate()+15):d.getDate()-15);
+  var sched={freq:freq,amount:amt,payDow:d.getDay(),payAnchor:ds,payDay:d.getDate(),payDay2:freq==='semimonthly'?d2:null,fromStart:true};
+  if(hsHasIncome()){
+    var src=DB.incomeSources.find(function(s){return s.id===c.payId;});
+    if(!src){src={id:'s'+uid(),name:'Paycheck',type:'Salary',owner:'household',payMonth:null};DB.incomeSources.push(src);c.payId=src.id;}
+    Object.assign(src,sched);src.monthly=typeof toMonthly==='function'?toMonthly(amt,freq):amt;
+  }else c.pay=sched;
+  save();return true;
+}
+function hsOpenPayday(){
+  hsSheet('Your payday',hsPayFields(),function(){if(!hsSavePay())return;closeModal('hs-sheet');renderFinance();hsRender();toast('Payday saved. It will repeat by itself ✓');});
+  hsPayFill();
+}
+// A payday arrived: add the paycheck to the main account. The amount starts at the usual amount.
+function hsOpenGotPaid(srcId,date){
+  var src=hsPaySource(srcId),m=hsMain();if(!src)return;if(!m){toast('Add your main account first.');return;}
+  hsSheet('Payday · '+hsNice(hsParse(date)),'<div class="field"><label>How much came in?</label><input type="number" inputmode="decimal" id="hs-gp-amt" step="0.01" value="'+(parseFloat(src.amount)||'')+'" placeholder="0.00"/></div><div class="field-hint" style="margin:-4px 0 6px;">Goes into '+hsEsc(m.name)+'. Change the amount if this one was different.</div><label class="hs-toggle"><span>Use this amount from now on</span><input type="checkbox" id="hs-gp-keep"/></label><button class="hs-link" style="display:block;margin:4px auto 0;" onclick="hsSkipPay(\''+srcId+'\',\''+date+'\')">Not paid this time</button>',function(){
+    var amt=parseFloat(g('hs-gp-amt').value)||0;if(amt<=0){toast('Enter the amount.');return;}
+    var led={id:'l'+uid(),acctId:m.id,acctName:m.name,date:date,desc:src.name,amount:amt,type:'in'};
+    DB.ledger.push(led);
+    var c=hsCfg();
+    if(src.id==='simple'){c.paid=(c.paid||[]).concat([date]).slice(-60);if(g('hs-gp-keep').checked)c.pay.amount=amt;}
+    else{
+      DB.incomeEntries=DB.incomeEntries||[];
+      DB.incomeEntries.push({id:'ie'+uid(),sourceId:src.id,sourceName:src.name,sourceOwner:src.owner||'household',amount:amt,date:date,note:'',posted:true,acctId:m.id,acctName:m.name,ledgerRef:led.id});
+      if(g('hs-gp-keep').checked){var real=DB.incomeSources.find(function(s){return s.id===src.id;});if(real){real.amount=amt;if(typeof toMonthly==='function')real.monthly=toMonthly(amt,real.freq);}}
+    }
+    save();closeModal('hs-sheet');renderFinance();updateHeader();hsRender();toast(fmt$(amt)+' added ✓');
+  },'Add paycheck');
+}
+function hsSkipPay(srcId,date){var c=hsCfg();c.skipped=(c.skipped||[]).concat([srcId+'|'+date]).slice(-60);save();closeModal('hs-sheet');hsRender();}
+
+// ── START HERE ──
+function hsOpenStart(){hsStep=1;hsStartRender();g('hs-start').classList.add('open');}
+function hsStartRender(){
+  var box=g('hs-start-box'),c=hsCfg(),m=hsMain(),h='<div class="hs-dots">';
+  for(var i=1;i<=HS_STEPS;i++)h+='<div class="hs-dot'+(i<=hsStep?' on':'')+'"></div>';
+  h+='</div>';
+  if(hsStep===1){
+    h+='<div class="hs-step-num">Step 1 of 3</div><div class="hs-q">How much is in your main account right now?</div><div class="hs-why">Use the checking account your bills come out of. Look at your bank app and type the number you see. It does not have to be perfect.</div>';
+    h+='<div class="field"><label>Account name</label><input id="hs-s-name" value="'+hsEsc(m?m.name:'Checking')+'"/></div><div class="field"><label>Balance right now</label><input type="number" inputmode="decimal" id="hs-s-bal" placeholder="0.00" step="0.01" value="'+(m?acctBal(m.id).toFixed(2):'')+'"/></div>';
+    h+='<div class="hs-foot"><button class="btn-full" onclick="hsNext()">Next</button><button class="hs-link hs-skip" onclick="hsSkipAll()">I will set it up myself</button><button class="hs-link hs-skip" onclick="loadSampleData()" style="margin-top:4px;">Just looking? See it with sample data</button></div>';
+  }else if(hsStep===2){
+    h+='<div class="hs-step-num">Step 2 of 3</div><div class="hs-q">When do you get paid?</div><div class="hs-why">Set it once and every payday shows up by itself. You just tap to add it, and change the amount if it was different.</div>'+hsPayFields();
+    h+='<div class="hs-foot"><button class="btn-full" onclick="hsNext()">Next</button><div style="display:flex;justify-content:space-between;"><button class="hs-link" onclick="hsBack()">Back</button><button class="hs-link" onclick="hsNext(true)">Skip this step</button></div></div>';
+  }else if(hsStep===3){
+    h+='<div class="hs-step-num">Step 3 of 3</div><div class="hs-q">Which bills still need to come out before payday?</div><div class="hs-why">Just the ones you remember right now. You can add more any time with one tap.</div><div id="hs-s-bills"></div><button class="hs-link" onclick="hsAddBillRow()">+ Add another bill</button>';
+    h+='<div class="hs-foot"><button class="btn-full" onclick="hsFinish()">Show my Safe to Spend</button><div style="display:flex;justify-content:space-between;"><button class="hs-link" onclick="hsBack()">Back</button><button class="hs-link" onclick="hsFinish()">No bills right now</button></div></div>';
+  }else{
+    var n=hsNumbers();
+    h+='<div class="hs-q" style="margin-top:20px;">You are all set.</div><div class="hs-hero" style="margin:12px 0;"><div class="hs-label">Safe to spend</div><div class="hs-big'+(n.safe<0?' neg':'')+'">'+fmt$(n.safe)+'</div><div class="hs-explain">This is what is left after the bills you listed. Check this one number before you spend.</div></div>';
+    h+='<div class="hs-why">Each day: tap <b>I spent money</b> when you buy something and <b>✓ Paid</b> when a bill comes out. Missed a few days? Tap <b>Update my balance</b> and you are caught up.</div>';
+    h+='<div class="hs-foot"><button class="btn-full" onclick="hsDone()">Go to my Today screen</button></div>';
+  }
+  box.innerHTML=h;
+  if(hsStep===2){g('hs-pay-freq').value='biweekly';hsPayFill();}
+  if(hsStep===3){var w=g('hs-s-bills');(HS_DRAFT.length?HS_DRAFT:[{},{}]).forEach(function(r){hsAddBillRow(r);});}
+  box.scrollTop=0;
+}
+var HS_DRAFT=[];
+function hsAddBillRow(r){
+  r=r||{};var w=g('hs-s-bills');var d=document.createElement('div');d.className='hs-billrow';
+  d.innerHTML='<div class="field"><input class="hs-r-name" placeholder="Bill name, e.g. Rent" value="'+hsEsc(r.name||'')+'"/></div><div class="field-row"><div class="field"><input class="hs-r-amt" type="number" inputmode="decimal" placeholder="Amount" step="0.01" value="'+(r.amt||'')+'"/></div><div class="field"><input class="hs-r-due" type="date" value="'+(r.due||'')+'"/></div></div>';
+  w.appendChild(d);
+}
+function hsReadRows(){var out=[];document.querySelectorAll('#hs-s-bills .hs-billrow').forEach(function(el){out.push({name:el.querySelector('.hs-r-name').value.trim(),amt:el.querySelector('.hs-r-amt').value,due:el.querySelector('.hs-r-due').value});});return out;}
+function hsNext(skip){
+  if(hsStep===1){
+    var name=g('hs-s-name').value.trim()||'Checking',raw=g('hs-s-bal').value;
+    if(raw===''){toast('Type your balance, even a rough one.');return;}
+    var bal=parseFloat(raw)||0,m=hsMain();
+    if(m){var diff=Math.round((bal-acctBal(m.id))*100)/100;m.name=name;if(diff!==0)m.balance=(parseFloat(m.balance)||0)+diff;DB.profile.mainAcctId=m.id;}
+    else{var a={id:'a'+uid(),name:name,type:'Checking',balance:bal};DB.accounts.push(a);DB.profile.mainAcctId=a.id;}
+    save();updateHeader();renderFinance();
+  }else if(hsStep===2&&!skip){
+    if(!hsSavePay())return;
+  }
+  hsStep++;hsStartRender();
+}
+function hsBack(){if(hsStep===3)HS_DRAFT=hsReadRows();hsStep--;hsStartRender();}
+function hsFinish(){
+  var m=hsMain(),rows=hsStep===3?hsReadRows():[];HS_DRAFT=[];
+  rows.forEach(function(r){if(!r.name)return;DB.bills.push(hsMakeBill(r.name,parseFloat(r.amt)||0,r.due||today(),m));});
+  if(hsHasRecurring())autoGenerateRecurringBills();
+  var c=hsCfg();c.done=true;c.on=true;c.autoDue=true;
+  save();updateHeader();renderFinance();
+  hsStep=4;hsStartRender();
+}
+function hsDone(){g('hs-start').classList.remove('open');hsShow();}
+function hsSkipAll(){var c=hsCfg();c.done=true;save();g('hs-start').classList.remove('open');}
+
+// ── SETTINGS CARD ──
+function hsSettingsHTML(){
+  var c=hsCfg();
+  return '<div class="card"><div class="card-title">Today screen</div>'
+   +'<label class="hs-toggle"><span>Open the app on the Today screen<small>One screen with Safe to Spend and the bills still due.</small></span><input type="checkbox" '+(c.on?'checked':'')+' onchange="hsSet(\'on\',this.checked)"/></label>'
+   +(hsHasRecurring()?'<label class="hs-toggle"><span>Count monthly bills as they come up<small>Repeat bills switch to Due when their date gets close, so Safe to Spend stays right.</small></span><input type="checkbox" '+(c.autoDue?'checked':'')+' onchange="hsSet(\'autoDue\',this.checked)"/></label>':'')
+   +'<button class="btn-ghost" onclick="hsOpenStart()">Run Start here again</button></div>';
+}
+function hsSet(k,v){var c=hsCfg();c[k]=v;if(k==='autoDue'&&v)hsAutoDue();save();updateHeader();renderFinance();}
+
+// ── WIRING ──
+function hsInit(){
+  var app=document.querySelector('.app');
+  var fin=g('pg-finance');
+  fin.insertAdjacentHTML('beforebegin','<div id="pg-simple" style="display:none;flex-direction:column;flex:1;min-height:0;"><div class="content hs-wrap" id="hs-content" style="padding-top:14px;"></div></div>');
+  var nav=document.querySelector('.bottom-nav');
+  nav.insertAdjacentHTML('afterbegin','<button class="nav-btn" id="hs-nav" onclick="showPage(\'simple\',this)"><i class="ti ti-sun"></i><span>Today</span></button>');
+  document.body.insertAdjacentHTML('beforeend','<div class="modal-bg" id="hs-sheet"></div><div class="hs-start-bg" id="hs-start"><div class="hs-start" id="hs-start-box"></div></div>');
+  var gen=g('settings-panel-general');
+  if(gen){var holder=document.createElement('div');holder.id='hs-settings';gen.insertBefore(holder,gen.firstChild);}
+  var _showPage=window.showPage;
+  window.showPage=function(id,btn){
+    if(id==='simple'){hsShow();return;}
+    var s=g('pg-simple');if(s)s.style.display='none';
+    _showPage(id,btn);
+    if(id==='settings'){var h=g('hs-settings');if(h)h.innerHTML=hsSettingsHTML();}
+  };
+  var _uh=window.updateHeader;
+  window.updateHeader=function(){_uh();var s=g('pg-simple');if(s&&s.style.display!=='none')hsRender();};
+  var c=hsCfg();
+  if(hsAutoDue()){save();updateHeader();renderFinance();}
+  if(!c.done&&!DB.accounts.length&&!DB.bills.length)hsOpenStart();
+  else if(c.on)hsShow();
+}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(hsInit,0);});
+
+
+/* ===== Desktop layout: sidebar + Overview dashboard (900px and wider) ===== */
+var DSK_ITEMS=[['dash','ti-layout-dashboard','Overview'],['today','ti-sun','Today'],['sep'],
+  ['accounts','ti-building-bank','Accounts'],['bills','ti-receipt','Bills'],['pending','ti-clock','Pending'],['sep'],
+  ['print','ti-printer','Printable pages'],['settings','ti-settings','Settings']];
+var dskCur='dash';
+function dskIsDesk(){return window.matchMedia('(min-width:900px)').matches;}
+function dskEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function dskNav(){
+  var due=(DB.bills||[]).filter(function(b){return b.status==='D';}).length;
+  var s=document.querySelector('.dsk-side');if(!s)return;
+  s.innerHTML='<div class="dsk-brand"><div class="e">MOBILE FIRST STUDIO</div><div class="t">'+dskEsc(DB.appName||'Simple Finance Hub')+'</div></div>'+DSK_ITEMS.map(function(it){
+    if(it[0]==='sep')return '<div class="dsk-sep"></div>';
+    return '<button class="dsk-item'+(dskCur===it[0]?' on':'')+'" onclick="dskGo(\''+it[0]+'\')"><i class="ti '+it[1]+'"></i>'+it[2]+(it[0]==='bills'&&due?'<span class="bdg">'+due+'</span>':'')+'</button>';
+  }).join('');
+}
+function dskHideAll(){['finance','settings','simple','dash'].forEach(function(p){var el=g('pg-'+p);if(el)el.style.display='none';});}
+function dskNavBtn(page){return Array.prototype.find.call(document.querySelectorAll('.bottom-nav .nav-btn'),function(b){return (b.getAttribute('onclick')||'').indexOf("'"+page+"'")>-1;});}
+function dskGo(k){
+  if(k==='print'){openModal('dsk-print-modal');return;}
+  dskCur=k;
+  if(k==='dash'){dskHideAll();g('pg-dash').style.display='flex';dskRender();}
+  else if(k==='today'){showPage('simple',g('hs-nav'));}
+  else if(k==='settings'){showPage('settings',dskNavBtn('settings'));}
+  else{showPage('finance',dskNavBtn('finance'));var tb=Array.prototype.find.call(document.querySelectorAll('.tab-btn'),function(b){return (b.getAttribute('onclick')||'').indexOf("'"+k+"'")>-1;});if(tb)switchTab(k,tb);}
+  dskCur=k;dskNav();
+}
+function dskMonthKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function dskChart(){
+  var now=new Date(),months=[];for(var i=5;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({k:dskMonthKey(d),l:d.toLocaleString(undefined,{month:'short'}),inn:0,out:0});}
+  (DB.ledger||[]).forEach(function(l){var m=months.find(function(x){return l.date&&l.date.indexOf(x.k)===0;});if(!m)return;var a=parseFloat(l.amount)||0;if(l.type==='in')m.inn+=a;else m.out+=a;});
+  var max=Math.max(1,Math.max.apply(null,months.map(function(m){return Math.max(m.inn,m.out);})));
+  var W=640,H=230,base=196,span=170,gw=W/6,bw=30,svg='';
+  [0,.5,1].forEach(function(f){var y=base-f*span;svg+='<line x1="0" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="var(--border)" stroke-width="1"/>';});
+  months.forEach(function(m,i){var x=i*gw+gw/2,hi=m.inn/max*span,ho=m.out/max*span,cur=i===5;
+    svg+='<g><title>'+m.l+': in '+fmt$(m.inn)+', out '+fmt$(m.out)+'</title><rect x="'+(x-bw-3)+'" y="'+(base-hi)+'" width="'+bw+'" height="'+hi+'" rx="6" fill="var(--success)" opacity="'+(cur?1:.75)+'"/><rect x="'+(x+3)+'" y="'+(base-ho)+'" width="'+bw+'" height="'+ho+'" rx="6" fill="var(--danger)" opacity="'+(cur?1:.75)+'"/>';
+    svg+='<text x="'+x+'" y="'+(H-10)+'" text-anchor="middle"'+(cur?' style="fill:var(--ink);font-weight:700"':'')+'>'+m.l+'</text></g>';});
+  var c=months[5],net=c.inn-c.out;
+  return '<div class="dcard"><h3>Money in vs money out<a style="cursor:default;color:'+(net>=0?'var(--success)':'var(--danger)')+'">This month '+(net>=0?'+':'')+fmt$(net)+'</a></h3><div class="dleg"><span><i style="background:var(--success)"></i>Money in</span><span><i style="background:var(--danger)"></i>Money out</span><span style="margin-left:auto;color:var(--ink-faint)">Last 6 months</span></div><svg class="dchart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Money in and out for the last 6 months">'+svg+'</svg></div>';
+}
+function dskRecent(){
+  var rows=(DB.ledger||[]).slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'');}).slice(0,9);
+  var pend=(DB.pending||[]).slice(0,3);
+  if(!rows.length&&!pend.length)return '<div class="dcard"><h3>Recent activity</h3><div class="dempty">Nothing logged yet.</div></div>';
+  var tr=pend.map(function(p){return '<tr onclick="dskGo(\'pending\')"><td>'+fmtD(p.date)+'</td><td>'+dskEsc(p.desc)+' <span style="font-size:.68rem;font-weight:800;color:var(--warning);margin-left:4px">PENDING</span></td><td style="color:var(--ink-faint)">Not cleared yet</td><td class="r" style="color:'+(p.type==='in'?'var(--success)':'var(--danger)')+';font-weight:800">'+(p.type==='in'?'+':'-')+fmt$(p.amount)+'</td></tr>';}).join('')+
+    rows.map(function(l){return '<tr onclick="dskGo(\'accounts\')"><td>'+fmtD(l.date)+'</td><td>'+dskEsc(l.desc)+'</td><td style="color:var(--ink-faint)">'+dskEsc(l.acctName||'')+'</td><td class="r" style="color:'+(l.type==='in'?'var(--success)':'var(--ink)')+';font-weight:800">'+(l.type==='in'?'+':'-')+fmt$(l.amount)+'</td></tr>';}).join('');
+  return '<div class="dcard"><h3>Recent activity<a onclick="dskGo(\'accounts\')">Accounts &rarr;</a></h3><table class="dt"><thead><tr><th>Date</th><th>What</th><th>Account</th><th class="r">Amount</th></tr></thead><tbody>'+tr+'</tbody></table></div>';
+}
+function fmtD(s){if(!s)return '';var d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString(undefined,{month:'short',day:'numeric'});}
+function dskBills(){
+  var list=(DB.bills||[]).filter(function(b){return b.status==='D'||b.status==='A';}).sort(function(a,b){return (a.due||'').localeCompare(b.due||'');}).slice(0,6);
+  var t=today();
+  var h=list.map(function(b){var late=b.status==='D'&&b.due&&b.due<t;return '<div class="drow"><div class="n">'+dskEsc(b.name)+'<small style="'+(late?'color:var(--danger);font-weight:700':'')+'">'+(late?'Overdue · ':'Due ')+fmtD(b.due)+(b.status==='A'?' · autopay':'')+'</small></div><div class="a">'+fmt$(b.amount)+'</div>'+(b.status==='D'?'<button class="dpaid" onclick="hsPaid(\''+b.id+'\');dskRender();dskNav();">✓ Paid</button>':'<span style="font-size:.72rem;font-weight:700;color:var(--blue);padding:0 4px">Auto</span>')+'</div>';}).join('');
+  return '<div class="dcard"><h3>Bills still due<a onclick="dskGo(\'bills\')">All bills &rarr;</a></h3>'+(h||'<div class="dempty">All caught up. Nothing due.</div>')+'</div>';
+}
+function dskAccounts(){
+  var main=DB.profile&&DB.profile.mainAcctId;
+  var h=(DB.accounts||[]).map(function(a){return '<div class="drow" style="cursor:pointer" onclick="openAccountModal(\''+a.id+'\')"><div class="n">'+dskEsc(a.name)+(a.id===main?' <span style="color:var(--navy);font-size:.7rem">★ Main</span>':'')+'<small>'+dskEsc(a.type||'')+'</small></div><div class="a">'+fmt$(acctBal(a.id))+'</div></div>';}).join('');
+  return '<div class="dcard"><h3>Accounts<a onclick="dskGo(\'accounts\')">Open &rarr;</a></h3>'+(h||'<div class="dempty">No accounts yet.</div>')+'</div>';
+}
+function dskGoals(){
+  var gs=DB.goals||[];if(!gs.length)return '';
+  return '<div class="dcard"><h3>Savings goals</h3>'+gs.map(function(x){var p=x.target>0?Math.min(100,Math.round(x.saved/x.target*100)):0;return '<div style="padding:8px 0"><div style="display:flex;justify-content:space-between;font-size:.86rem;font-weight:700;color:var(--ink)"><span>'+dskEsc(x.name)+'</span><span>'+p+'%</span></div><div class="dbarw"><span style="width:'+p+'%;background:var(--success)"></span></div><div style="font-size:.74rem;color:var(--ink-faint);margin-top:4px">'+fmt$(x.saved)+' of '+fmt$(x.target)+'</div></div>';}).join('')+'</div>';
+}
+function dskDebts(){
+  var ds=DB.debts||[];if(!ds.length)return '';
+  return '<div class="dcard"><h3>Debt payoff<a onclick="dskGo(\'debt\')">Plan &rarr;</a></h3>'+ds.map(function(d){var o=parseFloat(d.originalBalance)||parseFloat(d.balance)||0,b=typeof debtCurrentBal==='function'?debtCurrentBal(d.id):(parseFloat(d.balance)||0),p=o>0?Math.max(0,Math.min(100,Math.round((o-b)/o*100))):0;return '<div style="padding:8px 0"><div style="display:flex;justify-content:space-between;font-size:.86rem;font-weight:700;color:var(--ink)"><span>'+dskEsc(d.name)+'</span><span style="color:var(--danger)">'+fmt$(b)+'</span></div><div class="dbarw"><span style="width:'+p+'%;background:var(--navy)"></span></div><div style="font-size:.74rem;color:var(--ink-faint);margin-top:4px">'+p+'% paid off'+(d.apr?' · '+d.apr+'% APR':'')+'</div></div>';}).join('')+'</div>';
+}
+function dskRender(){
+  var c=g('dash-content');if(!c||g('pg-dash').style.display==='none')return;
+  var total=(DB.accounts||[]).reduce(function(s,a){return s+acctBal(a.id);},0);
+  var due=(DB.bills||[]).filter(function(b){return b.status==='D'||b.status==='A';});
+  var dueAmt=due.reduce(function(s,b){return s+(parseFloat(b.amount)||0);},0);
+  var debt=(DB.debts||[]).reduce(function(s,d){return s+(typeof debtCurrentBal==='function'?debtCurrentBal(d.id):(parseFloat(d.balance)||0));},0);
+  var orig=(DB.debts||[]).reduce(function(s,d){return s+(parseFloat(d.originalBalance)||parseFloat(d.balance)||0);},0);
+  var pendAmt=(DB.pending||[]).filter(function(p){return p.type!=='in';}).reduce(function(s,p){return s+(parseFloat(p.amount)||0);},0);var safeEl=g('header-safe'),safeSub=g('header-safe-sub');
+  var now=new Date(),greet=now.getHours()<12?'Good morning':now.getHours()<17?'Good afternoon':'Good evening';
+  var nm=(DB.profile&&DB.profile.p1Name&&DB.profile.p1Name!=='Person 1')?', '+dskEsc(DB.profile.p1Name):'';
+  c.innerHTML='<div class="dsk-wrap"><div class="dsk-bar"><h2>'+greet+nm+'<small>'+now.toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'})+'</small></h2>'+
+    '<button class="dsk-btn" onclick="hsOpenSpend()"><i class="ti ti-shopping-bag"></i>I spent money</button><button class="dsk-btn" onclick="hsOpenBalance()"><i class="ti ti-refresh"></i>Update a balance</button><button class="dsk-btn pri" onclick="hsOpenBill()"><i class="ti ti-plus"></i>Add a bill</button></div>'+
+    '<div class="kpi4"><div class="kpi"><div class="l">Safe to spend</div><div class="v" style="color:var(--success)">'+(safeEl?safeEl.textContent:'')+'</div><div class="s">'+(safeSub?safeSub.textContent:'')+' after bills</div></div>'+
+    '<div class="kpi"><div class="l">Total funds</div><div class="v">'+fmt$(total)+'</div><div class="s">'+(DB.accounts||[]).length+' accounts</div></div>'+
+    '<div class="kpi"><div class="l">Bills still due</div><div class="v" style="color:'+(dueAmt?'var(--danger)':'var(--ink)')+'">'+fmt$(dueAmt)+'</div><div class="s">'+due.length+' bill'+(due.length===1?'':'s')+'</div></div>'+
+    '<div class="kpi"><div class="l">Pending</div><div class="v" style="color:'+(pendAmt?'var(--warning)':'var(--ink)')+'">'+fmt$(pendAmt)+'</div><div class="s">'+(DB.pending||[]).length+' not cleared yet</div></div></div>'+
+    '<div class="dgrid"><div class="dcol">'+dskChart()+(typeof fhBudgetHTML==='function'?'<div class="dsk-bud">'+fhBudgetHTML(true)+'</div>':'')+dskRecent()+'</div><div class="dcol">'+dskBills()+(typeof fhPlanHTML==='function'?fhPlanHTML():'')+(typeof fhDebtFreeHTML==='function'?fhDebtFreeHTML():'')+dskAccounts()+'</div></div></div>';
+}
+function dskInit(){
+  var app=document.querySelector('.app');if(!app||document.querySelector('.dsk-side'))return;
+  app.insertAdjacentHTML('afterbegin','<aside class="dsk-side"></aside>');
+  g('pg-finance').insertAdjacentHTML('beforebegin','<div id="pg-dash" style="display:none;flex-direction:column;flex:1;min-height:0;"><div class="content" id="dash-content"></div></div>');
+  document.body.insertAdjacentHTML('beforeend','<div class="modal-bg" id="dsk-print-modal"><div class="modal"><div class="modal-title">Printable pages</div><p class="field-hint" style="margin-bottom:14px;">Print your bills, balances, debts and goals as they are now, or get blank budget pages to fill in by hand. The PDF is made on your device. Nothing is uploaded.</p><button class="btn-full" onclick="closeModal(\'dsk-print-modal\');hpPrint(\'filled\')" style="margin-bottom:8px;">Print My Budget (PDF)</button><button class="btn-ghost" onclick="closeModal(\'dsk-print-modal\');hpPrint(\'blank\')" style="margin-bottom:8px;">Get Blank Budget Pages (PDF)</button><button class="btn-ghost" onclick="closeModal(\'dsk-print-modal\')">Close</button></div></div>');
+  g('dsk-print-modal').addEventListener('click',function(e){if(e.target===this)closeModal('dsk-print-modal');});
+  var _sp=window.showPage;window.showPage=function(id,btn){var d=g('pg-dash');if(d)d.style.display='none';_sp(id,btn);if(id==='simple')dskCur='today';else if(id==='settings')dskCur='settings';else if(id==='finance')dskCur=(typeof curTab!=='undefined'?curTab:'accounts');dskNav();};
+  var _st=window.switchTab;window.switchTab=function(t,b){_st(t,b);if(g('pg-finance').style.display!=='none'){dskCur=t;dskNav();}};
+  var _uh=window.updateHeader;window.updateHeader=function(){_uh();dskNav();dskRender();};
+  dskNav();
+  if(dskIsDesk()&&!(g('hs-start')&&g('hs-start').classList.contains('open')))dskGo('dash');
+  window.addEventListener('resize',function(){if(!dskIsDesk()&&g('pg-dash').style.display!=='none')showPage('finance',dskNavBtn('finance'));});
+}
+document.addEventListener('DOMContentLoaded',function(){setTimeout(dskInit,30);});
+</script>
+</body>
+</html>
