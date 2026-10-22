@@ -1,11 +1,12 @@
 {
-  "name": "Kitchen HQ — Free Trial",
+  "id": "./",
+  "name": "Kitchen HQ (Free Trial)",
   "short_name": "Kitchen HQ",
-  "description": "Recipes, meal plan, and pantry all in one place. Free 14-day trial.",
-  "start_url": "./index.html",
+  "description": "Free 14 day trial. Recipes, meal plan, shopping list and pantry in one place.",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#f6ede1",
   "theme_color": "#f6ede1",
   "icons": [
@@ -13,13 +14,13 @@
       "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }

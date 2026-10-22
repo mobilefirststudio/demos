@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Kitchen HQ — Free Trial — Mobile First Studio</title>
+<title>Kitchen HQ | Free Trial</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <link rel="manifest" href="./manifest.json" />
 <meta name="theme-color" content="#f6ede1" id="theme-color-meta" />
@@ -11,6 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <style>
   :root, [data-theme="cream"] {
     --bg-a: #f6ede1; --bg-b: #ecdcc7;
@@ -263,6 +264,15 @@
   .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
   .backup-section-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
 
+  .drive-backup-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 0.6rem;
+    padding: 0.65rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.4); margin-top: 0.5rem; cursor: pointer;
+  }
+  .drive-backup-row:hover { border-color: var(--accent-b); }
+  .drive-backup-row-label { font-size: 0.8rem; color: var(--text); font-weight: 600; }
+  .drive-backup-row-sub { font-size: 0.68rem; color: var(--text-faint); margin-top: 0.1rem; }
+
   .tabbar {
     position: fixed; bottom: 0.7rem; left: 50%; transform: translateX(-50%);
     width: calc(100% - 2rem); max-width: 440px; display: flex; justify-content: space-between; gap: 0.15rem;
@@ -302,59 +312,106 @@
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast-action { color: var(--text); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; }
 
-  /* =========================================================
-     FREE TRIAL DEMO — banner + lock overlay
-     ========================================================= */
-  .demo-banner {
-    position: sticky; top: 0; z-index: 60;
-    margin: -1.1rem -1rem 1rem; padding: 0.55rem 1rem;
-    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
-    color: var(--on-accent); font-size: 0.72rem; font-weight: 600; text-align: center;
-    letter-spacing: 0.01em;
+  /* ===== Printable pages + computer layout ===== */
+  .header-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+  .kh-side, .kh-kpi, .kh-desk { display: none; }
+  .print-row { display: flex; justify-content: space-between; align-items: center; gap: .6rem; padding: .65rem .7rem; border-radius: .7rem; border: 1px solid var(--border-soft); background: rgba(255,255,255,.4); margin-bottom: .45rem; cursor: pointer; width: 100%; text-align: left; font-family: inherit; color: var(--text); }
+  .print-row:hover { border-color: var(--accent-b); }
+  .print-row b { display: block; font-size: .82rem; }
+  .print-row small { display: block; font-size: .68rem; color: var(--text-faint); margin-top: .1rem; }
+  .print-h { font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); margin: .8rem 0 .45rem; }
+  @media (min-width: 900px) {
+    body { display: block; }
+    .app { max-width: none; padding: 0; display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+    .kh-side { display: flex; flex-direction: column; gap: 3px; position: sticky; top: 0; height: 100vh; padding: 26px 14px; border-right: 1px solid var(--border-soft); background: var(--card); backdrop-filter: blur(6px); overflow-y: auto; grid-column: 1; grid-row: 1 / span 3; }
+    .kh-brand { padding: 2px 12px 22px; }
+    .kh-brand .e { font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint); }
+    .kh-brand .t { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.6rem; color: var(--text); margin-top: 4px; }
+    .kh-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 14px; border: none; background: none; border-radius: 12px; font-family: inherit; font-size: .9rem; font-weight: 600; color: var(--text-muted); cursor: pointer; text-align: left; }
+    .kh-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .kh-item:hover { background: rgba(255,255,255,.35); color: var(--text); }
+    .kh-item.on { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); }
+    .kh-item .n { margin-left: auto; font-size: .72rem; font-weight: 700; opacity: .85; white-space: nowrap; }
+    .kh-sep { height: 1px; background: var(--border-soft); margin: 12px 10px; }
+    header { grid-column: 2; padding: 28px 40px 6px; max-width: 1320px; width: 100%; margin: 0 auto 6px; align-items: center; }
+    header .eyebrow { display: none; }
+    .app-name { font-size: 2rem; }
+    main { grid-column: 2; padding: 0 40px 48px; max-width: 1320px; width: 100%; margin: 0 auto; }
+    .app > input { grid-column: 2; }
+    .tabbar { display: none; }
+    .card { margin-bottom: 0; }
+    /* home dashboard */
+    #screen-home.active-screen { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-areas: "kpi kpi kpi" "health health today" "week week attn" "week week shop"; gap: 16px; align-items: start; }
+    .kh-kpi { grid-area: kpi; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .kh-k { background: var(--card); border: 1px solid var(--border-soft); border-radius: 1rem; padding: 14px 16px; backdrop-filter: blur(6px); }
+    .kh-k .l { font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); }
+    .kh-k .v { font-family: "Fraunces", Georgia, serif; font-size: 1.9rem; color: var(--text); margin-top: 2px; }
+    .kh-k .v small { font-size: 1rem; color: var(--text-faint); }
+    .kh-k .s { font-size: .72rem; color: var(--text-muted); }
+    #kh-health { grid-area: health; } #kh-today { grid-area: today; } #kh-attn { grid-area: attn; }
+    #kh-week { grid-area: week; display: block; } #kh-shop { grid-area: shop; display: block; }
+    #home-plan-week-btn { display: none; }
+    .kh-h { display: flex; align-items: baseline; gap: .6rem; }
+    .kh-h .card-subtitle { margin: 0; }
+    .kh-h button { margin-left: auto; }
+    table.kh-t { width: 100%; border-collapse: separate; border-spacing: 0 6px; table-layout: fixed; }
+    table.kh-t th { font-size: .6rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); text-align: left; font-weight: 500; padding: 0 4px; }
+    table.kh-t th:first-child { width: 70px; }
+    table.kh-t td { padding: 0 4px; }
+    table.kh-t td.d { font-size: .72rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+    table.kh-t tr.today td.d { color: var(--accent-b); font-weight: 700; }
+    .kh-slot { width: 100%; min-height: 40px; padding: .45rem .55rem; border-radius: .6rem; border: 1px dashed var(--border-soft); background: rgba(255,255,255,.25); color: var(--text-faint); font-family: inherit; font-size: .78rem; text-align: left; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .kh-slot.f { border-style: solid; border-color: var(--accent-b); color: var(--text); background: rgba(255,255,255,.45); }
+    .kh-slot:hover { border-color: var(--accent-b); }
+    /* other screens */
+    #recipe-list, #pantry-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
+    #recipe-list .list-item, #pantry-list .list-item { margin: 0; }
+    #recipe-list .empty-state, #pantry-list .empty-state { grid-column: 1 / -1; }
+    #add-recipe-btn, #add-pantry-btn { max-width: 320px; }
+    #week-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; }
+    #week-grid .day-row { margin: 0; display: flex; flex-direction: column; }
+    #week-grid .slot-row { flex-direction: column; gap: 6px; }
+    #week-grid .slot-chip { min-height: 58px; }
+    #week-grid .slot-chip-text { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: .76rem; }
+    #generate-shopping-btn { max-width: 420px; margin-top: 14px !important; }
+    .week-nav { max-width: 520px; }
+    #mealplan-shopping-panel { max-width: 760px; }
+    #streak-heatmap { max-width: 460px; }
+    #screen-progress.active-screen { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+    .modal-overlay { align-items: center; }
+    .modal-card { border-radius: 1.4rem; max-width: 560px; }
+    .toast { left: calc(50% + 124px); bottom: 2rem; }
   }
-  .demo-banner a { color: var(--on-accent); text-decoration: underline; font-weight: 700; }
-  #trial-lock {
-    display: none; position: fixed; inset: 0; z-index: 998;
-    background: rgba(20, 15, 10, 0.6); backdrop-filter: blur(6px);
-    align-items: center; justify-content: center; padding: 1.5rem;
+  @media (min-width: 900px) and (max-width: 1199px) {
+    #screen-home.active-screen { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "kpi kpi" "health today" "week week" "attn shop"; }
+    .kh-kpi { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #week-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    #recipe-list, #pantry-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  .lock-card {
-    background: var(--card-hi); border: 1px solid var(--border-soft); border-radius: 1.1rem;
-    padding: 1.6rem 1.4rem; max-width: 380px; width: 100%; text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-  }
-  .lock-title { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.3rem; color: var(--text); margin-bottom: 0.6rem; }
-  .lock-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 1.1rem; }
-  .lock-cta {
-    display: inline-block; width: 100%; padding: 0.7rem; border-radius: 999px; text-decoration: none;
-    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
-    font-size: 0.85rem; font-weight: 700;
-  }
-  .upsell-card {
-    background: var(--card); border: 1px solid var(--border-soft); border-radius: 1.1rem;
-    padding: 1.1rem 1.05rem; margin-bottom: 0.85rem;
-  }
-  .upsell-title { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.05rem; color: var(--text); margin-bottom: 0.4rem; }
-  .upsell-text { font-size: 0.8rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 0.9rem; }
-  .upsell-btn {
-    display: block; width: 100%; text-align: center; padding: 0.65rem; border-radius: 999px; text-decoration: none;
-    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
-    font-size: 0.8rem; font-weight: 700;
-  }
+
+/* ===== free trial ===== */
+body{flex-direction:column;align-items:center}
+.demo-banner{width:100%;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-size:13px;line-height:1.4;text-align:center;padding:9px 14px;font-weight:600}
+.demo-banner b{font-weight:800}
+.demo-banner a{color:var(--on-accent);font-weight:800;text-decoration:underline;white-space:nowrap}
+#trial-lock{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(30,20,10,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.lock-card{max-width:380px;width:100%;background:radial-gradient(circle at top,var(--bg-a),var(--bg-b));border:1px solid var(--border-soft);border-radius:20px;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);color:var(--text)}
+.lock-icon{width:56px;height:56px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent)}
+.lock-title{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:1.45rem;margin-bottom:8px}
+.lock-text{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:20px}
+.lock-cta{display:block;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-weight:700;font-size:15px;padding:14px;border-radius:12px;text-decoration:none}
+.upsell-card{border:1px solid var(--border-soft);background:rgba(255,255,255,.35);border-radius:1rem;padding:.9rem;margin:.2rem 0 .8rem}
+.upsell-card .t{font-weight:600;font-size:.86rem;color:var(--text);margin-bottom:.3rem}
+.upsell-card p{font-size:.76rem;color:var(--text-muted);line-height:1.55;margin-bottom:.7rem}
+.upsell-card a,.upsell-card button{display:block;width:100%;text-align:center;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-weight:600;font-size:.82rem;padding:.7rem;border-radius:.8rem;text-decoration:none;border:none;cursor:pointer;font-family:inherit}
+.sample-link{display:block;width:100%;margin:0 0 .9rem;padding:.8rem;border-radius:.9rem;border:1.5px dashed var(--accent-b);background:rgba(255,255,255,.3);color:var(--text);font-family:inherit;font-size:.86rem;font-weight:600;cursor:pointer}
+@media(min-width:900px){body{display:block}.demo-banner{font-size:14px}.kh-side{height:auto;min-height:100vh}}
 </style>
 </head>
 <body data-theme="cream">
+<div class="demo-banner" id="demo-banner"><b>Free trial</b>: try every feature for 14 days. <a href="https://www.etsy.com/listing/4563291012/kitchen-hq-recipe-box-meal-planner" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
 
 <div class="app">
-  <div class="demo-banner" id="demo-banner"><span id="demo-banner-text">Free trial — 14 days left</span> &middot; <a href="https://www.etsy.com/listing/4563291012/kitchen-hq-recipe-box-meal-planner" target="_blank" rel="noopener">Buy the full version</a></div>
-  <div id="trial-lock">
-    <div class="lock-card">
-      <div class="lock-title">Your free trial has ended</div>
-      <div class="lock-text">Your 14-day trial of Kitchen HQ has ended. Purchase the full version on Etsy to keep planning meals, tracking your pantry, and building your recipe box, with no interruptions and optional Google Drive backup.</div>
-      <a class="lock-cta" href="https://www.etsy.com/listing/4563291012/kitchen-hq-recipe-box-meal-planner" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
-    </div>
-  </div>
-
   <header>
     <div class="header-text">
       <div class="eyebrow">Mobile First Studio</div>
@@ -484,23 +541,21 @@
 
       <section class="card">
         <div class="card-header">
-          <div class="card-title">Backup</div>
+          <div class="card-title">Backup &amp; Sync</div>
           <div class="card-subtitle">Keep your recipes, plans, and pantry safe.</div>
         </div>
-        <div class="backup-section-label">Local backup file</div>
-        <div class="backup-actions">
-          <button class="backup-btn" id="export-btn">Export backup file</button>
-          <button class="backup-btn" id="import-btn">Import backup file</button>
+        <div class="upsell-card"><div class="t">Google Drive backup is in the full app</div><p>The full Kitchen HQ backs up your recipes, meal plans, pantry and shopping list to your own Google Drive, so they follow you to a new phone. This free trial skips it, since trial data is not meant to be permanent.</p><a href="https://www.etsy.com/listing/4563291012/kitchen-hq-recipe-box-meal-planner" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+        <div class="upsell-card"><div class="t">Sample data</div><p>Fill the trial with 10 example recipes, a planned week, a stocked pantry with expiring items and a shopping list, to see every feature in action.</p><button type="button" onclick="loadSampleData()">Load sample data</button></div>
+        <div class="backup-divider">
+          <div class="backup-section-label">Local backup file</div>
+          <div class="backup-actions">
+            <button class="backup-btn" id="export-btn">Export backup file</button>
+            <button class="backup-btn" id="import-btn">Import backup file</button>
+          </div>
+          <div id="local-restore-undo-slot"></div>
         </div>
-        <div id="local-restore-undo-slot"></div>
         <div class="note">Exporting or backing up saves everything in this app. It never includes anything else from your device.</div>
       </section>
-
-      <div class="upsell-card">
-        <div class="upsell-title">Google Drive backup is a full-version feature</div>
-        <div class="upsell-text">The full Kitchen HQ backs your recipes, meal plan, and pantry up to your own Google Drive automatically. This trial keeps everything local to this device.</div>
-        <a class="upsell-btn" href="https://www.etsy.com/listing/4563291012/kitchen-hq-recipe-box-meal-planner" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
-      </div>
     </section>
 
   </main>
@@ -531,6 +586,9 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<div id="trial-lock"><div class="lock-card"><div class="lock-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+<div class="lock-title">Your free trial has ended</div><div class="lock-text">You've had 14 days with Kitchen HQ. Get the full app to keep your recipes, meal plans and pantry, with printable recipe cards and Google Drive backup.</div>
+<a class="lock-cta" href="https://www.etsy.com/listing/4563291012/kitchen-hq-recipe-box-meal-planner" target="_blank" rel="noopener">Get the full app</a></div></div>
 
 <script>
   /* =========================================================
@@ -579,6 +637,7 @@
     const activeDays = new Set(Object.keys(DB.mealPlan).filter(dayHasCookedMeal));
     let current = 0;
     const cursor = new Date();
+    if (!activeDays.has(todayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
     while (activeDays.has(todayKey(cursor))) { current += 1; cursor.setDate(cursor.getDate() - 1); }
     const sortedDays = Array.from(activeDays).sort();
     let longest = 0, run = 0, prevDate = null;
@@ -787,7 +846,7 @@
         : `<button class="list-item-action-btn" data-plan-slot="${slot}">Plan it</button>`;
       return `
         <div class="attn-row">
-          <div><div class="stat-label" style="text-align:left;">${label}</div><div style="font-size:0.82rem;color:var(--text);margin-top:0.15rem;">${valueText}</div></div>
+          <div><div class="stat-label" style="text-align:left;">${label}</div><div style="font-size:0.82rem;color:var(--text);margin-top:0.15rem;">${esc(valueText)}</div></div>
           <div>${actionHtml}</div>
         </div>
       `;
@@ -804,7 +863,7 @@
         if (status === "expired") tag = `<span class="badge badge-expired">Expired</span>`;
         else if (status === "soon") tag = `<span class="badge badge-soon">Expiring soon</span>`;
         if (it.lowStock) tag += `<span class="badge badge-low">Low stock</span>`;
-        return `<div class="attn-row"><div style="font-size:0.82rem;color:var(--text);">${it.name}</div><div>${tag}</div></div>`;
+        return `<div class="attn-row"><div style="font-size:0.82rem;color:var(--text);">${esc(it.name)}</div><div>${tag}</div></div>`;
       }).join("");
     }
   }
@@ -820,7 +879,7 @@
       return;
     }
     const planBtn = e.target.closest("[data-plan-slot]");
-    if (planBtn) { switchToTab("screen-mealplan"); }
+    if (planBtn) { openSlotPicker(todayKey(new Date()), planBtn.dataset.planSlot); }
   });
   document.getElementById("home-plan-week-btn").addEventListener("click", () => switchToTab("screen-mealplan"));
 
@@ -833,7 +892,7 @@
     const pantryNames = DB.pantry.map((p) => p.name.toLowerCase());
     return recipe.ingredients.every((ing) => {
       const needle = ing.toLowerCase();
-      return pantryNames.some((name) => name.includes(needle) || needle.includes(name));
+      return DB.pantry.some((p) => khqMatch(p.name, ing));
     });
   }
   function renderRecipes() {
@@ -854,8 +913,8 @@
       <div class="list-item" data-recipe-id="${r.id}">
         <div class="list-item-top">
           <div style="flex:1;min-width:0;">
-            <div class="list-item-title" data-view-recipe="${r.id}" style="cursor:pointer;">${r.title}</div>
-            <div class="list-item-sub">${r.mealType} · ${r.ingredients.length} ingredient${r.ingredients.length === 1 ? "" : "s"}</div>
+            <div class="list-item-title" data-view-recipe="${r.id}" style="cursor:pointer;">${esc(r.title)}</div>
+            <div class="list-item-sub">${esc(r.mealType)} · ${r.ingredients.length} ingredient${r.ingredients.length === 1 ? "" : "s"}</div>
           </div>
           <button class="star-btn ${r.favorite ? "starred" : ""}" data-toggle-fav="${r.id}" title="Favorite">${r.favorite ? "★" : "☆"}</button>
         </div>
@@ -905,14 +964,14 @@
   function openRecipeForm(existingId) {
     const existing = existingId ? findRecipe(existingId) : null;
     const extraHtml = `
-      <div class="field"><label>Title</label><input type="text" id="rf-title" value="${existing ? existing.title.replace(/"/g, "&quot;") : ""}" placeholder="Sunday Roast Chicken" /></div>
+      <div class="field"><label>Title</label><input type="text" id="rf-title" value="${existing ? esc(existing.title) : ""}" placeholder="Sunday Roast Chicken" /></div>
       <div class="field"><label>Meal type</label>
         <select id="rf-mealtype">
           ${["Breakfast", "Lunch", "Dinner", "Snack", "Dessert"].map((m) => `<option value="${m}" ${existing && existing.mealType === m ? "selected" : ""}>${m}</option>`).join("")}
         </select>
       </div>
-      <div class="field"><label>Ingredients (one per line)</label><textarea id="rf-ingredients" placeholder="2 chicken breasts&#10;1 lemon&#10;olive oil" style="min-height:90px;">${existing ? existing.ingredients.join("\n") : ""}</textarea></div>
-      <div class="field"><label>Steps (one per line)</label><textarea id="rf-steps" placeholder="Preheat oven to 400°F&#10;Season the chicken&#10;Roast 35 minutes" style="min-height:90px;">${existing ? existing.steps.join("\n") : ""}</textarea></div>
+      <div class="field"><label>Ingredients (one per line)</label><textarea id="rf-ingredients" placeholder="2 chicken breasts&#10;1 lemon&#10;olive oil" style="min-height:90px;">${existing ? esc(existing.ingredients.join("\n")) : ""}</textarea></div>
+      <div class="field"><label>Steps (one per line)</label><textarea id="rf-steps" placeholder="Preheat oven to 400°F&#10;Season the chicken&#10;Roast 35 minutes" style="min-height:90px;">${existing ? esc(existing.steps.join("\n")) : ""}</textarea></div>
       <div class="checkbox-row"><input type="checkbox" id="rf-favorite" ${existing && existing.favorite ? "checked" : ""} /><label for="rf-favorite" style="margin:0;text-transform:none;font-size:0.8rem;">Mark as favorite</label></div>
     `;
     openModal({
@@ -990,7 +1049,7 @@
             const cooked = !!(entry && entry.cooked && entry.cooked[slot]);
             return `<button class="slot-chip ${recipe ? "filled" : ""} ${cooked ? "cooked" : ""}" data-day-key="${key}" data-slot="${slot}">
               <span class="slot-chip-label">${slot.slice(0, 1).toUpperCase() + slot.slice(1)}</span>
-              <span class="slot-chip-text">${recipe ? recipe.title : "+ Add"}</span>
+              <span class="slot-chip-text">${recipe ? esc(recipe.title) : "+ Add"}</span>
             </button>`;
           }).join("")}
         </div>
@@ -1020,7 +1079,7 @@
     }
     const rowsHtml = DB.recipes.slice().sort((a, b) => a.title.localeCompare(b.title)).map((r) =>
       `<div class="picker-row" data-pick-recipe="${r.id}">
-        <div><div class="picker-row-label">${r.title}</div><div class="picker-row-sub">${r.mealType}</div></div>
+        <div><div class="picker-row-label">${esc(r.title)}</div><div class="picker-row-sub">${esc(r.mealType)}</div></div>
         <span style="color:var(--accent-b);">${currentId === r.id ? "✓" : "→"}</span>
       </div>`
     ).join("");
@@ -1065,7 +1124,7 @@
     listEl.innerHTML = items.map((it) => `
       <div class="shopping-item">
         <div class="shopping-check ${it.checked ? "done" : ""}" data-toggle-shop="${it.id}">${it.checked ? "✓" : ""}</div>
-        <div class="shopping-text ${it.checked ? "done" : ""}">${it.text}</div>
+        <div class="shopping-text ${it.checked ? "done" : ""}">${esc(it.text)}</div>
         <button class="shopping-del" data-delete-shop="${it.id}">×</button>
       </div>
     `).join("");
@@ -1114,8 +1173,8 @@
     const existingListNames = DB.shoppingList.map((s) => s.text.toLowerCase());
     let added = 0;
     neededSet.forEach((original, lower) => {
-      const inPantry = pantryNames.some((name) => name.includes(lower) || lower.includes(name));
-      const alreadyListed = existingListNames.some((name) => name.includes(lower) || lower.includes(name));
+      const inPantry = DB.pantry.some((p) => khqMatch(p.name, original));
+      const alreadyListed = existingListNames.some((name) => name.trim() === lower.trim());
       if (!inPantry && !alreadyListed) {
         DB.shoppingList.push({ id: uid(), text: original, checked: false, auto: true, createdAt: new Date().toISOString() });
         added += 1;
@@ -1149,7 +1208,7 @@
     }
     listEl.innerHTML = items.map((it) => {
       const status = pantryStatus(it);
-      let badges = `<span class="badge badge-tag">${it.location}</span>`;
+      let badges = `<span class="badge badge-tag">${esc(it.location)}</span>`;
       if (status === "expired") badges += `<span class="badge badge-expired">Expired</span>`;
       else if (status === "soon") badges += `<span class="badge badge-soon">Expiring soon</span>`;
       else if (it.expiresOn) badges += `<span class="badge badge-ok">Fresh</span>`;
@@ -1158,8 +1217,8 @@
         <div class="list-item">
           <div class="list-item-top">
             <div style="flex:1;min-width:0;">
-              <div class="list-item-title">${it.name}</div>
-              <div class="list-item-sub">${it.qty || ""} ${it.unit || ""}${it.expiresOn ? " · expires " + new Date(it.expiresOn + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""}</div>
+              <div class="list-item-title">${esc(it.name)}</div>
+              <div class="list-item-sub">${esc(it.qty || "")} ${esc(it.unit || "")}${it.expiresOn ? " · expires " + new Date(it.expiresOn + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""}</div>
               <div>${badges}</div>
             </div>
           </div>
@@ -1188,15 +1247,15 @@
   function openPantryForm(existingId) {
     const existing = existingId ? DB.pantry.find((p) => p.id === existingId) : null;
     const extraHtml = `
-      <div class="field"><label>Item name</label><input type="text" id="pf-name" value="${existing ? existing.name.replace(/"/g, "&quot;") : ""}" placeholder="Eggs" /></div>
+      <div class="field"><label>Item name</label><input type="text" id="pf-name" value="${existing ? esc(existing.name) : ""}" placeholder="Eggs" /></div>
       <div class="field"><label>Location</label>
         <select id="pf-location">
           ${["Fridge", "Freezer", "Pantry", "Spice Rack"].map((l) => `<option value="${l}" ${existing && existing.location === l ? "selected" : ""}>${l}</option>`).join("")}
         </select>
       </div>
       <div class="field-row">
-        <div class="field"><label>Quantity</label><input type="text" id="pf-qty" value="${existing ? existing.qty || "" : ""}" placeholder="1" /></div>
-        <div class="field"><label>Unit</label><input type="text" id="pf-unit" value="${existing ? existing.unit || "" : ""}" placeholder="dozen" /></div>
+        <div class="field"><label>Quantity</label><input type="text" id="pf-qty" value="${existing ? esc(existing.qty || "") : ""}" placeholder="1" /></div>
+        <div class="field"><label>Unit</label><input type="text" id="pf-unit" value="${existing ? esc(existing.unit || "") : ""}" placeholder="dozen" /></div>
       </div>
       <div class="field"><label>Expiration date (optional)</label><input type="date" id="pf-expires" value="${existing ? existing.expiresOn || "" : ""}" /></div>
       <div class="checkbox-row"><input type="checkbox" id="pf-lowstock" ${existing && existing.lowStock ? "checked" : ""} /><label for="pf-lowstock" style="margin:0;text-transform:none;font-size:0.8rem;">Running low — needs restocking</label></div>
@@ -1318,7 +1377,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `kitchen-hq-backup-${localDateStr()}.json`;
+      a.download = `kitchen-hq-demo-backup-${localDateStr()}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -1345,37 +1404,9 @@
     e.target.value = "";
   }
 
-  /* =========================================================
-     GOOGLE DRIVE BACKUP — removed for the free trial demo.
-     The full version backs up to the user's own Google Drive;
-     this trial is local-device-only, so all Drive OAuth/API
-     code and its Settings UI were removed rather than hidden.
-     scheduleAutoBackup() is kept as a no-op since sv() still
-     calls it after every save.
-     ========================================================= */
+  /* Free trial: Google Drive backup is only in the full app. */
   function scheduleAutoBackup() {}
-
-  /* =========================================================
-     FREE TRIAL DEMO — 14-day countdown
-     ========================================================= */
-  const DEMO_TRIAL_DAYS = 14;
-  const DEMO_SINCE_KEY = "khq_demo_since";
-  function demoTrialDaysLeft() {
-    let since = localStorage.getItem(DEMO_SINCE_KEY);
-    if (!since) { since = String(Date.now()); localStorage.setItem(DEMO_SINCE_KEY, since); }
-    const elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
-    return DEMO_TRIAL_DAYS - elapsedDays;
-  }
-  function enforceDemoTrial() {
-    const daysLeft = demoTrialDaysLeft();
-    if (daysLeft <= 0) {
-      document.getElementById("trial-lock").style.display = "flex";
-      document.body.style.overflow = "hidden";
-    } else {
-      const bannerText = document.getElementById("demo-banner-text");
-      if (bannerText) bannerText.textContent = `Free trial — ${daysLeft} day${daysLeft === 1 ? "" : "s"} left`;
-    }
-  }
+  function updateDriveStatusUI() {}
 
   /* =========================================================
      INIT
@@ -1389,6 +1420,7 @@
     renderShoppingList();
     renderPantry();
     renderProgress();
+    updateDriveStatusUI();
     renderLocalRestoreUndo();
 
     document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => switchToTab(tab.dataset.target)));
@@ -1400,9 +1432,551 @@
     document.getElementById("export-btn").addEventListener("click", exportBackupFile);
     document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
     document.getElementById("import-file-input").addEventListener("change", handleImportFileSelected);
-
-    enforceDemoTrial();
   });
+
+/* ── PRINTABLE PAGES (PDF made on the device with pdf-lib, same method as Life Admin HQ) ── */
+var MFSPrint=(function(){
+  // The built-in PDF fonts draw basic Latin letters only. Anything else is removed so the PDF never fails.
+  function safe(s){
+    return String(s==null?'':s)
+      .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[\r\n\t]+/g,' ')
+      .replace(/ ?[^\x20-\x7E\xA0-\xFF–—•…]+/g,'')
+      .trim();
+  }
+  function rgbHex(hex){
+    var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex||'');
+    if(!m)return PDFLib.rgb(.30,.40,.35);
+    return PDFLib.rgb(parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255);
+  }
+  var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function pd(ds){if(!ds)return new Date(NaN);var p=String(ds).split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+  function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function longDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+  function shortDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return MON[d.getMonth()].slice(0,3)+' '+d.getDate()+', '+d.getFullYear();}
+  function money(n){var v=parseFloat(n)||0;return(v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  async function create(opts){
+    opts=opts||{};
+    var doc=await PDFLib.PDFDocument.create();
+    var font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var bold=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    var k={doc:doc,font:font,bold:bold,W:612,H:792,M:46,CW:520,BOTTOM:62,page:null,y:0,title:'',landscape:false,
+      ink:PDFLib.rgb(.16,.16,.16),soft:PDFLib.rgb(.42,.42,.42),line:PDFLib.rgb(.66,.66,.66),faint:PDFLib.rgb(.84,.84,.84),
+      fill:PDFLib.rgb(.95,.95,.94),accent:rgbHex(opts.accent),footer:opts.footer||''};
+    // Shrink text a little to fit its space, then shorten it if it still does not fit.
+    k.fit=function(f,text,size,maxW,minSize){
+      var s=safe(text),sz=size,min=minSize||Math.max(6,size-2);
+      while(sz>min&&f.widthOfTextAtSize(s,sz)>maxW)sz-=0.25;
+      if(f.widthOfTextAtSize(s,sz)>maxW){
+        while(s.length>1&&f.widthOfTextAtSize(s+'...',sz)>maxW)s=s.slice(0,-1);
+        s=s.replace(/\s+$/,'')+'...';
+      }
+      return {text:s,size:sz};
+    };
+    k.text=function(text,x,y,size,o){
+      o=o||{};var f=o.bold?bold:font;
+      var r=k.fit(f,text,size,o.maxW||(k.W-k.M-x),o.minSize);
+      if(!r.text)return;
+      var w=f.widthOfTextAtSize(r.text,r.size);
+      var dx=o.align==='right'?(o.maxW-w):o.align==='center'?((o.maxW-w)/2):0;
+      k.page.drawText(r.text,{x:x+dx,y:y,size:r.size,font:f,color:o.color||k.ink});
+    };
+    k.hline=function(x1,x2,y,color,t){k.page.drawLine({start:{x:x1,y:y},end:{x:x2,y:y},thickness:t||.7,color:color||k.line});};
+    k.vline=function(x,y1,y2,color,t){k.page.drawLine({start:{x:x,y:y1},end:{x:x,y:y2},thickness:t||.7,color:color||k.line});};
+    k.rect=function(x,y,w,h,o){o=o||{};var r={x:x,y:y,width:w,height:h};if(o.fill)r.color=o.fill;if(o.border!==false){r.borderColor=o.border||k.line;r.borderWidth=o.bw||.7;}k.page.drawRectangle(r);};
+    k.newPage=function(title,sub,landscape){
+      var ls=landscape===undefined?k.landscape:!!landscape;k.landscape=ls;
+      k.W=ls?792:612;k.H=ls?612:792;k.CW=k.W-2*k.M;
+      k.page=doc.addPage([k.W,k.H]);k.title=title;
+      var y=k.H-k.M;
+      k.text(title,k.M,y-6,19,{bold:true,maxW:k.CW});
+      y-=24;
+      if(sub){k.text(sub,k.M,y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});y-=12;}
+      k.hline(k.M,k.M+k.CW,y,k.accent,1.2);
+      k.y=y-22;
+    };
+    k.contTitle=function(){return k.title.indexOf('(continued)')>-1?k.title:k.title+' (continued)';};
+    k.room=function(h){if(k.y-h<k.BOTTOM){k.newPage(k.contTitle());return true;}return false;};
+    k.section=function(text){k.room(48);k.text(text,k.M,k.y,11.5,{bold:true,color:k.accent,maxW:k.CW});k.y-=20;};
+    k.field=function(label,x,y,w,value){
+      var r=k.fit(font,label,9.5,w*0.6);
+      k.page.drawText(r.text,{x:x,y:y,size:r.size,font:font,color:k.soft});
+      var lx=x+font.widthOfTextAtSize(r.text,r.size)+6;
+      if(value)k.text(value,lx+2,y,10,{maxW:x+w-lx-4,minSize:7.5});
+      k.hline(lx,x+w,y-2);
+    };
+    // fields: array of label strings or [label,value]
+    k.fieldRow=function(fields){
+      var gap=24,w=(k.CW-gap*(fields.length-1))/fields.length;
+      fields.forEach(function(f,i){var l=Array.isArray(f)?f[0]:f,v=Array.isArray(f)?f[1]:'';k.field(l,k.M+i*(w+gap),k.y,w,v);});
+      k.y-=28;
+    };
+    k.box=function(x,y,s,on){
+      k.page.drawRectangle({x:x,y:y,width:s,height:s,borderColor:k.soft,borderWidth:.8});
+      if(on){k.page.drawLine({start:{x:x+2,y:y+s/2},end:{x:x+s*0.42,y:y+2},thickness:1.2,color:k.ink});k.page.drawLine({start:{x:x+s*0.42,y:y+2},end:{x:x+s-1.5,y:y+s-1.5},thickness:1.2,color:k.ink});}
+    };
+    // A tick list. items: a number (blank lines to write on) or an array of text / {t,on}.
+    k.checks=function(items,ncols){
+      ncols=ncols||1;
+      var n=typeof items==='number'?items:items.length,rows=Math.ceil(n/ncols),gap=20,w=(k.CW-gap*(ncols-1))/ncols;
+      for(var r=0;r<rows;r++){
+        if(k.y-20<k.BOTTOM)k.newPage(k.contTitle());
+        for(var c=0;c<ncols;c++){
+          var i=r+c*rows;if(i>=n)continue;
+          var x=k.M+c*(w+gap),it=typeof items==='number'?null:items[i];
+          k.box(x,k.y-3,10,!!(it&&it.on));
+          if(it!==null)k.text(typeof it==='string'?it:it.t,x+16,k.y-1,10,{maxW:w-18,minSize:7.5});
+          else k.hline(x+16,x+w,k.y-3,k.faint);
+        }
+        k.y-=20;
+      }
+    };
+    k.lines=function(n,gap){gap=gap||20;for(var i=0;i<n;i++){if(k.y-gap<k.BOTTOM)k.newPage(k.contTitle());k.hline(k.M,k.M+k.CW,k.y-4,k.faint);k.y-=gap;}};
+    // cols: [{label,w,align,soft,bold,box}] · rows: a number (blank rows) or an array of rows.
+    // A cell can be text or {box:true,on:bool}. A column with box:true draws an empty tick box in blank rows.
+    k.table=function(cols,rows,rowH,o){
+      o=o||{};var x=o.x||k.M;
+      var sum=cols.reduce(function(s,c){return s+c.w;},0);
+      if(o.stretch!==false&&Math.abs(sum-k.CW)>0.5){var f=k.CW/sum;cols=cols.map(function(c){var d={};for(var p in c)d[p]=c[p];d.w=c.w*f;return d;});sum=k.CW;}
+      var headH=19,n=typeof rows==='number'?rows:rows.length;
+      function sides(top,h){var cx=x;for(var i=0;i<=cols.length;i++){k.vline(cx,top,top-h);if(i<cols.length)cx+=cols[i].w;}}
+      function head(){
+        k.page.drawRectangle({x:x,y:k.y-headH,width:sum,height:headH,color:k.fill});
+        var cx=x;
+        cols.forEach(function(c){
+          if(c.label)k.text(c.label,cx+(c.w<34?2:5),k.y-13,8.5,{bold:true,maxW:c.w-(c.w<34?4:10),minSize:6,align:c.align==='center'||c.box?'center':undefined});
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y);k.hline(x,x+sum,k.y-headH);sides(k.y,headH);
+        k.y-=headH;
+      }
+      if(k.y-headH-rowH<k.BOTTOM)k.newPage(k.contTitle());
+      head();
+      for(var r=0;r<n;r++){
+        if(k.y-rowH<k.BOTTOM){k.newPage(k.contTitle());head();}
+        var row=typeof rows==='number'?null:rows[r],cx=x;
+        cols.forEach(function(c,i){
+          var v=row?row[i]:undefined,bs=Math.min(10,rowH-8),by=k.y-rowH+(rowH-bs)/2;
+          if(v&&typeof v==='object'&&v.box){k.box(cx+(c.w-bs)/2,by,bs,!!v.on);}
+          else if(c.box&&(v===undefined||v===null)){k.box(cx+(c.w-bs)/2,by,bs,false);}
+          else if(v!==undefined&&v!==null&&v!==''){
+            k.text(String(v),cx+5,k.y-rowH/2-3,9,{maxW:c.w-10,minSize:6.5,bold:!!c.bold,color:c.soft?k.soft:k.ink,align:c.align==='center'?'center':c.align==='right'?'right':undefined});
+          }
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y-rowH);sides(k.y,rowH);
+        k.y-=rowH;
+      }
+      k.y-=14;
+    };
+    k.fillRows=function(rowH){return Math.max(0,Math.floor((k.y-k.BOTTOM-19)/rowH));};
+    k.finish=async function(){
+      var pages=doc.getPages();
+      pages.forEach(function(pg,i){
+        var sz=pg.getSize();
+        pg.drawText(safe(k.footer),{x:k.M,y:30,size:8,font:font,color:k.soft});
+        var lbl='Page '+(i+1)+' of '+pages.length;
+        pg.drawText(lbl,{x:sz.width-k.M-font.widthOfTextAtSize(lbl,8),y:30,size:8,font:font,color:k.soft});
+      });
+      return await doc.save();
+    };
+    // Month grid, Monday first. cellText(dateStr) returns an array of short lines for that day.
+    // With numbered=false the grid has no dates, for an undated month to fill in by hand.
+    k.month=function(year,month,o){
+      o=o||{};var top=k.y,heads=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],cw=k.CW/7,hh=18;
+      var first=new Date(year,month,1).getDay(),off=(first+6)%7,dim=new Date(year,month+1,0).getDate();
+      var weeks=o.numbered===false?5:Math.ceil((off+dim)/7);
+      var gridH=(o.height||(k.y-k.BOTTOM-8))-hh,ch=gridH/weeks;
+      k.page.drawRectangle({x:k.M,y:top-hh,width:k.CW,height:hh,color:k.fill});
+      heads.forEach(function(h,i){k.text(h,k.M+i*cw,top-12.5,8.5,{bold:true,maxW:cw,align:'center'});});
+      for(var w=0;w<weeks;w++)for(var d=0;d<7;d++){
+        var x=k.M+d*cw,y=top-hh-(w+1)*ch,n=w*7+d-off+1;
+        k.rect(x,y,cw,ch,{border:k.line});
+        if(o.numbered===false||n<1||n>dim)continue;
+        k.text(String(n),x+4,y+ch-11,9,{bold:true,maxW:cw-8});
+        if(o.cellText){
+          var ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+          var lines=o.cellText(ds)||[],ly=y+ch-22;
+          for(var li=0;li<lines.length&&ly>y+3;li++){k.text(lines[li],x+4,ly,7,{maxW:cw-8,minSize:6});ly-=8.5;}
+        }
+      }
+      k.y=top-hh-gridH-14;
+    };
+    // Twelve small month calendars on one page.
+    k.yearGrid=function(year){
+      var cols=3,rows=4,gap=16,bw=(k.CW-gap*(cols-1))/cols,top=k.y,bh=(top-k.BOTTOM-gap*(rows-1))/rows;
+      for(var m=0;m<12;m++){
+        var c=m%cols,r=Math.floor(m/cols),x=k.M+c*(bw+gap),y=top-r*(bh+gap);
+        k.text(MON[m],x,y-10,10.5,{bold:true,color:k.accent,maxW:bw});
+        var cw=bw/7,heads=['M','T','W','T','F','S','S'];
+        heads.forEach(function(h,i){k.text(h,x+i*cw,y-26,7.5,{bold:true,color:k.soft,maxW:cw,align:'center'});});
+        var first=new Date(year,m,1).getDay(),off=(first+6)%7,dim=new Date(year,m+1,0).getDate(),lh=(bh-38)/6;
+        for(var d=1;d<=dim;d++){var p=off+d-1,cc=p%7,rr=Math.floor(p/7);k.text(String(d),x+cc*cw,y-40-rr*lh,8,{maxW:cw,align:'center'});}
+      }
+      k.y=k.BOTTOM;
+    };
+    return k;
+  }
+  // Hand the finished PDF to the person. On iPhone and iPad the share sheet (Print, Save to Files)
+  // is the dependable route from a home screen app, so it is tried first there.
+  function deliver(bytes,filename){
+    var blob=new Blob([bytes],{type:'application/pdf'});
+    var download=function(){
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+    };
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&navigator.canShare&&typeof File!=='undefined'){
+      try{
+        var file=new File([blob],filename,{type:'application/pdf'});
+        if(navigator.canShare({files:[file]})){
+          return navigator.share({files:[file],title:filename}).catch(function(err){
+            if(err&&err.name==='AbortError')return;
+            download();
+          });
+        }
+      }catch(e){}
+    }
+    download();
+  }
+  var busy=false;
+  // Runs a page builder and hands over the PDF. say(msg,isErr) shows the app's own message.
+  async function run(build,filename,opts,say){
+    if(typeof PDFLib==='undefined'){say('The PDF tool is still loading. Check your connection and try again.',true);return;}
+    if(busy)return;busy=true;say('Creating your PDF...');
+    try{var k=await create(opts);await build(k);var bytes=await k.finish();await deliver(bytes,filename);say('Your PDF is ready!');}
+    catch(e){console.error(e);say('Could not create the PDF. Try again.',true);}
+    busy=false;
+  }
+  return {safe:safe,create:create,deliver:deliver,run:run,MON:MON,DOW:DOW,pd:pd,ymd:ymd,longDate:longDate,shortDate:shortDate,money:money};
+})();
+
+  /* =========================================================
+     FIXES: safe text + smarter ingredient matching
+     ========================================================= */
+  // Recipe names, pantry items and list items are shown as text, so a "<" or "&" in a name can't break the page.
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
+  // Whole-word matching: "eggs" matches "2 eggs" and "chicken breasts" matches "2 chicken breasts",
+  // but "salt" no longer matches "unsalted butter" and "egg" no longer matches "eggplant".
+  function khqWords(s) {
+    return String(s || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter((w) => w && !/^\d+([./]\d+)?$/.test(w)).map((w) => {
+      if (w.length > 4 && w.endsWith("ies")) return w.slice(0, -3) + "y";
+      if (w.length > 4 && w.endsWith("oes")) return w.slice(0, -2);
+      if (w.length > 3 && w.endsWith("s") && !w.endsWith("ss")) return w.slice(0, -1);
+      return w;
+    });
+  }
+  function khqMatch(a, b) {
+    const wa = khqWords(a), wb = khqWords(b);
+    if (!wa.length || !wb.length) return false;
+    const [small, big] = wa.length <= wb.length ? [wa, wb] : [wb, wa];
+    return small.every((w) => big.includes(w));
+  }
+
+  /* =========================================================
+     PRINTABLE PAGES (PDF made on the device)
+     ========================================================= */
+  const KH_SLOTS = ["breakfast", "lunch", "dinner"];
+  function khWeekDays(start) { const out = []; for (let i = 0; i < 7; i++) out.push(addDays(start, i)); return out; }
+  function khWeekLabel(start) { const end = addDays(start, 6); return `${start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} to ${end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`; }
+  function khSlotTitle(key, slot) { const e = DB.mealPlan[key]; const r = e && e[slot] ? findRecipe(e[slot]) : null; return r ? r.title : ""; }
+  function khAccent() { const v = getComputedStyle(document.body).getPropertyValue("--accent-b").trim(); return /^#[0-9a-f]{6}$/i.test(v) ? v : "#c9823f"; }
+  const KH_PRINT_OPTS = [
+    { h: "Filled in from the app" },
+    { k: "week", t: "This week's meal plan", s: "Breakfast, lunch and dinner for the week shown" },
+    { k: "shop", t: "Shopping list", s: "Everything still on your list, ready to check off" },
+    { k: "weekshop", t: "Meal plan + shopping list", s: "Both on one PDF, ready for the fridge" },
+    { k: "book", t: "My recipe book", s: "Every recipe with ingredients and steps, favorites first" },
+    { k: "pantry", t: "Pantry inventory", s: "Fridge, freezer, pantry and spice rack, with dates" },
+    { h: "Blank pages to fill in by hand" },
+    { k: "bweek", t: "Blank weekly meal planner", s: "Breakfast, lunch, dinner and grocery notes for 7 days" },
+    { k: "bshop", t: "Blank shopping list", s: "A full page of lines to check off" },
+    { k: "bcard", t: "Blank recipe cards", s: "2 per page with ingredients and steps" },
+    { k: "bpantry", t: "Blank pantry inventory", s: "Fridge, freezer, pantry and spice rack" },
+    { k: "ball", t: "All blank pages", s: "Every blank page in one PDF" }
+  ];
+  function openPrintPages() {
+    const html = KH_PRINT_OPTS.map((o) => o.h ? `<div class="print-h">${o.h}</div>` : `<button class="print-row" data-print="${o.k}"><span><b>${o.t}</b><small>${o.s}</small></span><span style="color:var(--accent-b);">→</span></button>`).join("");
+    openModal({ title: "Printable pages", bodyText: "Pick a page. You get a PDF you can print or save. It is made on your device, and nothing is uploaded.", extraHtml: html, secondaryLabel: "Close", onSecondary: closeModal });
+    document.getElementById("modal-extra-body").querySelectorAll("[data-print]").forEach((b) => b.addEventListener("click", () => { closeModal(); makePrint(b.dataset.print); }));
+  }
+  function khWrap(k, text, size, maxW, bold) {
+    const f = bold ? k.bold : k.font, w = (t) => f.widthOfTextAtSize(k.fit(f, t, size, 1e6).text, size);
+    const lines = []; let cur = "";
+    String(text).split(/\s+/).filter(Boolean).forEach((word) => { const t = cur ? cur + " " + word : word; if (cur && w(t) > maxW) { lines.push(cur); cur = word; } else cur = t; });
+    if (cur) lines.push(cur);
+    return lines;
+  }
+  function pWeek(k) {
+    const start = currentWeekStart(), names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    k.newPage("Meal Plan", khWeekLabel(start), true);
+    const rowH = Math.floor((k.y - k.BOTTOM - 19 - 14) / 7);
+    k.table([{ label: "Day", w: 100, bold: true }, { label: "Breakfast", w: 170 }, { label: "Lunch", w: 170 }, { label: "Dinner", w: 170 }, { label: "Notes", w: 110 }],
+      khWeekDays(start).map((d, i) => { const key = todayKey(d); return [names[i] + "  " + (d.getMonth() + 1) + "/" + d.getDate()].concat(KH_SLOTS.map((s) => khSlotTitle(key, s)), [""]); }), rowH);
+  }
+  function pShop(k) {
+    const items = DB.shoppingList.filter((s) => !s.checked).sort((a, b) => (a.createdAt || "").localeCompare(b.createdAt || ""));
+    k.newPage("Shopping List", items.length + (items.length === 1 ? " item" : " items") + "  ·  " + new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }), false);
+    if (!items.length) { k.text("Your shopping list is empty.", k.M, k.y, 10, { color: k.soft }); k.y -= 20; }
+    else k.checks(items.map((s) => s.text), 2);
+    k.y -= 8; k.section("Also need"); k.checks(Math.max(4, Math.min(20, Math.floor((k.y - k.BOTTOM) / 20) * 2)), 2);
+  }
+  function pRecipeBody(k, r) {
+    const meta = [r.mealType, r.favorite ? "Favorite" : "", r.ingredients.length + " ingredient" + (r.ingredients.length === 1 ? "" : "s"), r.steps.length + " step" + (r.steps.length === 1 ? "" : "s")].filter(Boolean).join("  ·  ");
+    k.text(meta, k.M, k.y + 4, 9, { color: k.soft }); k.y -= 16;
+    k.text("Ingredients", k.M, k.y, 10.5, { bold: true }); k.y -= 18;
+    if (r.ingredients.length) k.checks(r.ingredients, 2); else { k.text("None listed.", k.M, k.y, 9.5, { color: k.soft }); k.y -= 18; }
+    k.y -= 6; k.room(40);
+    k.text("Steps", k.M, k.y, 10.5, { bold: true }); k.y -= 18;
+    if (!r.steps.length) { k.text("None listed.", k.M, k.y, 9.5, { color: k.soft }); k.y -= 18; }
+    r.steps.forEach((s, i) => {
+      const lines = khWrap(k, s, 10, k.CW - 24);
+      if (k.y - lines.length * 14 < k.BOTTOM) k.newPage(k.contTitle());
+      k.text(String(i + 1) + ".", k.M, k.y, 10, { bold: true, color: k.accent });
+      lines.forEach((ln) => { k.text(ln, k.M + 22, k.y, 10, { maxW: k.CW - 24 }); k.y -= 14; });
+      k.y -= 4;
+    });
+  }
+  function pRecipe(k, r) { k.newPage(r.title, "Kitchen HQ recipe card", false); pRecipeBody(k, r); }
+  function pBook(k) {
+    const list = DB.recipes.slice().sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0) || a.title.localeCompare(b.title));
+    k.newPage("My Recipe Book", list.length + (list.length === 1 ? " recipe" : " recipes") + (list.some((r) => r.favorite) ? "  ·  favorites first" : ""), false);
+    if (!list.length) { k.text("No recipes saved yet.", k.M, k.y, 10, { color: k.soft }); return; }
+    list.forEach((r, i) => {
+      if (i > 0) { k.y -= 6; if (k.y - 150 < k.BOTTOM) k.newPage("My Recipe Book (continued)"); else { k.hline(k.M, k.M + k.CW, k.y + 6, k.faint); k.y -= 14; } }
+      k.room(150); k.text((r.favorite ? "* " : "") + r.title, k.M, k.y, 14, { bold: true, color: k.accent, maxW: k.CW }); k.y -= 18;
+      pRecipeBody(k, r);
+    });
+  }
+  function khPantryStatus(it) { const s = pantryStatus(it); return [s === "expired" ? "Expired" : s === "soon" ? "Expiring soon" : "", it.lowStock ? "Low stock" : ""].filter(Boolean).join(", "); }
+  function pPantry(k) {
+    k.newPage("Pantry Inventory", DB.pantry.length + (DB.pantry.length === 1 ? " item" : " items") + "  ·  " + new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }), false);
+    if (!DB.pantry.length) { k.text("Nothing in the pantry yet.", k.M, k.y, 10, { color: k.soft }); return; }
+    ["Fridge", "Freezer", "Pantry", "Spice Rack"].forEach((loc) => {
+      const items = DB.pantry.filter((p) => p.location === loc).sort((a, b) => (a.expiresOn || "9999").localeCompare(b.expiresOn || "9999") || a.name.localeCompare(b.name));
+      if (!items.length) return;
+      k.room(80); k.section(loc + "  (" + items.length + ")");
+      k.table([{ label: "Item", w: 200, bold: true }, { label: "Qty", w: 80 }, { label: "Expires", w: 90 }, { label: "Status", w: 110 }, { label: "Have", w: 40, box: true }],
+        items.map((it) => [it.name, [it.qty, it.unit].filter(Boolean).join(" "), it.expiresOn ? new Date(it.expiresOn + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "", khPantryStatus(it), { box: true, on: false }]), 22);
+    });
+  }
+  function pBlankWeek(k) {
+    k.newPage("Weekly Meal Planner", "Week of ____________________", true);
+    const rowH = Math.floor((k.y - k.BOTTOM - 19 - 14) / 7);
+    k.table([{ label: "Day", w: 90, bold: true }, { label: "Breakfast", w: 160 }, { label: "Lunch", w: 160 }, { label: "Dinner", w: 160 }, { label: "Grocery notes", w: 130 }],
+      ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => [d, "", "", "", ""]), rowH);
+  }
+  function pBlankShop(k) {
+    k.newPage("Shopping List", "Store ____________________   Date ______________", false);
+    k.checks(Math.floor((k.y - k.BOTTOM) / 20) * 2, 2);
+  }
+  function pBlankCard(k) {
+    k.newPage("Recipe Cards", "Write down the recipes your family asks for again and again.", false);
+    const H = (k.y - k.BOTTOM - 18) / 2, top = k.y;
+    for (let i = 0; i < 2; i++) {
+      const x = k.M, W = k.CW, yt = top - i * (H + 18);
+      k.rect(x, yt - H, W, H, { bw: 0.8 });
+      k.page.drawRectangle({ x, y: yt - 6, width: W, height: 6, color: k.accent });
+      k.field("Recipe", x + 12, yt - 30, W - 24);
+      const q = (W - 24 - 36) / 4;
+      ["Serves", "Prep", "Cook", "Meal"].forEach((l, j) => k.field(l, x + 12 + j * (q + 12), yt - 54, q));
+      const cw = (W - 36) * 0.42, sx = x + 24 + cw;
+      k.text("Ingredients", x + 12, yt - 80, 9.5, { bold: true, color: k.soft });
+      k.text("Steps", sx, yt - 80, 9.5, { bold: true, color: k.soft });
+      let y = yt - 98, n = 1;
+      while (y > yt - H + 14) {
+        k.box(x + 12, y - 3, 9, false); k.hline(x + 26, x + 12 + cw, y - 3, k.faint);
+        k.text(String(n++) + ".", sx, y - 1, 8.5, { color: k.soft }); k.hline(sx + 14, x + W - 12, y - 3, k.faint);
+        y -= 19;
+      }
+    }
+    k.y = k.BOTTOM;
+  }
+  function pBlankPantry(k) {
+    k.newPage("Pantry Inventory", "Date ______________   Check what you have before you shop.", false);
+    ["Fridge", "Freezer", "Pantry", "Spice Rack"].forEach((loc) => {
+      k.text(loc, k.M, k.y, 11.5, { bold: true, color: k.accent }); k.y -= 18;
+      k.table([{ label: "Item", w: 220 }, { label: "Qty", w: 80 }, { label: "Expires", w: 100 }, { label: "Need more", w: 70, box: true }], 5, 19);
+      k.y += 2;
+    });
+  }
+  function makePrint(kind, recipeId) {
+    const day = todayKey(new Date()), wk = todayKey(currentWeekStart());
+    const map = {
+      week: [(k) => pWeek(k), "meal-plan-" + wk + ".pdf"],
+      shop: [(k) => pShop(k), "shopping-list-" + day + ".pdf"],
+      weekshop: [(k) => { pWeek(k); pShop(k); }, "meal-plan-and-shopping-list-" + wk + ".pdf"],
+      book: [(k) => pBook(k), "my-recipe-book.pdf"],
+      pantry: [(k) => pPantry(k), "pantry-inventory-" + day + ".pdf"],
+      bweek: [(k) => pBlankWeek(k), "weekly-meal-planner-blank.pdf"],
+      bshop: [(k) => pBlankShop(k), "shopping-list-blank.pdf"],
+      bcard: [(k) => pBlankCard(k), "recipe-cards-blank.pdf"],
+      bpantry: [(k) => pBlankPantry(k), "pantry-inventory-blank.pdf"],
+      ball: [(k) => { pBlankWeek(k); pBlankShop(k); pBlankCard(k); pBlankPantry(k); }, "kitchen-hq-printables.pdf"]
+    };
+    if (kind === "recipe") {
+      const r = findRecipe(recipeId); if (!r) return;
+      map.recipe = [(k) => pRecipe(k, r), "recipe-" + (r.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "card") + ".pdf"];
+    }
+    const m = map[kind]; if (!m) return;
+    MFSPrint.run(m[0], m[1], { accent: khAccent(), footer: "Kitchen HQ · Mobile First Studio" }, (msg) => showToast(msg));
+  }
+  // Recipe view gets a "Print this recipe" button.
+  function openRecipeDetail(id) {
+    const r = findRecipe(id);
+    if (!r) return;
+    const body = `Ingredients:\n${r.ingredients.map((i) => "• " + i).join("\n") || "(none listed)"}\n\nSteps:\n${r.steps.map((s, i) => `${i + 1}. ${s}`).join("\n") || "(none listed)"}`;
+    openModal({
+      title: r.title, bodyText: body,
+      extraHtml: `<button class="backup-btn" style="width:100%;margin-top:1rem;" id="print-recipe-btn">Print this recipe</button>`,
+      ctaLabel: "Edit recipe", onCta: () => openRecipeForm(id),
+      secondaryLabel: "Close", onSecondary: closeModal
+    });
+    document.getElementById("print-recipe-btn").addEventListener("click", () => makePrint("recipe", id));
+  }
+
+  /* =========================================================
+     COMPUTER LAYOUT (900px and wider)
+     ========================================================= */
+  const KH_ICONS = {
+    home: '<path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/>',
+    recipes: '<path d="M4 5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z"/><path d="M8 7h6M8 11h6"/>',
+    mealplan: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    pantry: '<path d="M6 3h12v4H6zM5 7h14v14H5z"/><path d="M9 11h6"/>',
+    progress: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+    print: '<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/>',
+    backup: '<path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19 10a4 4 0 0 1 0 8z"/>'
+  };
+  function khActiveScreen() { const s = document.querySelector(".screen.active-screen"); return s ? s.id.replace("screen-", "") : "home"; }
+  function khSideItem(key, label, n) {
+    const on = key === khActiveScreen();
+    return `<button class="kh-item ${on ? "on" : ""}" data-side="${key}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${KH_ICONS[key]}</svg>${label}${n ? `<span class="n">${n}</span>` : ""}</button>`;
+  }
+  function khSide() {
+    const el = document.querySelector(".kh-side"); if (!el) return;
+    const left = DB.shoppingList.filter((s) => !s.checked).length;
+    el.innerHTML = `<div class="kh-brand"><div class="e">Mobile First Studio</div><div class="t">Kitchen HQ</div></div>`
+      + khSideItem("home", "Home") + khSideItem("recipes", "Recipes", DB.recipes.length) + khSideItem("mealplan", "Meal Plan", left ? left + " to buy" : "")
+      + khSideItem("pantry", "Pantry", attentionItems().length ? attentionItems().length + " ⚠" : DB.pantry.length) + khSideItem("progress", "Progress")
+      + `<div class="kh-sep"></div>` + khSideItem("print", "Printable pages") + khSideItem("backup", "Backup &amp; Sync");
+  }
+  function khDeskHome() {
+    const kpi = document.getElementById("kh-kpi"), wk = document.getElementById("kh-week"), sh = document.getElementById("kh-shop");
+    if (!kpi || !wk || !sh) return;
+    const start = startOfWeek(new Date()), days = khWeekDays(start), today = todayKey(new Date());
+    let planned = 0, cooked = 0;
+    days.forEach((d) => { const e = DB.mealPlan[todayKey(d)]; if (!e) return; KH_SLOTS.forEach((s) => { if (e[s] && findRecipe(e[s])) { planned++; if (e.cooked && e.cooked[s]) cooked++; } }); });
+    const left = DB.shoppingList.filter((s) => !s.checked), attn = attentionItems(), favs = DB.recipes.filter((r) => r.favorite).length;
+    const canMake = DB.recipes.filter(recipeMatchesPantry).length;
+    kpi.innerHTML = `<div class="kh-k"><div class="l">Planned this week</div><div class="v">${planned} <small>of 21</small></div><div class="s">${cooked} cooked so far</div></div>
+      <div class="kh-k"><div class="l">Recipes</div><div class="v">${DB.recipes.length}</div><div class="s">${favs} favorite${favs === 1 ? "" : "s"} · ${canMake} you can make now</div></div>
+      <div class="kh-k"><div class="l">Pantry</div><div class="v">${DB.pantry.length}</div><div class="s">${attn.length ? attn.length + " need attention" : "everything fresh"}</div></div>
+      <div class="kh-k"><div class="l">Shopping list</div><div class="v">${left.length}</div><div class="s">items left to buy</div></div>`;
+    const names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    wk.innerHTML = `<div class="card-header kh-h"><div class="card-title">This week</div><div class="card-subtitle">${khWeekLabel(start)}</div><button class="list-item-action-btn" data-side="mealplan">Open plan →</button></div>
+      <table class="kh-t"><thead><tr><th></th><th>Breakfast</th><th>Lunch</th><th>Dinner</th></tr></thead><tbody>${days.map((d, i) => { const key = todayKey(d), e = DB.mealPlan[key];
+        return `<tr class="${key === today ? "today" : ""}"><td class="d">${names[i]} ${d.getDate()}</td>${KH_SLOTS.map((s) => { const t = khSlotTitle(key, s), c = !!(e && e.cooked && e.cooked[s]); return `<td><button class="kh-slot ${t ? "f" : ""}" data-day-key="${key}" data-slot="${s}">${t ? esc(t) + (c ? " ✓" : "") : "+"}</button></td>`; }).join("")}</tr>`; }).join("")}</tbody></table>`;
+    sh.innerHTML = `<div class="card-header kh-h"><div class="card-title">Shopping list</div><div class="card-subtitle">${left.length} left</div><button class="list-item-action-btn" data-side="shopping">Open list →</button></div>
+      ${left.length ? left.slice(0, 10).map((it) => `<div class="shopping-item"><div class="shopping-check" data-toggle-desk="${it.id}"></div><div class="shopping-text">${esc(it.text)}</div></div>`).join("") + (left.length > 10 ? `<div class="note">+ ${left.length - 10} more on the list</div>` : "") : `<div class="empty-state">Nothing left to buy. Plan meals, then generate a list.</div>`}`;
+  }
+  function khRefresh() { khSide(); khDeskHome(); }
+  function khGoShopping() {
+    switchToTab("screen-mealplan");
+    const b = document.querySelector('[data-mealplan-tab="shopping"]'); if (b) b.click();
+  }
+
+  (function khInit() {
+    const _h = renderHome; renderHome = function () { _h(); khRefresh(); };
+    const _r = renderRecipes; renderRecipes = function () { _r(); khSide(); };
+    const _w = renderWeekGrid; renderWeekGrid = function () { _w(); khDeskHome(); };
+    const _s = renderShoppingList; renderShoppingList = function () { _s(); khRefresh(); };
+    const _p = renderPantry; renderPantry = function () { _p(); khRefresh(); };
+    const _t = switchToTab; switchToTab = function (id) { _t(id); khSide(); };
+    document.addEventListener("DOMContentLoaded", () => {
+      const app = document.querySelector(".app");
+      app.insertAdjacentHTML("afterbegin", '<aside class="kh-side"></aside>');
+      const home = document.getElementById("screen-home"), cards = home.querySelectorAll(":scope > .card");
+      if (cards[0]) cards[0].id = "kh-health"; if (cards[1]) cards[1].id = "kh-today"; if (cards[2]) cards[2].id = "kh-attn";
+      home.insertAdjacentHTML("afterbegin", '<div class="kh-kpi" id="kh-kpi"></div>');
+      home.insertAdjacentHTML("beforeend", '<section class="card kh-desk" id="kh-week"></section><section class="card kh-desk" id="kh-shop"></section>');
+      const hdr = document.querySelector("header"), tb = document.getElementById("theme-btn");
+      const box = document.createElement("div"); box.className = "header-actions"; hdr.appendChild(box);
+      box.insertAdjacentHTML("beforeend", '<button class="theme-btn" id="print-btn" title="Printable pages" aria-label="Printable pages"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + KH_ICONS.print + '</svg></button>');
+      box.appendChild(tb);
+      document.getElementById("print-btn").addEventListener("click", openPrintPages);
+      const bd = document.querySelector("#screen-progress .backup-divider");
+      if (bd) bd.insertAdjacentHTML("afterend", '<div class="backup-divider"><div class="backup-section-label">Printable pages</div><button class="backup-btn primary" style="width:100%;" id="print-btn-2">Open printable pages</button></div>');
+      const p2 = document.getElementById("print-btn-2"); if (p2) p2.addEventListener("click", openPrintPages);
+      document.addEventListener("click", (e) => {
+        const s = e.target.closest("[data-side]");
+        if (s) {
+          const k = s.dataset.side;
+          if (k === "print") openPrintPages();
+          else if (k === "shopping") khGoShopping();
+          else if (k === "backup") { switchToTab("screen-progress"); const c = document.querySelector("#screen-progress .card:last-of-type"); if (c) c.scrollIntoView({ behavior: "smooth", block: "start" }); }
+          else switchToTab("screen-" + k);
+          return;
+        }
+        const slot = e.target.closest(".kh-slot");
+        if (slot) { openSlotPicker(slot.dataset.dayKey, slot.dataset.slot); return; }
+        const t = e.target.closest("[data-toggle-desk]");
+        if (t) { const it = DB.shoppingList.find((x) => x.id === Number(t.dataset.toggleDesk)); if (it) { it.checked = true; sv(); renderShoppingList(); showToast("Checked off: " + it.text, "Undo", () => { it.checked = false; sv(); renderShoppingList(); }); } }
+      });
+      khRefresh();
+    });
+  })();
+
+
+  /* ---------- free trial ---------- */
+function demoSampleDB(){
+ const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ const mon=(()=>{const d=new Date();const day=d.getDay();d.setDate(d.getDate()+(day===0?-6:1-day));d.setHours(0,0,0,0);return d;})();
+ const at=n=>{const d=new Date(mon);d.setDate(d.getDate()+n);return key(d);};
+ const R=[["Sheet Pan Chicken Fajitas", "Dinner", ["1.5 lb chicken breasts", "3 bell peppers", "1 onion", "Fajita seasoning", "Tortillas", "Sour cream"], ["Heat the oven to 425F.", "Slice the chicken, peppers and onion into strips.", "Toss with oil and fajita seasoning on a sheet pan.", "Roast 20 to 25 minutes, stirring once.", "Serve in warm tortillas with sour cream."], true], ["Turkey Chili", "Dinner", ["1 lb ground turkey", "2 cans black beans", "1 can diced tomatoes", "1 onion", "Chili powder", "Shredded cheese"], ["Brown the turkey with the onion.", "Add beans, tomatoes and chili powder.", "Simmer 30 minutes.", "Top with cheese."], true], ["Lemon Garlic Salmon", "Dinner", ["4 salmon fillets", "2 lemons", "4 garlic cloves", "Butter", "Asparagus"], ["Heat the oven to 400F.", "Melt butter with garlic and lemon juice.", "Pour over the salmon and asparagus.", "Bake 12 to 15 minutes."], false], ["Spaghetti Bolognese", "Dinner", ["1 lb spaghetti", "1 lb ground beef", "1 jar marinara", "1 onion", "Parmesan"], ["Brown the beef with the onion.", "Add marinara and simmer 15 minutes.", "Cook the pasta and toss with the sauce.", "Top with parmesan."], true], ["Overnight Oats", "Breakfast", ["Rolled oats", "Greek yogurt", "Milk", "Berries", "Honey"], ["Mix oats, yogurt and milk in a jar.", "Refrigerate overnight.", "Top with berries and honey."], false], ["Veggie Omelet", "Breakfast", ["3 eggs", "Spinach", "Mushrooms", "Cheddar"], ["Whisk the eggs.", "Cook the vegetables in a pan.", "Add eggs, then cheese, and fold."], false], ["Chicken Caesar Wraps", "Lunch", ["Cooked chicken", "Romaine", "Caesar dressing", "Tortillas", "Parmesan"], ["Toss chicken and romaine with dressing.", "Wrap in tortillas with parmesan."], false], ["Tomato Basil Soup", "Lunch", ["2 cans crushed tomatoes", "1 onion", "Fresh basil", "Heavy cream", "Bread"], ["Cook the onion until soft.", "Add tomatoes and simmer 20 minutes.", "Blend with basil and cream.", "Serve with bread."], false], ["Banana Pancakes", "Breakfast", ["2 bananas", "2 eggs", "Flour", "Milk", "Maple syrup"], ["Mash the bananas.", "Whisk in eggs, flour and milk.", "Cook on a hot griddle.", "Serve with maple syrup."], true], ["Chocolate Chip Cookies", "Dessert", ["Butter", "Brown sugar", "2 eggs", "Flour", "Chocolate chips", "Salt"], ["Cream butter and sugar.", "Beat in the eggs.", "Mix in flour, salt and chips.", "Bake at 350F for 10 minutes."], false]];
+ const recipes=R.map((r,i)=>({id:5000+i,title:r[0],mealType:r[1],ingredients:r[2],steps:r[3],favorite:r[4],createdAt:new Date(2026,8,1+i).toISOString()}));
+ const plan={};const P=[[4,6,0],[5,7,1],[4,6,2],[8,7,3],[4,6,0],[8,null,1],[5,null,3]];
+ for(let w=-3;w<=0;w++)P.forEach((row,i)=>{const k=at(i+w*7);const past=w<0||i<3;plan[k]={breakfast:row[0]!=null?5000+row[0]:null,lunch:row[1]!=null?5000+row[1]:null,dinner:5000+((row[2]+(w<0?-w:0))%4),cooked:{breakfast:past&&row[0]!=null,lunch:past&&row[1]!=null,dinner:past}};});
+ const pantry=[['Eggs','Fridge','12','',3,false],['Milk','Fridge','1','gallon',2,false],['Greek yogurt','Fridge','1','tub',-1,false],['Spinach','Fridge','1','bag',1,false],['Berries','Fridge','1','pint',4,false],['Mushrooms','Fridge','8','oz',5,false],['Cheddar','Fridge','8','oz',20,false],['Butter','Fridge','2','sticks',30,false],
+  ['Chicken breasts','Freezer','2','lb',90,false],['Ground beef','Freezer','1','lb',60,false],['Frozen peas','Freezer','1','bag',null,false],
+  ['Rolled oats','Pantry','1','canister',null,false],['Flour','Pantry','5','lb',null,true],['Spaghetti','Pantry','2','boxes',null,false],['Marinara','Pantry','1','jar',null,false],['Black beans','Pantry','3','cans',null,false],['Honey','Pantry','1','jar',null,false],['Brown sugar','Pantry','1','bag',null,true],
+  ['Chili powder','Spice Rack','1','jar',null,false],['Salt','Spice Rack','1','box',null,false],['Fajita seasoning','Spice Rack','1','packet',null,true]];
+ const pan=pantry.map((p,i)=>{const d=new Date();if(p[4]!=null)d.setDate(d.getDate()+p[4]);return {id:7000+i,name:p[0],location:p[1],qty:p[2],unit:p[3],expiresOn:p[4]!=null?key(d):'',lowStock:p[5],createdAt:new Date(2026,9,1,0,i).toISOString()};});
+ const shop=['3 bell peppers','1 onion','Tortillas','Sour cream','4 salmon fillets','2 lemons','Asparagus','Berries','Romaine','Parmesan','Paper towels','Coffee'].map((t,i)=>({id:9000+i,text:t,checked:i===7,auto:i<10,createdAt:new Date(2026,9,20,0,i).toISOString()}));
+ return {theme:'cream',recipes,mealPlan:plan,pantry:pan,shoppingList:shop};
+}
+  function demoHasData() { return DB.recipes.length > 0 || DB.pantry.length > 0 || Object.keys(DB.mealPlan || {}).length > 0 || DB.shoppingList.length > 0; }
+  function loadSampleData() {
+    const go = () => {
+      const theme = DB.theme; DB = Object.assign(defaultDB(), demoSampleDB()); DB.theme = theme || "cream";
+      sv(); closeModal(); applyTheme(); renderRecipes(); renderWeekGrid(); renderShoppingList(); renderPantry(); renderProgress(); renderLocalRestoreUndo();
+      switchToTab("screen-home"); document.querySelectorAll(".sample-link").forEach((e) => e.remove());
+      showToast("Sample data loaded. Explore every tab.");
+    };
+    if (!demoHasData()) { go(); return; }
+    openModal({ title: "Load sample data?", bodyText: "This replaces what you have entered in the trial with example recipes, a planned week, a pantry and a shopping list.", ctaLabel: "Load it", onCta: go, secondaryLabel: "Cancel", onSecondary: closeModal });
+  }
+  function demoSampleButton() {
+    const card = document.querySelector("#screen-home > section.card"); if (!card) return;
+    const btn = card.querySelector(".sample-link");
+    if (demoHasData()) { if (btn) btn.remove(); return; }
+    if (!btn) card.insertAdjacentHTML("afterbegin", '<button type="button" class="sample-link" onclick="loadSampleData()">Just looking? See it with sample data</button>');
+  }
+  const DEMO_TRIAL_DAYS = 14;
+  function demoSinceMs(s) { const p = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ""); if (p) return new Date(+p[1], p[2] - 1, +p[3]).getTime(); const n = parseInt(s, 10); return isNaN(n) ? Date.now() : n; }
+  function demoTrialDaysLeft() { const KEY = "khq_demo_since"; let since = null; try { since = localStorage.getItem(KEY); } catch (e) {} if (!since) { since = String(Date.now()); try { localStorage.setItem(KEY, since); } catch (e) {} } return DEMO_TRIAL_DAYS - Math.floor((Date.now() - demoSinceMs(since)) / 86400000); }
+  function enforceDemoTrial() {
+    const left = demoTrialDaysLeft(), banner = document.getElementById("demo-banner"), lock = document.getElementById("trial-lock");
+    if (left <= 0) { if (lock) lock.style.display = "flex"; if (banner) banner.style.display = "none"; document.body.style.overflow = "hidden"; return true; }
+    if (banner) banner.innerHTML = "<b>Free trial</b>: " + left + " day" + (left === 1 ? "" : "s") + ' left. <a href="https://www.etsy.com/listing/4563291012/kitchen-hq-recipe-box-meal-planner" target="_blank" rel="noopener">Get the full app &rarr;</a>';
+    return false;
+  }
+  (function demoInit() {
+    const _h = renderHome; renderHome = function () { _h(); demoSampleButton(); };
+    document.addEventListener("DOMContentLoaded", () => { enforceDemoTrial(); demoSampleButton(); });
+    enforceDemoTrial(); setInterval(enforceDemoTrial, 60000);
+  })();
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {

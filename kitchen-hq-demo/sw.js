@@ -1,73 +1,78 @@
-const CACHE_NAME = 'mfs-kitchenhq-demo-v1';
-const APP_SHELL = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
+// Kitchen HQ (Free Trial) — Service Worker
+// Bump CACHE_NAME (e.g. to -v3) whenever you redeploy index.html.
+const CACHE_NAME = "mfs-kitchenhq-demo-v2";
+const PDF_LIB_URL = "https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js";
+const CORE_ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png",
+  PDF_LIB_URL
 ];
 
-self.addEventListener('install', function(event) {
+self.addEventListener("install", (event) => {
+  // Each file is saved on its own, so one missing file can't stop the rest from being saved.
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      return cache.addAll(APP_SHELL);
-    })
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.all(CORE_ASSETS.map((url) => cache.add(url).catch(() => {})))
+    )
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then(function(names) {
-      return Promise.all(
-        names.filter(function(n) { return n !== CACHE_NAME; })
-             .map(function(n) { return caches.delete(n); })
-      );
-    })
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))
+    )
   );
   self.clients.claim();
 });
 
-// Network-first for the page itself, so a fresh deploy shows up right away
-// instead of waiting on a cache-name bump. Cache-first (with background
-// populate) for the rest of the app shell. Anything cross-origin always
-// goes straight to the network, never cached.
-self.addEventListener('fetch', function(event) {
-  if (event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
-  if (url.origin !== self.location.origin) return;
+// Network-first for the page itself; cache-first for other same-origin
+// static assets and the PDF tool (so printable pages work offline too).
+// Everything else cross-origin (Google Fonts, Google Drive, Google
+// Identity Services) is left alone so backup/sync always hits the real network.
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
 
-  const isPageRequest = event.request.mode === 'navigate' ||
-    url.pathname.endsWith('/') ||
-    url.pathname.endsWith('/index.html');
+  const url = new URL(event.request.url);
+  const isPdfLib = event.request.url === PDF_LIB_URL;
+  if (url.origin !== self.location.origin && !isPdfLib) return;
+
+  const isPageRequest =
+    event.request.mode === "navigate" ||
+    url.pathname.endsWith("/index.html") ||
+    (url.origin === self.location.origin && url.pathname.endsWith("/"));
 
   if (isPageRequest) {
     event.respondWith(
-      fetch(event.request).then(function(response) {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(function(cache) { cache.put(event.request, clone); });
-        return response;
-      }).catch(function() {
-        return caches.match(event.request).then(function(cached) { return cached || caches.match('./index.html'); });
-      })
+      fetch(event.request)
+        .then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match("./index.html")))
     );
     return;
   }
 
   event.respondWith(
-    caches.match(event.request).then(function(cached) {
-      if (cached) return cached;
-      return fetch(event.request).then(function(response) {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(function(cache) {
-            cache.put(event.request, clone);
-          });
-        }
-        return response;
-      }).catch(function() {
-        if (event.request.mode === 'navigate') return caches.match('./index.html');
-      });
+    caches.match(event.request).then((cached) => {
+      return (
+        cached ||
+        fetch(event.request).then((response) => {
+          if (response && response.status === 200) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        }).catch(() => Response.error())
+      );
     })
   );
 });
