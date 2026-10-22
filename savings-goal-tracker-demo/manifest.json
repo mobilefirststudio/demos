@@ -1,16 +1,25 @@
 {
-  "name": "Savings Goal Tracker Demo",
+  "name": "Savings Goal Tracker (Free Trial)",
   "short_name": "Savings Demo",
-  "description": "Free trial demo of Savings Goal Tracker by Mobile First Studio",
-  "start_url": "./index.html",
+  "id": "./",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0f4c75",
+  "orientation": "any",
+  "background_color": "#f5f7fa",
   "theme_color": "#0f4c75",
-  "orientation": "portrait",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }
