@@ -1,49 +1,15 @@
-const CACHE_NAME = "bill-due-date-calendar-demo-v1";
-const ASSETS = ["./index.html", "./manifest.json"];
-
-self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE_NAME).then((c) => c.addAll(ASSETS)));
-  self.skipWaiting();
-});
-
-self.addEventListener("activate", (e) => {
-  e.waitUntil(caches.keys().then((keys) =>
-    Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-  ));
-  self.clients.claim();
-});
-
-self.addEventListener("fetch", (e) => {
-  if (e.request.method !== "GET") return;
-
-  const isPageRequest =
-    e.request.mode === "navigate" ||
-    e.request.url.endsWith("/index.html") ||
-    e.request.url.endsWith("/");
-
-  if (isPageRequest) {
-    e.respondWith(
-      fetch(e.request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
-          return response;
-        })
-        .catch(() => caches.match(e.request).then((cached) => cached || caches.match("./index.html")))
-    );
+const CACHE = 'bill-due-date-calendar-demo-v3';
+const CACHE_HOSTS = ['cdnjs.cloudflare.com', 'cdn.jsdelivr.net', 'fonts.googleapis.com', 'fonts.gstatic.com'];
+self.addEventListener('install', e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./', './manifest.json', './icon-192.png', './icon-512.png']).catch(() => {}))); });
+self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  const u = new URL(e.request.url);
+  const keep = r => r && (r.ok || r.type === 'opaque');
+  if (e.request.mode === 'navigate') {
+    e.respondWith(fetch(e.request).then(r => { if (keep(r)) { const c = r.clone(); caches.open(CACHE).then(x => x.put('./', c)); } return r; }).catch(() => caches.match('./')));
     return;
   }
-
-  e.respondWith(
-    caches.match(e.request).then((cached) => {
-      return (
-        cached ||
-        fetch(e.request).then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, copy));
-          return response;
-        }).catch(() => cached)
-      );
-    })
-  );
+  if (u.origin !== location.origin && !CACHE_HOSTS.includes(u.hostname)) return;
+  e.respondWith(caches.match(e.request).then(hit => hit || fetch(e.request).then(r => { if (keep(r)) { const c = r.clone(); caches.open(CACHE).then(x => x.put(e.request, c)); } return r; })));
 });
