@@ -1097,6 +1097,71 @@ header.topbar .brand { font-size: 19px; line-height: 1.15; }
   .mh-val { font-size: 16px; }
 }
 
+/* ===== Computer layout (900px and wider) ===== */
+.side-brand,.side-sep,.desk-title,nav.tabbar button.side-x{display:none}
+.dk-cols,.dk-c{display:block}
+@media (min-width:900px){
+  html{background:var(--bg)}
+  #app{max-width:none;margin:0;height:100dvh;display:grid;grid-template-columns:248px minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);box-shadow:none!important;background:var(--bg)}
+  nav.tabbar{grid-column:1;grid-row:1/4;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:3px;border-top:none;border-right:1px solid var(--border);padding:26px 14px;overflow-y:auto}
+  .side-brand{display:block;padding:2px 12px 22px}
+  .side-brand .e{font-size:10px;letter-spacing:.16em;font-weight:700;color:var(--text-faint)}
+  .side-brand .t{font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-top:6px;color:var(--text)}
+  .side-brand .t span{color:var(--gold)}
+  nav.tabbar button.tab-btn,nav.tabbar button.side-x{flex:0 0 auto;flex-direction:row;justify-content:flex-start;align-items:center;gap:12px;font-size:14px;font-weight:600;padding:11px 14px;border-radius:10px;width:100%;color:var(--text-dim)}
+  nav.tabbar button.side-x{display:flex;background:none;border:none;cursor:pointer;font-family:inherit}
+  .side-x svg{width:20px;height:20px;stroke:currentColor;fill:none}
+  nav.tabbar button.tab-btn:hover,nav.tabbar button.side-x:hover{background:var(--card-raised);color:var(--text)}
+  nav.tabbar button.tab-btn.active{background:var(--gold-soft);color:var(--gold)}
+  .side-sep{display:block;height:1px;background:var(--border);margin:12px 10px}
+  header.topbar,.property-switcher,main{grid-column:2}
+  header.topbar{padding:28px max(40px,calc((100% - 1240px)/2)) 14px;align-items:center}
+  header.topbar .brand-block{display:none}
+  .desk-title{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+  .desk-title small{display:block;font-size:13px;font-weight:500;color:var(--text-faint);letter-spacing:0;margin-top:3px}
+  .property-switcher{margin:0 max(40px,calc((100% - 1240px)/2)) 18px!important;padding:8px}
+  main{padding:0 max(40px,calc((100% - 1240px)/2)) 60px;scrollbar-width:thin}
+  main::-webkit-scrollbar{width:8px}
+  .fab{right:40px;bottom:32px}
+  .toast{left:calc(50% + 124px);bottom:40px}
+  .sheet-backdrop{align-items:center;padding:24px}
+  .sheet{border-radius:16px;max-width:560px;transform:none!important;transition:none;max-height:90vh}
+  .sheet-handle{display:none}
+  .section-title{margin-top:22px}
+  /* two-column tabs */
+  .dk-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 28px;align-items:start}
+  .dk-c>.section-title:first-child{margin-top:22px}
+  /* home dashboard */
+  #tab-home.active{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.05fr);grid-template-areas:"hero hero port" "dash sum port" "t1 t1 t2" "att att due";gap:14px 24px;align-items:start}
+  #tab-home:has(#portfolioSection:empty).active{grid-template-areas:"hero hero t2" "dash sum due" "t1 t1 due" "att att due"}
+  #tab-home>#portfolioSection{grid-area:port}
+  #tab-home>#portfolioSection>*{margin-top:0}
+  #tab-home>#propertyHeroCard{grid-area:hero}
+  #tab-home>#propertyHeroCard>*{margin-bottom:0}
+  #tab-home>.dash-grid{grid-area:dash;margin:0}
+  #tab-home>.summary-row{grid-area:sum;margin:0;flex-direction:column}
+  #tab-home>.section-title:nth-child(5){grid-area:t1;margin:8px 0 -6px}
+  #tab-home>#attentionList{grid-area:att}
+  #tab-home>.section-title:nth-child(7){grid-area:t2;margin:8px 0 -6px}
+  #tab-home>#dueSoonList{grid-area:due}
+  /* lists that read better as a grid */
+  #taskList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+  #taskList>.empty-state,#taskList>.suggestion-chips{grid-column:1/-1}
+  .filter-scroll-row{flex-wrap:wrap;overflow:visible}
+  .filter-scroll-fade{display:none}
+  /* money: chart + transactions on the left, categories on the right */
+  #tab-money.active{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);grid-template-areas:"head head" "hero hero" "chart t4" "chart cat" "t6 cat" "filt cat" "txn cat";gap:0 28px;align-items:start;align-content:start}
+  #tab-money>:nth-child(1){grid-area:head} #tab-money>:nth-child(2){grid-area:hero} #tab-money>:nth-child(3){grid-area:chart;margin-top:22px}
+  #tab-money>:nth-child(4){grid-area:t4} #tab-money>:nth-child(5){grid-area:cat} #tab-money>:nth-child(6){grid-area:t6}
+  #tab-money>:nth-child(7){grid-area:filt} #tab-money>:nth-child(8){grid-area:txn}
+  .money-chart svg{max-height:260px}
+}
+@media (min-width:900px) and (max-width:1199px){
+  #tab-home.active{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"hero hero" "dash sum" "port port" "t1 t2" "att due"}
+  #tab-home:has(#portfolioSection:empty).active{grid-template-areas:"hero hero" "dash sum" "t1 t2" "att due"}
+  #taskList{grid-template-columns:minmax(0,1fr)}
+}
+
 /* ===== Free trial ===== */
 .demo-banner { flex-shrink: 0; background: linear-gradient(135deg, #4A9EA3, #007A86); color: #fff; text-align: center; padding: 8px 16px; font-size: 12px; font-weight: 600; line-height: 1.4; z-index: 10; }
 .demo-banner a { color: #fff; text-decoration: underline; font-weight: 700; white-space: nowrap; }
@@ -1111,6 +1176,12 @@ header.topbar .brand { font-size: 19px; line-height: 1.15; }
 .upsell-text { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; margin-bottom: 12px; }
 .upsell-btn { padding: 9px 18px; font-size: 13px; }
 .fab { bottom: 90px; }
+@media (min-width: 900px) {
+  #app { grid-template-rows: auto auto auto minmax(0,1fr); }
+  .demo-banner { grid-column: 1 / -1; grid-row: 1; font-size: 13px; }
+  nav.tabbar { grid-row: 2 / 5; } header.topbar { grid-row: 2; } .property-switcher { grid-row: 3; } main { grid-row: 4; }
+  .fab { bottom: 32px; }
+}
 </style>
 </head>
 <body>
@@ -3804,6 +3875,44 @@ function themeLabel(themeName) {
 // Apply saved theme immediately (before DOMContentLoaded) to avoid a flash of the wrong theme
 loadTheme();
 
+
+
+/* ===================== COMPUTER LAYOUT ===================== */
+const DESK_TITLES = { home: 'Overview', rent: 'Rent', tenants: 'Units + tenants', tasks: 'Repairs + maintenance', money: 'Money', setup: 'Property' };
+function deskTitle() {
+  const el = document.getElementById('deskTitle'); if (!el) return;
+  const p = currentProperty(), d = new Date();
+  const name = p ? escapeHtml(p.name) : '';
+  const t = currentTab === 'home' ? (name || 'Overview') : (DESK_TITLES[currentTab] || '') + (name ? ` <span style="color:var(--text-faint);font-weight:600">· ${name}</span>` : '');
+  el.innerHTML = t + `<small>${d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</small>`;
+}
+function deskWrap(panelId, groups) {
+  // Puts runs of a tab's sections side by side on a computer. Order stays the same, so the phone layout is unchanged.
+  const panel = document.getElementById(panelId); if (!panel) return;
+  const kids = Array.from(panel.children);
+  groups.forEach((g) => {
+    const cols = document.createElement('div'); cols.className = 'dk-cols';
+    kids[g[0][0] - 1].before(cols);
+    g.forEach((idx) => { const c = document.createElement('div'); c.className = 'dk-c'; idx.forEach((i) => c.appendChild(kids[i - 1])); cols.appendChild(c); });
+  });
+}
+(function deskInit() {
+  const ICON = (d) => `<svg viewBox="0 0 24 24" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const nav = document.querySelector('nav.tabbar');
+  if (nav) {
+    nav.insertAdjacentHTML('afterbegin', '<div class="side-brand"><div class="e">MOBILE FIRST STUDIO</div><div class="t">Rental <span>Property</span> Tracker</div></div>');
+    nav.insertAdjacentHTML('beforeend', '<div class="side-sep"></div>'
+      + '<button class="side-x" onclick="openPrintMenu()">' + ICON('<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/>') + 'Printable pages</button>'
+      + '<button class="side-x" onclick="openSettings()">' + ICON('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>') + 'Backup + settings</button>');
+  }
+  const hdr = document.querySelector('header.topbar');
+  if (hdr) hdr.insertAdjacentHTML('afterbegin', '<div class="desk-title" id="deskTitle"></div>');
+  deskWrap('tab-rent', [[[3, 4], [5, 6, 7]]]);
+  deskWrap('tab-tenants', [[[1, 2, 3], [4, 5, 6, 7]]]);
+  deskWrap('tab-setup', [[[3, 4, 5], [6, 7, 8]]]);
+  const _sw = switchTab; switchTab = function (tab) { _sw(tab); deskTitle(); };
+  const _r = render; render = function () { _r(); deskTitle(); };
+})();
 
 
 /* ---------- sample data for the trial ---------- */
