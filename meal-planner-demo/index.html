@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Meal Planner — Mobile First Studio</title>
+<title>Meal Planner | Free Trial</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <link rel="manifest" href="./manifest.json" />
 <meta name="theme-color" content="#f6ede1" id="theme-color-meta" />
@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <style>
   :root, [data-theme="cream"] {
     --bg-a: #f6ede1; --bg-b: #ecdcc7;
@@ -223,6 +224,15 @@
   .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
   .backup-section-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
 
+  .drive-backup-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 0.6rem;
+    padding: 0.65rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.4); margin-top: 0.5rem; cursor: pointer;
+  }
+  .drive-backup-row:hover { border-color: var(--accent-b); }
+  .drive-backup-row-label { font-size: 0.8rem; color: var(--text); font-weight: 600; }
+  .drive-backup-row-sub { font-size: 0.68rem; color: var(--text-faint); margin-top: 0.1rem; }
+
   .modal-overlay { position: fixed; inset: 0; background: rgba(20, 15, 10, 0.45); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
   .modal-overlay.open { display: flex; }
   .modal-card {
@@ -252,48 +262,116 @@
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast-action { color: var(--text); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; }
 
-  /* ── DEMO TRIAL ── */
-  .demo-banner {
-    margin: -1.1rem -1rem 0.85rem -1rem;
-    padding: 0.55rem 1rem;
-    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
-    color: var(--on-accent);
-    text-align: center;
-    font-size: 0.74rem;
-    font-weight: 600;
-    line-height: 1.4;
-  }
-  .demo-banner a { color: var(--on-accent); text-decoration: underline; }
-  .upsell-card { background: var(--card); border: 1px solid var(--border-soft); border-radius: 1.1rem; padding: 1.1rem 1.05rem; }
-  .upsell-card .upsell-title { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.05rem; color: var(--text); margin-bottom: 6px; }
-  .upsell-card .upsell-text { font-size: 0.78rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 12px; }
-  .upsell-card a.upsell-btn {
-    display: block; text-align: center; padding: 0.65rem; border-radius: 999px; border: none;
-    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
-    font-size: 0.8rem; font-weight: 600; text-decoration: none;
-  }
-  #trial-lock {
-    display: none; position: fixed; inset: 0; z-index: 2000;
-    background: rgba(20, 15, 10, 0.55); backdrop-filter: blur(6px);
-    align-items: center; justify-content: center; padding: 1.2rem;
-  }
-  #trial-lock .lock-card {
-    background: var(--card-hi); border: 1px solid var(--border-soft); border-radius: 1.3rem;
-    padding: 1.6rem 1.4rem; max-width: 400px; width: 100%; text-align: center;
-  }
-  #trial-lock .lock-card h3 { font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 500; font-size: 1.2rem; color: var(--text); margin-bottom: 10px; }
-  #trial-lock .lock-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 18px; }
-  #trial-lock .lock-card a {
-    display: inline-block; padding: 0.7rem 1.6rem; border-radius: 999px; border: none;
-    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
-    font-size: 0.85rem; font-weight: 600; text-decoration: none;
-  }
+/* ===== Printable pages + computer layout ===== */
+.mp-side,.mp-kpi,.mp-extra{display:none}
+.print-row{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.65rem .7rem;border-radius:.7rem;border:1px solid var(--border-soft);background:rgba(255,255,255,.4);margin-bottom:.45rem;cursor:pointer;width:100%;text-align:left;font-family:inherit;color:var(--text)}
+.print-row:hover{border-color:var(--accent-b)}
+.print-row b{display:block;font-size:.82rem}
+.print-row small{display:block;font-size:.68rem;color:var(--text-faint);margin-top:.1rem}
+.print-h{font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);margin:.8rem 0 .45rem}
+@media (min-width:900px){
+  body{display:block}
+  .app{max-width:none;padding:0;display:grid;grid-template-columns:248px minmax(0,1fr);min-height:100vh}
+  .mp-side{display:flex;flex-direction:column;gap:3px;position:sticky;top:0;height:100vh;padding:26px 14px;border-right:1px solid var(--border-soft);background:var(--card);backdrop-filter:blur(6px);overflow-y:auto;grid-column:1;grid-row:1 / span 3}
+  .mp-brand{padding:2px 12px 22px}
+  .mp-brand .e{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-faint)}
+  .mp-brand .t{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:1.6rem;color:var(--text);margin-top:4px}
+  .mp-item{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border:none;background:none;border-radius:12px;font-family:inherit;font-size:.9rem;font-weight:600;color:var(--text-muted);cursor:pointer;text-align:left}
+  .mp-item svg{width:20px;height:20px;flex-shrink:0}
+  .mp-item:hover{background:rgba(255,255,255,.35);color:var(--text)}
+  .mp-item.on{background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent)}
+  .mp-item .n{margin-left:auto;font-size:.72rem;font-weight:700;opacity:.85}
+  .mp-sep{height:1px;background:var(--border-soft);margin:12px 10px}
+  header{grid-column:2;padding:28px 40px 6px;max-width:1320px;width:100%;margin:0 auto 6px}
+  header .eyebrow{display:none}
+  .app-name{font-size:2rem}
+  main{grid-column:2;padding:0 40px 48px;max-width:1320px;width:100%;margin:0 auto}
+  .app>input{grid-column:2}
+  .subtab-row{display:none}
+  #screen-home>.card{padding:1.4rem 1.5rem}
+  .mp-kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+  .mp-k{background:var(--card);border:1px solid var(--border-soft);border-radius:1rem;padding:14px 16px;backdrop-filter:blur(6px)}
+  .mp-k .l{font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint)}
+  .mp-k .v{font-family:"Fraunces",Georgia,serif;font-size:1.9rem;color:var(--text);margin-top:2px}
+  .mp-k .s{font-size:.72rem;color:var(--text-muted)}
+  #week-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px}
+  #week-grid .day-row{margin:0;display:flex;flex-direction:column}
+  #week-grid .slot-row{flex-direction:column;gap:6px}
+  #week-grid .slot-chip{min-height:58px}
+  #week-grid .slot-chip-text{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;font-size:.76rem}
+  #generate-shopping-btn{max-width:420px;margin-top:14px!important}
+  .week-nav{max-width:520px}
+  .mp-extra{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:18px}
+  .mp-extra .card{margin:0}
+  .mp-extra .shopping-item{padding:.45rem 0}
+  .mp-bar{display:flex;align-items:center;gap:10px;margin:.45rem 0}
+  .mp-bar .nm{flex:1;min-width:0;font-size:.82rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .mp-bar .tr{flex:1.4;height:8px;border-radius:5px;background:rgba(255,255,255,.4);overflow:hidden}
+  .mp-bar .tr span{display:block;height:100%;background:linear-gradient(90deg,var(--accent-a),var(--accent-b));border-radius:5px}
+  .mp-bar .c{font-size:.72rem;color:var(--text-faint);width:56px;text-align:right}
+  #meal-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+  #meal-list .list-item{margin:0}
+  #meal-list .empty-state{grid-column:1/-1}
+  #panel-meals .btn-primary{max-width:320px}
+  #panel-shopping{max-width:760px}
+  #screen-backup .card{max-width:760px}
+  .modal-overlay{align-items:center}
+  .modal-card{border-radius:1.4rem;max-width:560px}
+  .toast{left:calc(50% + 124px)}
+}
+@media (min-width:900px) and (max-width:1199px){
+  #week-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  #meal-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mp-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .mp-extra{grid-template-columns:minmax(0,1fr)}
+}
+
+.tool-chip{flex-shrink:0;padding:.42rem .75rem;border-radius:999px;font-size:.72rem;border:1px solid var(--border-soft);background:rgba(255,255,255,.35);color:var(--text);cursor:pointer;font-family:inherit;font-weight:500}
+.tool-chip.on{background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);border-color:transparent;font-weight:600}
+.tool-chip.pri{border-color:var(--accent-b);color:var(--text);font-weight:600}
+.week-tools{display:flex;gap:.4rem;overflow-x:auto;margin-bottom:.7rem;scrollbar-width:none}
+.week-tools::-webkit-scrollbar{display:none}
+.filter-row{display:flex;flex-wrap:wrap;gap:.35rem;margin:.2rem 0 .7rem}
+.picker-specials{display:flex;gap:.4rem;margin-top:.6rem}
+.picker-row.surprise{border-style:dashed;border-color:var(--accent-b)}
+.slot-chip.special{border-style:dashed}
+.slot-chip.special .slot-chip-text{font-style:italic;color:var(--text-muted)}
+.dinner-idea{margin-top:.8rem;padding:1rem;border-radius:1rem;border:1px solid var(--border-soft);background:rgba(255,255,255,.4);text-align:center}
+.dinner-idea .l{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint)}
+.dinner-idea .n{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:1.5rem;color:var(--text);margin:.25rem 0}
+.dinner-idea .s{font-size:.74rem;color:var(--text-muted);line-height:1.5}
+.shop-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem;font-size:.72rem;color:var(--text-faint);margin-bottom:.2rem}
+.aisle-h{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-b);font-weight:700;margin:.85rem 0 .1rem}
+.shopping-text{cursor:pointer}
+.fav-btn{background:none;border:none;font-size:1.25rem;line-height:1;color:var(--text-faint);cursor:pointer;padding:0 .1rem}
+.fav-btn.on{color:var(--accent-b)}
+.slot-chip-label{white-space:nowrap}
+@media (max-width:420px){.slot-row{gap:.3rem}.slot-chip{padding:.4rem .3rem}.slot-chip-label{font-size:.52rem}.slot-chip-text{font-size:.66rem}}
+@media (min-width:900px){#panel-shopping .shopping-item{max-width:100%}.week-tools{flex-wrap:wrap}}
+
+/* ===== free trial ===== */
+body{flex-direction:column;align-items:center}
+.demo-banner{width:100%;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-size:13px;line-height:1.4;text-align:center;padding:9px 14px;font-weight:600}
+.demo-banner b{font-weight:800}
+.demo-banner a{color:var(--on-accent);font-weight:800;text-decoration:underline;white-space:nowrap}
+#trial-lock{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(30,20,10,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.lock-card{max-width:380px;width:100%;background:radial-gradient(circle at top,var(--bg-a),var(--bg-b));border:1px solid var(--border-soft);border-radius:20px;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);color:var(--text)}
+.lock-icon{width:56px;height:56px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent)}
+.lock-title{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:1.45rem;margin-bottom:8px}
+.lock-text{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:20px}
+.lock-cta{display:block;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-weight:700;font-size:15px;padding:14px;border-radius:12px;text-decoration:none}
+.upsell-card{border:1px solid var(--border-soft);background:rgba(255,255,255,.35);border-radius:1rem;padding:.9rem;margin:.2rem 0 .8rem}
+.upsell-card .t{font-weight:600;font-size:.86rem;color:var(--text);margin-bottom:.3rem}
+.upsell-card p{font-size:.76rem;color:var(--text-muted);line-height:1.55;margin-bottom:.7rem}
+.upsell-card a,.upsell-card button{display:block;width:100%;text-align:center;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-weight:600;font-size:.82rem;padding:.7rem;border-radius:.8rem;text-decoration:none;border:none;cursor:pointer;font-family:inherit}
+.sample-link{display:block;width:100%;margin:0 0 .9rem;padding:.8rem;border-radius:.9rem;border:1.5px dashed var(--accent-b);background:rgba(255,255,255,.3);color:var(--text);font-family:inherit;font-size:.86rem;font-weight:600;cursor:pointer}
+@media(min-width:900px){body{display:block}.demo-banner{font-size:14px}.mp-side{height:auto;min-height:100vh}}
 </style>
 </head>
 <body data-theme="cream">
+<div class="demo-banner" id="demo-banner"><b>Free trial</b>: try every feature for 14 days. <a href="https://www.etsy.com/listing/4563390783/meal-planner-app-weekly-meal-plan-auto" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
 
 <div class="app">
-  <div class="demo-banner" id="demo-banner"></div>
   <header>
     <div class="header-text">
       <div class="eyebrow">Mobile First Studio</div>
@@ -324,15 +402,17 @@
             <div class="week-nav-label" id="week-range-label"></div>
             <button class="week-nav-btn" id="week-next-btn">›</button>
           </div>
+          <div class="week-tools" id="week-tools"></div>
           <div id="week-grid"></div>
           <button class="btn-primary" id="generate-shopping-btn" style="margin-top:0.4rem;">Generate shopping list from this week</button>
         </div>
 
         <!-- QUICK MEALS -->
         <div id="panel-meals" style="display:none;">
-          <div class="card-subtitle" style="margin-bottom:0.7rem;">Simple named meals with an ingredient list — no steps, no meal types.</div>
+          <div class="card-subtitle" style="margin-bottom:0.7rem;">Simple named meals with an ingredient list. Tag them and star your favorites.</div>
           <button class="btn-primary" id="add-meal-btn">Add a quick meal</button>
-          <div id="meal-list" style="margin-top:0.85rem;"></div>
+          <div id="meal-filter" style="margin-top:0.85rem;"></div>
+          <div id="meal-list"></div>
         </div>
 
         <!-- SHOPPING LIST -->
@@ -357,11 +437,8 @@
             <div class="card-subtitle">Keep your meals, week plan, and shopping list safe.</div>
           </div>
         </div>
-        <div class="upsell-card">
-          <div class="upsell-title">Google Drive Backup</div>
-          <div class="upsell-text">The full version backs up your meals, week plan, and shopping list to your own Google Drive automatically, so you never lose them even if you switch phones.</div>
-          <a class="upsell-btn" href="https://www.etsy.com/listing/4563390783/meal-planner-app-weekly-meal-plan-auto" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
-        </div>
+        <div class="upsell-card"><div class="t">Google Drive backup is in the full app</div><p>The full Meal Planner backs up your meals, week plans and shopping list to your own Google Drive, so they follow you to a new phone. This free trial skips it, since trial data is not meant to be permanent.</p><a href="https://www.etsy.com/listing/4563390783/meal-planner-app-weekly-meal-plan-auto" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+        <div class="upsell-card"><div class="t">Sample data</div><p>Fill the trial with example meals, tags, favorites, a planned week, a saved favorite week and a shopping list sorted by aisle, to see every feature in action.</p><button type="button" onclick="loadSampleData()">Load sample data</button></div>
         <div class="backup-divider">
           <div class="backup-section-label">Local backup file</div>
           <div class="backup-actions">
@@ -394,23 +471,15 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
-<div id="trial-lock">
-  <div class="lock-card">
-    <h3>Thanks for trying Meal Planner!</h3>
-    <p>Your 14 day free trial is up. Unlock the full app to keep planning your week and shopping list.</p>
-    <a href="https://www.etsy.com/listing/4563390783/meal-planner-app-weekly-meal-plan-auto" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
-  </div>
-</div>
+<div id="trial-lock"><div class="lock-card"><div class="lock-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+<div class="lock-title">Your free trial has ended</div><div class="lock-text">You've had 14 days with Meal Planner. Get the full app to keep planning every week, with your shopping list sorted by aisle, printable pages and Google Drive backup.</div>
+<a class="lock-cta" href="https://www.etsy.com/listing/4563390783/meal-planner-app-weekly-meal-plan-auto" target="_blank" rel="noopener">Get the full app</a></div></div>
 
 <script>
   /* =========================================================
      STORAGE
      ========================================================= */
   const STORE_KEY = "mp_data_demo_v1";
-  const DEMO_SINCE_KEY = "mp_demo_since";
-  const TRIAL_DAYS = 14;
-  const ETSY_URL = "https://www.etsy.com/listing/4563390783/meal-planner-app-weekly-meal-plan-auto";
   function defaultDB() {
     return { theme: "cream", meals: [], mealPlan: {}, shoppingList: [] };
   }
@@ -425,33 +494,6 @@
     try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
     catch (e) { showToast("Could not save — storage may be full."); }
     scheduleAutoBackup();
-  }
-
-  /* =========================================================
-     FREE TRIAL
-     ========================================================= */
-  function demoTrialDaysLeft() {
-    let since = localStorage.getItem(DEMO_SINCE_KEY);
-    if (!since) {
-      since = String(Date.now());
-      try { localStorage.setItem(DEMO_SINCE_KEY, since); } catch (e) {}
-    }
-    const elapsedDays = (Date.now() - Number(since)) / 86400000;
-    return Math.max(0, Math.ceil(TRIAL_DAYS - elapsedDays));
-  }
-  function enforceDemoTrial() {
-    const daysLeft = demoTrialDaysLeft();
-    const banner = document.getElementById("demo-banner");
-    const lock = document.getElementById("trial-lock");
-    if (banner) {
-      banner.innerHTML = daysLeft > 0
-        ? `${daysLeft} day${daysLeft === 1 ? "" : "s"} left in your free trial &middot; <a href="${ETSY_URL}" target="_blank" rel="noopener">Unlock the full app &rarr;</a>`
-        : `Your free trial has ended &middot; <a href="${ETSY_URL}" target="_blank" rel="noopener">Unlock the full app &rarr;</a>`;
-    }
-    if (lock) {
-      lock.style.display = daysLeft <= 0 ? "flex" : "none";
-      document.body.style.overflow = daysLeft <= 0 ? "hidden" : "";
-    }
   }
 
   function todayKey(date) {
@@ -539,7 +581,7 @@
     document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
     document.getElementById(targetId).classList.add("active-screen");
     if (targetId === "screen-home") { renderActivePanel(); }
-    if (targetId === "screen-backup") { renderLocalRestoreUndo(); }
+    if (targetId === "screen-backup") { updateDriveStatusUI(); renderLocalRestoreUndo(); }
   }
 
   /* =========================================================
@@ -577,7 +619,7 @@
       <div class="list-item">
         <div class="list-item-top">
           <div style="flex:1;min-width:0;">
-            <div class="list-item-title">${m.name}</div>
+            <div class="list-item-title">${esc(m.name)}</div>
             <div class="list-item-sub">${m.ingredients.length} ingredient${m.ingredients.length === 1 ? "" : "s"}</div>
           </div>
         </div>
@@ -674,7 +716,7 @@
             const meal = mealId ? findMeal(mealId) : null;
             return `<button class="slot-chip ${meal ? "filled" : ""}" data-day-key="${key}" data-slot="${slot}">
               <span class="slot-chip-label">${slot.slice(0, 1).toUpperCase() + slot.slice(1)}</span>
-              <span class="slot-chip-text">${meal ? meal.name : "+ Add"}</span>
+              <span class="slot-chip-text">${meal ? esc(meal.name) : "+ Add"}</span>
             </button>`;
           }).join("")}
         </div>
@@ -706,7 +748,7 @@
     }
     const rowsHtml = DB.meals.slice().sort((a, b) => a.name.localeCompare(b.name)).map((m) =>
       `<div class="picker-row" data-pick-meal="${m.id}">
-        <div><div class="picker-row-label">${m.name}</div><div class="picker-row-sub">${m.ingredients.length} ingredient${m.ingredients.length === 1 ? "" : "s"}</div></div>
+        <div><div class="picker-row-label">${esc(m.name)}</div><div class="picker-row-sub">${m.ingredients.length} ingredient${m.ingredients.length === 1 ? "" : "s"}</div></div>
         <span style="color:var(--accent-b);">${currentId === m.id ? "✓" : "→"}</span>
       </div>`
     ).join("");
@@ -740,7 +782,7 @@
     listEl.innerHTML = items.map((it) => `
       <div class="shopping-item">
         <div class="shopping-check ${it.checked ? "done" : ""}" data-toggle-shop="${it.id}">${it.checked ? "✓" : ""}</div>
-        <div class="shopping-text ${it.checked ? "done" : ""}">${it.text}</div>
+        <div class="shopping-text ${it.checked ? "done" : ""}">${esc(it.text)}</div>
         <button class="shopping-del" data-delete-shop="${it.id}">×</button>
       </div>
     `).join("");
@@ -788,7 +830,7 @@
     const existingListNames = DB.shoppingList.map((s) => s.text.toLowerCase());
     let added = 0;
     neededSet.forEach((original, lower) => {
-      const alreadyListed = existingListNames.some((name) => name.includes(lower) || lower.includes(name));
+      const alreadyListed = existingListNames.some((name) => name.trim() === lower.trim());
       if (!alreadyListed) {
         DB.shoppingList.push({ id: uid(), text: original, checked: false, auto: true, createdAt: new Date().toISOString() });
         added += 1;
@@ -877,7 +919,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `meal-planner-backup-${localDateStr()}.json`;
+      a.download = `meal-planner-demo-backup-${localDateStr()}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -904,11 +946,9 @@
     e.target.value = "";
   }
 
-  /* =========================================================
-     GOOGLE DRIVE — removed for the demo (upsell card shown
-     instead); kept as a no-op since sv() calls it unconditionally.
-     ========================================================= */
+  /* Free trial: Google Drive backup is only in the full app. */
   function scheduleAutoBackup() {}
+  function updateDriveStatusUI() {}
 
   /* =========================================================
      INIT
@@ -919,9 +959,8 @@
     renderWeekGrid();
     renderMealList();
     renderShoppingList();
+    updateDriveStatusUI();
     renderLocalRestoreUndo();
-    enforceDemoTrial();
-    setInterval(enforceDemoTrial, 60000);
 
     document.getElementById("theme-btn").addEventListener("click", cycleTheme);
     document.getElementById("backup-btn").addEventListener("click", () => {
@@ -937,6 +976,767 @@
     document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
     document.getElementById("import-file-input").addEventListener("change", handleImportFileSelected);
   });
+
+/* ── PRINTABLE PAGES (PDF made on the device with pdf-lib, same method as Life Admin HQ) ── */
+var MFSPrint=(function(){
+  // The built-in PDF fonts draw basic Latin letters only. Anything else is removed so the PDF never fails.
+  function safe(s){
+    return String(s==null?'':s)
+      .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[\r\n\t]+/g,' ')
+      .replace(/ ?[^\x20-\x7E\xA0-\xFF–—•…]+/g,'')
+      .trim();
+  }
+  function rgbHex(hex){
+    var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex||'');
+    if(!m)return PDFLib.rgb(.30,.40,.35);
+    return PDFLib.rgb(parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255);
+  }
+  var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function pd(ds){if(!ds)return new Date(NaN);var p=String(ds).split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+  function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function longDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+  function shortDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return MON[d.getMonth()].slice(0,3)+' '+d.getDate()+', '+d.getFullYear();}
+  function money(n){var v=parseFloat(n)||0;return(v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  async function create(opts){
+    opts=opts||{};
+    var doc=await PDFLib.PDFDocument.create();
+    var font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var bold=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    var k={doc:doc,font:font,bold:bold,W:612,H:792,M:46,CW:520,BOTTOM:62,page:null,y:0,title:'',landscape:false,
+      ink:PDFLib.rgb(.16,.16,.16),soft:PDFLib.rgb(.42,.42,.42),line:PDFLib.rgb(.66,.66,.66),faint:PDFLib.rgb(.84,.84,.84),
+      fill:PDFLib.rgb(.95,.95,.94),accent:rgbHex(opts.accent),footer:opts.footer||''};
+    // Shrink text a little to fit its space, then shorten it if it still does not fit.
+    k.fit=function(f,text,size,maxW,minSize){
+      var s=safe(text),sz=size,min=minSize||Math.max(6,size-2);
+      while(sz>min&&f.widthOfTextAtSize(s,sz)>maxW)sz-=0.25;
+      if(f.widthOfTextAtSize(s,sz)>maxW){
+        while(s.length>1&&f.widthOfTextAtSize(s+'...',sz)>maxW)s=s.slice(0,-1);
+        s=s.replace(/\s+$/,'')+'...';
+      }
+      return {text:s,size:sz};
+    };
+    k.text=function(text,x,y,size,o){
+      o=o||{};var f=o.bold?bold:font;
+      var r=k.fit(f,text,size,o.maxW||(k.W-k.M-x),o.minSize);
+      if(!r.text)return;
+      var w=f.widthOfTextAtSize(r.text,r.size);
+      var dx=o.align==='right'?(o.maxW-w):o.align==='center'?((o.maxW-w)/2):0;
+      k.page.drawText(r.text,{x:x+dx,y:y,size:r.size,font:f,color:o.color||k.ink});
+    };
+    k.hline=function(x1,x2,y,color,t){k.page.drawLine({start:{x:x1,y:y},end:{x:x2,y:y},thickness:t||.7,color:color||k.line});};
+    k.vline=function(x,y1,y2,color,t){k.page.drawLine({start:{x:x,y:y1},end:{x:x,y:y2},thickness:t||.7,color:color||k.line});};
+    k.rect=function(x,y,w,h,o){o=o||{};var r={x:x,y:y,width:w,height:h};if(o.fill)r.color=o.fill;if(o.border!==false){r.borderColor=o.border||k.line;r.borderWidth=o.bw||.7;}k.page.drawRectangle(r);};
+    k.newPage=function(title,sub,landscape){
+      var ls=landscape===undefined?k.landscape:!!landscape;k.landscape=ls;
+      k.W=ls?792:612;k.H=ls?612:792;k.CW=k.W-2*k.M;
+      k.page=doc.addPage([k.W,k.H]);k.title=title;
+      var y=k.H-k.M;
+      k.text(title,k.M,y-6,19,{bold:true,maxW:k.CW});
+      y-=24;
+      if(sub){k.text(sub,k.M,y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});y-=12;}
+      k.hline(k.M,k.M+k.CW,y,k.accent,1.2);
+      k.y=y-22;
+    };
+    k.contTitle=function(){return k.title.indexOf('(continued)')>-1?k.title:k.title+' (continued)';};
+    k.room=function(h){if(k.y-h<k.BOTTOM){k.newPage(k.contTitle());return true;}return false;};
+    k.section=function(text){k.room(48);k.text(text,k.M,k.y,11.5,{bold:true,color:k.accent,maxW:k.CW});k.y-=20;};
+    k.field=function(label,x,y,w,value){
+      var r=k.fit(font,label,9.5,w*0.6);
+      k.page.drawText(r.text,{x:x,y:y,size:r.size,font:font,color:k.soft});
+      var lx=x+font.widthOfTextAtSize(r.text,r.size)+6;
+      if(value)k.text(value,lx+2,y,10,{maxW:x+w-lx-4,minSize:7.5});
+      k.hline(lx,x+w,y-2);
+    };
+    // fields: array of label strings or [label,value]
+    k.fieldRow=function(fields){
+      var gap=24,w=(k.CW-gap*(fields.length-1))/fields.length;
+      fields.forEach(function(f,i){var l=Array.isArray(f)?f[0]:f,v=Array.isArray(f)?f[1]:'';k.field(l,k.M+i*(w+gap),k.y,w,v);});
+      k.y-=28;
+    };
+    k.box=function(x,y,s,on){
+      k.page.drawRectangle({x:x,y:y,width:s,height:s,borderColor:k.soft,borderWidth:.8});
+      if(on){k.page.drawLine({start:{x:x+2,y:y+s/2},end:{x:x+s*0.42,y:y+2},thickness:1.2,color:k.ink});k.page.drawLine({start:{x:x+s*0.42,y:y+2},end:{x:x+s-1.5,y:y+s-1.5},thickness:1.2,color:k.ink});}
+    };
+    // A tick list. items: a number (blank lines to write on) or an array of text / {t,on}.
+    k.checks=function(items,ncols){
+      ncols=ncols||1;
+      var n=typeof items==='number'?items:items.length,rows=Math.ceil(n/ncols),gap=20,w=(k.CW-gap*(ncols-1))/ncols;
+      for(var r=0;r<rows;r++){
+        if(k.y-20<k.BOTTOM)k.newPage(k.contTitle());
+        for(var c=0;c<ncols;c++){
+          var i=r+c*rows;if(i>=n)continue;
+          var x=k.M+c*(w+gap),it=typeof items==='number'?null:items[i];
+          k.box(x,k.y-3,10,!!(it&&it.on));
+          if(it!==null)k.text(typeof it==='string'?it:it.t,x+16,k.y-1,10,{maxW:w-18,minSize:7.5});
+          else k.hline(x+16,x+w,k.y-3,k.faint);
+        }
+        k.y-=20;
+      }
+    };
+    k.lines=function(n,gap){gap=gap||20;for(var i=0;i<n;i++){if(k.y-gap<k.BOTTOM)k.newPage(k.contTitle());k.hline(k.M,k.M+k.CW,k.y-4,k.faint);k.y-=gap;}};
+    // cols: [{label,w,align,soft,bold,box}] · rows: a number (blank rows) or an array of rows.
+    // A cell can be text or {box:true,on:bool}. A column with box:true draws an empty tick box in blank rows.
+    k.table=function(cols,rows,rowH,o){
+      o=o||{};var x=o.x||k.M;
+      var sum=cols.reduce(function(s,c){return s+c.w;},0);
+      if(o.stretch!==false&&Math.abs(sum-k.CW)>0.5){var f=k.CW/sum;cols=cols.map(function(c){var d={};for(var p in c)d[p]=c[p];d.w=c.w*f;return d;});sum=k.CW;}
+      var headH=19,n=typeof rows==='number'?rows:rows.length;
+      function sides(top,h){var cx=x;for(var i=0;i<=cols.length;i++){k.vline(cx,top,top-h);if(i<cols.length)cx+=cols[i].w;}}
+      function head(){
+        k.page.drawRectangle({x:x,y:k.y-headH,width:sum,height:headH,color:k.fill});
+        var cx=x;
+        cols.forEach(function(c){
+          if(c.label)k.text(c.label,cx+(c.w<34?2:5),k.y-13,8.5,{bold:true,maxW:c.w-(c.w<34?4:10),minSize:6,align:c.align==='center'||c.box?'center':undefined});
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y);k.hline(x,x+sum,k.y-headH);sides(k.y,headH);
+        k.y-=headH;
+      }
+      if(k.y-headH-rowH<k.BOTTOM)k.newPage(k.contTitle());
+      head();
+      for(var r=0;r<n;r++){
+        if(k.y-rowH<k.BOTTOM){k.newPage(k.contTitle());head();}
+        var row=typeof rows==='number'?null:rows[r],cx=x;
+        cols.forEach(function(c,i){
+          var v=row?row[i]:undefined,bs=Math.min(10,rowH-8),by=k.y-rowH+(rowH-bs)/2;
+          if(v&&typeof v==='object'&&v.box){k.box(cx+(c.w-bs)/2,by,bs,!!v.on);}
+          else if(c.box&&(v===undefined||v===null)){k.box(cx+(c.w-bs)/2,by,bs,false);}
+          else if(v!==undefined&&v!==null&&v!==''){
+            k.text(String(v),cx+5,k.y-rowH/2-3,9,{maxW:c.w-10,minSize:6.5,bold:!!c.bold,color:c.soft?k.soft:k.ink,align:c.align==='center'?'center':c.align==='right'?'right':undefined});
+          }
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y-rowH);sides(k.y,rowH);
+        k.y-=rowH;
+      }
+      k.y-=14;
+    };
+    k.fillRows=function(rowH){return Math.max(0,Math.floor((k.y-k.BOTTOM-19)/rowH));};
+    k.finish=async function(){
+      var pages=doc.getPages();
+      pages.forEach(function(pg,i){
+        var sz=pg.getSize();
+        pg.drawText(safe(k.footer),{x:k.M,y:30,size:8,font:font,color:k.soft});
+        var lbl='Page '+(i+1)+' of '+pages.length;
+        pg.drawText(lbl,{x:sz.width-k.M-font.widthOfTextAtSize(lbl,8),y:30,size:8,font:font,color:k.soft});
+      });
+      return await doc.save();
+    };
+    // Month grid, Monday first. cellText(dateStr) returns an array of short lines for that day.
+    // With numbered=false the grid has no dates, for an undated month to fill in by hand.
+    k.month=function(year,month,o){
+      o=o||{};var top=k.y,heads=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],cw=k.CW/7,hh=18;
+      var first=new Date(year,month,1).getDay(),off=(first+6)%7,dim=new Date(year,month+1,0).getDate();
+      var weeks=o.numbered===false?5:Math.ceil((off+dim)/7);
+      var gridH=(o.height||(k.y-k.BOTTOM-8))-hh,ch=gridH/weeks;
+      k.page.drawRectangle({x:k.M,y:top-hh,width:k.CW,height:hh,color:k.fill});
+      heads.forEach(function(h,i){k.text(h,k.M+i*cw,top-12.5,8.5,{bold:true,maxW:cw,align:'center'});});
+      for(var w=0;w<weeks;w++)for(var d=0;d<7;d++){
+        var x=k.M+d*cw,y=top-hh-(w+1)*ch,n=w*7+d-off+1;
+        k.rect(x,y,cw,ch,{border:k.line});
+        if(o.numbered===false||n<1||n>dim)continue;
+        k.text(String(n),x+4,y+ch-11,9,{bold:true,maxW:cw-8});
+        if(o.cellText){
+          var ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+          var lines=o.cellText(ds)||[],ly=y+ch-22;
+          for(var li=0;li<lines.length&&ly>y+3;li++){k.text(lines[li],x+4,ly,7,{maxW:cw-8,minSize:6});ly-=8.5;}
+        }
+      }
+      k.y=top-hh-gridH-14;
+    };
+    // Twelve small month calendars on one page.
+    k.yearGrid=function(year){
+      var cols=3,rows=4,gap=16,bw=(k.CW-gap*(cols-1))/cols,top=k.y,bh=(top-k.BOTTOM-gap*(rows-1))/rows;
+      for(var m=0;m<12;m++){
+        var c=m%cols,r=Math.floor(m/cols),x=k.M+c*(bw+gap),y=top-r*(bh+gap);
+        k.text(MON[m],x,y-10,10.5,{bold:true,color:k.accent,maxW:bw});
+        var cw=bw/7,heads=['M','T','W','T','F','S','S'];
+        heads.forEach(function(h,i){k.text(h,x+i*cw,y-26,7.5,{bold:true,color:k.soft,maxW:cw,align:'center'});});
+        var first=new Date(year,m,1).getDay(),off=(first+6)%7,dim=new Date(year,m+1,0).getDate(),lh=(bh-38)/6;
+        for(var d=1;d<=dim;d++){var p=off+d-1,cc=p%7,rr=Math.floor(p/7);k.text(String(d),x+cc*cw,y-40-rr*lh,8,{maxW:cw,align:'center'});}
+      }
+      k.y=k.BOTTOM;
+    };
+    return k;
+  }
+  // Hand the finished PDF to the person. On iPhone and iPad the share sheet (Print, Save to Files)
+  // is the dependable route from a home screen app, so it is tried first there.
+  function deliver(bytes,filename){
+    var blob=new Blob([bytes],{type:'application/pdf'});
+    var download=function(){
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+    };
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&navigator.canShare&&typeof File!=='undefined'){
+      try{
+        var file=new File([blob],filename,{type:'application/pdf'});
+        if(navigator.canShare({files:[file]})){
+          return navigator.share({files:[file],title:filename}).catch(function(err){
+            if(err&&err.name==='AbortError')return;
+            download();
+          });
+        }
+      }catch(e){}
+    }
+    download();
+  }
+  var busy=false;
+  // Runs a page builder and hands over the PDF. say(msg,isErr) shows the app's own message.
+  async function run(build,filename,opts,say){
+    if(typeof PDFLib==='undefined'){say('The PDF tool is still loading. Check your connection and try again.',true);return;}
+    if(busy)return;busy=true;say('Creating your PDF...');
+    try{var k=await create(opts);await build(k);var bytes=await k.finish();await deliver(bytes,filename);say('Your PDF is ready!');}
+    catch(e){console.error(e);say('Could not create the PDF. Try again.',true);}
+    busy=false;
+  }
+  return {safe:safe,create:create,deliver:deliver,run:run,MON:MON,DOW:DOW,pd:pd,ymd:ymd,longDate:longDate,shortDate:shortDate,money:money};
+})();
+
+  /* =========================================================
+     MORE: snacks, leftovers + eating out, made check-off,
+     tags + favorites, surprise picker, copy + favorite weeks,
+     shopping list by aisle with quantities that add up, sharing
+     ========================================================= */
+  function defaultDB() {
+    return { theme: "cream", meals: [], mealPlan: {}, shoppingList: [], weekTemplates: [] };
+  }
+  const ALL_SLOTS = ["breakfast", "lunch", "dinner", "snack"];
+  const SLOT_LABEL = { breakfast: "Breakfast", lunch: "Lunch", dinner: "Dinner", snack: "Snack" };
+  const SPECIAL = { leftovers: "Leftovers", out: "Eating out" };
+  const TAGS = ["Quick", "Kid friendly", "Vegetarian", "Slow cooker", "Freezer friendly", "Healthy", "Budget"];
+  function slotValue(entry, slot) { return entry ? entry[slot] : null; }
+  function slotText(v) { if (!v) return ""; if (SPECIAL[v]) return SPECIAL[v]; const m = findMeal(v); return m ? m.name : ""; }
+  function isMade(entry, slot) { return !!(entry && entry.made && entry.made[slot]); }
+
+  /* ---------- week grid ---------- */
+  function renderWeekGrid() {
+    const start = currentWeekStart();
+    const end = addDays(start, 6);
+    document.getElementById("week-range-label").textContent =
+      `${start.toLocaleDateString(undefined, { month: "short", day: "numeric" })} – ${end.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+    const dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const todayStr = todayKey(new Date());
+    let html = "";
+    for (let i = 0; i < 7; i++) {
+      const date = addDays(start, i), key = todayKey(date), entry = DB.mealPlan[key], isToday = key === todayStr;
+      html += `<div class="day-row ${isToday ? "is-today" : ""}">
+        <div class="day-row-label">${dayNames[i]} · ${date.toLocaleDateString(undefined, { month: "short", day: "numeric" })}${isToday ? " · Today" : ""}</div>
+        <div class="slot-row">${ALL_SLOTS.map((slot) => {
+          const v = slotValue(entry, slot), txt = slotText(v), made = isMade(entry, slot);
+          return `<button class="slot-chip ${txt ? "filled" : ""} ${made ? "cooked" : ""} ${SPECIAL[v] ? "special" : ""}" data-day-key="${key}" data-slot="${slot}">
+            <span class="slot-chip-label">${SLOT_LABEL[slot]}${made ? " ✓" : ""}</span>
+            <span class="slot-chip-text">${txt ? esc(txt) : "+ Add"}</span></button>`;
+        }).join("")}</div></div>`;
+    }
+    document.getElementById("week-grid").innerHTML = html;
+    const tools = document.getElementById("week-tools");
+    if (tools) tools.innerHTML = `<button class="tool-chip pri" onclick="whatsForDinner()">🎲 What's for dinner?</button><button class="tool-chip" onclick="copyLastWeek()">Copy last week</button><button class="tool-chip" onclick="openFavoriteWeeks()">★ Favorite weeks</button>`;
+  }
+
+  /* ---------- picking a meal for a slot ---------- */
+  let pickerFilter = "all";
+  function filterChipsHtml(attr, current) {
+    const used = TAGS.filter((t) => DB.meals.some((m) => (m.tags || []).includes(t)));
+    const chips = [["all", "All"], ["fav", "★ Favorites"]].concat(used.map((t) => [t, t]));
+    return `<div class="filter-row">${chips.map(([k, l]) => `<button class="tool-chip ${current === k ? "on" : ""}" ${attr}="${esc(k)}">${esc(l)}</button>`).join("")}</div>`;
+  }
+  function mealsFiltered(f) {
+    return DB.meals.filter((m) => f === "all" || (f === "fav" ? m.fav : (m.tags || []).includes(f)))
+      .sort((a, b) => (b.fav ? 1 : 0) - (a.fav ? 1 : 0) || a.name.localeCompare(b.name));
+  }
+  function recentlyPlanned(dayKey, days) {
+    const d = new Date(dayKey + "T00:00:00"), set = new Set();
+    for (let i = -days; i <= days; i++) { const e = DB.mealPlan[todayKey(addDays(d, i))]; if (e) ALL_SLOTS.forEach((s) => { if (e[s] && !SPECIAL[e[s]]) set.add(e[s]); }); }
+    return set;
+  }
+  function suggestMeal(dayKey, exclude) {
+    const recent = recentlyPlanned(dayKey, 7), pool = [];
+    DB.meals.forEach((m) => { if (exclude && exclude.has(m.id)) return; const w = recent.has(m.id) ? 0 : (m.fav ? 3 : 1); for (let i = 0; i < w; i++) pool.push(m); });
+    if (!pool.length) DB.meals.forEach((m) => { if (!exclude || !exclude.has(m.id)) pool.push(m); });
+    return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+  }
+  function openSlotPicker(dayKey, slot) {
+    const entry = mealEntry(dayKey);
+    const currentId = entry[slot];
+    const dateLabel = new Date(dayKey + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+    const title = `${SLOT_LABEL[slot]} · ${dateLabel}`;
+    const rows = () => {
+      const list = mealsFiltered(pickerFilter);
+      return (DB.meals.length ? `<div class="picker-row surprise" data-surprise="1"><div><div class="picker-row-label">🎲 Surprise me</div><div class="picker-row-sub">Picks a meal you haven't had this week</div></div><span style="color:var(--accent-b);">→</span></div>` + filterChipsHtml("data-pfilter", pickerFilter) : "")
+        + list.map((m) => `<div class="picker-row" data-pick-meal="${m.id}"><div><div class="picker-row-label">${m.fav ? "★ " : ""}${esc(m.name)}</div><div class="picker-row-sub">${[m.ingredients.length + " ingredient" + (m.ingredients.length === 1 ? "" : "s")].concat(m.tags || []).map(esc).join(" · ")}</div></div><span style="color:var(--accent-b);">${currentId === m.id ? "✓" : "→"}</span></div>`).join("")
+        + (DB.meals.length && !list.length ? `<div class="empty-state">No meals with that tag yet.</div>` : "")
+        + `<div class="picker-specials">${Object.keys(SPECIAL).map((k) => `<button class="tool-chip ${currentId === k ? "on" : ""}" data-pick-special="${k}">${k === "out" ? "🍽 " : "♻ "}${SPECIAL[k]}</button>`).join("")}</div>`
+        + (!DB.meals.length ? `<div class="empty-state">No quick meals saved yet. Add one on the Quick Meals tab, or mark this slot as leftovers or eating out.</div>` : "");
+    };
+    const filled = !!currentId, made = isMade(entry, slot);
+    openModal({
+      title, extraHtml: `<div id="picker-body">${rows()}</div>`,
+      ctaLabel: filled ? (made ? "Made ✓  (tap to undo)" : "Mark as made") : (DB.meals.length ? "" : "Add a quick meal"),
+      onCta: filled ? () => { entry.made = entry.made || {}; entry.made[slot] = !made; sv(); closeModal(); renderWeekGrid(); showToast(!made ? "Marked as made." : "Unmarked."); }
+        : () => { closeModal(); selectMainTab("meals"); openMealForm(null); },
+      secondaryLabel: filled ? "Clear this slot" : "Cancel",
+      onSecondary: filled ? () => { entry[slot] = null; if (entry.made) delete entry.made[slot]; sv(); closeModal(); renderWeekGrid(); } : closeModal
+    });
+    const body = document.getElementById("picker-body");
+    const pick = (val, msg) => { entry[slot] = val; if (entry.made) delete entry.made[slot]; sv(); closeModal(); renderWeekGrid(); showToast(msg || "Meal planned."); };
+    body.addEventListener("click", (e) => {
+      const f = e.target.closest("[data-pfilter]"); if (f) { pickerFilter = f.dataset.pfilter; body.innerHTML = rows(); return; }
+      const sp = e.target.closest("[data-pick-special]"); if (sp) { pick(sp.dataset.pickSpecial, SPECIAL[sp.dataset.pickSpecial] + " planned."); return; }
+      if (e.target.closest("[data-surprise]")) { const m = suggestMeal(dayKey); if (m) { pick(m.id, "Planned: " + m.name); } return; }
+      const r = e.target.closest("[data-pick-meal]"); if (r) pick(Number(r.dataset.pickMeal));
+    });
+  }
+  function whatsForDinner() {
+    if (!DB.meals.length) { showToast("Add a few quick meals first."); return; }
+    const today = new Date();
+    let target = null;
+    for (let i = 0; i < 7 && !target; i++) { const k = todayKey(addDays(today, i)), e = DB.mealPlan[k]; if (!e || !e.dinner) target = k; }
+    if (!target) target = todayKey(today);
+    const tried = new Set();
+    const show = () => {
+      const m = suggestMeal(target, tried); if (!m) { showToast("That's every meal. Add more quick meals for more ideas."); return; }
+      tried.add(m.id);
+      const label = target === todayKey(today) ? "Tonight" : new Date(target + "T00:00:00").toLocaleDateString(undefined, { weekday: "long" });
+      openModal({
+        title: "What's for dinner?",
+        extraHtml: `<div class="dinner-idea"><div class="l">${label}</div><div class="n">${m.fav ? "★ " : ""}${esc(m.name)}</div><div class="s">${m.ingredients.slice(0, 6).map(esc).join(" · ")}${m.ingredients.length > 6 ? " …" : ""}</div></div>`,
+        ctaLabel: "Plan it for " + (label === "Tonight" ? "tonight" : label),
+        onCta: () => { mealEntry(target).dinner = m.id; sv(); closeModal(); renderWeekGrid(); showToast("Planned: " + m.name); },
+        secondaryLabel: "Another idea", onSecondary: show
+      });
+    };
+    show();
+  }
+
+  /* ---------- copy last week + favorite weeks ---------- */
+  function weekSnapshot(start) { return weekDays(start).map((d) => { const e = DB.mealPlan[todayKey(d)] || {}; const o = {}; ALL_SLOTS.forEach((s) => { o[s] = e[s] || null; }); return o; }); }
+  function applyWeek(days, start, mode) {
+    let n = 0;
+    weekDays(start).forEach((d, i) => {
+      const e = mealEntry(todayKey(d)), src = days[i] || {};
+      ALL_SLOTS.forEach((s) => { const v = src[s]; if (!v || (!SPECIAL[v] && !findMeal(v))) return; if (mode === "empty" && e[s]) return; if (e[s] !== v) { e[s] = v; if (e.made) delete e.made[s]; n++; } });
+    });
+    sv(); renderWeekGrid(); return n;
+  }
+  function weekHasPlan(start) { return weekSnapshot(start).some((d) => ALL_SLOTS.some((s) => d[s])); }
+  function askApply(days, label) {
+    const start = currentWeekStart();
+    if (!weekHasPlan(start)) { const n = applyWeek(days, start, "all"); showToast(n ? `Filled ${n} meal${n === 1 ? "" : "s"} from ${label}.` : `${label} has nothing planned.`); return; }
+    openModal({
+      title: "This week already has meals", bodyText: `Fill only the empty slots from ${label}, or replace the whole week?`,
+      ctaLabel: "Fill empty slots", onCta: () => { closeModal(); const n = applyWeek(days, start, "empty"); showToast(n ? `Filled ${n} empty slot${n === 1 ? "" : "s"}.` : "No empty slots to fill."); },
+      secondaryLabel: "Replace the whole week", onSecondary: () => { closeModal(); const n = applyWeek(days, start, "all"); showToast(`Replaced ${n} slot${n === 1 ? "" : "s"}.`); }
+    });
+  }
+  function copyLastWeek() {
+    const prev = addDays(currentWeekStart(), -7);
+    if (!weekHasPlan(prev)) { showToast("Last week has nothing planned."); return; }
+    askApply(weekSnapshot(prev), "last week");
+  }
+  function openFavoriteWeeks() {
+    const list = DB.weekTemplates || [];
+    const rows = list.map((t) => `<div class="picker-row" data-use-tpl="${t.id}"><div><div class="picker-row-label">★ ${esc(t.name)}</div><div class="picker-row-sub">${t.days.reduce((n, d) => n + ALL_SLOTS.filter((s) => d[s]).length, 0)} meals · saved ${new Date(t.savedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}</div></div><button class="list-item-action-btn danger" data-del-tpl="${t.id}">Delete</button></div>`).join("");
+    openModal({
+      title: "Favorite weeks",
+      bodyText: list.length ? "Tap a saved week to use it for the week you're looking at." : "Save a week you liked, then reuse it any time with one tap.",
+      extraHtml: rows + `<div class="field" style="margin-top:.8rem;"><label>Save this week as</label><input type="text" id="tpl-name" placeholder="e.g. Busy school week" maxlength="40"/></div>`,
+      ctaLabel: "Save this week", onCta: () => {
+        const name = document.getElementById("tpl-name").value.trim() || ("Week of " + currentWeekStart().toLocaleDateString(undefined, { month: "short", day: "numeric" }));
+        const days = weekSnapshot(currentWeekStart());
+        if (!days.some((d) => ALL_SLOTS.some((s) => d[s]))) { showToast("Plan some meals this week first."); return; }
+        DB.weekTemplates = DB.weekTemplates || []; DB.weekTemplates.push({ id: uid(), name, days, savedAt: new Date().toISOString() });
+        sv(); closeModal(); showToast("Saved: " + name);
+      },
+      secondaryLabel: "Close", onSecondary: closeModal
+    });
+    document.getElementById("modal-extra-body").addEventListener("click", (e) => {
+      const d = e.target.closest("[data-del-tpl]"); if (d) { e.stopPropagation(); DB.weekTemplates = DB.weekTemplates.filter((t) => t.id !== Number(d.dataset.delTpl)); sv(); openFavoriteWeeks(); return; }
+      const u = e.target.closest("[data-use-tpl]"); if (u) { const t = DB.weekTemplates.find((x) => x.id === Number(u.dataset.useTpl)); if (t) { closeModal(); askApply(t.days, '"' + t.name + '"'); } }
+    });
+  }
+
+  /* ---------- quick meals: tags + favorites ---------- */
+  let mealFilter = "all";
+  function renderMealList() {
+    const listEl = document.getElementById("meal-list");
+    if (!DB.meals.length) { listEl.innerHTML = `<div class="empty-state">No quick meals yet. Add your first one above.</div>`; return; }
+    const list = mealsFiltered(mealFilter);
+    const fr = document.getElementById("meal-filter"); if (fr) fr.innerHTML = filterChipsHtml("data-mfilter", mealFilter);
+    const cutoff = todayKey(addDays(new Date(), -28)), counts = new Map();
+    Object.keys(DB.mealPlan).forEach((k) => { if (k < cutoff) return; ALL_SLOTS.forEach((s) => { const v = DB.mealPlan[k][s]; if (v && !SPECIAL[v]) counts.set(v, (counts.get(v) || 0) + 1); }); });
+    listEl.innerHTML = list.length ? list.map((m) => `
+      <div class="list-item">
+        <div class="list-item-top">
+          <div style="flex:1;min-width:0;">
+            <div class="list-item-title">${esc(m.name)}</div>
+            <div class="list-item-sub">${m.ingredients.length} ingredient${m.ingredients.length === 1 ? "" : "s"}${counts.get(m.id) ? " · planned " + counts.get(m.id) + "× in 4 weeks" : ""}</div>
+            ${(m.tags || []).map((t) => `<span class="badge badge-tag">${esc(t)}</span>`).join("")}
+          </div>
+          <button class="fav-btn ${m.fav ? "on" : ""}" data-fav-meal="${m.id}" title="Favorite">${m.fav ? "★" : "☆"}</button>
+        </div>
+        <div class="list-item-actions">
+          <button class="list-item-action-btn" data-edit-meal="${m.id}">Edit</button>
+          <button class="list-item-action-btn danger" data-delete-meal="${m.id}">Delete</button>
+        </div>
+      </div>`).join("") : `<div class="empty-state">No meals with that tag yet.</div>`;
+  }
+  function openMealForm(existingId) {
+    const existing = existingId ? findMeal(existingId) : null;
+    const tags = new Set(existing ? existing.tags || [] : []);
+    const extraHtml = `
+      <div class="field"><label>Meal name</label><input type="text" id="mf-name" value="${existing ? esc(existing.name) : ""}" placeholder="Turkey Chili" /></div>
+      <div class="field"><label>Ingredients (one per line)</label><textarea id="mf-ingredients" placeholder="1 lb ground turkey&#10;1 can black beans&#10;1 can diced tomatoes">${existing ? esc(existing.ingredients.join("\n")) : ""}</textarea>
+        <div class="note" style="margin-top:.35rem;">Start a line with an amount, like "2 onions" or "1 lb ground beef", and the shopping list adds them up across the week.</div></div>
+      <div class="field"><label>Tags</label><div class="filter-row" id="mf-tags">${TAGS.map((t) => `<button type="button" class="tool-chip ${tags.has(t) ? "on" : ""}" data-tag="${esc(t)}">${esc(t)}</button>`).join("")}</div></div>
+      <label class="checkbox-row"><input type="checkbox" id="mf-fav" ${existing && existing.fav ? "checked" : ""}/> ★ Favorite (comes up first and more often in Surprise me)</label>`;
+    openModal({
+      title: existing ? "Edit Quick Meal" : "Add Quick Meal", extraHtml,
+      ctaLabel: existing ? "Save changes" : "Save meal",
+      onCta: () => {
+        const name = document.getElementById("mf-name").value.trim();
+        if (!name) { showToast("Give the meal a name first."); return; }
+        const ingredients = document.getElementById("mf-ingredients").value.split("\n").map((s) => s.trim()).filter(Boolean);
+        const t = [...document.querySelectorAll("#mf-tags .tool-chip.on")].map((b) => b.dataset.tag), fav = document.getElementById("mf-fav").checked;
+        if (existing) { Object.assign(existing, { name, ingredients, tags: t, fav }); showToast("Meal updated."); }
+        else { DB.meals.push({ id: uid(), name, ingredients, tags: t, fav, createdAt: new Date().toISOString() }); showToast("Meal saved."); }
+        sv(); closeModal(); renderMealList();
+      },
+      secondaryLabel: "Cancel", onSecondary: closeModal
+    });
+    document.getElementById("mf-tags").addEventListener("click", (e) => { const b = e.target.closest("[data-tag]"); if (b) b.classList.toggle("on"); });
+  }
+  function confirmDeleteMeal(id) {
+    openModal({
+      title: "Delete this meal?",
+      bodyText: "This can't be undone once confirmed. It will also be cleared from any week slots it's assigned to.",
+      ctaLabel: "Delete", ctaDanger: true,
+      onCta: () => {
+        DB.meals = DB.meals.filter((m) => m.id !== id);
+        Object.values(DB.mealPlan).forEach((entry) => { ALL_SLOTS.forEach((slot) => { if (entry[slot] === id) entry[slot] = null; }); });
+        (DB.weekTemplates || []).forEach((t) => t.days.forEach((d) => ALL_SLOTS.forEach((s) => { if (d[s] === id) d[s] = null; })));
+        sv(); closeModal(); renderMealList(); if (mainTab === "week") renderWeekGrid();
+        showToast("Meal deleted.");
+      },
+      secondaryLabel: "Keep it", onSecondary: closeModal
+    });
+  }
+
+  /* ---------- shopping list: aisles, amounts that add up, sharing ---------- */
+  const AISLES = ["Produce", "Meat + fish", "Dairy + eggs", "Bakery", "Pantry", "Frozen", "Snacks + drinks", "Household", "Other"];
+  const AISLE_RULES = [
+    ["Household", /\b(paper towels?|toilet paper|tissues?|soap|detergent|foil|plastic wrap|trash bags?|dish|napkins?|sponges?|batteries|zip ?lock|ziploc)\b/],
+    ["Frozen", /\b(frozen|ice cream|popsicles?|ice)\b/],
+    ["Pantry", /\b(peanut butter|cans?|canned|jars?|sauce|marinara|salsa|powder|seasoning|spices?|broth|stock|oil|vinegar|noodles|pasta|spaghetti|macaroni|rice|beans|lentils|flour|sugar|salt|pepper flakes|oats?|cereal|honey|syrup|mix|nuts?|almonds|ketchup|mustard|mayo|mayonnaise|dressing|soy sauce|tortilla chips|crackers|baking|vanilla|cocoa|quinoa|breadcrumbs|chili powder|cumin|oregano|paprika|cinnamon|olives|pickles|capers|tortilla chips)\b/],
+    ["Meat + fish", /\b(chicken|beef|turkey|pork|ham|bacon|sausages?|steaks?|salmon|fish|shrimp|tuna|meatballs|ground|deli|lamb|tilapia|cod|hot dogs?|ribs|pepperoni|salami|prosciutto)\b/],
+    ["Produce", /\b(eggplant|apples?|bananas?|berr(y|ies)|strawberr(y|ies)|blueberr(y|ies)|lettuce|romaine|spinach|onions?|garlic|tomato(es)?|potato(es)?|carrots?|peppers?|broccoli|cucumbers?|avocados?|lemons?|limes?|cilantro|parsley|basil|herbs?|kale|celery|mushrooms?|zucchini|squash|corn|grapes?|oranges?|peaches|pears?|melon|cabbage|green beans|scallions|ginger|jalapenos?|sweet potato(es)?)\b/],
+    ["Dairy + eggs", /\b(milk|cheese|cheddar|mozzarella|parmesan|feta|yogurt|butter|cream|eggs?|sour cream|cottage)\b/],
+    ["Bakery", /\b(bread|buns?|rolls?|tortillas?|bagels?|pita|dough|croissants?|english muffins?|muffins?|naan)\b/],
+    ["Snacks + drinks", /\b(chips|cookies?|snacks?|juice|soda|coffee|tea|water|sparkling|granola bars?|pretzels?|popcorn|wine|beer)\b/]
+  ];
+  function guessAisle(text) { const t = String(text || "").toLowerCase(); for (const [a, re] of AISLE_RULES) if (re.test(t)) return a; return "Other"; }
+  const UNIT_RE = /^\s*(\d+\s+\d+\/\d+|\d+\/\d+|\d*\.\d+|\d+)\s*(lbs?|pounds?|oz|ounces?|cups?|cans?|jars?|tbsp|tablespoons?|tsp|teaspoons?|cloves?|bags?|box(?:es)?|packs?|packages?|dozen|bunch(?:es)?|heads?|bottles?|pints?|quarts?|gallons?|slices?|sticks?|loaf|loaves)?\.?\s+(?:of\s+)?(.+)$/i;
+  const UNIT_CANON = { lb: "lb", lbs: "lb", pound: "lb", pounds: "lb", oz: "oz", ounce: "oz", ounces: "oz", cup: "cup", cups: "cup", can: "can", cans: "can", jar: "jar", jars: "jar", tbsp: "tbsp", tablespoon: "tbsp", tablespoons: "tbsp", tsp: "tsp", teaspoon: "tsp", teaspoons: "tsp", clove: "clove", cloves: "clove", bag: "bag", bags: "bag", box: "box", boxes: "box", pack: "pack", packs: "pack", package: "pack", packages: "pack", dozen: "dozen", bunch: "bunch", bunches: "bunch", head: "head", heads: "head", bottle: "bottle", bottles: "bottle", pint: "pint", pints: "pint", quart: "quart", quarts: "quart", gallon: "gallon", gallons: "gallon", slice: "slice", slices: "slice", stick: "stick", sticks: "stick", loaf: "loaf", loaves: "loaf" };
+  function num(s) { s = s.trim(); let m; if ((m = /^(\d+)\s+(\d+)\/(\d+)$/.exec(s))) return +m[1] + m[2] / m[3]; if ((m = /^(\d+)\/(\d+)$/.exec(s))) return m[1] / m[2]; return parseFloat(s); }
+  function singular(w) { w = w.toLowerCase().trim(); if (/ies$/.test(w)) return w.slice(0, -3) + "y"; if (/(tomato|potato)es$/.test(w)) return w.slice(0, -2); if (/(ch|sh|x)es$/.test(w)) return w.slice(0, -2); if (/[^s]s$/.test(w)) return w.slice(0, -1); return w; }
+  function plural(w) { if (/s$/i.test(w)) return w; if (/(tomato|potato)$/i.test(w)) return w + "es"; if (/[^aeiou]y$/i.test(w)) return w.slice(0, -1) + "ies"; if (/(ch|sh|x)$/i.test(w)) return w + "es"; return w + "s"; }
+  function fmtQty(q) { const whole = Math.floor(q), f = Math.round((q - whole) * 100) / 100; const fr = { 0.25: "1/4", 0.33: "1/3", 0.5: "1/2", 0.67: "2/3", 0.75: "3/4" }[f]; if (!f) return String(whole); if (fr) return (whole ? whole + " " : "") + fr; return String(Math.round(q * 100) / 100); }
+  function parseItem(text) {
+    const m = UNIT_RE.exec(text);
+    if (!m) return { key: "|" + singular(text), qty: null, unit: "", name: text.trim() };
+    const unit = m[2] ? UNIT_CANON[m[2].toLowerCase()] || m[2].toLowerCase() : "", name = m[3].trim();
+    return { key: unit + "|" + singular(name), qty: num(m[1]), unit, name };
+  }
+  function itemText(p) {
+    if (p.qty == null) return p.name;
+    const q = fmtQty(p.qty), many = p.qty > 1;
+    if (p.unit) { const u = many && !["lb", "oz", "tbsp", "tsp", "dozen"].includes(p.unit) ? plural(p.unit) : p.unit; return `${q} ${u} ${p.name}`; }
+    return `${q} ${many ? plural(p.name) : p.name}`;
+  }
+  function generateShopping() {
+    const start = currentWeekStart(), totals = new Map();
+    weekDays(start).forEach((d) => {
+      const e = DB.mealPlan[todayKey(d)]; if (!e) return;
+      ALL_SLOTS.forEach((s) => {
+        const m = e[s] && !SPECIAL[e[s]] ? findMeal(e[s]) : null; if (!m) return;
+        m.ingredients.forEach((ing) => {
+          const p = parseItem(ing), cur = totals.get(p.key);
+          if (!cur) totals.set(p.key, { ...p });
+          else if (cur.qty != null && p.qty != null) cur.qty += p.qty;
+        });
+      });
+    });
+    if (!totals.size) { showToast("Plan some meals this week first."); return; }
+    let added = 0, updated = 0;
+    totals.forEach((p, key) => {
+      const text = itemText(p);
+      const existing = DB.shoppingList.find((s) => parseItem(s.text).key === key);
+      if (!existing) { DB.shoppingList.push({ id: uid(), text, checked: false, auto: true, aisle: guessAisle(text), createdAt: new Date().toISOString() }); added++; }
+      else if (existing.auto && !existing.checked && existing.text !== text) { existing.text = text; updated++; }
+    });
+    sv(); selectMainTab("shopping");
+    const bits = []; if (added) bits.push(`added ${added} item${added === 1 ? "" : "s"}`); if (updated) bits.push(`updated ${updated} amount${updated === 1 ? "" : "s"}`);
+    showToast(bits.length ? bits.join(", ").replace(/^./, (c) => c.toUpperCase()) + "." : "You already have everything on your list.");
+  }
+  function renderShoppingList() {
+    const listEl = document.getElementById("shopping-list-body");
+    let fixed = false; DB.shoppingList.forEach((it) => { if (!it.aisle) { it.aisle = guessAisle(it.text); fixed = true; } }); if (fixed) { try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); } catch (e) {} }
+    if (!DB.shoppingList.length) { listEl.innerHTML = `<div class="empty-state">Your shopping list is empty. Add items above, or generate one from this week's meal plan.</div>`; return; }
+    const left = DB.shoppingList.filter((s) => !s.checked).length;
+    listEl.innerHTML = `<div class="shop-head"><span>${left} left · sorted by aisle</span><button class="tool-chip pri" onclick="shareShoppingList()">Share list</button></div>` + AISLES.map((a) => {
+      const items = DB.shoppingList.filter((s) => s.aisle === a).sort((x, y) => (x.checked - y.checked) || (x.createdAt || "").localeCompare(y.createdAt || ""));
+      if (!items.length) return "";
+      return `<div class="aisle-h">${a}</div>` + items.map((it) => `
+        <div class="shopping-item">
+          <div class="shopping-check ${it.checked ? "done" : ""}" data-toggle-shop="${it.id}">${it.checked ? "✓" : ""}</div>
+          <div class="shopping-text ${it.checked ? "done" : ""}" data-aisle-item="${it.id}" title="Tap to move to another aisle">${esc(it.text)}</div>
+          <button class="shopping-del" data-delete-shop="${it.id}">×</button>
+        </div>`).join("");
+    }).join("");
+  }
+  function shoppingText() {
+    return "Shopping list\n" + AISLES.map((a) => { const items = DB.shoppingList.filter((s) => s.aisle === a && !s.checked); return items.length ? `\n${a}\n` + items.map((s) => "• " + s.text).join("\n") : ""; }).join("\n");
+  }
+  async function shareShoppingList() {
+    if (!DB.shoppingList.some((s) => !s.checked)) { showToast("Nothing left on the list to share."); return; }
+    const text = shoppingText();
+    if (navigator.share) { try { await navigator.share({ title: "Shopping list", text }); return; } catch (e) { if (e && e.name === "AbortError") return; } }
+    try { await navigator.clipboard.writeText(text); showToast("List copied. Paste it into a text or email."); }
+    catch (e) { openModal({ title: "Shopping list", extraHtml: `<div class="field"><textarea readonly style="min-height:220px;">${esc(text)}</textarea></div>`, secondaryLabel: "Close", onSecondary: closeModal }); }
+  }
+  function openAisleChooser(id) {
+    const it = DB.shoppingList.find((s) => s.id === id); if (!it) return;
+    openModal({ title: "Move to an aisle", bodyText: it.text, extraHtml: `<div class="filter-row" style="margin-top:.6rem;">${AISLES.map((a) => `<button class="tool-chip ${it.aisle === a ? "on" : ""}" data-aisle="${a}">${a}</button>`).join("")}</div>`, secondaryLabel: "Close", onSecondary: closeModal });
+    document.getElementById("modal-extra-body").addEventListener("click", (e) => { const b = e.target.closest("[data-aisle]"); if (b) { it.aisle = b.dataset.aisle; sv(); closeModal(); renderShoppingList(); } });
+  }
+
+  (function featInit() {
+    // The generate button gets the new version that adds amounts up.
+    const gb = document.getElementById("generate-shopping-btn");
+    const nb = gb.cloneNode(true); gb.replaceWith(nb); nb.addEventListener("click", generateShopping);
+    // New items typed in by hand go to the right aisle.
+    document.getElementById("shopping-add-input").addEventListener("keydown", (e) => { if (e.key === "Enter") document.getElementById("shopping-add-btn").click(); });
+    document.getElementById("shopping-list-body").addEventListener("click", (e) => { const a = e.target.closest("[data-aisle-item]"); if (a) openAisleChooser(Number(a.dataset.aisleItem)); });
+    document.getElementById("meal-list").addEventListener("click", (e) => {
+      const f = e.target.closest("[data-fav-meal]"); if (f) { const m = findMeal(Number(f.dataset.favMeal)); if (m) { m.fav = !m.fav; sv(); renderMealList(); showToast(m.fav ? "Added to favorites." : "Removed from favorites."); } }
+    });
+    document.addEventListener("click", (e) => { const f = e.target.closest("[data-mfilter]"); if (f) { mealFilter = f.dataset.mfilter; renderMealList(); } });
+  })();
+
+  /* =========================================================
+     PRINTABLE PAGES (PDF made on the device)
+     ========================================================= */
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
+  const SLOTS = ["breakfast", "lunch", "dinner"];
+  function weekDays(start) { const out = []; for (let i = 0; i < 7; i++) out.push(addDays(start, i)); return out; }
+  function weekLabel(start) { const end = addDays(start, 6); return `${start.toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`; }
+  function slotMealName(key, slot) { const e = DB.mealPlan[key]; const m = e && e[slot] ? findMeal(e[slot]) : null; return m ? m.name : ""; }
+  function accentHex() { const v = getComputedStyle(document.body).getPropertyValue("--accent-b").trim(); return /^#[0-9a-f]{6}$/i.test(v) ? v : "#c9823f"; }
+  const PRINT_OPTS = [
+    { h: "Filled in from the app" },
+    { k: "week", t: "This week's meal plan", s: "Every breakfast, lunch and dinner for the week shown" },
+    { k: "shop", t: "Shopping list", s: "Everything still on your list, sorted by aisle" },
+    { k: "weekshop", t: "Meal plan + shopping list", s: "Both on one PDF, ready for the fridge" },
+    { k: "meals", t: "My quick meals", s: "Every saved meal with its ingredients" },
+    { h: "Blank pages to fill in by hand" },
+    { k: "bweek", t: "Blank weekly meal planner", s: "Breakfast, lunch, dinner and snacks for 7 days" },
+    { k: "bshop", t: "Blank shopping list", s: "Sorted by aisle: produce, dairy, pantry and more" },
+    { k: "bcards", t: "Blank meal cards", s: "4 cards per page for meal names and ingredients" },
+    { k: "ball", t: "All blank pages", s: "Every blank page in one PDF" }
+  ];
+  function openPrintPages() {
+    const html = PRINT_OPTS.map((o) => o.h ? `<div class="print-h">${o.h}</div>` : `<button class="print-row" data-print="${o.k}"><span><b>${o.t}</b><small>${o.s}</small></span><span style="color:var(--accent-b);">→</span></button>`).join("");
+    openModal({ title: "Printable pages", bodyText: "Pick a page. You get a PDF you can print or save. It is made on your device, and nothing is uploaded.", extraHtml: html, secondaryLabel: "Close", onSecondary: closeModal });
+    document.getElementById("modal-extra-body").querySelectorAll("[data-print]").forEach((b) => b.addEventListener("click", () => { closeModal(); makePrint(b.dataset.print); }));
+  }
+  function pWeek(k) {
+    const start = currentWeekStart(), names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    k.newPage("Meal Plan", weekLabel(start), true);
+    const rowH = Math.floor((k.y - k.BOTTOM - 19 - 14) / 7);
+    k.table([{ label: "Day", w: 100, bold: true }, { label: "Breakfast", w: 160 }, { label: "Lunch", w: 160 }, { label: "Dinner", w: 160 }, { label: "Snack", w: 130 }],
+      weekDays(start).map((d, i) => { const key = todayKey(d); return [names[i] + "  " + (d.getMonth() + 1) + "/" + d.getDate()].concat(ALL_SLOTS.map((s) => slotText(slotValue(DB.mealPlan[key], s)))); }), rowH);
+  }
+  function pShop(k) {
+    const items = DB.shoppingList.filter((s) => !s.checked).sort((a, b) => (a.createdAt || "").localeCompare(b.createdAt || ""));
+    k.newPage("Shopping List", items.length + (items.length === 1 ? " item" : " items") + "  ·  " + new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }), false);
+    if (!items.length) { k.text("Your shopping list is empty.", k.M, k.y, 10, { color: k.soft }); k.y -= 20; }
+    else AISLES.forEach((a) => { const g = items.filter((s) => (s.aisle || guessAisle(s.text)) === a); if (!g.length) return; k.room(40); k.section(a); k.checks(g.map((s) => s.text), 2); k.y -= 4; });
+    k.y -= 8; k.section("Also need"); k.checks(Math.max(4, Math.min(16, Math.floor((k.y - k.BOTTOM) / 20) * 2)), 2);
+  }
+  function pMeals(k) {
+    const meals = DB.meals.slice().sort((a, b) => a.name.localeCompare(b.name));
+    k.newPage("My Quick Meals", meals.length + (meals.length === 1 ? " meal" : " meals"), false);
+    if (!meals.length) { k.text("No quick meals saved yet.", k.M, k.y, 10, { color: k.soft }); return; }
+    meals.sort((a, b) => (b.fav ? 1 : 0) - (a.fav ? 1 : 0) || a.name.localeCompare(b.name)).forEach((m) => { k.room(46 + Math.ceil(m.ingredients.length / 2) * 20); k.section((m.fav ? "* " : "") + m.name); if ((m.tags || []).length) { k.text(m.tags.join("  ·  "), k.M, k.y + 4, 8.5, { color: k.soft }); k.y -= 12; } if (m.ingredients.length) k.checks(m.ingredients, 2); else { k.text("No ingredients listed.", k.M, k.y, 9.5, { color: k.soft }); k.y -= 18; } k.y -= 6; });
+  }
+  function pBlankWeek(k) {
+    k.newPage("Weekly Meal Planner", "Week of ____________________", true);
+    const rowH = Math.floor((k.y - k.BOTTOM - 19 - 14) / 7);
+    k.table([{ label: "Day", w: 90, bold: true }, { label: "Breakfast", w: 160 }, { label: "Lunch", w: 160 }, { label: "Dinner", w: 160 }, { label: "Snacks", w: 130 }],
+      ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((d) => [d, "", "", "", ""]), rowH);
+  }
+  function pBlankShop(k) {
+    k.newPage("Shopping List", "Store ____________________   Date ______________", false);
+    const groups = ["Produce", "Meat + fish", "Dairy + eggs", "Bakery", "Pantry", "Frozen", "Snacks + drinks", "Household"];
+    const colW = (k.CW - 24) / 2, top = k.y, perCol = 4, lines = 5, gh = 22 + lines * 20 + 10;
+    groups.forEach((g, i) => {
+      const c = Math.floor(i / perCol), r = i % perCol, x = k.M + c * (colW + 24); let y = top - r * gh;
+      k.text(g, x, y, 11, { bold: true, color: k.accent, maxW: colW }); y -= 20;
+      for (let j = 0; j < lines; j++) { k.box(x, y - 3, 10, false); k.hline(x + 16, x + colW, y - 3, k.faint); y -= 20; }
+    });
+    k.y = top - perCol * gh;
+  }
+  function pBlankCards(k) {
+    k.newPage("Meal Cards", "Write down meals your family likes, then plan your week from them.", false);
+    const W = (k.CW - 20) / 2, H = (k.y - k.BOTTOM - 20) / 2, top = k.y;
+    for (let i = 0; i < 4; i++) {
+      const x = k.M + (i % 2) * (W + 20), yt = top - Math.floor(i / 2) * (H + 20);
+      k.rect(x, yt - H, W, H, { bw: 0.8 });
+      k.page.drawRectangle({ x, y: yt - 6, width: W, height: 6, color: k.accent });
+      k.field("Meal", x + 12, yt - 30, W - 24); k.field("Serves", x + 12, yt - 54, (W - 36) / 2); k.field("Time", x + 24 + (W - 36) / 2, yt - 54, (W - 36) / 2);
+      k.text("Ingredients", x + 12, yt - 80, 9.5, { bold: true, color: k.soft });
+      let y = yt - 100; while (y > yt - H + 16) { k.box(x + 12, y - 3, 9, false); k.hline(x + 26, x + W - 12, y - 3, k.faint); y -= 19; }
+    }
+    k.y = k.BOTTOM;
+  }
+  function makePrint(kind) {
+    const slug = "meal-planner";
+    const map = {
+      week: [(k) => pWeek(k), "meal-plan-" + todayKey(currentWeekStart()) + ".pdf"],
+      shop: [(k) => pShop(k), "shopping-list-" + todayKey(new Date()) + ".pdf"],
+      weekshop: [(k) => { pWeek(k); pShop(k); }, "meal-plan-and-shopping-list-" + todayKey(currentWeekStart()) + ".pdf"],
+      meals: [(k) => pMeals(k), "my-quick-meals.pdf"],
+      bweek: [(k) => pBlankWeek(k), "weekly-meal-planner-blank.pdf"],
+      bshop: [(k) => pBlankShop(k), "shopping-list-blank.pdf"],
+      bcards: [(k) => pBlankCards(k), "meal-cards-blank.pdf"],
+      ball: [(k) => { pBlankWeek(k); pBlankShop(k); pBlankCards(k); }, slug + "-printables.pdf"]
+    };
+    const m = map[kind]; if (!m) return;
+    MFSPrint.run(m[0], m[1], { accent: accentHex(), footer: "Meal Planner · Mobile First Studio" }, (msg) => showToast(msg));
+  }
+
+  /* =========================================================
+     COMPUTER LAYOUT (900px and wider)
+     ========================================================= */
+  function mpIsDesk() { return window.matchMedia("(min-width:900px)").matches; }
+  const MP_ICONS = {
+    week: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    meals: '<path d="M7 3v8a3 3 0 0 0 6 0V3M10 3v18M17 3c-2 2-2 6 0 8v10"/>',
+    shopping: '<path d="M3 4h2l2.5 11h11L21 7H7"/><circle cx="9" cy="19" r="1.5"/><circle cx="18" cy="19" r="1.5"/>',
+    print: '<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/>',
+    backup: '<path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19 10a4 4 0 0 1 0 8z"/>'
+  };
+  function mpSideItem(key, label, n) {
+    const onBackup = document.getElementById("screen-backup").classList.contains("active-screen");
+    const on = key === "backup" ? onBackup : (!onBackup && key === mainTab);
+    return `<button class="mp-item ${on ? "on" : ""}" data-side="${key}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${MP_ICONS[key]}</svg>${label}${n !== undefined ? `<span class="n">${n}</span>` : ""}</button>`;
+  }
+  function renderSide() {
+    const el = document.querySelector(".mp-side"); if (!el) return;
+    const left = DB.shoppingList.filter((s) => !s.checked).length;
+    el.innerHTML = `<div class="mp-brand"><div class="e">Mobile First Studio</div><div class="t">Meal Planner</div></div>`
+      + mpSideItem("week", "This Week") + mpSideItem("meals", "Quick Meals", DB.meals.length) + mpSideItem("shopping", "Shopping List", left)
+      + `<div class="mp-sep"></div>` + mpSideItem("print", "Printable pages") + mpSideItem("backup", "Backup &amp; Sync");
+  }
+  function renderDeskWeek() {
+    const kpi = document.getElementById("mp-kpi"), extra = document.getElementById("mp-extra");
+    if (!kpi || !extra) return;
+    const start = currentWeekStart(), keys = weekDays(start).map(todayKey);
+    let planned = 0, dinners = 0;
+    let made = 0;
+    keys.forEach((key) => { const e = DB.mealPlan[key]; if (!e) return; ALL_SLOTS.forEach((s) => { if (slotText(e[s])) { planned++; if (s === "dinner") dinners++; if (isMade(e, s)) made++; } }); });
+    const left = DB.shoppingList.filter((s) => !s.checked).sort((a, b) => AISLES.indexOf(a.aisle || guessAisle(a.text)) - AISLES.indexOf(b.aisle || guessAisle(b.text)));
+    kpi.innerHTML = `<div class="mp-k"><div class="l">Planned this week</div><div class="v">${planned} <span style="font-size:1rem;color:var(--text-faint)">of 28</span></div><div class="s">${made} made so far</div></div>
+      <div class="mp-k"><div class="l">Dinners planned</div><div class="v">${dinners} <span style="font-size:1rem;color:var(--text-faint)">of 7</span></div><div class="s">${7 - dinners ? (7 - dinners) + " still open" : "every night covered"}</div></div>
+      <div class="mp-k"><div class="l">Shopping list</div><div class="v">${left.length}</div><div class="s">items left to buy</div></div>
+      <div class="mp-k"><div class="l">Quick meals</div><div class="v">${DB.meals.length}</div><div class="s">${DB.meals.filter((m) => m.fav).length} favorites</div></div>`;
+    // most planned meals over the last 4 weeks and the next week
+    const counts = new Map(), from = todayKey(addDays(startOfWeek(new Date()), -28)), to = todayKey(addDays(startOfWeek(new Date()), 13));
+    Object.keys(DB.mealPlan).forEach((key) => { if (key < from || key > to) return; const e = DB.mealPlan[key]; ALL_SLOTS.forEach((s) => { const m = e[s] && !SPECIAL[e[s]] ? findMeal(e[s]) : null; if (m) counts.set(m.id, (counts.get(m.id) || 0) + 1); }); });
+    const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 7), mx = top.length ? top[0][1] : 1;
+    const unused = DB.meals.filter((m) => !counts.has(m.id)).slice(0, 6);
+    extra.innerHTML = `<div class="card"><div class="card-header" style="display:flex;align-items:baseline;gap:.5rem;"><div class="card-title">Shopping list</div><div class="card-subtitle" style="margin:0;">${left.length} left</div><button class="list-item-action-btn" style="margin-left:auto;" data-side="shopping">Open list →</button></div>
+      ${left.length ? left.slice(0, 12).map((it) => `<div class="shopping-item"><div class="shopping-check" data-toggle-desk="${it.id}"></div><div class="shopping-text">${esc(it.text)}</div></div>`).join("") + (left.length > 12 ? `<div class="note">+ ${left.length - 12} more on the list</div>` : "") : `<div class="empty-state">Nothing left to buy. Generate a list from this week's plan.</div>`}</div>
+      <div class="card"><div class="card-header"><div class="card-title">Most planned meals</div><div class="card-subtitle">Last 4 weeks and the next 2</div></div>
+      ${top.length ? top.map(([id, n]) => `<div class="mp-bar"><div class="nm">${esc(findMeal(id).name)}</div><div class="tr"><span style="width:${Math.round(n / mx * 100)}%"></span></div><div class="c">${n} time${n === 1 ? "" : "s"}</div></div>`).join("") : `<div class="empty-state">Plan a few meals to see your favorites here.</div>`}
+      ${unused.length ? `<div class="backup-section-label" style="margin-top:.9rem;">Not planned lately</div><div>${unused.map((m) => `<span class="badge badge-tag">${esc(m.name)}</span>`).join("")}</div>` : ""}</div>`;
+  }
+  function mpRefresh() { renderSide(); renderDeskWeek(); }
+
+  (function mpInit() {
+    const _rw = renderWeekGrid; renderWeekGrid = function () { _rw(); mpRefresh(); };
+    const _rm = renderMealList; renderMealList = function () { _rm(); renderSide(); };
+    const _rs = renderShoppingList; renderShoppingList = function () { _rs(); mpRefresh(); };
+    const _sel = selectMainTab; selectMainTab = function (t) { if (document.getElementById("screen-backup").classList.contains("active-screen")) switchToTab("screen-home"); _sel(t); renderSide(); };
+    const _sw = switchToTab; switchToTab = function (id) { _sw(id); renderSide(); };
+    document.addEventListener("DOMContentLoaded", () => {
+      const app = document.querySelector(".app");
+      app.insertAdjacentHTML("afterbegin", '<aside class="mp-side"></aside>');
+      document.querySelector(".week-nav").insertAdjacentHTML("beforebegin", '<div class="mp-kpi" id="mp-kpi"></div>');
+      document.getElementById("generate-shopping-btn").insertAdjacentHTML("afterend", '<div class="mp-extra" id="mp-extra"></div>');
+      document.querySelector(".header-actions").insertAdjacentHTML("afterbegin", '<button class="theme-btn" id="print-btn" title="Printable pages"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + MP_ICONS.print + '</svg></button>');
+      document.getElementById("print-btn").addEventListener("click", openPrintPages);
+      const bd = document.querySelector("#screen-backup .backup-divider");
+      if (bd) bd.insertAdjacentHTML("afterend", '<div class="backup-divider"><div class="backup-section-label">Printable pages</div><button class="backup-btn primary" style="width:100%;" id="print-btn-2">Open printable pages</button></div>');
+      const p2 = document.getElementById("print-btn-2"); if (p2) p2.addEventListener("click", openPrintPages);
+      document.addEventListener("click", (e) => {
+        const s = e.target.closest("[data-side]");
+        if (s) { const k = s.dataset.side; if (k === "print") openPrintPages(); else if (k === "backup") switchToTab("screen-backup"); else selectMainTab(k); return; }
+        const t = e.target.closest("[data-toggle-desk]");
+        if (t) { const it = DB.shoppingList.find((x) => x.id === Number(t.dataset.toggleDesk)); if (it) { it.checked = true; sv(); renderShoppingList(); showToast("Checked off: " + it.text, "Undo", () => { it.checked = false; sv(); renderShoppingList(); }); } }
+      });
+      mpRefresh();
+    });
+  })();
+
+
+  /* ---------- free trial ---------- */
+  const DEMO_SAMPLE = {"theme":"cream","meals":[{"id":1000,"name":"Turkey Chili","ingredients":["1 lb ground turkey","1 can black beans","1 can diced tomatoes","1 onion","Chili powder","Shredded cheese"],"createdAt":"2026-09-01T04:00:00.000Z","tags":["Slow cooker","Budget"],"fav":true},{"id":1001,"name":"Sheet Pan Chicken + Veggies","ingredients":["2 lb chicken thighs","2 bell peppers","1 head broccoli","Olive oil","Garlic powder"],"createdAt":"2026-09-02T04:00:00.000Z","tags":["Healthy"],"fav":false},{"id":1002,"name":"Spaghetti + Meatballs","ingredients":["1 lb spaghetti","Frozen meatballs","1 jar marinara","Parmesan"],"createdAt":"2026-09-03T04:00:00.000Z","tags":["Kid friendly","Budget"],"fav":false},{"id":1003,"name":"Chicken Tacos","ingredients":["1 lb chicken breast","Taco seasoning","Tortillas","Salsa","1 onion","1 can black beans"],"createdAt":"2026-09-04T04:00:00.000Z","tags":["Quick","Kid friendly"],"fav":true},{"id":1004,"name":"Salmon + Rice Bowls","ingredients":["4 salmon fillets","Jasmine rice","Cucumber","Avocado","Soy sauce"],"createdAt":"2026-09-05T04:00:00.000Z","tags":[],"fav":false},{"id":1005,"name":"Overnight Oats","ingredients":["Rolled oats","Greek yogurt","Milk","Berries","Honey"],"createdAt":"2026-09-06T04:00:00.000Z","tags":["Quick","Healthy"],"fav":false},{"id":1006,"name":"Scrambled Eggs + Toast","ingredients":["1 dozen eggs","Bread","Butter"],"createdAt":"2026-09-07T04:00:00.000Z","tags":[],"fav":false},{"id":1007,"name":"Turkey Wraps","ingredients":["Deli turkey","Tortillas","Spinach","Cheddar slices"],"createdAt":"2026-09-08T04:00:00.000Z","tags":[],"fav":false},{"id":1008,"name":"Greek Salad","ingredients":["Romaine","Cucumber","Feta","Kalamata olives","Red onion"],"createdAt":"2026-09-09T04:00:00.000Z","tags":["Vegetarian","Healthy","Quick"],"fav":false},{"id":1009,"name":"Homemade Pizza Night","ingredients":["Pizza dough","Mozzarella","Pepperoni","Pizza sauce"],"createdAt":"2026-09-10T04:00:00.000Z","tags":["Kid friendly"],"fav":true},{"id":1010,"name":"Pancake Breakfast","ingredients":["Pancake mix","Eggs","Maple syrup","Berries"],"createdAt":"2026-09-11T04:00:00.000Z","tags":[],"fav":false}],"mealPlan":{"2026-10-05":{"breakfast":1005,"lunch":1007,"dinner":1004},"2026-10-06":{"breakfast":1006,"lunch":1008,"dinner":1002},"2026-10-07":{"breakfast":1006,"lunch":1000,"dinner":1000},"2026-10-08":{"breakfast":1005,"lunch":1008,"dinner":1001},"2026-10-09":{"breakfast":1006,"lunch":1007,"dinner":1002},"2026-10-10":{"breakfast":1010,"lunch":1008,"dinner":1002},"2026-10-11":{"breakfast":1006,"lunch":null,"dinner":1003},"2026-10-12":{"breakfast":1006,"lunch":1007,"dinner":1000},"2026-10-13":{"breakfast":1006,"lunch":1008,"dinner":1003},"2026-10-14":{"breakfast":1006,"lunch":1000,"dinner":1001},"2026-10-15":{"breakfast":1006,"lunch":1008,"dinner":1002},"2026-10-16":{"breakfast":1006,"lunch":1007,"dinner":1003},"2026-10-17":{"breakfast":1010,"lunch":1008,"dinner":1003},"2026-10-18":{"breakfast":1006,"lunch":null,"dinner":1004},"2026-10-19":{"breakfast":1005,"lunch":1007,"dinner":1001,"made":{"breakfast":true,"dinner":true},"snack":1005},"2026-10-20":{"breakfast":1006,"lunch":1008,"dinner":1004,"made":{"dinner":true}},"2026-10-21":{"breakfast":1006,"lunch":1000,"dinner":1002},"2026-10-22":{"breakfast":1005,"lunch":1008,"dinner":1003},"2026-10-23":{"breakfast":1006,"lunch":1007,"dinner":"out"},"2026-10-24":{"breakfast":1010,"lunch":"leftovers","dinner":1004},"2026-10-25":{"breakfast":1006,"lunch":1009,"dinner":1000},"2026-10-26":{"breakfast":1006,"lunch":1007,"dinner":1001,"snack":1005},"2026-10-27":{"breakfast":1006,"lunch":1008,"dinner":1004},"2026-10-28":{"breakfast":1006,"lunch":1000,"dinner":1002},"2026-10-29":{"breakfast":1006,"lunch":1008,"dinner":1003},"2026-10-30":{"breakfast":1006,"lunch":1007,"dinner":"out"},"2026-10-31":{"breakfast":1010,"lunch":"leftovers","dinner":1004},"2026-11-01":{"breakfast":1006,"lunch":1009,"dinner":1000}},"shoppingList":[{"id":1792704606067,"text":"Rolled oats","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.281Z"},{"id":1792704606114,"text":"Greek yogurt","checked":false,"auto":true,"aisle":"Dairy + eggs","createdAt":"2026-10-22T21:30:05.281Z"},{"id":1792704605450,"text":"Milk","checked":false,"auto":true,"aisle":"Dairy + eggs","createdAt":"2026-10-22T21:30:05.281Z"},{"id":1792704605700,"text":"Berries","checked":true,"auto":true,"aisle":"Produce","createdAt":"2026-10-22T21:30:05.281Z"},{"id":1792704605683,"text":"Honey","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.281Z"},{"id":1792704605451,"text":"Deli turkey","checked":false,"auto":true,"aisle":"Meat + fish","createdAt":"2026-10-22T21:30:05.281Z"},{"id":1792704606125,"text":"Tortillas","checked":false,"auto":true,"aisle":"Bakery","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605424,"text":"Spinach","checked":false,"auto":true,"aisle":"Produce","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605602,"text":"Cheddar slices","checked":false,"auto":true,"aisle":"Dairy + eggs","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605398,"text":"2 lb chicken thighs","checked":false,"auto":true,"aisle":"Meat + fish","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605714,"text":"2 bell peppers","checked":false,"auto":true,"aisle":"Produce","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605585,"text":"1 head broccoli","checked":false,"auto":true,"aisle":"Produce","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606002,"text":"Olive oil","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605919,"text":"Garlic powder","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605491,"text":"4 dozen eggs","checked":false,"auto":true,"aisle":"Dairy + eggs","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605993,"text":"Bread","checked":false,"auto":true,"aisle":"Bakery","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605530,"text":"Butter","checked":false,"auto":true,"aisle":"Dairy + eggs","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606231,"text":"Romaine","checked":false,"auto":true,"aisle":"Produce","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605875,"text":"Cucumber","checked":false,"auto":true,"aisle":"Produce","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605863,"text":"Feta","checked":false,"auto":true,"aisle":"Dairy + eggs","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606138,"text":"Kalamata olives","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606106,"text":"Red onion","checked":false,"auto":true,"aisle":"Produce","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606045,"text":"8 salmon fillets","checked":false,"auto":true,"aisle":"Meat + fish","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606235,"text":"Jasmine rice","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605600,"text":"Avocado","checked":false,"auto":true,"aisle":"Produce","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605385,"text":"Soy sauce","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606160,"text":"2 lb ground turkey","checked":false,"auto":true,"aisle":"Meat + fish","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606226,"text":"3 cans black beans","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605516,"text":"2 cans diced tomatoes","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605756,"text":"3 onions","checked":false,"auto":true,"aisle":"Produce","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605657,"text":"Chili powder","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605359,"text":"Shredded cheese","checked":false,"auto":true,"aisle":"Dairy + eggs","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606279,"text":"1 lb spaghetti","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606237,"text":"Frozen meatballs","checked":false,"auto":true,"aisle":"Frozen","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606237,"text":"1 jar marinara","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605538,"text":"Parmesan","checked":false,"auto":true,"aisle":"Dairy + eggs","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606066,"text":"1 lb chicken breast","checked":false,"auto":true,"aisle":"Meat + fish","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606064,"text":"Taco seasoning","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605996,"text":"Salsa","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605466,"text":"Pancake mix","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605687,"text":"Eggs","checked":false,"auto":true,"aisle":"Dairy + eggs","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605882,"text":"Maple syrup","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605688,"text":"Pizza dough","checked":false,"auto":true,"aisle":"Bakery","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704606273,"text":"Mozzarella","checked":false,"auto":true,"aisle":"Dairy + eggs","createdAt":"2026-10-22T21:30:05.282Z"},{"id":1792704605881,"text":"Pepperoni","checked":false,"auto":true,"aisle":"Meat + fish","createdAt":"2026-10-22T21:30:05.283Z"},{"id":1792704605422,"text":"Pizza sauce","checked":false,"auto":true,"aisle":"Pantry","createdAt":"2026-10-22T21:30:05.283Z"}],"weekTemplates":[{"id":1792704604727,"name":"Busy school week","days":[{"breakfast":1005,"lunch":1007,"dinner":1001,"snack":1005},{"breakfast":1006,"lunch":1008,"dinner":1004,"snack":null},{"breakfast":1006,"lunch":1000,"dinner":1002,"snack":null},{"breakfast":1005,"lunch":1008,"dinner":1003,"snack":null},{"breakfast":1006,"lunch":1007,"dinner":"out","snack":null},{"breakfast":1010,"lunch":"leftovers","dinner":1004,"snack":null},{"breakfast":1006,"lunch":1009,"dinner":1000,"snack":null}],"savedAt":"2026-10-22T21:30:04.452Z"}]};
+  function demoSampleDB() {
+    const d = JSON.parse(JSON.stringify(DEMO_SAMPLE));
+    const ds = (x) => x.getFullYear() + "-" + String(x.getMonth() + 1).padStart(2, "0") + "-" + String(x.getDate()).padStart(2, "0");
+    const mon = new Date(); mon.setHours(0, 0, 0, 0); mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7));
+    const shift = Math.round((mon - new Date(2026, 9, 19)) / 86400000), today = ds(new Date()), plan = {};
+    Object.keys(d.mealPlan).forEach((k) => { const p = k.split("-"), x = new Date(+p[0], p[1] - 1, +p[2] + shift), nk = ds(x), e = d.mealPlan[k]; if (nk > today) delete e.made; plan[nk] = e; });
+    d.mealPlan = plan; const now = new Date().toISOString(); d.shoppingList.forEach((it) => { it.createdAt = now; });
+    return d;
+  }
+  function demoHasData() { return DB.meals.length > 0 || Object.keys(DB.mealPlan || {}).length > 0 || DB.shoppingList.length > 0; }
+  function loadSampleData() {
+    const go = () => {
+      const theme = DB.theme; DB = Object.assign(defaultDB(), demoSampleDB()); DB.theme = theme || "cream";
+      sv(); closeModal(); applyTheme(); renderWeekGrid(); renderMealList(); renderShoppingList(); renderLocalRestoreUndo();
+      switchToTab("screen-home"); selectMainTab("week"); document.querySelectorAll(".sample-link").forEach((e) => e.remove());
+      showToast("Sample data loaded. Explore every tab.");
+    };
+    if (!demoHasData()) { go(); return; }
+    openModal({ title: "Load sample data?", bodyText: "This replaces what you have entered in the trial with example meals, a planned week and a shopping list.", ctaLabel: "Load it", onCta: go, secondaryLabel: "Cancel", onSecondary: closeModal });
+  }
+  function demoSampleButton() {
+    const card = document.querySelector("#screen-home > .card"); if (!card) return;
+    const btn = card.querySelector(".sample-link");
+    if (demoHasData()) { if (btn) btn.remove(); return; }
+    if (!btn) card.insertAdjacentHTML("afterbegin", '<button type="button" class="sample-link" onclick="loadSampleData()">Just looking? See it with sample data</button>');
+  }
+  const DEMO_TRIAL_DAYS = 14;
+  function demoSinceMs(s) { const p = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ""); if (p) return new Date(+p[1], p[2] - 1, +p[3]).getTime(); const n = parseInt(s, 10); return isNaN(n) ? Date.now() : n; }
+  function demoTrialDaysLeft() { const KEY = "mp_demo_since"; let since = null; try { since = localStorage.getItem(KEY); } catch (e) {} if (!since) { since = String(Date.now()); try { localStorage.setItem(KEY, since); } catch (e) {} } return DEMO_TRIAL_DAYS - Math.floor((Date.now() - demoSinceMs(since)) / 86400000); }
+  function enforceDemoTrial() {
+    const left = demoTrialDaysLeft(), banner = document.getElementById("demo-banner"), lock = document.getElementById("trial-lock");
+    if (left <= 0) { if (lock) lock.style.display = "flex"; if (banner) banner.style.display = "none"; document.body.style.overflow = "hidden"; return true; }
+    if (banner) banner.innerHTML = "<b>Free trial</b>: " + left + " day" + (left === 1 ? "" : "s") + ' left. <a href="https://www.etsy.com/listing/4563390783/meal-planner-app-weekly-meal-plan-auto" target="_blank" rel="noopener">Get the full app &rarr;</a>';
+    return false;
+  }
+  (function demoInit() {
+    const _w = renderWeekGrid; renderWeekGrid = function () { _w(); demoSampleButton(); };
+    const _m = renderMealList; renderMealList = function () { _m(); demoSampleButton(); };
+    const _s = renderShoppingList; renderShoppingList = function () { _s(); demoSampleButton(); };
+    document.addEventListener("DOMContentLoaded", () => { enforceDemoTrial(); demoSampleButton(); });
+    enforceDemoTrial(); setInterval(enforceDemoTrial, 60000);
+  })();
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
