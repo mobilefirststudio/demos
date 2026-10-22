@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="Standard Home Maintenance Scheduler"/>
+<meta name="apple-mobile-web-app-title" content="Home Demo"/>
 <meta name="theme-color" content="#FAF6EE"/>
-<link rel="manifest" href="./manifest.json"/>
-<link rel="apple-touch-icon" href="./icons/icon-192.png"/>
-<title>Standard Home Maintenance Scheduler — Mobile First Studio</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<title>Home Maintenance Tracker | Free Trial</title>
 <style>
 :root, [data-theme="light"] {
   --bg: #FAF6EE;
@@ -76,20 +76,6 @@ header.topbar .brand {
   color: var(--slate-accent);
 }
 header.topbar .brand .accent { color: var(--gold); }
-.tier-badge {
-  align-self: flex-start;
-  font-family: -apple-system, sans-serif;
-  font-size: 9.5px;
-  font-weight: 700;
-  letter-spacing: 0.8px;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-.tier-badge-standard {
-  background: var(--gold-soft);
-  color: var(--gold);
-  border: 1px solid var(--gold);
-}
 .header-icons { display: flex; gap: 8px; }
 .icon-btn {
   width: 38px; height: 38px;
@@ -769,73 +755,87 @@ nav.tabbar button.active { color: var(--gold); }
   white-space: nowrap;
   flex-shrink: 0;
 }
+.sheet-lede { color: var(--text-dim); font-size: 13.5px; line-height: 1.5; margin: -6px 0 14px; }
+.print-opt { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 13px 14px; margin-bottom: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--card); color: var(--text); cursor: pointer; font-family: inherit; }
+.print-opt:hover { border-color: var(--gold); }
+.print-opt:active { transform: scale(0.99); }
+.print-opt-ico { width: 36px; height: 36px; border-radius: 9px; background: var(--gold-soft); color: var(--gold); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.print-opt-ico svg { width: 18px; height: 18px; margin: 0 !important; vertical-align: 0 !important; }
+.print-opt-label { display: block; font-size: 14px; font-weight: 600; }
+.print-opt-sub { display: block; font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
 
-/* ---- demo trial banner / upsell / lock ---- */
-.demo-banner {
-  display: none;
-  flex-shrink: 0;
-  background: linear-gradient(135deg, var(--slate-accent), var(--gold));
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
-  padding: 9px 16px;
-  line-height: 1.4;
+/* ===== Computer layout (900px and wider) ===== */
+.side-brand,.side-sep,.desk-title,nav.tabbar button.side-x{display:none}
+.dk-cols,.dk-c{display:block}
+@media (min-width:900px){
+  html{background:var(--bg)}
+  #app{max-width:none;margin:0;height:100dvh;display:grid;grid-template-columns:248px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);box-shadow:none!important;background:var(--bg)}
+  nav.tabbar{grid-column:1;grid-row:1/3;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:3px;border-top:none;border-right:1px solid var(--border);padding:26px 14px;overflow-y:auto}
+  .side-brand{display:block;padding:2px 12px 22px}
+  .side-brand .e{font-size:10px;letter-spacing:.16em;font-weight:700;color:var(--text-faint)}
+  .side-brand .t{font-size:20px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-top:6px;color:var(--text)}
+  .side-brand .t span{color:var(--gold)}
+  nav.tabbar button.tab-btn,nav.tabbar button.side-x{flex:0 0 auto;flex-direction:row;justify-content:flex-start;align-items:center;gap:12px;font-size:14px;font-weight:600;padding:11px 14px;border-radius:10px;width:100%;color:var(--text-dim)}
+  nav.tabbar button.side-x{display:flex;background:none;border:none;cursor:pointer;font-family:inherit}
+  .side-x svg{width:20px;height:20px;stroke:currentColor;fill:none}
+  nav.tabbar button.tab-btn:hover,nav.tabbar button.side-x:hover{background:var(--card-raised);color:var(--text)}
+  nav.tabbar button.tab-btn.active{background:var(--gold-soft);color:var(--gold)}
+  .side-sep{display:block;height:1px;background:var(--border);margin:12px 10px}
+  header.topbar,main{grid-column:2}
+  header.topbar{padding:28px max(40px,calc((100% - 1240px)/2)) 14px;align-items:center}
+  header.topbar .brand-block{display:none}
+  .desk-title{display:block;font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--text)}
+  .desk-title small{display:block;font-size:13px;font-weight:500;color:var(--text-faint);letter-spacing:0;margin-top:3px}
+  main{padding:0 max(40px,calc((100% - 1240px)/2)) 60px;scrollbar-width:thin}
+  main::-webkit-scrollbar{width:8px}
+  .fab{right:40px;bottom:32px}
+  .toast{left:calc(50% + 124px);bottom:40px}
+  .sheet-backdrop{align-items:center;padding:24px}
+  .sheet{border-radius:16px;max-width:560px;transform:none!important;transition:none;max-height:90vh}
+  .sheet-handle{display:none}
+  .section-title{margin-top:22px}
+  .dk-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 28px;align-items:start}
+  .dk-c>.section-title:first-child{margin-top:22px}
+  #tab-home .dash-grid{max-width:760px}
+  #taskList,#seasonalList,#cleaningList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px;align-items:start}
+  #taskList>.empty-state,#taskList>.suggestion-chips,#seasonalList>.empty-state,#seasonalList>.section-title,#cleaningList>.empty-state,#cleaningList>.suggestion-chips,#cleaningList>.section-title{grid-column:1/-1}
+  .filter-scroll-row{flex-wrap:wrap;overflow:visible}
+  .filter-scroll-fade{display:none}
+  .cleaning-member-filter{max-width:320px}
 }
-.demo-banner.show { display: block; }
-.demo-banner a { color: #fff; text-decoration: underline; font-weight: 800; }
-.upsell-link {
-  display: inline-block;
-  background: linear-gradient(135deg, var(--slate-accent), var(--gold));
-  color: #fff;
-  font-weight: 700;
-  font-size: 13.5px;
-  padding: 12px 20px;
-  border-radius: var(--radius-sm);
-  text-decoration: none;
+@media (min-width:900px) and (max-width:1199px){
+  #taskList,#seasonalList,#cleaningList{grid-template-columns:minmax(0,1fr)}
 }
-#trial-lock {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-#trial-lock.show { display: flex; }
-.trial-lock-box {
-  background: var(--card-raised);
-  border-radius: 16px;
-  padding: 30px 26px;
-  text-align: center;
-  max-width: 360px;
-}
-.trial-lock-icon { font-size: 34px; margin-bottom: 12px; }
-.trial-lock-title {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-weight: 700;
-  font-size: 19px;
-  color: var(--text);
-  margin-bottom: 10px;
-}
-.trial-lock-text {
-  font-size: 13.5px;
-  color: var(--text-dim);
-  line-height: 1.6;
-  margin-bottom: 20px;
+
+/* ===== Free trial ===== */
+.demo-banner { flex-shrink: 0; background: linear-gradient(135deg, #4A9EA3, #007A86); color: #fff; text-align: center; padding: 8px 16px; font-size: 12px; font-weight: 600; line-height: 1.4; z-index: 10; }
+.demo-banner a { color: #fff; text-decoration: underline; font-weight: 700; white-space: nowrap; }
+#trial-lock { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(20,24,26,0.78); align-items: center; justify-content: center; padding: 24px; }
+.lock-card { background: var(--card-raised); border-radius: 16px; padding: 28px 24px; max-width: 360px; text-align: center; }
+.lock-icon { width: 56px; height: 56px; border-radius: 50%; background: var(--gold-soft); color: var(--gold); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.lock-title { font-size: 19px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+.lock-text { font-size: 14px; color: var(--text-dim); line-height: 1.55; margin-bottom: 20px; }
+.lock-cta, .upsell-btn { display: inline-block; background: var(--gold); color: var(--bg); padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 14px; }
+.upsell-card { background: var(--gold-soft); border: 1px solid var(--gold); border-radius: var(--radius-sm); padding: 14px 16px; margin: 4px 0 8px; }
+.upsell-title { font-weight: 700; font-size: 14px; color: var(--gold); margin-bottom: 6px; }
+.upsell-text { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; margin-bottom: 12px; }
+.upsell-btn { padding: 9px 18px; font-size: 13px; }
+.fab { bottom: 90px; }
+@media (min-width: 900px) {
+  #app { grid-template-rows: auto auto minmax(0,1fr); }
+  .demo-banner { grid-column: 1 / -1; grid-row: 1; font-size: 13px; }
+  nav.tabbar { grid-row: 2 / 4; } header.topbar { grid-row: 2; } main { grid-row: 3; }
+  .fab { bottom: 32px; }
 }
 </style>
 </head>
 <body>
 <div id="app">
-  <div class="demo-banner" id="demo-banner"></div>
+  <div class="demo-banner" id="demo-banner"><b>Free trial</b>: try every feature for 14 days. <a href="https://www.etsy.com/listing/4553595439/home-maintenance-tracker-for-families" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
 
   <header class="topbar">
     <div class="brand-block">
-      <div class="brand" id="brandText">Standard Home <span class="accent">Maintenance</span></div>
-      <div class="tier-badge tier-badge-standard">STANDARD</div>
+      <div class="brand" id="brandText">Home Maintenance <span class="accent">Tracker</span></div>
     </div>
     <div class="header-icons">
       <div class="icon-btn-accent" onclick="toggleDarkMode()" title="Toggle light/dark mode" id="darkModeIconBtn">
@@ -847,6 +847,7 @@ nav.tabbar button.active { color: var(--gold); }
           <path d="M12 2.5v2.3M12 19.2v2.3M21.5 12h-2.3M4.8 12H2.5M18.6 5.4l-1.6 1.6M7 17l-1.6 1.6M18.6 18.6L17 17M7 7L5.4 5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
         </svg>
       </div>
+      <div class="icon-btn" onclick="openPrintMenu()" title="Printable pages" aria-label="Printable pages"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg></div>
       <div class="icon-btn" onclick="openSettings()"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
     </div>
   </header>
@@ -957,15 +958,6 @@ nav.tabbar button.active { color: var(--gold); }
       Setup
     </button>
   </nav>
-
-  <div id="trial-lock">
-    <div class="trial-lock-box">
-      <div class="trial-lock-icon">🔧</div>
-      <div class="trial-lock-title">Thanks for trying Standard Home Maintenance!</div>
-      <div class="trial-lock-text">Your 14 day free trial is up. Unlock the full app to keep tracking your tasks, appliances, and cleaning schedule.</div>
-      <a class="upsell-link" href="https://www.etsy.com/listing/4553595439/home-maintenance-tracker-for-families" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
-    </div>
-  </div>
 </div>
 
 
@@ -1168,26 +1160,54 @@ nav.tabbar button.active { color: var(--gold); }
   </div>
 </div>
 
+<!-- Print sheet -->
+<div class="sheet-backdrop" id="printSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>Printable pages</h3>
+    <p class="sheet-lede">Pick a page. You get a PDF you can print or save. It is made on your phone, and nothing is uploaded.</p>
+    <div id="printOptions"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closePrintMenu()">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- Settings sheet -->
 <div class="sheet-backdrop" id="settingsSheetBackdrop">
   <div class="sheet">
     <div class="sheet-handle"></div>
     <h3>Settings</h3>
     <div class="tier-info-card">
-      <div class="tier-info-title">Standard Home Maintenance</div>
+      <div class="tier-info-title">Home Maintenance Tracker</div>
       <div class="tier-info-list">
         <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Dashboard &amp; full calendar</div>
         <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Appliance profiles &amp; warranty alerts</div>
         <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Document uploads</div>
         <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Cleaning schedule &amp; chore assignments</div>
+        <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Printable schedules, checklists and blank forms</div>
         <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Light + dark mode</div>
         <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Google Drive backup</div>
       </div>
     </div>
-    <div class="tier-info-card" style="margin-bottom:16px">
-      <div class="tier-info-title">Unlock the Full App</div>
-      <div style="font-size:12px; color:var(--text-dim); margin-bottom:12px; line-height:1.5;">This free trial saves locally only. Unlock the full app to add optional Google Drive backup, so your maintenance history is safe even if you lose your phone.</div>
-      <a class="upsell-link" style="width:100%; text-align:center; box-sizing:border-box;" href="https://www.etsy.com/listing/4553595439/home-maintenance-tracker-for-families" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Printable pages</div>
+        <div class="lbl-sub">Schedules, checklists and blank forms</div>
+      </div>
+      <button class="settings-btn" onclick="closeSettings(); openPrintMenu()">Open</button>
+    </div>
+    <div class="upsell-card">
+      <div class="upsell-title">Google Drive backup is in the full app</div>
+      <div class="upsell-text">The full Home Maintenance Tracker backs up every task, appliance, document and chore to your own Google Drive, so your records follow you to a new phone. This free trial skips it, since trial data is not meant to be permanent.</div>
+      <a class="upsell-btn" href="https://www.etsy.com/listing/4553595439/home-maintenance-tracker-for-families" target="_blank" rel="noopener">Get the full app</a>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Sample home</div>
+        <div class="lbl-sub">Fill the trial with example tasks, appliances and chores</div>
+      </div>
+      <button class="settings-btn" onclick="closeSettings(); loadSampleData()">Load</button>
     </div>
     <div class="settings-row">
       <div>
@@ -1212,6 +1232,237 @@ nav.tabbar button.active { color: var(--gold); }
 
 <div class="toast" id="toast"></div>
 
+<div id="trial-lock">
+  <div class="lock-card">
+    <div class="lock-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+    <div class="lock-title">Your free trial has ended</div>
+    <div class="lock-text">You've had 14 days with Home Maintenance Tracker. Get the full app to keep every task, appliance and chore, with printable pages and Google Drive backup so your records are never at risk.</div>
+    <a class="lock-cta" href="https://www.etsy.com/listing/4553595439/home-maintenance-tracker-for-families" target="_blank" rel="noopener">Get the full app</a>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script>
+/* ── PRINTABLE PAGES (PDF made on the device with pdf-lib, same method as Life Admin HQ) ── */
+var MFSPrint=(function(){
+  // The built-in PDF fonts draw basic Latin letters only. Anything else is removed so the PDF never fails.
+  function safe(s){
+    return String(s==null?'':s)
+      .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[\r\n\t]+/g,' ')
+      .replace(/ ?[^\x20-\x7E\xA0-\xFF–—•…]+/g,'')
+      .trim();
+  }
+  function rgbHex(hex){
+    var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex||'');
+    if(!m)return PDFLib.rgb(.30,.40,.35);
+    return PDFLib.rgb(parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255);
+  }
+  var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function pd(ds){if(!ds)return new Date(NaN);var p=String(ds).split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+  function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function longDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+  function shortDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return MON[d.getMonth()].slice(0,3)+' '+d.getDate()+', '+d.getFullYear();}
+  function money(n){var v=parseFloat(n)||0;return(v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  async function create(opts){
+    opts=opts||{};
+    var doc=await PDFLib.PDFDocument.create();
+    var font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var bold=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    var k={doc:doc,font:font,bold:bold,W:612,H:792,M:46,CW:520,BOTTOM:62,page:null,y:0,title:'',landscape:false,
+      ink:PDFLib.rgb(.16,.16,.16),soft:PDFLib.rgb(.42,.42,.42),line:PDFLib.rgb(.66,.66,.66),faint:PDFLib.rgb(.84,.84,.84),
+      fill:PDFLib.rgb(.95,.95,.94),accent:rgbHex(opts.accent),footer:opts.footer||''};
+    // Shrink text a little to fit its space, then shorten it if it still does not fit.
+    k.fit=function(f,text,size,maxW,minSize){
+      var s=safe(text),sz=size,min=minSize||Math.max(6,size-2);
+      while(sz>min&&f.widthOfTextAtSize(s,sz)>maxW)sz-=0.25;
+      if(f.widthOfTextAtSize(s,sz)>maxW){
+        while(s.length>1&&f.widthOfTextAtSize(s+'...',sz)>maxW)s=s.slice(0,-1);
+        s=s.replace(/\s+$/,'')+'...';
+      }
+      return {text:s,size:sz};
+    };
+    k.text=function(text,x,y,size,o){
+      o=o||{};var f=o.bold?bold:font;
+      var r=k.fit(f,text,size,o.maxW||(k.W-k.M-x),o.minSize);
+      if(!r.text)return;
+      var w=f.widthOfTextAtSize(r.text,r.size);
+      var dx=o.align==='right'?(o.maxW-w):o.align==='center'?((o.maxW-w)/2):0;
+      k.page.drawText(r.text,{x:x+dx,y:y,size:r.size,font:f,color:o.color||k.ink});
+    };
+    k.hline=function(x1,x2,y,color,t){k.page.drawLine({start:{x:x1,y:y},end:{x:x2,y:y},thickness:t||.7,color:color||k.line});};
+    k.vline=function(x,y1,y2,color,t){k.page.drawLine({start:{x:x,y:y1},end:{x:x,y:y2},thickness:t||.7,color:color||k.line});};
+    k.rect=function(x,y,w,h,o){o=o||{};var r={x:x,y:y,width:w,height:h};if(o.fill)r.color=o.fill;if(o.border!==false){r.borderColor=o.border||k.line;r.borderWidth=o.bw||.7;}k.page.drawRectangle(r);};
+    k.newPage=function(title,sub,landscape){
+      var ls=landscape===undefined?k.landscape:!!landscape;k.landscape=ls;
+      k.W=ls?792:612;k.H=ls?612:792;k.CW=k.W-2*k.M;
+      k.page=doc.addPage([k.W,k.H]);k.title=title;
+      var y=k.H-k.M;
+      k.text(title,k.M,y-6,19,{bold:true,maxW:k.CW});
+      y-=24;
+      if(sub){k.text(sub,k.M,y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});y-=12;}
+      k.hline(k.M,k.M+k.CW,y,k.accent,1.2);
+      k.y=y-22;
+    };
+    k.contTitle=function(){return k.title.indexOf('(continued)')>-1?k.title:k.title+' (continued)';};
+    k.room=function(h){if(k.y-h<k.BOTTOM){k.newPage(k.contTitle());return true;}return false;};
+    k.section=function(text){k.room(48);k.text(text,k.M,k.y,11.5,{bold:true,color:k.accent,maxW:k.CW});k.y-=20;};
+    k.field=function(label,x,y,w,value){
+      var r=k.fit(font,label,9.5,w*0.6);
+      k.page.drawText(r.text,{x:x,y:y,size:r.size,font:font,color:k.soft});
+      var lx=x+font.widthOfTextAtSize(r.text,r.size)+6;
+      if(value)k.text(value,lx+2,y,10,{maxW:x+w-lx-4,minSize:7.5});
+      k.hline(lx,x+w,y-2);
+    };
+    // fields: array of label strings or [label,value]
+    k.fieldRow=function(fields){
+      var gap=24,w=(k.CW-gap*(fields.length-1))/fields.length;
+      fields.forEach(function(f,i){var l=Array.isArray(f)?f[0]:f,v=Array.isArray(f)?f[1]:'';k.field(l,k.M+i*(w+gap),k.y,w,v);});
+      k.y-=28;
+    };
+    k.box=function(x,y,s,on){
+      k.page.drawRectangle({x:x,y:y,width:s,height:s,borderColor:k.soft,borderWidth:.8});
+      if(on){k.page.drawLine({start:{x:x+2,y:y+s/2},end:{x:x+s*0.42,y:y+2},thickness:1.2,color:k.ink});k.page.drawLine({start:{x:x+s*0.42,y:y+2},end:{x:x+s-1.5,y:y+s-1.5},thickness:1.2,color:k.ink});}
+    };
+    // A tick list. items: a number (blank lines to write on) or an array of text / {t,on}.
+    k.checks=function(items,ncols){
+      ncols=ncols||1;
+      var n=typeof items==='number'?items:items.length,rows=Math.ceil(n/ncols),gap=20,w=(k.CW-gap*(ncols-1))/ncols;
+      for(var r=0;r<rows;r++){
+        if(k.y-20<k.BOTTOM)k.newPage(k.contTitle());
+        for(var c=0;c<ncols;c++){
+          var i=r+c*rows;if(i>=n)continue;
+          var x=k.M+c*(w+gap),it=typeof items==='number'?null:items[i];
+          k.box(x,k.y-3,10,!!(it&&it.on));
+          if(it!==null)k.text(typeof it==='string'?it:it.t,x+16,k.y-1,10,{maxW:w-18,minSize:7.5});
+          else k.hline(x+16,x+w,k.y-3,k.faint);
+        }
+        k.y-=20;
+      }
+    };
+    k.lines=function(n,gap){gap=gap||20;for(var i=0;i<n;i++){if(k.y-gap<k.BOTTOM)k.newPage(k.contTitle());k.hline(k.M,k.M+k.CW,k.y-4,k.faint);k.y-=gap;}};
+    // cols: [{label,w,align,soft,bold,box}] · rows: a number (blank rows) or an array of rows.
+    // A cell can be text or {box:true,on:bool}. A column with box:true draws an empty tick box in blank rows.
+    k.table=function(cols,rows,rowH,o){
+      o=o||{};var x=o.x||k.M;
+      var sum=cols.reduce(function(s,c){return s+c.w;},0);
+      if(o.stretch!==false&&Math.abs(sum-k.CW)>0.5){var f=k.CW/sum;cols=cols.map(function(c){var d={};for(var p in c)d[p]=c[p];d.w=c.w*f;return d;});sum=k.CW;}
+      var headH=19,n=typeof rows==='number'?rows:rows.length;
+      function sides(top,h){var cx=x;for(var i=0;i<=cols.length;i++){k.vline(cx,top,top-h);if(i<cols.length)cx+=cols[i].w;}}
+      function head(){
+        k.page.drawRectangle({x:x,y:k.y-headH,width:sum,height:headH,color:k.fill});
+        var cx=x;
+        cols.forEach(function(c){
+          if(c.label)k.text(c.label,cx+(c.w<34?2:5),k.y-13,8.5,{bold:true,maxW:c.w-(c.w<34?4:10),minSize:6,align:c.align==='center'||c.box?'center':undefined});
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y);k.hline(x,x+sum,k.y-headH);sides(k.y,headH);
+        k.y-=headH;
+      }
+      if(k.y-headH-rowH<k.BOTTOM)k.newPage(k.contTitle());
+      head();
+      for(var r=0;r<n;r++){
+        if(k.y-rowH<k.BOTTOM){k.newPage(k.contTitle());head();}
+        var row=typeof rows==='number'?null:rows[r],cx=x;
+        cols.forEach(function(c,i){
+          var v=row?row[i]:undefined,bs=Math.min(10,rowH-8),by=k.y-rowH+(rowH-bs)/2;
+          if(v&&typeof v==='object'&&v.box){k.box(cx+(c.w-bs)/2,by,bs,!!v.on);}
+          else if(c.box&&(v===undefined||v===null)){k.box(cx+(c.w-bs)/2,by,bs,false);}
+          else if(v!==undefined&&v!==null&&v!==''){
+            k.text(String(v),cx+5,k.y-rowH/2-3,9,{maxW:c.w-10,minSize:6.5,bold:!!c.bold,color:c.soft?k.soft:k.ink,align:c.align==='center'?'center':c.align==='right'?'right':undefined});
+          }
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y-rowH);sides(k.y,rowH);
+        k.y-=rowH;
+      }
+      k.y-=14;
+    };
+    k.fillRows=function(rowH){return Math.max(0,Math.floor((k.y-k.BOTTOM-19)/rowH));};
+    k.finish=async function(){
+      var pages=doc.getPages();
+      pages.forEach(function(pg,i){
+        var sz=pg.getSize();
+        pg.drawText(safe(k.footer),{x:k.M,y:30,size:8,font:font,color:k.soft});
+        var lbl='Page '+(i+1)+' of '+pages.length;
+        pg.drawText(lbl,{x:sz.width-k.M-font.widthOfTextAtSize(lbl,8),y:30,size:8,font:font,color:k.soft});
+      });
+      return await doc.save();
+    };
+    // Month grid, Monday first. cellText(dateStr) returns an array of short lines for that day.
+    // With numbered=false the grid has no dates, for an undated month to fill in by hand.
+    k.month=function(year,month,o){
+      o=o||{};var top=k.y,heads=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],cw=k.CW/7,hh=18;
+      var first=new Date(year,month,1).getDay(),off=(first+6)%7,dim=new Date(year,month+1,0).getDate();
+      var weeks=o.numbered===false?5:Math.ceil((off+dim)/7);
+      var gridH=(o.height||(k.y-k.BOTTOM-8))-hh,ch=gridH/weeks;
+      k.page.drawRectangle({x:k.M,y:top-hh,width:k.CW,height:hh,color:k.fill});
+      heads.forEach(function(h,i){k.text(h,k.M+i*cw,top-12.5,8.5,{bold:true,maxW:cw,align:'center'});});
+      for(var w=0;w<weeks;w++)for(var d=0;d<7;d++){
+        var x=k.M+d*cw,y=top-hh-(w+1)*ch,n=w*7+d-off+1;
+        k.rect(x,y,cw,ch,{border:k.line});
+        if(o.numbered===false||n<1||n>dim)continue;
+        k.text(String(n),x+4,y+ch-11,9,{bold:true,maxW:cw-8});
+        if(o.cellText){
+          var ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+          var lines=o.cellText(ds)||[],ly=y+ch-22;
+          for(var li=0;li<lines.length&&ly>y+3;li++){k.text(lines[li],x+4,ly,7,{maxW:cw-8,minSize:6});ly-=8.5;}
+        }
+      }
+      k.y=top-hh-gridH-14;
+    };
+    // Twelve small month calendars on one page.
+    k.yearGrid=function(year){
+      var cols=3,rows=4,gap=16,bw=(k.CW-gap*(cols-1))/cols,top=k.y,bh=(top-k.BOTTOM-gap*(rows-1))/rows;
+      for(var m=0;m<12;m++){
+        var c=m%cols,r=Math.floor(m/cols),x=k.M+c*(bw+gap),y=top-r*(bh+gap);
+        k.text(MON[m],x,y-10,10.5,{bold:true,color:k.accent,maxW:bw});
+        var cw=bw/7,heads=['M','T','W','T','F','S','S'];
+        heads.forEach(function(h,i){k.text(h,x+i*cw,y-26,7.5,{bold:true,color:k.soft,maxW:cw,align:'center'});});
+        var first=new Date(year,m,1).getDay(),off=(first+6)%7,dim=new Date(year,m+1,0).getDate(),lh=(bh-38)/6;
+        for(var d=1;d<=dim;d++){var p=off+d-1,cc=p%7,rr=Math.floor(p/7);k.text(String(d),x+cc*cw,y-40-rr*lh,8,{maxW:cw,align:'center'});}
+      }
+      k.y=k.BOTTOM;
+    };
+    return k;
+  }
+  // Hand the finished PDF to the person. On iPhone and iPad the share sheet (Print, Save to Files)
+  // is the dependable route from a home screen app, so it is tried first there.
+  function deliver(bytes,filename){
+    var blob=new Blob([bytes],{type:'application/pdf'});
+    var download=function(){
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+    };
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&navigator.canShare&&typeof File!=='undefined'){
+      try{
+        var file=new File([blob],filename,{type:'application/pdf'});
+        if(navigator.canShare({files:[file]})){
+          return navigator.share({files:[file],title:filename}).catch(function(err){
+            if(err&&err.name==='AbortError')return;
+            download();
+          });
+        }
+      }catch(e){}
+    }
+    download();
+  }
+  var busy=false;
+  // Runs a page builder and hands over the PDF. say(msg,isErr) shows the app's own message.
+  async function run(build,filename,opts,say){
+    if(typeof PDFLib==='undefined'){say('The PDF tool is still loading. Check your connection and try again.',true);return;}
+    if(busy)return;busy=true;say('Creating your PDF...');
+    try{var k=await create(opts);await build(k);var bytes=await k.finish();await deliver(bytes,filename);say('Your PDF is ready!');}
+    catch(e){console.error(e);say('Could not create the PDF. Try again.',true);}
+    busy=false;
+  }
+  return {safe:safe,create:create,deliver:deliver,run:run,MON:MON,DOW:DOW,pd:pd,ymd:ymd,longDate:longDate,shortDate:shortDate,money:money};
+})();
+
+</script>
 <!-- Shared confirm dialog -->
 <div class="sheet-backdrop" id="confirmSheetBackdrop">
   <div class="sheet">
@@ -1226,7 +1477,7 @@ nav.tabbar button.active { color: var(--gold); }
 </div>
 
 <script>
-/* ===== Home Maintenance Scheduler — Standard tier (free trial demo) ===== */
+/* ===== Home Maintenance Tracker ===== */
 
 /* ---------- inline icon set (no external font/CDN dependency) ---------- */
 const ICONS = {
@@ -1238,6 +1489,8 @@ const ICONS = {
   sun: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
   sponge: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="10" rx="2"/><path d="M7 11h.01M11 11h.01M15 11h.01"/></svg>',
   paperclip: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>',
+  printer: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/></svg>',
+  calendar: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
   document: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'
 };
 
@@ -1267,38 +1520,6 @@ function themedConfirm(title, message, okLabel) {
 }
 
 const STORAGE_KEY = 'homemaint_standard_demo_v1';
-const DEMO_SINCE_KEY = 'homemaint_standard_demo_since';
-const TRIAL_DAYS = 14;
-const ETSY_URL = 'https://www.etsy.com/listing/4553595439/home-maintenance-tracker-for-families';
-function demoTrialDaysLeft(){
-  let since = localStorage.getItem(DEMO_SINCE_KEY);
-  if(!since){
-    since = Date.now().toString();
-    try{ localStorage.setItem(DEMO_SINCE_KEY, since); }catch(e){}
-  }
-  const elapsedDays = (Date.now() - parseInt(since,10)) / (24*60*60*1000);
-  return Math.max(0, Math.ceil(TRIAL_DAYS - elapsedDays));
-}
-function enforceDemoTrial(){
-  const daysLeft = demoTrialDaysLeft();
-  const banner = document.getElementById('demo-banner');
-  const lock = document.getElementById('trial-lock');
-  if(banner){
-    banner.classList.add('show');
-    banner.innerHTML = daysLeft > 0
-      ? (daysLeft + ' day' + (daysLeft===1?'':'s') + ' left in your free trial &middot; <a href="'+ETSY_URL+'" target="_blank" rel="noopener">Unlock the full app</a>')
-      : ('Your free trial has ended &middot; <a href="'+ETSY_URL+'" target="_blank" rel="noopener">Unlock the full app</a>');
-  }
-  if(lock){
-    if(daysLeft <= 0){
-      lock.classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }else{
-      lock.classList.remove('show');
-      document.body.style.overflow = '';
-    }
-  }
-}
 
 let state = {
   tasks: [],         // {id, name, category, frequencyDays, lastDone, nextDue}
@@ -1313,6 +1534,7 @@ let editingApplianceId = null;
 let editingTaskId = null;
 let editingCleaningId = null;
 let editingMemberId = null;
+let gsiReady = false;
 let currentTab = 'home';
 let currentTaskFilter = 'all';
 let currentCleaningFilter = 'daily';
@@ -1404,7 +1626,7 @@ function renderBrand() {
   if (name) {
     el.innerHTML = `${escapeHtml(name)} <span class="accent">Maintenance</span>`;
   } else {
-    el.innerHTML = `Standard Home <span class="accent">Maintenance</span>`;
+    el.innerHTML = `Home Maintenance <span class="accent">Tracker</span>`;
   }
 }
 
@@ -1415,7 +1637,7 @@ function taskCategoryLabel(cat) {
 
 function renderDashboard() {
   const total = state.tasks.length;
-  const overdue = state.tasks.filter(t => daysUntil(computeNextDue(t)) < 0).length;
+  const overdue = state.tasks.filter(t => !isOneTimeDone(t) && daysUntil(computeNextDue(t)) < 0).length;
   const onTrack = total - overdue;
   const pct = total > 0 ? Math.round((onTrack / total) * 100) : 0;
 
@@ -1431,7 +1653,7 @@ function renderDashboard() {
   `;
 
   const seasonTasks = state.tasks.filter(t => t.season);
-  const seasonDone = seasonTasks.filter(t => t.lastDone && daysUntil(computeNextDue(t)) >= 0).length;
+  const seasonDone = seasonTasks.filter(t => t.lastDone && (isOneTimeDone(t) || daysUntil(computeNextDue(t)) >= 0)).length;
   document.getElementById('dashSeasonalCard').innerHTML = `
     <div class="val">${seasonTasks.length ? seasonDone + '/' + seasonTasks.length : '0'}</div>
     <div class="lbl">Seasonal progress</div>
@@ -1439,7 +1661,7 @@ function renderDashboard() {
 }
 
 function renderOverdueAndDueSoon() {
-  const withDue = state.tasks.map(t => ({ ...t, due: computeNextDue(t), diff: daysUntil(computeNextDue(t)) }));
+  const withDue = state.tasks.filter(t => !isOneTimeDone(t)).map(t => ({ ...t, due: computeNextDue(t), diff: daysUntil(computeNextDue(t)) }));
   const overdue = withDue.filter(t => t.diff < 0).sort((a, b) => a.diff - b.diff);
   const dueSoon = withDue.filter(t => t.diff >= 0 && t.diff <= 30).sort((a, b) => a.diff - b.diff);
 
@@ -1510,12 +1732,13 @@ function renderTasks() {
   if (currentTaskFilter !== 'all') {
     tasks = tasks.filter(t => t.category === currentTaskFilter);
   }
-  tasks.sort((a, b) => a.diff - b.diff);
+  tasks.sort((a, b) => (isOneTimeDone(a) ? 1 : 0) - (isOneTimeDone(b) ? 1 : 0) || a.diff - b.diff);
 
   document.getElementById('taskCount').textContent = tasks.length + ' total';
   if (tasks.length === 0) {
     list.innerHTML = `<div class="empty-state"><div class="big-icon">${ICONS.wrench}</div><div class="msg">No tasks added yet.<br>Tap + to add your first task.</div></div>
       <div class="suggestion-chips">
+        <button class="suggestion-chip" onclick="loadSampleData()">Just looking? See it with a sample home</button>
         <div class="suggestion-label">Try one of these to get started:</div>
         <button class="suggestion-chip" onclick="quickStartTask('Replace HVAC filter','hvac',90)">HVAC filter, every 3 months</button>
         <button class="suggestion-chip" onclick="quickStartTask('Test smoke detectors','safety',182)">Smoke detectors, every 6 months</button>
@@ -1524,15 +1747,15 @@ function renderTasks() {
     return;
   }
   list.innerHTML = tasks.map(t => {
-    const dueLabel = t.diff < 0 ? `${Math.abs(t.diff)}d overdue` : t.diff === 0 ? 'Due today' : `Due in ${t.diff}d`;
+    const dueLabel = isOneTimeDone(t) ? 'Done' : t.diff < 0 ? `${Math.abs(t.diff)}d overdue` : t.diff === 0 ? 'Due today' : `Due in ${t.diff}d`;
     return `
-    <div class="item-card" onclick="openTaskSheet('${t.id}')">
+    <div class="item-card${isOneTimeDone(t) ? ' done' : ''}" onclick="openTaskSheet('${t.id}')">
       <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
       <div class="body-text">
         <div class="title-line">${escapeHtml(t.name)}</div>
         <div class="sub-line">${taskCategoryLabel(t.category)} &middot; ${frequencyLabel(t.frequencyDays)}</div>
       </div>
-      <div class="amount" style="${t.diff < 0 ? 'color:var(--cranberry);' : ''}">${dueLabel}</div>
+      <div class="amount" style="${t.diff < 0 && !isOneTimeDone(t) ? 'color:var(--cranberry);' : ''}">${dueLabel}</div>
     </div>
   `;
   }).join('');
@@ -1578,7 +1801,7 @@ function calSelectDay(dateStr) {
 }
 
 function tasksDueOn(dateStr) {
-  return state.tasks.filter(t => computeNextDue(t) === dateStr);
+  return state.tasks.filter(t => !isOneTimeDone(t) && computeNextDue(t) === dateStr);
 }
 
 function getWeekDates(anchorDateStr) {
@@ -1717,15 +1940,15 @@ function renderSeasonal() {
   }
   const withDue = tasks.map(t => ({ ...t, diff: daysUntil(computeNextDue(t)) })).sort((a, b) => a.diff - b.diff);
   list.innerHTML = withDue.map(t => {
-    const dueLabel = t.diff < 0 ? `${Math.abs(t.diff)}d overdue` : t.diff === 0 ? 'Due today' : `Due in ${t.diff}d`;
+    const dueLabel = isOneTimeDone(t) ? 'Done' : t.diff < 0 ? `${Math.abs(t.diff)}d overdue` : t.diff === 0 ? 'Due today' : `Due in ${t.diff}d`;
     return `
-    <div class="item-card" onclick="openTaskSheet('${t.id}')">
+    <div class="item-card${isOneTimeDone(t) ? ' done' : ''}" onclick="openTaskSheet('${t.id}')">
       <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
       <div class="body-text">
         <div class="title-line">${escapeHtml(t.name)}</div>
         <div class="sub-line">${taskCategoryLabel(t.category)}</div>
       </div>
-      <div class="amount" style="${t.diff < 0 ? 'color:var(--cranberry);' : ''}">${dueLabel}</div>
+      <div class="amount" style="${t.diff < 0 && !isOneTimeDone(t) ? 'color:var(--cranberry);' : ''}">${dueLabel}</div>
     </div>
   `;
   }).join('');
@@ -1954,7 +2177,7 @@ function renderCleaning() {
   }
   const withDue = tasks.map(t => ({ ...t, diff: daysUntil(cleaningNextDue(t)) })).sort((a, b) => a.diff - b.diff);
   list.innerHTML = withDue.map(t => {
-    const dueLabel = t.diff < 0 ? `${Math.abs(t.diff)}d overdue` : t.diff === 0 ? 'Due today' : `Due in ${t.diff}d`;
+    const dueLabel = isOneTimeDone(t) ? 'Done' : t.diff < 0 ? `${Math.abs(t.diff)}d overdue` : t.diff === 0 ? 'Due today' : `Due in ${t.diff}d`;
     const assignee = memberName(t.assigneeId);
     return `
     <div class="item-card" onclick="openCleaningSheet('${t.id}')">
@@ -1963,7 +2186,7 @@ function renderCleaning() {
         <div class="title-line">${escapeHtml(t.name)}</div>
         <div class="sub-line">${assignee ? escapeHtml(assignee) : 'Unassigned'}</div>
       </div>
-      <div class="amount" style="${t.diff < 0 ? 'color:var(--cranberry);' : ''}">${dueLabel}</div>
+      <div class="amount" style="${t.diff < 0 && !isOneTimeDone(t) ? 'color:var(--cranberry);' : ''}">${dueLabel}</div>
     </div>
   `;
   }).join('');
@@ -2136,9 +2359,9 @@ function quickStartTask(name, category, frequencyDays) {
   openTaskSheet(null);
   document.getElementById('taskName').value = name;
   document.getElementById('taskCategory').value = category;
-  const standardValues = { 30: '30', 90: '90', 182: '182', 365: '365' };
-  document.getElementById('taskFrequency').value = standardValues[frequencyDays] || 'custom';
-  if (!standardValues[frequencyDays]) {
+  const presetValues = { 30: '30', 90: '90', 182: '182', 365: '365' };
+  document.getElementById('taskFrequency').value = presetValues[frequencyDays] || 'custom';
+  if (!presetValues[frequencyDays]) {
     document.getElementById('taskCustomDays').value = frequencyDays;
     document.getElementById('customDaysField').style.display = 'block';
   }
@@ -2154,11 +2377,11 @@ function openTaskSheet(id) {
     document.getElementById('taskName').value = t.name || '';
     document.getElementById('taskCategory').value = t.category || 'other';
     const freqSelect = document.getElementById('taskFrequency');
-    const standardValues = ['30', '90', '182', '365'];
+    const presetValues = ['30', '90', '182', '365'];
     if (t.frequencyDays === 0) {
       freqSelect.value = 'once';
       document.getElementById('customDaysField').style.display = 'none';
-    } else if (standardValues.includes(String(t.frequencyDays))) {
+    } else if (presetValues.includes(String(t.frequencyDays))) {
       freqSelect.value = String(t.frequencyDays);
       document.getElementById('customDaysField').style.display = 'none';
     } else {
@@ -2208,6 +2431,7 @@ function saveTask() {
   if (editingTaskId) {
     const t = state.tasks.find(x => x.id === editingTaskId);
     t.name = name; t.category = category; t.frequencyDays = frequencyDays; t.lastDone = lastDone; t.season = season;
+    if (frequencyDays !== 0) t.done = false;
   } else {
     state.tasks.push({ id: uid(), name, category, frequencyDays, lastDone, season });
   }
@@ -2220,7 +2444,14 @@ function deleteTask() {
 function markTaskDone(id) {
   const t = state.tasks.find(x => x.id === id);
   if (!t) return;
+  if (t.frequencyDays === 0 && t.done) {
+    t.done = false;
+    saveState(); render();
+    showToast('Marked not done');
+    return;
+  }
   t.lastDone = todayStr();
+  if (t.frequencyDays === 0) t.done = true;
   saveState(); render();
   showToast(t.frequencyDays === 0 ? 'Marked done' : 'Marked done — next due ' + computeNextDue(t));
 }
@@ -2254,10 +2485,15 @@ function showToast(msg) {
 /* ---------- settings sheet ---------- */
 function openSettings() {
   document.getElementById('settingsSheetBackdrop').classList.add('open');
+  updateDriveStatusUI();
 }
 function closeSettings() {
   document.getElementById('settingsSheetBackdrop').classList.remove('open');
 }
+
+/* ---------- Google Drive backup is part of the full app, not this demo ---------- */
+function initDriveFromCache() {}
+function updateDriveStatusUI() {}
 
 /* ---------- local export/import ---------- */
 function exportLocal() {
@@ -2266,7 +2502,7 @@ function exportLocal() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `home-maintenance-backup-${todayStr()}.json`;
+  a.download = `home-maintenance-demo-backup-${todayStr()}.json`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -2310,6 +2546,254 @@ function importLocal(event) {
   event.target.value = '';
 }
 
+/* ---------- printable pages (PDF made on the device) ---------- */
+const PRINT_ACCENT = '#007A86';
+const PRINT_FOOTER = 'Home Maintenance Tracker  ·  Mobile First Studio';
+const SD = ds => ds ? MFSPrint.shortDate(ds) : '';
+const SEASON_LABEL = { spring: 'Spring', summer: 'Summer', fall: 'Fall', winter: 'Winter' };
+// A section heading never sits alone at the bottom of a page.
+function sec(k, title, need) { k.room(need || 95); k.section(title); }
+function homeLine() { return (state.homeName || '').trim() || 'My Home'; }
+function isOneTimeDone(t) { return t.frequencyDays === 0 && !!t.done; }
+function taskRows() {
+  return state.tasks.map(t => ({ t, due: computeNextDue(t), diff: daysUntil(computeNextDue(t)), done: isOneTimeDone(t) }))
+    .sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0) || a.diff - b.diff);
+}
+function dueText(r) { return r.done ? 'Done' : r.diff < 0 ? SD(r.due) + ' (late)' : SD(r.due); }
+
+/* 1. Full maintenance schedule */
+function buildSchedule(k) {
+  const rows = taskRows();
+  const late = rows.filter(r => !r.done && r.diff < 0).length;
+  k.newPage('Home Maintenance Schedule', homeLine() + '  ·  ' + rows.length + ' tasks' + (late ? '  ·  ' + late + ' overdue' : '') + '  ·  Printed ' + SD(todayStr()), false);
+  k.table([{ label: 'Done', w: 34, box: true }, { label: 'Task', w: 150, bold: true }, { label: 'Category', w: 66 }, { label: 'Repeats', w: 78 }, { label: 'Last done', w: 64 }, { label: 'Next due', w: 74 }, { label: 'Season', w: 54 }],
+    rows.map(r => [{ box: true, on: r.done }, r.t.name, taskCategoryLabel(r.t.category), frequencyLabel(r.t.frequencyDays), SD(r.t.lastDone), dueText(r), SEASON_LABEL[r.t.season] || ''])
+      .concat(Array(5).fill(null).map(() => [null, '', '', '', '', '', ''])), 24);
+}
+
+/* 2. One month: calendar plus checklist */
+function dueDatesInMonth(t, y, m) {
+  if (isOneTimeDone(t)) return [];
+  const first = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+  const last = `${y}-${String(m + 1).padStart(2, '0')}-${String(new Date(y, m + 1, 0).getDate()).padStart(2, '0')}`;
+  const out = [];
+  let d = computeNextDue(t);
+  if (t.frequencyDays > 0) { while (d < first) d = addDays(d, t.frequencyDays); }
+  while (d <= last) {
+    if (d >= first) out.push(d);
+    if (!t.frequencyDays) break;
+    d = addDays(d, t.frequencyDays);
+  }
+  return out;
+}
+function buildMonth(k, y, m) {
+  const label = MFSPrint.MON[m] + ' ' + y;
+  const byDay = {};
+  const items = [];
+  state.tasks.forEach(t => dueDatesInMonth(t, y, m).forEach(d => { (byDay[d] = byDay[d] || []).push(t.name); items.push({ d, t }); }));
+  items.sort((a, b) => a.d < b.d ? -1 : a.d > b.d ? 1 : 0);
+  const thisMonth = y === new Date().getFullYear() && m === new Date().getMonth();
+  const late = thisMonth ? taskRows().filter(r => !r.done && r.diff < 0) : [];
+
+  k.newPage('Maintenance Calendar, ' + label, homeLine() + '  ·  ' + items.length + ' task' + (items.length === 1 ? '' : 's') + ' due this month', true);
+  k.month(y, m, { cellText: ds => byDay[ds] || [] });
+
+  k.newPage('Maintenance Checklist, ' + label, homeLine() + '  ·  Tick each one off as you go', false);
+  if (late.length) {
+    sec(k, 'Overdue, do these first');
+    k.table([{ label: 'Done', w: 34, box: true }, { label: 'Task', w: 196, bold: true }, { label: 'Category', w: 80 }, { label: 'Was due', w: 90 }, { label: 'Date done', w: 120 }],
+      late.map(r => [null, r.t.name, taskCategoryLabel(r.t.category), SD(r.due), '']), 24);
+  }
+  const lateIds = new Set(late.map(r => r.t.id));
+  const list = items.filter(x => !lateIds.has(x.t.id));
+  sec(k, 'Due in ' + label);
+  if (list.length) {
+    k.table([{ label: 'Done', w: 34, box: true }, { label: 'Task', w: 196, bold: true }, { label: 'Category', w: 80 }, { label: 'Due', w: 90 }, { label: 'Date done', w: 120 }],
+      list.map(x => [null, x.t.name, taskCategoryLabel(x.t.category), SD(x.d), '']).concat(Array(3).fill(null).map(() => [null, '', '', '', ''])), 24);
+  } else {
+    k.text('Nothing is scheduled this month. Use the lines below for extra jobs.', k.M, k.y, 10, { color: k.soft });
+    k.y -= 22;
+    k.checks(6);
+  }
+  sec(k, 'Notes', 70);
+  k.lines(Math.min(6, Math.max(2, Math.floor((k.y - k.BOTTOM) / 20))));
+}
+
+/* 3. Seasonal checklists, one page per season */
+function buildSeasonal(k) {
+  ['spring', 'summer', 'fall', 'winter'].forEach(s => {
+    const tasks = state.tasks.filter(t => t.season === s);
+    k.newPage(SEASON_LABEL[s] + ' Home Checklist', homeLine() + '  ·  ' + (tasks.length ? tasks.length + ' task' + (tasks.length === 1 ? '' : 's') + ' from your app' : 'No tasks set for this season yet'), false);
+    const rows = tasks.map(t => [null, t.name, taskCategoryLabel(t.category), SD(t.lastDone), '', '']);
+    const blank = Math.max(4, Math.floor((k.y - k.BOTTOM - 19) / 26) - rows.length);
+    k.table([{ label: 'Done', w: 34, box: true }, { label: 'Task', w: 180, bold: true }, { label: 'Category', w: 74 }, { label: 'Last done', w: 72 }, { label: 'Date done', w: 72 }, { label: 'Notes', w: 88 }],
+      rows.concat(Array(blank).fill(null).map(() => [null, '', '', '', '', ''])), 26);
+  });
+}
+
+/* 4. Cleaning chore chart for this week */
+function weekStartMonday() {
+  const d = new Date(todayStr() + 'T00:00:00');
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function buildCleaning(k) {
+  const mon = weekStartMonday();
+  const days = [0, 1, 2, 3, 4, 5, 6].map(i => addDays(mon, i));
+  const dn = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const who = t => memberName(t.assigneeId) || 'Anyone';
+  const of = f => state.cleaningTasks.filter(t => t.frequency === f);
+  k.newPage('Cleaning Chore Chart', homeLine() + '  ·  Week of ' + SD(mon) + '  ·  Tick a box when it is done', true);
+  const daily = of('daily');
+  if (daily.length) {
+    sec(k, 'Every day');
+    k.table([{ label: 'Task', w: 190, bold: true }, { label: 'Who', w: 100 }].concat(days.map((d, i) => ({ label: dn[i] + ' ' + parseInt(d.slice(8), 10), w: 58, box: true }))),
+      daily.map(t => [t.name, who(t)]).concat([['', ''], ['', '']]), 26);
+  }
+  const weekly = of('weekly');
+  if (weekly.length) {
+    sec(k, 'Once this week');
+    k.table([{ label: 'Done', w: 40, box: true }, { label: 'Task', w: 230, bold: true }, { label: 'Who', w: 130 }, { label: 'Day done', w: 110 }, { label: 'Notes', w: 190 }],
+      weekly.map(t => [null, t.name, who(t), '', '']).concat([[null, '', '', '', '']]), 24);
+  }
+  const monthly = of('monthly');
+  if (monthly.length) {
+    sec(k, 'Once this month');
+    k.table([{ label: 'Done', w: 40, box: true }, { label: 'Task', w: 230, bold: true }, { label: 'Who', w: 130 }, { label: 'Last done', w: 110 }, { label: 'Date done', w: 190 }],
+      monthly.map(t => [null, t.name, who(t), SD(t.lastDone), '']).concat([[null, '', '', '', '']]), 24);
+  }
+  if (state.members.length) {
+    k.newPage('Chores by Person', homeLine() + '  ·  Cut along the lines and give everyone their own list', false);
+    const people = state.members.map(m => ({ name: m.name, tasks: state.cleaningTasks.filter(t => t.assigneeId === m.id) }));
+    const open = state.cleaningTasks.filter(t => !t.assigneeId || !state.members.some(m => m.id === t.assigneeId));
+    if (open.length) people.push({ name: 'Anyone can do these', tasks: open });
+    const freq = { daily: 'Every day', weekly: 'Weekly', monthly: 'Monthly' };
+    people.forEach(p => {
+      sec(k, p.name, 60 + Math.min(p.tasks.length, 4) * 20);
+      if (p.tasks.length) k.checks(p.tasks.map(t => t.name + '  (' + (freq[t.frequency] || 'Weekly') + ')'));
+      else k.checks(3);
+      k.y -= 6;
+    });
+  }
+}
+
+/* 5. Home and appliance record */
+function buildAppliances(k) {
+  k.newPage('Home & Appliance Record', homeLine() + '  ·  Printed ' + SD(todayStr()), true);
+  if ((state.homeNotes || '').trim()) {
+    sec(k, 'Notes about this home', 60);
+    const words = state.homeNotes.trim().split(/\s+/);
+    let line = '';
+    const lines = [];
+    words.forEach(w => {
+      const test = line ? line + ' ' + w : w;
+      if (k.font.widthOfTextAtSize(MFSPrint.safe(test), 10) > k.CW) { lines.push(line); line = w; } else line = test;
+    });
+    if (line) lines.push(line);
+    lines.slice(0, 8).forEach(l => { k.text(l, k.M, k.y, 10, { maxW: k.CW }); k.y -= 14; });
+    k.y -= 10;
+  }
+  sec(k, 'Appliances');
+  const status = a => {
+    if (!a.warrantyExpires) return '';
+    const d = daysUntil(a.warrantyExpires);
+    return d < 0 ? 'Expired' : d <= 60 ? 'Ends in ' + d + ' days' : 'Active';
+  };
+  k.table([{ label: 'Appliance', w: 150, bold: true }, { label: 'Brand', w: 100 }, { label: 'Model', w: 130 }, { label: 'Purchased', w: 80 }, { label: 'Warranty ends', w: 86 }, { label: 'Warranty', w: 84 }, { label: 'Manual in app', w: 70, align: 'center' }],
+    state.appliances.map(a => [a.name, a.brand || '', a.model || '', SD(a.purchaseDate), SD(a.warrantyExpires), status(a), a.documentData ? 'Yes' : ''])
+      .concat(Array(3).fill(null).map(() => ['', '', '', '', '', '', ''])), 24);
+}
+
+/* 6. Blank forms: the same pages buyers get in the bonus PDF */
+const SEASON_STARTERS = {
+  spring: ['Clean gutters and downspouts', 'Check roof for winter damage', 'Service the AC before summer', 'Replace HVAC filter', 'Test smoke and CO detectors', 'Check siding and exterior paint', 'Clean window screens', 'Look for foundation cracks', 'Check outdoor faucets and hoses', 'Clean the dryer vent', 'Power wash deck and walkways', 'Turn on and test sprinklers'],
+  summer: ['Clean ceiling fan blades', 'Check for pests and seal gaps', 'Clean refrigerator coils', 'Check deck and fence boards', 'Trim plants away from the house', 'Check window and door seals', 'Replace HVAC filter', 'Clean the garbage disposal', 'Deep clean the grill', 'Check the attic for leaks'],
+  fall: ['Clean gutters after leaves drop', 'Service furnace or heat pump', 'Replace HVAC filter', 'Drain and store garden hoses', 'Shut off outdoor faucets', 'Seal gaps around doors and windows', 'Test smoke and CO detectors', 'Have the chimney checked', 'Set ceiling fans to clockwise', 'Winterize the sprinklers', 'Check attic insulation', 'Stock up on ice melt'],
+  winter: ['Check pipes in cold areas', 'Watch the roof for ice dams', 'Replace HVAC filter', 'Test the sump pump', 'Clean the range hood filter', 'Check caulk in kitchen and bath', 'Check fire extinguishers', 'Test GFCI outlets', 'Check the basement for damp', 'Plan spring projects']
+};
+function buildBlankForms(k) {
+  const MON = MFSPrint.MON;
+  // 1. Year plan
+  k.newPage('Yearly Maintenance Plan', 'Write the big jobs under the month you want to do them.', false);
+  k.fieldRow(['Home', 'Year']);
+  k.table([{ label: 'Month', w: 84, bold: true }, { label: 'Jobs to do', w: 300 }, { label: 'Done', w: 40, box: true }, { label: 'Cost', w: 96 }], MON.map(m => [m, '', null, '']), 46);
+
+  // 2-5. Seasonal checklists with starter tasks
+  ['spring', 'summer', 'fall', 'winter'].forEach(s => {
+    k.newPage(SEASON_LABEL[s] + ' Home Checklist', 'Common ' + SEASON_LABEL[s].toLowerCase() + ' jobs to start you off. Add your own on the blank lines.', false);
+    k.fieldRow(['Home', 'Year']);
+    const rows = SEASON_STARTERS[s].map(t => [null, t, '', '']);
+    const blank = Math.max(3, Math.floor((k.y - k.BOTTOM - 19) / 26) - rows.length);
+    k.table([{ label: 'Done', w: 34, box: true }, { label: 'Task', w: 230, bold: true }, { label: 'Date done', w: 90 }, { label: 'Notes', w: 166 }],
+      rows.concat(Array(blank).fill(null).map(() => [null, '', '', ''])), 26);
+  });
+
+  // 6. Maintenance log
+  k.newPage('Home Maintenance Log', 'Write down every job when it is done. It helps when you sell or file a warranty claim.', true);
+  k.table([{ label: 'Date', w: 70 }, { label: 'Job', w: 190 }, { label: 'Area or room', w: 100 }, { label: 'Done by', w: 110 }, { label: 'Cost', w: 70 }, { label: 'Notes', w: 160 }], k.fillRows(26), 26);
+
+  // 7. Weekly chore chart
+  k.newPage('Weekly Cleaning Chart', 'Write the task and who does it, then tick a box each day.', true);
+  k.fieldRow(['Week of']);
+  k.table([{ label: 'Task', w: 190 }, { label: 'Who', w: 104 }].concat(['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => ({ label: d, w: 58, box: true }))), k.fillRows(27), 27);
+
+  // 8. Appliance record
+  k.newPage('Appliance & Warranty Record', 'Find the model and serial number on a sticker inside the door or on the back.', true);
+  k.table([{ label: 'Appliance', w: 120 }, { label: 'Brand', w: 90 }, { label: 'Model', w: 100 }, { label: 'Serial', w: 100 }, { label: 'Bought', w: 66 }, { label: 'Store', w: 80 }, { label: 'Warranty ends', w: 74 }, { label: 'Price', w: 70 }], k.fillRows(30), 30);
+
+  // 9. Home info sheet
+  k.newPage('Home Info Sheet', 'The things you always have to go looking for. Keep it near the electrical panel.', false);
+  sec(k, 'Shutoffs and panels');
+  k.fieldRow(['Water main shutoff']); k.fieldRow(['Gas shutoff']); k.fieldRow(['Electrical panel']); k.fieldRow(['Water heater']);
+  sec(k, 'Sizes and parts');
+  k.fieldRow(['HVAC filter size', 'How many']); k.fieldRow(['Fridge water filter', 'Furnace filter']); k.fieldRow(['Light bulbs', 'Smoke detector battery']);
+  sec(k, 'Paint colors');
+  k.table([{ label: 'Room', w: 120 }, { label: 'Brand', w: 110 }, { label: 'Color name or code', w: 170 }, { label: 'Finish', w: 120 }], 4, 23);
+  sec(k, 'Service contacts');
+  k.table([{ label: 'Service', w: 110, bold: true }, { label: 'Company or name', w: 170 }, { label: 'Phone', w: 110 }, { label: 'Notes', w: 130 }],
+    ['Plumber', 'Electrician', 'HVAC', 'Roofer', 'Handyman', 'Pest control', 'Lawn care', 'Appliance repair'].map(s => [s, '', '', '']), 22);
+
+  // 10. Repair and project log
+  k.newPage('Repair & Project Log', 'Bigger jobs, who did them, and what they cost. Keep receipts with this page.', true);
+  k.table([{ label: 'Date', w: 70 }, { label: 'Project or repair', w: 190 }, { label: 'Contractor', w: 130 }, { label: 'Phone', w: 90 }, { label: 'Cost', w: 70 }, { label: 'Warranty', w: 70 }, { label: 'Receipt', w: 80, box: true }], k.fillRows(28), 28);
+}
+
+const PRINT_OPTIONS = [
+  { key: 'schedule', icon: 'wrench', label: () => 'Full maintenance schedule', sub: () => 'Every task with its last and next due date' },
+  { key: 'month', icon: 'calendar', label: () => 'Monthly calendar & checklist, ' + MFSPrint.MON[calViewMonth] + ' ' + calViewYear, sub: () => 'The month showing on your Calendar tab' },
+  { key: 'seasonal', icon: 'sun', label: () => 'Seasonal checklists', sub: () => 'Spring, summer, fall and winter, one page each' },
+  { key: 'cleaning', icon: 'sponge', label: () => 'Cleaning chore chart', sub: () => 'This week, with names, plus a list for each person' },
+  { key: 'appliances', icon: 'document', label: () => 'Home & appliance record', sub: () => 'Brands, models and warranty dates' },
+  { key: 'blank', icon: 'printer', label: () => 'Blank home forms', sub: () => 'Year plan, seasonal lists, logs, chore chart, home info' }
+];
+function openPrintMenu() {
+  document.getElementById('printOptions').innerHTML = PRINT_OPTIONS.map(o => `
+    <button class="print-opt" onclick="doPrint('${o.key}')">
+      <span class="print-opt-ico">${ICONS[o.icon] || ICONS.document}</span>
+      <span><span class="print-opt-label">${escapeHtml(o.label())}</span><span class="print-opt-sub">${escapeHtml(o.sub())}</span></span>
+    </button>`).join('');
+  document.getElementById('printSheetBackdrop').classList.add('open');
+}
+function closePrintMenu() { document.getElementById('printSheetBackdrop').classList.remove('open'); }
+function doPrint(key) {
+  if ((key === 'schedule' || key === 'month') && !state.tasks.length) { showToast('Add a task first, or print the blank forms.'); return; }
+  if (key === 'seasonal' && !state.tasks.some(t => t.season)) { showToast('Give a task a season first, or print the blank forms.'); return; }
+  if (key === 'cleaning' && !state.cleaningTasks.length) { showToast('Add a cleaning task first, or print the blank forms.'); return; }
+  if (key === 'appliances' && !state.appliances.length) { showToast('Add an appliance first, or print the blank forms.'); return; }
+  closePrintMenu();
+  const y = calViewYear, m = calViewMonth;
+  const builders = {
+    schedule: k => buildSchedule(k), month: k => buildMonth(k, y, m), seasonal: k => buildSeasonal(k),
+    cleaning: k => buildCleaning(k), appliances: k => buildAppliances(k), blank: k => buildBlankForms(k)
+  };
+  const ym = `${y}-${String(m + 1).padStart(2, '0')}`;
+  const names = {
+    schedule: `maintenance-schedule-${todayStr()}.pdf`, month: `maintenance-${ym}.pdf`, seasonal: 'seasonal-checklists.pdf',
+    cleaning: `chore-chart-week-of-${weekStartMonday()}.pdf`, appliances: 'home-appliance-record.pdf', blank: 'home-maintenance-forms-printable.pdf'
+  };
+  MFSPrint.run(builders[key], names[key], { accent: PRINT_ACCENT, footer: PRINT_FOOTER }, msg => showToast(msg));
+}
+
 /* ---------- light/dark mode ---------- */
 const THEME_STORAGE_KEY = 'homemaint_standard_display_mode';
 const MODE_BG_COLORS = { light: '#FAF6EE', dark: '#0D2B2E' };
@@ -2342,19 +2826,137 @@ function toggleDarkMode() {
 // Apply saved mode immediately (before DOMContentLoaded) to avoid a flash of the wrong mode
 loadDisplayMode();
 
+
+/* ===================== COMPUTER LAYOUT ===================== */
+const DESK_TITLES = { home: 'Overview', tasks: 'All tasks', calendar: 'Calendar', cleaning: 'Cleaning', seasonal: 'Seasonal checklist', setup: 'Your home' };
+function deskTitle() {
+  const el = document.getElementById('deskTitle'); if (!el) return;
+  const d = new Date();
+  const hn = (typeof state !== 'undefined' && state.homeName) ? escapeHtml(state.homeName) : '';
+  el.innerHTML = (currentTab === 'home' && hn ? hn : (DESK_TITLES[currentTab] || '') + (hn ? ` <span style="color:var(--text-faint);font-weight:600">· ${hn}</span>` : '')) + `<small>${d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</small>`;
+}
+function deskWrap(panelId, groups) {
+  // Puts runs of a tab's sections side by side on a computer. Order stays the same, so the phone layout is unchanged.
+  const panel = document.getElementById(panelId); if (!panel) return;
+  const kids = Array.from(panel.children);
+  groups.forEach((g) => {
+    const cols = document.createElement('div'); cols.className = 'dk-cols';
+    kids[g[0][0] - 1].before(cols);
+    g.forEach((idx) => { const c = document.createElement('div'); c.className = 'dk-c'; idx.forEach((i) => c.appendChild(kids[i - 1])); cols.appendChild(c); });
+  });
+}
+(function deskInit() {
+  const ICON = (d) => `<svg viewBox="0 0 24 24" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const nav = document.querySelector('nav.tabbar');
+  if (nav) {
+    nav.insertAdjacentHTML('afterbegin', '<div class="side-brand"><div class="e">MOBILE FIRST STUDIO</div><div class="t">Home Maintenance <span>Tracker</span></div></div>');
+    nav.insertAdjacentHTML('beforeend', '<div class="side-sep"></div>'
+      + '<button class="side-x" onclick="openPrintMenu()">' + ICON('<path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 14h12v7H6z"/>') + 'Printable pages</button>'
+      + '<button class="side-x" onclick="openSettings()">' + ICON('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>') + 'Backup + settings</button>');
+  }
+  const hdr = document.querySelector('header.topbar');
+  if (hdr) hdr.insertAdjacentHTML('afterbegin', '<div class="desk-title" id="deskTitle"></div>');
+  deskWrap('tab-home', [[[2, 3], [4, 5]]]);
+  deskWrap('tab-calendar', [[[1, 2, 3], [4, 5]]]);
+  deskWrap('tab-setup', [[[3, 4, 5], [6, 7, 8]]]);
+  const _sw = switchTab; switchTab = function (tab) { _sw(tab); deskTitle(); };
+  const _r = render; render = function () { _r(); deskTitle(); };
+})();
+
+
+/* ---------- sample data for the trial ---------- */
+
+function demoSampleDB() {
+  const d = n => { const x = new Date(); x.setDate(x.getDate() + n); return x.getFullYear() + '-' + String(x.getMonth()+1).padStart(2,'0') + '-' + String(x.getDate()).padStart(2,'0'); };
+  const T = (id, name, category, frequencyDays, lastDone, season, extra) => Object.assign({ id, name, category, frequencyDays, lastDone, season: season || '' }, extra || {});
+  return ({
+    homeName: '14 Birch Lane',
+    homeNotes: 'Bought in 2019. Roof replaced 2022 by Summit Roofing, 25 year warranty. Main water shutoff is in the basement behind the washer. Spare key with the neighbors at number 16.',
+    tasks: [
+      T('t1','Replace HVAC filter','hvac',90,d(-100),'',{}),
+      T('t2','Test smoke and CO detectors','safety',182,d(-170),'spring'),
+      T('t3','Clean gutters','exterior',365,d(-340),'fall'),
+      T('t4','Flush water heater','plumbing',365,d(-200),'fall'),
+      T('t5','Clean dryer vent','appliances',182,d(-150),'spring'),
+      T('t6','Clean refrigerator coils','appliances',182,d(-60),'summer'),
+      T('t7','Service the furnace','hvac',365,d(-358),'fall'),
+      T('t8','Check sump pump','plumbing',30,d(-25),'winter'),
+      T('t9','Fix leaky kitchen faucet','plumbing',0,'',''),
+      T('t10','Repaint front door','exterior',0,d(-3),'',{done:true}),
+      T('t11','Drain outdoor faucets before the first freeze','exterior',365,d(-330),'fall'),
+      T('t12','Clean range hood filter','appliances',90,d(-80),'')
+    ],
+    appliances: [
+      { id:'a1', name:'Furnace', brand:'Carrier', model:'59SC5A060E17', purchaseDate:'2019-06-10', warrantyExpires:'2029-06-10' },
+      { id:'a2', name:'Refrigerator', brand:'GE', model:'GSS25GYPFS', purchaseDate:'2021-03-02', warrantyExpires: d(40), documentName:'r.pdf', documentMimeType:'application/pdf', documentData:'data:application/pdf;base64,AAAA' },
+      { id:'a3', name:'Water heater', brand:'Rheem', model:'XE50T10H45U0', purchaseDate:'2018-11-20', warrantyExpires:'2024-11-20' },
+      { id:'a4', name:'Dishwasher', brand:'Bosch', model:'SHX78CM5N', purchaseDate:'2023-08-14', warrantyExpires:'' }
+    ],
+    members: [{id:'m1',name:'Jess'},{id:'m2',name:'Sam'},{id:'m3',name:'Ava'}],
+    cleaningTasks: [
+      {id:'c1',name:'Wipe kitchen counters',frequency:'daily',assigneeId:'m1',lastDone:''},
+      {id:'c2',name:'Load and run dishwasher',frequency:'daily',assigneeId:'m3',lastDone:''},
+      {id:'c3',name:'Feed the dog',frequency:'daily',assigneeId:'',lastDone:''},
+      {id:'c4',name:'Vacuum living room',frequency:'weekly',assigneeId:'m2',lastDone:''},
+      {id:'c5',name:'Clean bathrooms',frequency:'weekly',assigneeId:'m1',lastDone:''},
+      {id:'c6',name:'Change bed sheets',frequency:'weekly',assigneeId:'m3',lastDone:''},
+      {id:'c7',name:'Wipe out the microwave',frequency:'monthly',assigneeId:'m2',lastDone:d(-20)},
+      {id:'c8',name:'Mop all hard floors',frequency:'monthly',assigneeId:'',lastDone:''}
+    ]
+  });
+}
+
+async function loadSampleData() {
+  if (state.tasks.length || state.appliances.length || state.cleaningTasks.length) {
+    const ok = await themedConfirm('Load sample data?', 'This replaces what you have entered in the trial with a sample home.', 'Load sample');
+    if (!ok) return;
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(demoSampleDB()));
+  loadState(); render(); switchTab('home');
+  showToast('Sample home loaded. Explore every tab.');
+}
+
+function demoHomeSample() {
+  const home = document.getElementById('tab-home'); if (!home) return;
+  const ex = home.querySelector('.demo-sample');
+  if (state.tasks.length || state.appliances.length || state.cleaningTasks.length) { if (ex) ex.remove(); return; }
+  if (!ex) home.insertAdjacentHTML('afterbegin', '<button class="suggestion-chip demo-sample" style="display:block;width:100%;margin:0 0 14px;padding:12px" onclick="loadSampleData()">Just looking? See it with a sample home</button>');
+}
+(function () { const _r = render; render = function () { _r(); demoHomeSample(); }; })();
+/* ---------- free trial window ---------- */
+const DEMO_TRIAL_DAYS = 14;
+function demoTrialDaysLeft() {
+  const KEY = 'homemaint_standard_demo_since';
+  let since = null;
+  try { since = localStorage.getItem(KEY); } catch (e) {}
+  if (!since) { since = String(Date.now()); try { localStorage.setItem(KEY, since); } catch (e) {} }
+  return DEMO_TRIAL_DAYS - Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
+}
+function enforceDemoTrial() {
+  const left = demoTrialDaysLeft();
+  const banner = document.getElementById('demo-banner');
+  if (left <= 0) {
+    document.getElementById('trial-lock').style.display = 'flex';
+    if (banner) banner.style.display = 'none';
+    return true;
+  }
+  if (banner) banner.innerHTML = '<b>Free trial</b>: ' + left + ' day' + (left === 1 ? '' : 's') + ' left. <a href="https://www.etsy.com/listing/4553595439/home-maintenance-tracker-for-families" target="_blank" rel="noopener">Get the full app &rarr;</a>';
+  return false;
+}
+
 /* ---------- init ---------- */
 function init() {
   loadState();
+  initDriveFromCache();
   render();
+  enforceDemoTrial();
+  setInterval(enforceDemoTrial, 60000);
 
   document.querySelectorAll('.sheet-backdrop').forEach(bd => {
     bd.addEventListener('click', (e) => {
       if (e.target === bd) bd.classList.remove('open');
     });
   });
-
-  enforceDemoTrial();
-  setInterval(enforceDemoTrial, 60000);
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
