@@ -1,0 +1,2442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Home Maintenance Planner"/>
+<meta name="theme-color" content="#FAF6EE"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<title>Home Maintenance Planner | Free Trial</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<style>
+:root {
+  --bg: #FAF6EE;
+  --card: #F1E9DA;
+  --card-raised: #E8DCC5;
+  --border: #D9C9A8;
+  --gold: #007A86;
+  --gold-soft: rgba(0,122,134,0.12);
+  --cranberry: #A8453D;
+  --cranberry-soft: rgba(168,69,61,0.15);
+  --text: #2B241A;
+  --text-dim: #6B5F4D;
+  --text-faint: #9A8C74;
+  --radius: 8px;
+  --radius-sm: 5px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { background: var(--bg); }
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); }
+#app {
+  max-width: 480px;
+  margin: 0 auto;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.display-font { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+header.topbar {
+  padding: calc(env(safe-area-inset-top, 16px) + 12px) 20px 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.brand-block { display: flex; flex-direction: column; gap: 4px; }
+header.topbar .brand {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+header.topbar .brand .accent { color: var(--gold); }
+.tier-badge {
+  align-self: flex-start;
+  font-family: -apple-system, sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.tier-badge-lite {
+  background: var(--card-raised);
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+}
+.header-icons { display: flex; gap: 8px; }
+.icon-btn {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 16px;
+}
+
+main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 20px 170px;
+  -webkit-overflow-scrolling: touch;
+}
+main::-webkit-scrollbar { width: 0; }
+
+.tab-panel { display: none; animation: fadeIn 0.25s ease; }
+.tab-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
+
+.countdown-hero {
+  background: linear-gradient(160deg, var(--card-raised), var(--card));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.countdown-hero::after {
+  content: '';
+  position: absolute;
+  top: -40%; right: -20%;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--gold-soft), transparent 70%);
+  pointer-events: none;
+}
+.countdown-hero .eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.countdown-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.countdown-chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 4px;
+  text-align: center;
+  min-width: 0;
+}
+.countdown-chip .num {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+}
+.countdown-chip .lbl {
+  font-size: 9.5px;
+  color: var(--text-dim);
+  margin-top: 5px;
+  line-height: 1.2;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.cal-header .cal-month-label {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+}
+.cal-header .cal-nav-btn {
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 20px;
+}
+.cal-dow {
+  text-align: center;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-faint);
+  padding-bottom: 6px;
+}
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 12.5px;
+  position: relative;
+}
+.cal-cell.empty { visibility: hidden; }
+.cal-cell.today { border-color: var(--gold); font-weight: 700; }
+.cal-cell.selected { background: var(--gold); color: var(--bg); }
+.cal-cell .cal-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-top: 2px;
+}
+.cal-cell.selected .cal-dot { background: var(--bg); }
+.cal-cell.overdue-dot .cal-dot { background: var(--cranberry); }
+.cal-cell.selected.overdue-dot .cal-dot { background: var(--bg); }
+
+.seasonal-tabs {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.seasonal-tab-btn {
+  padding: 12px 4px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+  text-align: center;
+}
+.seasonal-tab-btn.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+
+.filter-scroll-wrap {
+  position: relative;
+  margin-bottom: 6px;
+}
+.filter-scroll-row {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+}
+.filter-scroll-row::-webkit-scrollbar { display: none; }
+.filter-pill {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+.filter-pill.active { background: var(--gold); color: var(--bg); border-color: var(--gold); }
+.filter-scroll-fade {
+  position: absolute;
+  top: 0; right: 0; bottom: 10px;
+  width: 36px;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.summary-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+.summary-card .val {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 22px;
+  font-weight: 600;
+}
+.summary-card .lbl {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.summary-card.over .val { color: var(--cranberry); }
+.summary-card.good .val { color: var(--gold); }
+
+.section-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 17px;
+  font-weight: 600;
+  margin: 22px 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.section-title .count {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-dim);
+  font-family: -apple-system, sans-serif;
+}
+
+.btn-add-inline {
+  width: 100%;
+  background: var(--card);
+  border: 1px dashed var(--border);
+  color: var(--gold);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  font-family: -apple-system, sans-serif;
+}
+
+.item-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.item-card .status-dot {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  color: var(--bg);
+}
+.item-card.done .status-dot { background: var(--gold); border-color: var(--gold); }
+.item-card .body-text { flex: 1; min-width: 0; }
+.item-card .title-line {
+  font-size: 14.5px;
+  font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.item-card.done .title-line { color: var(--text-faint); text-decoration: line-through; }
+.item-card .sub-line {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+.item-card .amount {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-faint);
+}
+.empty-state .big-icon { font-size: 34px; margin-bottom: 10px; }
+.empty-state .msg { font-size: 13.5px; line-height: 1.5; }
+
+.suggestion-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 20px 20px;
+}
+.suggestion-label {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-bottom: 2px;
+}
+.suggestion-chip {
+  background: var(--card);
+  border: 1px dashed var(--border);
+  color: var(--gold);
+  padding: 9px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+.suggestion-chip:active { transform: scale(0.96); }
+.suggestion-chip:hover { border-color: var(--gold); }
+
+.fab {
+  position: fixed;
+  bottom: 90px;
+  right: calc(50% - 240px + 20px);
+  width: 52px; height: 52px;
+  border-radius: 8px;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  cursor: pointer;
+  z-index: 20;
+}
+@media (max-width: 480px) { .fab { right: 20px; } }
+
+nav.tabbar {
+  flex-shrink: 0;
+  display: flex;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+}
+nav.tabbar button {
+  flex: 1;
+  background: none; border: none;
+  color: var(--text-faint);
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  font-size: 10px;
+  padding: 6px 2px;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+nav.tabbar button svg { width: 20px; height: 20px; }
+nav.tabbar button.active { color: var(--gold); }
+
+.sheet-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 50;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet-backdrop.open { display: flex; }
+.sheet {
+  background: var(--card-raised);
+  width: 100%;
+  max-width: 480px;
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(20px + env(safe-area-inset-bottom));
+  max-height: 86vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.28s cubic-bezier(0.32,0.72,0,1);
+}
+.sheet-backdrop.open .sheet { transform: translateY(0); }
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.sheet h3 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: -apple-system, sans-serif;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.btn-row { display: flex; gap: 10px; margin-top: 18px; }
+.btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: -apple-system, sans-serif;
+}
+.btn-primary { background: var(--gold); color: var(--bg); }
+.btn-secondary { background: var(--bg); color: var(--text-dim); border: 1px solid var(--border); }
+.btn-danger { background: var(--cranberry-soft); color: var(--cranberry); }
+
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--card-raised);
+  border: 1px solid var(--gold);
+  color: var(--text);
+  padding: 10px 18px;
+  border-radius: 18px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 100;
+  pointer-events: none;
+  white-space: normal;
+  text-align: center;
+  max-width: calc(100% - 48px);
+  width: max-content;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.tier-info-card {
+  background: var(--card-raised);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.tier-info-title {
+  font-family: -apple-system, sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+.tier-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.settings-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row .lbl-main { font-size: 14px; font-weight: 500; }
+.settings-row .lbl-sub { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
+.settings-btn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ===== Printable pages + computer layout ===== */
+.hm-side,.hm-kpi,.hm-extra{display:none}
+.print-intro{font-size:13px;color:var(--text-dim);line-height:1.5;margin:-6px 0 6px}
+.print-h{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-faint);font-weight:700;margin:16px 0 8px}
+.print-row{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:11px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg);margin-bottom:7px;cursor:pointer;font-family:inherit;color:var(--text)}
+.print-row:hover{border-color:var(--gold)}
+.print-row b{display:block;font-size:13.5px;font-weight:600}
+.print-row small{display:block;font-size:11.5px;color:var(--text-dim);margin-top:2px}
+.print-row .go{color:var(--gold);font-size:16px;flex-shrink:0}
+.item-card.done .status-dot{display:flex}
+@media (min-width:900px){
+  html,body{height:auto}
+  #app{max-width:none;height:auto;min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr);grid-template-rows:auto 1fr}
+  .hm-side{display:flex;flex-direction:column;gap:3px;grid-column:1;grid-row:1 / span 2;position:sticky;top:0;height:100vh;padding:26px 14px;border-right:1px solid var(--border);background:var(--card);overflow-y:auto}
+  .hm-brand{padding:2px 12px 22px}
+  .hm-brand .e{font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--text-faint);font-weight:700}
+  .hm-brand .t{font-size:21px;font-weight:700;color:var(--text);margin-top:5px;line-height:1.2}
+  .hm-brand .t span{color:var(--gold)}
+  .hm-item{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;border:none;background:none;border-radius:var(--radius-sm);font-family:inherit;font-size:14px;font-weight:600;color:var(--text-dim);cursor:pointer;text-align:left}
+  .hm-item svg{width:19px;height:19px;flex-shrink:0}
+  .hm-item:hover{background:var(--card-raised);color:var(--text)}
+  .hm-item.on{background:var(--gold);color:var(--bg)}
+  .hm-item .n{margin-left:auto;font-size:12px;font-weight:700;opacity:.85}
+  .hm-sep{height:1px;background:var(--border);margin:12px 10px}
+  header.topbar{grid-column:2;padding:30px 44px 10px;max-width:1280px;width:100%;margin:0 auto}
+  header.topbar .brand{font-size:28px}
+  main{grid-column:2;overflow:visible;padding:0 44px 60px;max-width:1280px;width:100%;margin:0 auto}
+  nav.tabbar{display:none}
+  .fab{right:44px;bottom:40px;width:58px;height:58px}
+  .toast{bottom:40px}
+  .sheet-backdrop{align-items:center}
+  .sheet{max-width:540px;border-radius:14px;transform:translateY(20px);opacity:0;transition:transform .2s ease,opacity .2s ease}
+  .sheet-backdrop.open .sheet{transform:none;opacity:1}
+  .sheet-handle{display:none}
+  .summary-row{display:none}
+  .hm-kpi{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:22px}
+  .hm-k{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px}
+  .hm-k .l{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--text-faint);font-weight:700}
+  .hm-k .v{font-size:30px;font-weight:700;margin-top:6px;line-height:1}
+  .hm-k .s{font-size:12px;color:var(--text-dim);margin-top:6px}
+  .hm-k.over .v{color:var(--cranberry)}
+  .hm-k.good .v{color:var(--gold)}
+  .hm-home-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:26px;align-items:start}
+  .hm-home-grid .section-title:first-child{margin-top:0}
+  .hm-extra{display:block}
+  .hm-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px}
+  .hm-card h4{font-size:15px;font-weight:700;margin-bottom:3px}
+  .hm-card .sub{font-size:12px;color:var(--text-dim);margin-bottom:12px}
+  .hm-bar{display:grid;grid-template-columns:96px 1fr 26px;align-items:center;gap:10px;font-size:12.5px;margin-bottom:8px}
+  .hm-bar .tr{height:8px;border-radius:4px;background:var(--bg);overflow:hidden}
+  .hm-bar .tr span{display:block;height:100%;background:var(--gold);border-radius:4px}
+  .hm-bar .c{text-align:right;color:var(--text-dim)}
+  .hm-up{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;cursor:pointer}
+  .hm-up:last-child{border-bottom:none}
+  .hm-up .d{color:var(--text-dim);white-space:nowrap}
+  #taskList,#seasonalList,#applianceList{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #taskList .item-card,#seasonalList .item-card,#applianceList .item-card{margin-bottom:0}
+  #taskList>.empty-state,#taskList>.suggestion-chips,#seasonalList>.empty-state,#applianceList>.empty-state,#taskList>.hm-done-h{grid-column:1/-1}
+  .hm-cal-wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:30px;align-items:start}
+  .hm-cal-wrap .section-title:first-child{margin-top:0}
+  .cal-cell{aspect-ratio:auto;height:64px;font-size:14px}
+  .seasonal-tabs{max-width:620px}
+  .hm-setup-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:30px;align-items:start}
+  .hm-setup-wrap #applianceList{grid-template-columns:1fr}
+}
+@media (min-width:900px) and (max-width:1150px){
+  .hm-home-grid,.hm-cal-wrap,.hm-setup-wrap{grid-template-columns:1fr}
+  .hm-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* ===== free trial ===== */
+.demo-banner{position:fixed;top:0;left:0;right:0;z-index:40;height:38px;display:flex;align-items:center;justify-content:center;padding:0 12px;background:var(--gold);color:var(--bg);font-size:12.5px;line-height:1.2;text-align:center;font-weight:600;overflow:hidden}
+.demo-banner b{font-weight:800}
+.demo-banner a{color:var(--bg);font-weight:800;text-decoration:underline;white-space:nowrap}
+#app{margin-top:38px;height:calc(100dvh - 38px)}
+#trial-lock{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(30,20,10,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.lock-card{max-width:380px;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);color:var(--text)}
+.lock-icon{width:56px;height:56px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:var(--gold);color:var(--bg)}
+.lock-title{font-size:1.35rem;font-weight:700;margin-bottom:8px}
+.lock-text{font-size:14px;color:var(--text-dim);line-height:1.6;margin-bottom:20px}
+.lock-cta{display:block;background:var(--gold);color:var(--bg);font-weight:700;font-size:15px;padding:14px;border-radius:12px;text-decoration:none}
+.upsell-card{border:1px solid var(--border);background:var(--card);border-radius:14px;padding:14px;margin:6px 0 12px}
+.upsell-card .t{font-weight:700;font-size:14px;color:var(--text);margin-bottom:5px}
+.upsell-card p{font-size:12.5px;color:var(--text-dim);line-height:1.55;margin-bottom:11px}
+.upsell-card a,.upsell-card button{display:block;width:100%;text-align:center;background:var(--gold);color:var(--bg);font-weight:700;font-size:13.5px;padding:11px;border-radius:10px;text-decoration:none;border:none;cursor:pointer;font-family:inherit}
+.sample-link{display:block;width:100%;margin:0 0 14px;padding:13px;border-radius:12px;border:1.5px dashed var(--gold);background:var(--card);color:var(--text);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+@media(min-width:900px){#app{height:auto;min-height:calc(100vh - 38px)}.hm-side{top:38px;height:calc(100vh - 38px)}.demo-banner{font-size:14px}}
+</style>
+</head>
+<body>
+<div class="demo-banner" id="demo-banner"><span><b>Free trial</b>: try every feature for 14 days. <a href="https://www.etsy.com/listing/4553593139/home-maintenance-scheduler-for" target="_blank" rel="noopener">Get the full app &rarr;</a></span></div>
+<div id="app">
+  <aside class="hm-side" id="hmSide"></aside>
+
+  <header class="topbar">
+    <div class="brand-block">
+      <div class="brand" id="brandText">Home Maintenance <span class="accent">Planner</span></div>
+    </div>
+    <div class="header-icons">
+      <div class="icon-btn" title="Printable pages" onclick="openPrintSheet()"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></div>
+      <div class="icon-btn" title="Settings and backup" onclick="openSettings()"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HOME -->
+    <section class="tab-panel active" id="tab-home">
+      <div class="hm-kpi" id="hmKpi"></div>
+      <div class="summary-row" id="summaryRow"></div>
+      <div class="hm-home-grid">
+        <div>
+          <div class="section-title">Overdue <span class="count" id="overdueCount"></span></div>
+          <div id="overdueList"></div>
+
+          <div class="section-title">Due soon <span class="count" id="dueSoonCount"></span></div>
+          <div id="dueSoonList"></div>
+        </div>
+        <div class="hm-extra" id="hmExtra"></div>
+      </div>
+    </section>
+
+    <!-- TASKS -->
+    <section class="tab-panel" id="tab-tasks">
+      <div class="section-title">All tasks <span class="count" id="taskCount"></span></div>
+      <div id="taskFilterRow"></div>
+      <div id="taskList"></div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="tab-panel" id="tab-calendar">
+      <div class="hm-cal-wrap">
+        <div>
+          <div id="calendarHeader"></div>
+          <div id="calendarGrid" class="cal-grid"></div>
+        </div>
+        <div>
+          <div class="section-title">Tasks this day <span class="count" id="calendarDayCount"></span></div>
+          <div id="calendarDayList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEASONAL -->
+    <section class="tab-panel" id="tab-seasonal">
+      <div id="seasonalTabsRow"></div>
+      <div id="seasonalList"></div>
+    </section>
+
+    <!-- SETUP -->
+    <section class="tab-panel" id="tab-setup">
+      <div class="hm-setup-wrap">
+        <div>
+          <div class="section-title">About your home</div>
+          <div id="homeProfileCard"></div>
+        </div>
+        <div>
+          <div class="section-title">Appliances <span class="count" id="applianceCount"></span></div>
+          <div id="applianceList"></div>
+          <button class="btn-add-inline" onclick="openApplianceSheet(null)">+ Add appliance</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button class="fab" id="fabBtn" onclick="handleFab()">+</button>
+
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="home" onclick="switchTab('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>
+      Home
+    </button>
+    <button class="tab-btn" data-tab="tasks" onclick="switchTab('tasks')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l2 2 4-4"/><rect x="3" y="4" width="18" height="17" rx="2"/></svg>
+      Tasks
+    </button>
+    <button class="tab-btn" data-tab="calendar" onclick="switchTab('calendar')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+      Calendar
+    </button>
+    <button class="tab-btn" data-tab="seasonal" onclick="switchTab('seasonal')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/><path d="M5 5l14 14M19 5L5 19"/></svg>
+      Seasonal
+    </button>
+    <button class="tab-btn" data-tab="setup" onclick="switchTab('setup')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 21v-6h6v6"/></svg>
+      Setup
+    </button>
+  </nav>
+</div>
+
+
+<!-- Task form sheet -->
+<div class="sheet-backdrop" id="taskSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="taskSheetTitle">Add task</h3>
+    <div class="field">
+      <label>Task</label>
+      <input type="text" id="taskName" placeholder="Replace furnace filter, clean gutters...">
+    </div>
+    <div class="field">
+      <label>Category</label>
+      <select id="taskCategory">
+        <option value="hvac">HVAC</option>
+        <option value="exterior">Exterior</option>
+        <option value="plumbing">Plumbing</option>
+        <option value="safety">Safety</option>
+        <option value="appliances">Appliances</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Repeats</label>
+      <select id="taskFrequency" onchange="onFrequencyChange()">
+        <option value="30">Monthly</option>
+        <option value="90">Every 3 months</option>
+        <option value="182">Every 6 months</option>
+        <option value="365">Yearly</option>
+        <option value="custom">Custom (days)</option>
+        <option value="once">One-time (doesn't repeat)</option>
+      </select>
+    </div>
+    <div class="field" id="customDaysField" style="display:none;">
+      <label>Repeat every (days)</label>
+      <input type="number" id="taskCustomDays" placeholder="e.g. 45" inputmode="numeric">
+    </div>
+    <div class="field">
+      <label id="taskDateLabel">Last done (optional)</label>
+      <input type="date" id="taskLastDone">
+    </div>
+    <div class="field">
+      <label>Season (optional)</label>
+      <select id="taskSeason">
+        <option value="">No specific season</option>
+        <option value="spring">Spring</option>
+        <option value="summer">Summer</option>
+        <option value="fall">Fall</option>
+        <option value="winter">Winter</option>
+      </select>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeTaskSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Save task</button>
+    </div>
+    <div class="btn-row" id="taskDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteTask()">Delete task</button>
+    </div>
+  </div>
+</div>
+
+<!-- Home profile sheet -->
+<div class="sheet-backdrop" id="homeProfileSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>About your home</h3>
+    <div class="field">
+      <label>Home name or address</label>
+      <input type="text" id="homeName" placeholder="123 Maple St, or 'Our House'">
+    </div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="homeNotes" placeholder="Anything worth remembering about this home" style="min-height:90px; resize:vertical;"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeHomeProfileSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveHomeProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Appliance sheet (simple, no documents, no warranty) -->
+<div class="sheet-backdrop" id="applianceSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="applianceSheetTitle">Add appliance</h3>
+    <div class="field">
+      <label>Name</label>
+      <input type="text" id="applianceName" placeholder="Furnace, refrigerator, water heater...">
+    </div>
+    <div class="field">
+      <label>Brand (optional)</label>
+      <input type="text" id="applianceBrand" placeholder="e.g. Carrier, GE, Rheem">
+    </div>
+    <div class="field">
+      <label>Model (optional)</label>
+      <input type="text" id="applianceModel" placeholder="Model number">
+    </div>
+    <div class="field">
+      <label>Purchase date (optional)</label>
+      <input type="date" id="appliancePurchaseDate">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeApplianceSheet()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveAppliance()">Save appliance</button>
+    </div>
+    <div class="btn-row" id="applianceDeleteRow" style="display:none;">
+      <button class="btn btn-danger" onclick="deleteAppliance()">Delete appliance</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings sheet -->
+<div class="sheet-backdrop" id="settingsSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>Settings</h3>
+    <div class="tier-info-card">
+      <div class="tier-info-title">Home Maintenance Planner</div>
+      <div class="tier-info-list">
+        <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Maintenance tasks &amp; calendar</div>
+        <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Seasonal checklists</div>
+        <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Simple appliance list</div>
+        <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Printable pages + computer layout</div>
+        <div><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><polyline points="20 6 9 17 4 12"/></svg>Google Drive backup (full app)</div>
+      </div>
+    </div>
+    <div class="upsell-card"><div class="t">Google Drive backup is in the full app</div><p>The full Home Maintenance Planner backs up your tasks to your own Google Drive, so they follow you to a new phone. This free trial skips it, since trial data is not meant to be permanent.</p><a href="https://www.etsy.com/listing/4553593139/home-maintenance-scheduler-for" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+    <div class="upsell-card"><div class="t">Sample data</div><p>Fill the trial with a realistic home: tasks that are overdue and coming up, seasonal jobs, and a few appliances, so you can try the calendar, the printable pages and the computer layout.</p><button type="button" onclick="closeSettings();loadSampleData()">Load sample data</button></div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Export data</div>
+        <div class="lbl-sub">Save a local backup file</div>
+      </div>
+      <button class="settings-btn" onclick="exportLocal()">Export</button>
+    </div>
+    <div class="settings-row" id="undoRestoreRow" style="display:none;">
+      <div>
+        <div class="lbl-main">Undo last restore</div>
+        <div class="lbl-sub">Go back to what you had before restoring</div>
+      </div>
+      <button class="settings-btn" style="color:var(--cranberry);" onclick="undoLastRestore()">Undo</button>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Printable pages</div>
+        <div class="lbl-sub">Make a PDF to print or save</div>
+      </div>
+      <button class="settings-btn" onclick="closeSettings(); openPrintSheet();">Open</button>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="lbl-main">Import data</div>
+        <div class="lbl-sub">Load from a local backup file</div>
+      </div>
+      <button class="settings-btn" onclick="document.getElementById('importFileInput').click()">Import</button>
+      <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="importLocal(event)">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeSettings()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Printable pages sheet -->
+<div class="sheet-backdrop" id="printSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3>Printable pages</h3>
+    <p class="print-intro">Pick a page. Your PDF is made right on your device, and nothing is uploaded. Print it or save it.</p>
+    <div id="printOptions"></div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closePrintSheet()">Close</button>
+    </div>
+  </div>
+</div>
+
+<div id="trial-lock"><div class="lock-card"><div class="lock-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+<div class="lock-title">Your free trial has ended</div><div class="lock-text">You've had 14 days with Home Maintenance Planner. Get the full app to keep every household task on schedule, with printable pages and Google Drive backup.</div>
+<a class="lock-cta" href="https://www.etsy.com/listing/4553593139/home-maintenance-scheduler-for" target="_blank" rel="noopener">Get the full app</a></div></div>
+<div class="toast" id="toast"></div>
+
+<!-- Shared confirm dialog -->
+<div class="sheet-backdrop" id="confirmSheetBackdrop">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <h3 id="confirmSheetTitle">Are you sure?</h3>
+    <p id="confirmSheetMessage" style="color:var(--text-dim); font-size:14px; line-height:1.5; margin:4px 0 18px;"></p>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="confirmSheetCancelBtn">Cancel</button>
+      <button class="btn btn-primary" id="confirmSheetOkBtn">Continue</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== Home Maintenance Planner ===== */
+/* Storage keys keep their original -lite names so data saved by earlier versions loads unchanged. */
+
+/* ---------- inline icon set (no external font/CDN dependency) ---------- */
+const ICONS = {
+  wrench: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2-2 2.5-2.5z"/></svg>',
+  chevronLeft: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>',
+  chevronRight: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>',
+  check: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+  settings: '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+};
+
+/* ---------- themed confirm dialog (replaces native confirm()) ---------- */
+function themedConfirm(title, message, okLabel) {
+  return new Promise((resolve) => {
+    const backdrop = document.getElementById('confirmSheetBackdrop');
+    document.getElementById('confirmSheetTitle').textContent = title;
+    document.getElementById('confirmSheetMessage').textContent = message;
+    const okBtn = document.getElementById('confirmSheetOkBtn');
+    const cancelBtn = document.getElementById('confirmSheetCancelBtn');
+    okBtn.textContent = okLabel || 'Continue';
+
+    const cleanup = (result) => {
+      backdrop.classList.remove('open');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      resolve(result);
+    };
+    const onOk = () => cleanup(true);
+    const onCancel = () => cleanup(false);
+
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+    backdrop.classList.add('open');
+  });
+}
+
+const STORAGE_KEY = 'homemaint_planner_demo_data';
+const DRIVE_FILE_NAME = 'homemaint-lite-backup.json';
+const DRIVE_TOKEN_KEY = 'homemaint_planner_demo_drive_token';
+const DRIVE_FILEID_KEY = 'homemaint_planner_demo_drive_fileid';
+const DRIVE_CONNECTED_KEY = 'homemaint_planner_demo_drive_connected';
+const DRIVE_HOLD_KEY = 'homemaint_planner_demo_drive_hold';
+const DRIVE_LAST_KEY = 'homemaint_planner_demo_drive_last_backup';
+const PRE_RESTORE_KEY = 'homemaint_planner_demo_pre_restore';
+const GOOGLE_CLIENT_ID = '636576283764-urkn6im4r86n5q4u3iokmska4ejid9o9.apps.googleusercontent.com';
+const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+
+let state = {
+  tasks: [],       // {id, name, category, frequencyDays, lastDone, season, completed}
+  appliances: [],  // {id, name, brand, model, purchaseDate}
+  homeName: '',
+  homeNotes: ''
+};
+
+let editingApplianceId = null;
+let editingTaskId = null;
+let driveAccessToken = null;
+let driveTokenClient = null;
+let gsiReady = false;
+let currentTab = 'home';
+let currentTaskFilter = 'all';
+
+/* ---------- date helpers (local-date safe, no UTC boundary bug) ---------- */
+function todayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function daysUntil(dateStr) {
+  const today = new Date(todayStr() + 'T00:00:00');
+  const target = new Date(dateStr + 'T00:00:00');
+  return Math.round((target - today) / 86400000);
+}
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr + 'T00:00:00');
+  d.setDate(d.getDate() + days);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+function computeNextDue(task) {
+  // One-time tasks with no repeat: due date is lastDone itself (or today if never done), never recalculated
+  if (task.frequencyDays === 0) {
+    return task.lastDone || todayStr();
+  }
+  const base = task.lastDone || todayStr();
+  return addDays(base, task.frequencyDays);
+}
+
+function prettyDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+// One-time tasks that have been marked done drop out of the due lists and the calendar.
+function isFinished(t) { return t.frequencyDays === 0 && !!t.completed; }
+function activeTasks() { return state.tasks.filter(t => !isFinished(t)); }
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+/* ---------- data checks (used on load, import and restore) ---------- */
+const CATEGORY_KEYS = ['hvac', 'exterior', 'plumbing', 'safety', 'appliances', 'other'];
+const SEASON_KEYS = ['spring', 'summer', 'fall', 'winter'];
+function cleanDate(v) { return typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : ''; }
+function cleanId(v) { return typeof v === 'string' && /^[a-z0-9]{1,40}$/i.test(v) ? v : uid(); }
+function cleanText(v, max) { return typeof v === 'string' ? v.slice(0, max || 300) : ''; }
+function sanitizeData(data) {
+  data = data && typeof data === 'object' ? data : {};
+  const seen = new Set();
+  const tasks = (Array.isArray(data.tasks) ? data.tasks : []).filter(t => t && typeof t === 'object').map(t => {
+    let id = cleanId(t.id); while (seen.has(id)) id = uid(); seen.add(id);
+    let freq = parseInt(t.frequencyDays, 10); if (!(freq >= 0)) freq = 90;
+    return {
+      id, name: cleanText(t.name, 120) || 'Untitled task',
+      category: CATEGORY_KEYS.includes(t.category) ? t.category : 'other',
+      frequencyDays: freq, lastDone: cleanDate(t.lastDone),
+      season: SEASON_KEYS.includes(t.season) ? t.season : '',
+      completed: freq === 0 ? cleanDate(t.completed) : ''
+    };
+  });
+  const aSeen = new Set();
+  const appliances = (Array.isArray(data.appliances) ? data.appliances : []).filter(a => a && typeof a === 'object').map(a => {
+    let id = cleanId(a.id); while (aSeen.has(id)) id = uid(); aSeen.add(id);
+    return { id, name: cleanText(a.name, 120) || 'Appliance', brand: cleanText(a.brand, 80), model: cleanText(a.model, 80), purchaseDate: cleanDate(a.purchaseDate) };
+  });
+  return { tasks, appliances, homeName: cleanText(data.homeName, 120), homeNotes: cleanText(data.homeNotes, 2000) };
+}
+
+/* ---------- persistence ---------- */
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        Object.assign(state, sanitizeData(parsed));
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load local state', e);
+  }
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ tasks: state.tasks, appliances: state.appliances, homeName: state.homeName, homeNotes: state.homeNotes }));
+    scheduleAutoBackup();
+  } catch (e) {
+    console.error('Failed to save local state', e);
+    showToast('Could not save — storage may be full');
+  }
+}
+
+/* ---------- rendering ---------- */
+function render() {
+  renderBrand();
+  renderSummary();
+  renderOverdueAndDueSoon();
+  renderTasks();
+  renderCalendar();
+  renderSeasonal();
+  renderHomeProfile();
+  renderAppliances();
+  hmRefresh();
+}
+
+function renderBrand() {
+  const el = document.getElementById('brandText');
+  const name = (state.homeName || '').trim();
+  if (name) {
+    el.innerHTML = `${escapeHtml(name)} <span class="accent">Maintenance</span>`;
+  } else {
+    el.innerHTML = `Home Maintenance <span class="accent">Planner</span>`;
+  }
+}
+
+function taskCategoryLabel(cat) {
+  const labels = { hvac: 'HVAC', exterior: 'Exterior', plumbing: 'Plumbing', safety: 'Safety', appliances: 'Appliances', other: 'Other' };
+  return labels[cat] || 'Other';
+}
+
+function renderSummary() {
+  const total = state.tasks.length;
+  const overdue = activeTasks().filter(t => daysUntil(computeNextDue(t)) < 0).length;
+  const row = document.getElementById('summaryRow');
+  row.innerHTML = `
+    <div class="summary-card ${overdue > 0 ? 'over' : 'good'}">
+      <div class="val">${overdue}</div>
+      <div class="lbl">Overdue</div>
+    </div>
+    <div class="summary-card">
+      <div class="val">${total}</div>
+      <div class="lbl">Total tasks</div>
+    </div>
+  `;
+}
+
+function renderOverdueAndDueSoon() {
+  const withDue = activeTasks().map(t => ({ ...t, due: computeNextDue(t), diff: daysUntil(computeNextDue(t)) }));
+  const overdue = withDue.filter(t => t.diff < 0).sort((a, b) => a.diff - b.diff);
+  const dueSoon = withDue.filter(t => t.diff >= 0 && t.diff <= 30).sort((a, b) => a.diff - b.diff);
+
+  document.getElementById('overdueCount').textContent = overdue.length + ' total';
+  const overdueList = document.getElementById('overdueList');
+  if (overdue.length === 0) {
+    overdueList.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No overdue tasks.</div></div>`;
+  } else {
+    overdueList.innerHTML = overdue.map(t => `
+      <div class="item-card" onclick="openTaskSheet('${t.id}')">
+        <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+        <div class="body-text">
+          <div class="title-line">${escapeHtml(t.name)}</div>
+          <div class="sub-line">${taskCategoryLabel(t.category)} &middot; ${Math.abs(t.diff)} day${Math.abs(t.diff) === 1 ? '' : 's'} overdue</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('dueSoonCount').textContent = dueSoon.length + ' total';
+  const dueSoonList = document.getElementById('dueSoonList');
+  if (dueSoon.length === 0) {
+    dueSoonList.innerHTML = `<div class="empty-state"><div class="big-icon">${ICONS.wrench}</div><div class="msg">No tasks due in the next 30 days.<br>Tap + to add a task.</div></div>`;
+  } else {
+    dueSoonList.innerHTML = dueSoon.map(t => `
+      <div class="item-card" onclick="openTaskSheet('${t.id}')">
+        <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+        <div class="body-text">
+          <div class="title-line">${escapeHtml(t.name)}</div>
+          <div class="sub-line">${taskCategoryLabel(t.category)} &middot; ${t.diff === 0 ? 'Due today' : 'Due in ' + t.diff + ' day' + (t.diff === 1 ? '' : 's')}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+const TASK_FILTERS = [
+  { key: 'all', label: 'All' },
+  { key: 'hvac', label: 'HVAC' },
+  { key: 'exterior', label: 'Exterior' },
+  { key: 'plumbing', label: 'Plumbing' },
+  { key: 'safety', label: 'Safety' },
+  { key: 'appliances', label: 'Appliances' },
+  { key: 'other', label: 'Other' }
+];
+
+function renderTaskFilterRow() {
+  const row = document.getElementById('taskFilterRow');
+  row.innerHTML = `<div class="filter-scroll-wrap">
+    <div class="filter-scroll-row">
+      ${TASK_FILTERS.map(f => `
+        <button onclick="setTaskFilter('${f.key}')" class="filter-pill ${currentTaskFilter === f.key ? 'active' : ''}">${f.label}</button>
+      `).join('')}
+    </div>
+    <div class="filter-scroll-fade"></div>
+  </div>`;
+}
+
+function setTaskFilter(key) {
+  currentTaskFilter = key;
+  renderTasks();
+}
+
+function renderTasks() {
+  renderTaskFilterRow();
+  const list = document.getElementById('taskList');
+  let all = state.tasks;
+  if (currentTaskFilter !== 'all') {
+    all = all.filter(t => t.category === currentTaskFilter);
+  }
+  const finished = all.filter(isFinished).sort((a, b) => (b.completed || '').localeCompare(a.completed || ''));
+  let tasks = all.filter(t => !isFinished(t)).map(t => ({ ...t, due: computeNextDue(t), diff: daysUntil(computeNextDue(t)) }));
+  tasks.sort((a, b) => a.diff - b.diff);
+
+  document.getElementById('taskCount').textContent = all.length + ' total';
+  if (all.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="big-icon">${ICONS.wrench}</div><div class="msg">No tasks added yet.<br>Tap + to add your first task.</div></div>
+      <div class="suggestion-chips">
+        <div class="suggestion-label">Try one of these to get started:</div>
+        <button class="suggestion-chip" onclick="quickStartTask('Replace HVAC filter','hvac',90)">HVAC filter, every 3 months</button>
+        <button class="suggestion-chip" onclick="quickStartTask('Test smoke detectors','safety',182)">Smoke detectors, every 6 months</button>
+        <button class="suggestion-chip" onclick="quickStartTask('Clean gutters','exterior',365)">Clean gutters, yearly</button>
+      </div>`;
+    return;
+  }
+  list.innerHTML = tasks.map(t => {
+    const dueLabel = t.diff < 0 ? `${Math.abs(t.diff)}d overdue` : t.diff === 0 ? 'Due today' : `Due in ${t.diff}d`;
+    return `
+    <div class="item-card" onclick="openTaskSheet('${t.id}')">
+      <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(t.name)}</div>
+        <div class="sub-line">${taskCategoryLabel(t.category)} &middot; ${frequencyLabel(t.frequencyDays)}</div>
+      </div>
+      <div class="amount" style="${t.diff < 0 ? 'color:var(--cranberry);' : ''}">${dueLabel}</div>
+    </div>
+  `;
+  }).join('') + (finished.length ? `<div class="section-title hm-done-h" style="margin-top:14px;">Done <span class="count">${finished.length} one-time</span></div>` + finished.map(t => `
+    <div class="item-card done" onclick="openTaskSheet('${t.id}')">
+      <div class="status-dot" title="Mark as not done" onclick="event.stopPropagation(); markTaskDone('${t.id}')">${ICONS.check}</div>
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(t.name)}</div>
+        <div class="sub-line">${taskCategoryLabel(t.category)} &middot; Done ${prettyDate(t.completed)}</div>
+      </div>
+    </div>`).join('') : '');
+}
+
+function frequencyLabel(days) {
+  if (days === 0) return 'One-time';
+  if (days === 30) return 'Monthly';
+  if (days === 90) return 'Every 3 months';
+  if (days === 182) return 'Every 6 months';
+  if (days === 365) return 'Yearly';
+  return `Every ${days} days`;
+}
+
+/* ---------- calendar (month view) ---------- */
+let calViewYear = new Date().getFullYear();
+let calViewMonth = new Date().getMonth(); // 0-indexed
+let calSelectedDate = todayStr();
+
+function calNav(delta) {
+  calViewMonth += delta;
+  if (calViewMonth > 11) { calViewMonth = 0; calViewYear++; }
+  if (calViewMonth < 0) { calViewMonth = 11; calViewYear--; }
+  renderCalendar();
+}
+
+function calSelectDay(dateStr) {
+  calSelectedDate = dateStr;
+  renderCalendar();
+}
+
+function tasksDueOn(dateStr) {
+  return activeTasks().filter(t => computeNextDue(t) === dateStr);
+}
+
+function renderCalendar() {
+  const header = document.getElementById('calendarHeader');
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  header.innerHTML = `<div class="cal-header">
+    <button class="cal-nav-btn" onclick="calNav(-1)">${ICONS.chevronLeft}</button>
+    <div class="cal-month-label">${monthNames[calViewMonth]} ${calViewYear}</div>
+    <button class="cal-nav-btn" onclick="calNav(1)">${ICONS.chevronRight}</button>
+  </div>`;
+
+  const grid = document.getElementById('calendarGrid');
+  const firstOfMonth = new Date(calViewYear, calViewMonth, 1);
+  const startDow = firstOfMonth.getDay();
+  const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+  const today = todayStr();
+
+  const dowLabels = ['S','M','T','W','T','F','S'].map(d => `<div class="cal-dow">${d}</div>`).join('');
+  let cells = '';
+  for (let i = 0; i < startDow; i++) cells += `<div class="cal-cell empty"></div>`;
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${calViewYear}-${String(calViewMonth+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+    const dueTasks = tasksDueOn(dateStr);
+    const hasOverdue = dueTasks.length > 0 && daysUntil(dateStr) < 0;
+    const classes = ['cal-cell'];
+    if (dateStr === today) classes.push('today');
+    if (dateStr === calSelectedDate) classes.push('selected');
+    if (hasOverdue) classes.push('overdue-dot');
+    cells += `<div class="${classes.join(' ')}" onclick="calSelectDay('${dateStr}')">${day}${dueTasks.length ? '<div class="cal-dot"></div>' : ''}</div>`;
+  }
+  grid.innerHTML = dowLabels + cells;
+
+  const dayTasks = tasksDueOn(calSelectedDate);
+  document.getElementById('calendarDayCount').textContent = dayTasks.length + ' total';
+  const dayList = document.getElementById('calendarDayList');
+  if (dayTasks.length === 0) {
+    dayList.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No tasks due on this day.</div></div>`;
+  } else {
+    dayList.innerHTML = dayTasks.map(t => `
+      <div class="item-card" onclick="openTaskSheet('${t.id}')">
+        <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+        <div class="body-text">
+          <div class="title-line">${escapeHtml(t.name)}</div>
+          <div class="sub-line">${taskCategoryLabel(t.category)}</div>
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+/* ---------- seasonal checklist ---------- */
+let currentSeason = 'spring';
+const SEASONS = [
+  { key: 'spring', label: 'Spring' },
+  { key: 'summer', label: 'Summer' },
+  { key: 'fall', label: 'Fall' },
+  { key: 'winter', label: 'Winter' }
+];
+
+function setSeason(key) {
+  currentSeason = key;
+  renderSeasonal();
+}
+
+function renderSeasonal() {
+  const tabsRow = document.getElementById('seasonalTabsRow');
+  tabsRow.innerHTML = `<div class="seasonal-tabs">
+    ${SEASONS.map(s => `<button class="seasonal-tab-btn ${currentSeason === s.key ? 'active' : ''}" onclick="setSeason('${s.key}')">${s.label}</button>`).join('')}
+  </div>`;
+
+  const list = document.getElementById('seasonalList');
+  const tasks = activeTasks().filter(t => t.season === currentSeason);
+  if (tasks.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="big-icon">${ICONS.wrench}</div><div class="msg">No tasks assigned to this season yet.<br>Add or edit a task to assign it a season.</div></div>`;
+    return;
+  }
+  const withDue = tasks.map(t => ({ ...t, diff: daysUntil(computeNextDue(t)) })).sort((a, b) => a.diff - b.diff);
+  list.innerHTML = withDue.map(t => {
+    const dueLabel = t.diff < 0 ? `${Math.abs(t.diff)}d overdue` : t.diff === 0 ? 'Due today' : `Due in ${t.diff}d`;
+    return `
+    <div class="item-card" onclick="openTaskSheet('${t.id}')">
+      <div class="status-dot" onclick="event.stopPropagation(); markTaskDone('${t.id}')"></div>
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(t.name)}</div>
+        <div class="sub-line">${taskCategoryLabel(t.category)}</div>
+      </div>
+      <div class="amount" style="${t.diff < 0 ? 'color:var(--cranberry);' : ''}">${dueLabel}</div>
+    </div>
+  `;
+  }).join('');
+}
+
+function renderHomeProfile() {
+  const card = document.getElementById('homeProfileCard');
+  const name = (state.homeName || '').trim();
+  const notes = (state.homeNotes || '').trim();
+  card.innerHTML = `
+    <div class="item-card" onclick="openHomeProfileSheet()" style="cursor:pointer;">
+      <div class="body-text">
+        <div class="title-line">${name ? escapeHtml(name) : 'Add your home name or address'}</div>
+        <div class="sub-line">${notes ? escapeHtml(notes.length > 60 ? notes.slice(0, 60) + '…' : notes) : 'Tap to add notes'}</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- appliances (simple list — no documents, no warranty tracking) ---------- */
+function renderAppliances() {
+  const list = document.getElementById('applianceList');
+  document.getElementById('applianceCount').textContent = state.appliances.length + ' total';
+  if (state.appliances.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:24px 12px;"><div class="msg">No appliances added yet.</div></div>`;
+    return;
+  }
+  list.innerHTML = state.appliances.map(a => `
+    <div class="item-card" onclick="openApplianceSheet('${a.id}')">
+      <div class="body-text">
+        <div class="title-line">${escapeHtml(a.name)}</div>
+        <div class="sub-line">${[a.brand, a.model].filter(Boolean).map(escapeHtml).join(' · ') || 'No details added'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openApplianceSheet(id) {
+  editingApplianceId = id;
+  const backdrop = document.getElementById('applianceSheetBackdrop');
+  const deleteRow = document.getElementById('applianceDeleteRow');
+  if (id) {
+    const a = state.appliances.find(x => x.id === id);
+    document.getElementById('applianceSheetTitle').textContent = 'Edit appliance';
+    document.getElementById('applianceName').value = a.name || '';
+    document.getElementById('applianceBrand').value = a.brand || '';
+    document.getElementById('applianceModel').value = a.model || '';
+    document.getElementById('appliancePurchaseDate').value = a.purchaseDate || '';
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('applianceSheetTitle').textContent = 'Add appliance';
+    document.getElementById('applianceName').value = '';
+    document.getElementById('applianceBrand').value = '';
+    document.getElementById('applianceModel').value = '';
+    document.getElementById('appliancePurchaseDate').value = '';
+    deleteRow.style.display = 'none';
+  }
+  backdrop.classList.add('open');
+}
+function closeApplianceSheet() {
+  document.getElementById('applianceSheetBackdrop').classList.remove('open');
+  editingApplianceId = null;
+}
+function saveAppliance() {
+  const name = document.getElementById('applianceName').value.trim();
+  const brand = document.getElementById('applianceBrand').value.trim();
+  const model = document.getElementById('applianceModel').value.trim();
+  const purchaseDate = document.getElementById('appliancePurchaseDate').value;
+  if (!name) { showToast('Add an appliance name first'); return; }
+  if (editingApplianceId) {
+    const a = state.appliances.find(x => x.id === editingApplianceId);
+    a.name = name; a.brand = brand; a.model = model; a.purchaseDate = purchaseDate;
+  } else {
+    state.appliances.push({ id: uid(), name, brand, model, purchaseDate });
+  }
+  saveState(); render(); closeApplianceSheet(); showToast('Appliance saved');
+}
+function deleteAppliance() {
+  state.appliances = state.appliances.filter(a => a.id !== editingApplianceId);
+  saveState(); render(); closeApplianceSheet(); showToast('Appliance deleted');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+/* ---------- tab switching ---------- */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+  currentTab = tab;
+  hmRenderSide();
+  if (window.matchMedia('(min-width:900px)').matches) window.scrollTo(0, 0);
+}
+
+function handleFab() {
+  if (currentTab === 'tasks' || currentTab === 'home') openTaskSheet(null);
+  else if (currentTab === 'setup') openHomeProfileSheet();
+  else openTaskSheet(null);
+}
+
+/* ---------- task CRUD ---------- */
+function onFrequencyChange() {
+  const val = document.getElementById('taskFrequency').value;
+  document.getElementById('customDaysField').style.display = (val === 'custom') ? 'block' : 'none';
+  document.getElementById('taskDateLabel').textContent = val === 'once' ? 'Due date (optional, today if left blank)' : 'Last done (optional)';
+}
+
+function quickStartTask(name, category, frequencyDays) {
+  openTaskSheet(null);
+  document.getElementById('taskName').value = name;
+  document.getElementById('taskCategory').value = category;
+  const standardValues = { 30: '30', 90: '90', 182: '182', 365: '365' };
+  document.getElementById('taskFrequency').value = standardValues[frequencyDays] || 'custom';
+  if (!standardValues[frequencyDays]) {
+    document.getElementById('taskCustomDays').value = frequencyDays;
+    document.getElementById('customDaysField').style.display = 'block';
+  }
+}
+
+function openTaskSheet(id) {
+  editingTaskId = id;
+  const backdrop = document.getElementById('taskSheetBackdrop');
+  const deleteRow = document.getElementById('taskDeleteRow');
+  if (id) {
+    const t = state.tasks.find(x => x.id === id);
+    document.getElementById('taskSheetTitle').textContent = 'Edit task';
+    document.getElementById('taskName').value = t.name || '';
+    document.getElementById('taskCategory').value = t.category || 'other';
+    const freqSelect = document.getElementById('taskFrequency');
+    const standardValues = ['30', '90', '182', '365'];
+    if (t.frequencyDays === 0) {
+      freqSelect.value = 'once';
+      document.getElementById('customDaysField').style.display = 'none';
+    } else if (standardValues.includes(String(t.frequencyDays))) {
+      freqSelect.value = String(t.frequencyDays);
+      document.getElementById('customDaysField').style.display = 'none';
+    } else {
+      freqSelect.value = 'custom';
+      document.getElementById('taskCustomDays').value = t.frequencyDays;
+      document.getElementById('customDaysField').style.display = 'block';
+    }
+    document.getElementById('taskLastDone').value = t.lastDone || '';
+    document.getElementById('taskSeason').value = t.season || '';
+    onFrequencyChange();
+    deleteRow.style.display = 'flex';
+  } else {
+    document.getElementById('taskSheetTitle').textContent = 'Add task';
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskCategory').value = 'hvac';
+    document.getElementById('taskFrequency').value = '90';
+    document.getElementById('customDaysField').style.display = 'none';
+    document.getElementById('taskCustomDays').value = '';
+    document.getElementById('taskLastDone').value = '';
+    document.getElementById('taskSeason').value = '';
+    onFrequencyChange();
+    deleteRow.style.display = 'none';
+  }
+  backdrop.classList.add('open');
+}
+function closeTaskSheet() {
+  document.getElementById('taskSheetBackdrop').classList.remove('open');
+  editingTaskId = null;
+}
+function saveTask() {
+  const name = document.getElementById('taskName').value.trim();
+  const category = document.getElementById('taskCategory').value;
+  const freqSelect = document.getElementById('taskFrequency').value;
+  const lastDone = document.getElementById('taskLastDone').value;
+  const season = document.getElementById('taskSeason').value;
+  if (!name) { showToast('Add a task name first'); return; }
+
+  let frequencyDays;
+  if (freqSelect === 'once') {
+    frequencyDays = 0;
+  } else if (freqSelect === 'custom') {
+    const customVal = parseInt(document.getElementById('taskCustomDays').value, 10);
+    if (!customVal || customVal <= 0) { showToast('Enter a valid number of days'); return; }
+    frequencyDays = customVal;
+  } else {
+    frequencyDays = parseInt(freqSelect, 10);
+  }
+
+  if (editingTaskId) {
+    const t = state.tasks.find(x => x.id === editingTaskId);
+    t.name = name; t.category = category; t.frequencyDays = frequencyDays; t.lastDone = lastDone; t.season = season;
+    if (frequencyDays !== 0) t.completed = '';
+  } else {
+    state.tasks.push({ id: uid(), name, category, frequencyDays, lastDone, season, completed: '' });
+  }
+  saveState(); render(); closeTaskSheet(); showToast('Task saved');
+}
+function deleteTask() {
+  state.tasks = state.tasks.filter(t => t.id !== editingTaskId);
+  saveState(); render(); closeTaskSheet(); showToast('Task deleted');
+}
+function markTaskDone(id) {
+  const t = state.tasks.find(x => x.id === id);
+  if (!t) return;
+  if (t.frequencyDays === 0) {
+    // One-time task: tap once to mark it done, tap again (in the Done list) to undo.
+    t.completed = t.completed ? '' : todayStr();
+    saveState(); render();
+    showToast(t.completed ? 'Marked done' : 'Marked as not done');
+    return;
+  }
+  t.lastDone = todayStr();
+  saveState(); render();
+  showToast('Marked done. Next due ' + prettyDate(computeNextDue(t)));
+}
+
+/* ---------- home profile ---------- */
+function openHomeProfileSheet() {
+  document.getElementById('homeName').value = state.homeName || '';
+  document.getElementById('homeNotes').value = state.homeNotes || '';
+  document.getElementById('homeProfileSheetBackdrop').classList.add('open');
+}
+function closeHomeProfileSheet() {
+  document.getElementById('homeProfileSheetBackdrop').classList.remove('open');
+}
+function saveHomeProfile() {
+  state.homeName = document.getElementById('homeName').value.trim();
+  state.homeNotes = document.getElementById('homeNotes').value.trim();
+  saveState(); render(); closeHomeProfileSheet();
+  showToast('Saved');
+}
+
+/* ---------- toast ---------- */
+let toastTimer = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+/* ---------- settings sheet ---------- */
+function openSettings() {
+  document.getElementById('settingsSheetBackdrop').classList.add('open');
+  updateDriveStatusUI();
+  renderUndoRow();
+}
+function closeSettings() {
+  document.getElementById('settingsSheetBackdrop').classList.remove('open');
+}
+
+/* ---------- Google Drive backup ---------- */
+/* One live backup file in the person's own Drive (drive.file scope).
+   Connecting on a new device never overwrites a backup that is already on Drive:
+   the app holds automatic backups and offers to restore first. */
+let _driveWaiters = [];
+let _driveAutoTimer = null;
+let _driveSilentFailAt = 0;
+
+function isDriveConnected() { return localStorage.getItem(DRIVE_CONNECTED_KEY) === 'true'; }
+function isDriveHold() { return localStorage.getItem(DRIVE_HOLD_KEY) === 'true'; }
+function tokenValid() {
+  if (!driveAccessToken) return false;
+  try { const c = JSON.parse(localStorage.getItem(DRIVE_TOKEN_KEY) || 'null'); return !!(c && c.expires_at && Date.now() < c.expires_at - 60000); } catch (e) { return false; }
+}
+
+function initDriveFromCache() {
+  try {
+    const cached = localStorage.getItem(DRIVE_TOKEN_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (parsed.expires_at && Date.now() < parsed.expires_at) {
+        driveAccessToken = parsed.token;
+      }
+    }
+  } catch (e) {
+    console.error('Failed to read cached drive token', e);
+  }
+  // Earlier versions only kept a token. A saved token means this device was connected.
+  if (driveAccessToken && !isDriveConnected()) localStorage.setItem(DRIVE_CONNECTED_KEY, 'true');
+  updateDriveStatusUI();
+  const retryInterval = setInterval(() => {
+    if (window.google && window.google.accounts) {
+      setupTokenClient();
+      gsiReady = true;
+      clearInterval(retryInterval);
+    }
+  }, 300);
+  setTimeout(() => clearInterval(retryInterval), 15000);
+}
+
+function setupTokenClient() {
+  if (!window.google || !window.google.accounts) return;
+  driveTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: DRIVE_SCOPE,
+    callback: (resp) => {
+      const ok = !!(resp && resp.access_token);
+      if (ok) {
+        const wasConnected = isDriveConnected();
+        driveAccessToken = resp.access_token;
+        const expiresAt = Date.now() + (resp.expires_in ? resp.expires_in * 1000 : 3500 * 1000);
+        localStorage.setItem(DRIVE_TOKEN_KEY, JSON.stringify({ token: driveAccessToken, expires_at: expiresAt }));
+        localStorage.setItem(DRIVE_CONNECTED_KEY, 'true');
+        _driveSilentFailAt = 0;
+        updateDriveStatusUI();
+        if (!wasConnected) firstConnectCheck();
+      }
+      const waiters = _driveWaiters; _driveWaiters = [];
+      waiters.forEach(fn => fn(ok));
+    },
+    error_callback: () => {
+      const waiters = _driveWaiters; _driveWaiters = [];
+      waiters.forEach(fn => fn(false));
+    }
+  });
+}
+
+// Gets a fresh token. interactive=true is only used from a button tap.
+function ensureToken(interactive) {
+  return new Promise((resolve) => {
+    if (tokenValid()) { resolve(true); return; }
+    if (!driveTokenClient) { resolve(false); return; }
+    if (!interactive && _driveSilentFailAt && Date.now() - _driveSilentFailAt < 5 * 60 * 1000) { resolve(false); return; }
+    let done = false;
+    const finish = (ok) => { if (done) return; done = true; if (!ok && !interactive) _driveSilentFailAt = Date.now(); resolve(ok); };
+    _driveWaiters.push(finish);
+    try { driveTokenClient.requestAccessToken({ prompt: '' }); } catch (e) { finish(false); }
+    setTimeout(() => finish(false), interactive ? 60000 : 8000);
+  });
+}
+
+// Every Drive call goes through here. An expired token is refreshed once.
+async function driveFetch(url, opts, interactive) {
+  opts = opts || {};
+  const go = () => fetch(url, Object.assign({}, opts, { headers: Object.assign({}, opts.headers || {}, { Authorization: `Bearer ${driveAccessToken}` }) }));
+  let res = await go();
+  if (res.status === 401) {
+    driveAccessToken = null; localStorage.removeItem(DRIVE_TOKEN_KEY);
+    if (await ensureToken(interactive)) res = await go();
+  }
+  return res;
+}
+
+async function firstConnectCheck() {
+  try {
+    const fileId = await driveFindFile();
+    if (!fileId) {
+      localStorage.removeItem(DRIVE_HOLD_KEY);
+      updateDriveStatusUI();
+      showToast('Connected to Google Drive');
+      if (state.tasks.length || state.appliances.length) backupToDrive(true);
+      return;
+    }
+    // A backup already exists on Drive. Hold automatic backups until the person decides.
+    localStorage.setItem(DRIVE_HOLD_KEY, 'true');
+    updateDriveStatusUI();
+    const yes = await themedConfirm('Backup found on Google Drive', 'Your Google Drive already has a Home Maintenance Planner backup. Restore it to this device? You can also keep what is here and tap Back up later to replace the Drive copy.', 'Review backup');
+    if (yes) restoreFromDrive();
+  } catch (e) {
+    showToast('Connected to Google Drive');
+  }
+}
+
+function handleDriveConnect() {
+  if (isDriveConnected()) {
+    themedConfirm('Disconnect Google Drive?', 'Your backup stays in your Google Drive and your data stays on this device. Automatic backups stop until you connect again.', 'Disconnect').then((yes) => {
+      if (!yes) return;
+      try { if (driveAccessToken && window.google && google.accounts && google.accounts.oauth2) google.accounts.oauth2.revoke(driveAccessToken, () => {}); } catch (e) {}
+      driveAccessToken = null;
+      [DRIVE_TOKEN_KEY, DRIVE_FILEID_KEY, DRIVE_CONNECTED_KEY, DRIVE_HOLD_KEY, DRIVE_LAST_KEY].forEach(k => localStorage.removeItem(k));
+      updateDriveStatusUI();
+      showToast('Disconnected from Google Drive');
+    });
+    return;
+  }
+  if (!gsiReady || !driveTokenClient) {
+    showToast('Still loading Google sign-in. Try again in a moment');
+    return;
+  }
+  driveTokenClient.requestAccessToken();
+}
+
+function updateDriveStatusUI() {
+  const statusText = document.getElementById('driveStatusText');
+  const btn = document.getElementById('driveConnectBtn');
+  if (!statusText || !btn) return;
+  if (isDriveConnected()) {
+    if (isDriveHold()) {
+      statusText.textContent = 'Connected. Auto-backup paused: restore your Drive backup or tap Back up';
+    } else {
+      const last = localStorage.getItem(DRIVE_LAST_KEY);
+      statusText.textContent = last ? 'Connected. Last backed up ' + new Date(last).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'Connected';
+    }
+    btn.textContent = 'Disconnect';
+  } else {
+    statusText.textContent = 'Not connected';
+    btn.textContent = 'Connect';
+  }
+}
+
+async function driveFindFile() {
+  const cachedId = localStorage.getItem(DRIVE_FILEID_KEY);
+  if (cachedId) {
+    try {
+      const check = await driveFetch(`https://www.googleapis.com/drive/v3/files/${cachedId}?fields=id,name,trashed`);
+      if (check.ok) {
+        const meta = await check.json();
+        if (!meta.trashed) return cachedId;
+      }
+    } catch (e) { /* fall through to search */ }
+  }
+
+  const q = encodeURIComponent(`name='${DRIVE_FILE_NAME}' and trashed=false`);
+  const res = await driveFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`);
+  if (!res.ok) throw new Error('Drive search failed');
+  const data = await res.json();
+  const files = data.files || [];
+  if (files.length === 0) { localStorage.removeItem(DRIVE_FILEID_KEY); return null; }
+  // If there are copies, use the most recently changed one. Nothing is deleted.
+  localStorage.setItem(DRIVE_FILEID_KEY, files[0].id);
+  return files[0].id;
+}
+
+function backupPayload() {
+  return JSON.stringify({ tasks: state.tasks, appliances: state.appliances, homeName: state.homeName, homeNotes: state.homeNotes, backedUpAt: new Date().toISOString() });
+}
+
+async function uploadBackup(fileId, interactive) {
+  const metadata = { name: DRIVE_FILE_NAME, mimeType: 'application/json' };
+  const boundary = '-------homemaintbackup';
+  const multipartBody =
+    `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n` +
+    `--${boundary}\r\nContent-Type: application/json\r\n\r\n${backupPayload()}\r\n--${boundary}--`;
+  const url = fileId
+    ? `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`
+    : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+  const res = await driveFetch(url, { method: fileId ? 'PATCH' : 'POST', headers: { 'Content-Type': `multipart/related; boundary=${boundary}` }, body: multipartBody }, interactive);
+  if (!res.ok) throw new Error('Upload failed');
+  const result = await res.json();
+  if (!fileId && result.id) localStorage.setItem(DRIVE_FILEID_KEY, result.id);
+  localStorage.setItem(DRIVE_LAST_KEY, new Date().toISOString());
+  updateDriveStatusUI();
+}
+
+// quiet=true: automatic backup after a change. No toasts, no sign-in popups.
+async function backupToDrive(quiet) {
+  if (!isDriveConnected()) { if (!quiet) showToast('Connect to Google Drive first'); return; }
+  if (quiet && isDriveHold()) return;
+  const ok = await ensureToken(!quiet);
+  if (!ok) { if (!quiet) showToast('Could not reach Google Drive. Try again'); return; }
+  try {
+    const fileId = await driveFindFile();
+    if (!quiet && isDriveHold() && fileId) {
+      const yes = await themedConfirm('Replace your Drive backup?', `Google Drive already has a backup from another device. Backing up now replaces it with what is on this device (${state.tasks.length} task${state.tasks.length === 1 ? '' : 's'}, ${state.appliances.length} appliance${state.appliances.length === 1 ? '' : 's'}).`, 'Replace it');
+      if (!yes) return;
+    }
+    if (!quiet) showToast('Backing up...');
+    await uploadBackup(fileId, !quiet);
+    localStorage.removeItem(DRIVE_HOLD_KEY);
+    updateDriveStatusUI();
+    if (!quiet) showToast('Backed up to Google Drive');
+  } catch (e) {
+    console.error(e);
+    if (!quiet) showToast('Backup failed. Try again');
+  }
+}
+
+function scheduleAutoBackup() {
+  if (!isDriveConnected() || isDriveHold()) return;
+  clearTimeout(_driveAutoTimer);
+  _driveAutoTimer = setTimeout(() => backupToDrive(true), 3000);
+}
+
+function dataSummary(d) {
+  const t = d.tasks.length, a = d.appliances.length;
+  return `${t} task${t === 1 ? '' : 's'} and ${a} appliance${a === 1 ? '' : 's'}`;
+}
+
+// Shared restore: always asks first, keeps a copy of the current data for Undo.
+async function confirmAndRestore(raw, sourceLabel, fromDrive) {
+  if (!raw || !Array.isArray(raw.tasks)) { showToast("That backup doesn't look valid. Nothing was changed"); return false; }
+  const incoming = sanitizeData(raw);
+  let msg = `This backup has ${dataSummary(incoming)}. This device has ${dataSummary(state)}. Restoring replaces what is here now, and you can undo it from Settings.`;
+  if (incoming.tasks.length < state.tasks.length) msg = `Heads up: this backup has fewer tasks (${incoming.tasks.length}) than this device (${state.tasks.length}). ` + msg;
+  const yes = await themedConfirm(`Restore from ${sourceLabel}?`, msg, 'Yes, restore');
+  if (!yes) return false;
+  try { localStorage.setItem(PRE_RESTORE_KEY, JSON.stringify({ data: { tasks: state.tasks, appliances: state.appliances, homeName: state.homeName, homeNotes: state.homeNotes }, ts: Date.now() })); } catch (e) {}
+  Object.assign(state, incoming);
+  if (fromDrive) localStorage.removeItem(DRIVE_HOLD_KEY);
+  saveState(); render(); updateDriveStatusUI(); renderUndoRow();
+  showToast('Restored. You can undo this in Settings');
+  return true;
+}
+
+function renderUndoRow() {
+  const row = document.getElementById('undoRestoreRow');
+  if (row) row.style.display = localStorage.getItem(PRE_RESTORE_KEY) ? 'flex' : 'none';
+}
+
+function undoLastRestore() {
+  try {
+    const raw = localStorage.getItem(PRE_RESTORE_KEY);
+    if (!raw) { showToast('Nothing to undo'); return; }
+    Object.assign(state, sanitizeData(JSON.parse(raw).data));
+    localStorage.removeItem(PRE_RESTORE_KEY);
+    saveState(); render(); renderUndoRow();
+    showToast('Restore undone');
+  } catch (e) { showToast('Could not undo'); }
+}
+
+async function restoreFromDrive() {
+  if (!isDriveConnected()) { showToast('Connect to Google Drive first'); return; }
+  if (!(await ensureToken(true))) { showToast('Could not reach Google Drive. Try again'); return; }
+  try {
+    const fileId = await driveFindFile();
+    if (!fileId) { showToast('No backup found on Drive yet'); localStorage.removeItem(DRIVE_HOLD_KEY); updateDriveStatusUI(); return; }
+    const res = await driveFetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, {}, true);
+    if (!res.ok) throw new Error('Download failed');
+    const data = await res.json();
+    await confirmAndRestore(data, 'Google Drive', true);
+  } catch (e) {
+    console.error(e);
+    showToast('Restore failed. Try again');
+  }
+}
+
+/* ---------- local export/import ---------- */
+function exportLocal() {
+  const payload = JSON.stringify({ tasks: state.tasks, appliances: state.appliances, homeName: state.homeName, homeNotes: state.homeNotes, exportedAt: new Date().toISOString() }, null, 2);
+  const blob = new Blob([payload], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `home-maintenance-planner-demo-backup-${todayStr()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  showToast('Exported backup file');
+}
+
+function importLocal(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    let data;
+    try { data = JSON.parse(e.target.result); } catch (err) { showToast('Could not read that file'); return; }
+    await confirmAndRestore(data, `the file "${file.name}"`, false);
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ── PRINTABLE PAGES (PDF made on the device with pdf-lib, same method as Life Admin HQ) ── */
+var MFSPrint=(function(){
+  // The built-in PDF fonts draw basic Latin letters only. Anything else is removed so the PDF never fails.
+  function safe(s){
+    return String(s==null?'':s)
+      .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[\r\n\t]+/g,' ')
+      .replace(/ ?[^\x20-\x7E\xA0-\xFF–—•…]+/g,'')
+      .trim();
+  }
+  function rgbHex(hex){
+    var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex||'');
+    if(!m)return PDFLib.rgb(.30,.40,.35);
+    return PDFLib.rgb(parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255);
+  }
+  var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function pd(ds){if(!ds)return new Date(NaN);var p=String(ds).split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+  function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function longDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+  function shortDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return MON[d.getMonth()].slice(0,3)+' '+d.getDate()+', '+d.getFullYear();}
+  function money(n){var v=parseFloat(n)||0;return(v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  async function create(opts){
+    opts=opts||{};
+    var doc=await PDFLib.PDFDocument.create();
+    var font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var bold=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    var k={doc:doc,font:font,bold:bold,W:612,H:792,M:46,CW:520,BOTTOM:62,page:null,y:0,title:'',landscape:false,
+      ink:PDFLib.rgb(.16,.16,.16),soft:PDFLib.rgb(.42,.42,.42),line:PDFLib.rgb(.66,.66,.66),faint:PDFLib.rgb(.84,.84,.84),
+      fill:PDFLib.rgb(.95,.95,.94),accent:rgbHex(opts.accent),footer:opts.footer||''};
+    // Shrink text a little to fit its space, then shorten it if it still does not fit.
+    k.fit=function(f,text,size,maxW,minSize){
+      var s=safe(text),sz=size,min=minSize||Math.max(6,size-2);
+      while(sz>min&&f.widthOfTextAtSize(s,sz)>maxW)sz-=0.25;
+      if(f.widthOfTextAtSize(s,sz)>maxW){
+        while(s.length>1&&f.widthOfTextAtSize(s+'...',sz)>maxW)s=s.slice(0,-1);
+        s=s.replace(/\s+$/,'')+'...';
+      }
+      return {text:s,size:sz};
+    };
+    k.text=function(text,x,y,size,o){
+      o=o||{};var f=o.bold?bold:font;
+      var r=k.fit(f,text,size,o.maxW||(k.W-k.M-x),o.minSize);
+      if(!r.text)return;
+      var w=f.widthOfTextAtSize(r.text,r.size);
+      var dx=o.align==='right'?(o.maxW-w):o.align==='center'?((o.maxW-w)/2):0;
+      k.page.drawText(r.text,{x:x+dx,y:y,size:r.size,font:f,color:o.color||k.ink});
+    };
+    k.hline=function(x1,x2,y,color,t){k.page.drawLine({start:{x:x1,y:y},end:{x:x2,y:y},thickness:t||.7,color:color||k.line});};
+    k.vline=function(x,y1,y2,color,t){k.page.drawLine({start:{x:x,y:y1},end:{x:x,y:y2},thickness:t||.7,color:color||k.line});};
+    k.rect=function(x,y,w,h,o){o=o||{};var r={x:x,y:y,width:w,height:h};if(o.fill)r.color=o.fill;if(o.border!==false){r.borderColor=o.border||k.line;r.borderWidth=o.bw||.7;}k.page.drawRectangle(r);};
+    k.newPage=function(title,sub,landscape){
+      var ls=landscape===undefined?k.landscape:!!landscape;k.landscape=ls;
+      k.W=ls?792:612;k.H=ls?612:792;k.CW=k.W-2*k.M;
+      k.page=doc.addPage([k.W,k.H]);k.title=title;
+      var y=k.H-k.M;
+      k.text(title,k.M,y-6,19,{bold:true,maxW:k.CW});
+      y-=24;
+      if(sub){k.text(sub,k.M,y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});y-=12;}
+      k.hline(k.M,k.M+k.CW,y,k.accent,1.2);
+      k.y=y-22;
+    };
+    k.contTitle=function(){return k.title.indexOf('(continued)')>-1?k.title:k.title+' (continued)';};
+    k.room=function(h){if(k.y-h<k.BOTTOM){k.newPage(k.contTitle());return true;}return false;};
+    k.section=function(text){k.room(48);k.text(text,k.M,k.y,11.5,{bold:true,color:k.accent,maxW:k.CW});k.y-=20;};
+    k.field=function(label,x,y,w,value){
+      var r=k.fit(font,label,9.5,w*0.6);
+      k.page.drawText(r.text,{x:x,y:y,size:r.size,font:font,color:k.soft});
+      var lx=x+font.widthOfTextAtSize(r.text,r.size)+6;
+      if(value)k.text(value,lx+2,y,10,{maxW:x+w-lx-4,minSize:7.5});
+      k.hline(lx,x+w,y-2);
+    };
+    // fields: array of label strings or [label,value]
+    k.fieldRow=function(fields){
+      var gap=24,w=(k.CW-gap*(fields.length-1))/fields.length;
+      fields.forEach(function(f,i){var l=Array.isArray(f)?f[0]:f,v=Array.isArray(f)?f[1]:'';k.field(l,k.M+i*(w+gap),k.y,w,v);});
+      k.y-=28;
+    };
+    k.box=function(x,y,s,on){
+      k.page.drawRectangle({x:x,y:y,width:s,height:s,borderColor:k.soft,borderWidth:.8});
+      if(on){k.page.drawLine({start:{x:x+2,y:y+s/2},end:{x:x+s*0.42,y:y+2},thickness:1.2,color:k.ink});k.page.drawLine({start:{x:x+s*0.42,y:y+2},end:{x:x+s-1.5,y:y+s-1.5},thickness:1.2,color:k.ink});}
+    };
+    // A tick list. items: a number (blank lines to write on) or an array of text / {t,on}.
+    k.checks=function(items,ncols){
+      ncols=ncols||1;
+      var n=typeof items==='number'?items:items.length,rows=Math.ceil(n/ncols),gap=20,w=(k.CW-gap*(ncols-1))/ncols;
+      for(var r=0;r<rows;r++){
+        if(k.y-20<k.BOTTOM)k.newPage(k.contTitle());
+        for(var c=0;c<ncols;c++){
+          var i=r+c*rows;if(i>=n)continue;
+          var x=k.M+c*(w+gap),it=typeof items==='number'?null:items[i];
+          k.box(x,k.y-3,10,!!(it&&it.on));
+          if(it!==null)k.text(typeof it==='string'?it:it.t,x+16,k.y-1,10,{maxW:w-18,minSize:7.5});
+          else k.hline(x+16,x+w,k.y-3,k.faint);
+        }
+        k.y-=20;
+      }
+    };
+    k.lines=function(n,gap){gap=gap||20;for(var i=0;i<n;i++){if(k.y-gap<k.BOTTOM)k.newPage(k.contTitle());k.hline(k.M,k.M+k.CW,k.y-4,k.faint);k.y-=gap;}};
+    // cols: [{label,w,align,soft,bold,box}] · rows: a number (blank rows) or an array of rows.
+    // A cell can be text or {box:true,on:bool}. A column with box:true draws an empty tick box in blank rows.
+    k.table=function(cols,rows,rowH,o){
+      o=o||{};var x=o.x||k.M;
+      var sum=cols.reduce(function(s,c){return s+c.w;},0);
+      if(o.stretch!==false&&Math.abs(sum-k.CW)>0.5){var f=k.CW/sum;cols=cols.map(function(c){var d={};for(var p in c)d[p]=c[p];d.w=c.w*f;return d;});sum=k.CW;}
+      var headH=19,n=typeof rows==='number'?rows:rows.length;
+      function sides(top,h){var cx=x;for(var i=0;i<=cols.length;i++){k.vline(cx,top,top-h);if(i<cols.length)cx+=cols[i].w;}}
+      function head(){
+        k.page.drawRectangle({x:x,y:k.y-headH,width:sum,height:headH,color:k.fill});
+        var cx=x;
+        cols.forEach(function(c){
+          if(c.label)k.text(c.label,cx+(c.w<34?2:5),k.y-13,8.5,{bold:true,maxW:c.w-(c.w<34?4:10),minSize:6,align:c.align==='center'||c.box?'center':undefined});
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y);k.hline(x,x+sum,k.y-headH);sides(k.y,headH);
+        k.y-=headH;
+      }
+      if(k.y-headH-rowH<k.BOTTOM)k.newPage(k.contTitle());
+      head();
+      for(var r=0;r<n;r++){
+        if(k.y-rowH<k.BOTTOM){k.newPage(k.contTitle());head();}
+        var row=typeof rows==='number'?null:rows[r],cx=x;
+        cols.forEach(function(c,i){
+          var v=row?row[i]:undefined,bs=Math.min(10,rowH-8),by=k.y-rowH+(rowH-bs)/2;
+          if(v&&typeof v==='object'&&v.box){k.box(cx+(c.w-bs)/2,by,bs,!!v.on);}
+          else if(c.box&&(v===undefined||v===null)){k.box(cx+(c.w-bs)/2,by,bs,false);}
+          else if(v!==undefined&&v!==null&&v!==''){
+            k.text(String(v),cx+5,k.y-rowH/2-3,9,{maxW:c.w-10,minSize:6.5,bold:!!c.bold,color:c.soft?k.soft:k.ink,align:c.align==='center'?'center':c.align==='right'?'right':undefined});
+          }
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y-rowH);sides(k.y,rowH);
+        k.y-=rowH;
+      }
+      k.y-=14;
+    };
+    k.fillRows=function(rowH){return Math.max(0,Math.floor((k.y-k.BOTTOM-19)/rowH));};
+    k.finish=async function(){
+      var pages=doc.getPages();
+      pages.forEach(function(pg,i){
+        var sz=pg.getSize();
+        pg.drawText(safe(k.footer),{x:k.M,y:30,size:8,font:font,color:k.soft});
+        var lbl='Page '+(i+1)+' of '+pages.length;
+        pg.drawText(lbl,{x:sz.width-k.M-font.widthOfTextAtSize(lbl,8),y:30,size:8,font:font,color:k.soft});
+      });
+      return await doc.save();
+    };
+    // Month grid, Monday first. cellText(dateStr) returns an array of short lines for that day.
+    // With numbered=false the grid has no dates, for an undated month to fill in by hand.
+    k.month=function(year,month,o){
+      o=o||{};var top=k.y,heads=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],cw=k.CW/7,hh=18;
+      var first=new Date(year,month,1).getDay(),off=(first+6)%7,dim=new Date(year,month+1,0).getDate();
+      var weeks=o.numbered===false?5:Math.ceil((off+dim)/7);
+      var gridH=(o.height||(k.y-k.BOTTOM-8))-hh,ch=gridH/weeks;
+      k.page.drawRectangle({x:k.M,y:top-hh,width:k.CW,height:hh,color:k.fill});
+      heads.forEach(function(h,i){k.text(h,k.M+i*cw,top-12.5,8.5,{bold:true,maxW:cw,align:'center'});});
+      for(var w=0;w<weeks;w++)for(var d=0;d<7;d++){
+        var x=k.M+d*cw,y=top-hh-(w+1)*ch,n=w*7+d-off+1;
+        k.rect(x,y,cw,ch,{border:k.line});
+        if(o.numbered===false||n<1||n>dim)continue;
+        k.text(String(n),x+4,y+ch-11,9,{bold:true,maxW:cw-8});
+        if(o.cellText){
+          var ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+          var lines=o.cellText(ds)||[],ly=y+ch-22;
+          for(var li=0;li<lines.length&&ly>y+3;li++){k.text(lines[li],x+4,ly,7,{maxW:cw-8,minSize:6});ly-=8.5;}
+        }
+      }
+      k.y=top-hh-gridH-14;
+    };
+    // Twelve small month calendars on one page.
+    k.yearGrid=function(year){
+      var cols=3,rows=4,gap=16,bw=(k.CW-gap*(cols-1))/cols,top=k.y,bh=(top-k.BOTTOM-gap*(rows-1))/rows;
+      for(var m=0;m<12;m++){
+        var c=m%cols,r=Math.floor(m/cols),x=k.M+c*(bw+gap),y=top-r*(bh+gap);
+        k.text(MON[m],x,y-10,10.5,{bold:true,color:k.accent,maxW:bw});
+        var cw=bw/7,heads=['M','T','W','T','F','S','S'];
+        heads.forEach(function(h,i){k.text(h,x+i*cw,y-26,7.5,{bold:true,color:k.soft,maxW:cw,align:'center'});});
+        var first=new Date(year,m,1).getDay(),off=(first+6)%7,dim=new Date(year,m+1,0).getDate(),lh=(bh-38)/6;
+        for(var d=1;d<=dim;d++){var p=off+d-1,cc=p%7,rr=Math.floor(p/7);k.text(String(d),x+cc*cw,y-40-rr*lh,8,{maxW:cw,align:'center'});}
+      }
+      k.y=k.BOTTOM;
+    };
+    return k;
+  }
+  // Hand the finished PDF to the person. On iPhone and iPad the share sheet (Print, Save to Files)
+  // is the dependable route from a home screen app, so it is tried first there.
+  function deliver(bytes,filename){
+    var blob=new Blob([bytes],{type:'application/pdf'});
+    var download=function(){
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+    };
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&navigator.canShare&&typeof File!=='undefined'){
+      try{
+        var file=new File([blob],filename,{type:'application/pdf'});
+        if(navigator.canShare({files:[file]})){
+          return navigator.share({files:[file],title:filename}).catch(function(err){
+            if(err&&err.name==='AbortError')return;
+            download();
+          });
+        }
+      }catch(e){}
+    }
+    download();
+  }
+  var busy=false;
+  // Runs a page builder and hands over the PDF. say(msg,isErr) shows the app's own message.
+  async function run(build,filename,opts,say){
+    if(typeof PDFLib==='undefined'){say('The PDF tool is still loading. Check your connection and try again.',true);return;}
+    if(busy)return;busy=true;say('Creating your PDF...');
+    try{var k=await create(opts);await build(k);var bytes=await k.finish();await deliver(bytes,filename);say('Your PDF is ready!');}
+    catch(e){console.error(e);say('Could not create the PDF. Try again.',true);}
+    busy=false;
+  }
+  return {safe:safe,create:create,deliver:deliver,run:run,MON:MON,DOW:DOW,pd:pd,ymd:ymd,longDate:longDate,shortDate:shortDate,money:money};
+})();
+
+
+
+/* ---------- printable pages ---------- */
+const PRINT_OPTS = [
+  { h: 'Filled in from your planner' },
+  { k: 'schedule', t: 'Maintenance schedule', s: 'Every task by category, with how often, last done and next due' },
+  { k: 'todo', t: 'To-do list', s: 'Overdue tasks and everything due in the next 30 days, with tick boxes' },
+  { k: 'month', t: 'Month calendar', s: 'Tasks on their due dates for the month shown on the Calendar tab' },
+  { k: 'seasonal', t: 'Seasonal checklists', s: 'Spring, summer, fall and winter tasks with tick boxes' },
+  { k: 'home', t: 'Home and appliance record', s: 'Your home details and appliance list' },
+  { h: 'Blank pages to fill in by hand' },
+  { k: 'blog', t: 'Blank maintenance log', s: 'Date, task, done by, cost and notes' },
+  { k: 'bseason', t: 'Blank seasonal checklist', s: 'Four seasons with lines to write your own tasks' },
+  { k: 'bappl', t: 'Blank appliance record', s: 'Brand, model, purchase date, warranty and notes' },
+  { k: 'byear', t: 'Blank yearly planner', s: 'All twelve months on one page' },
+  { k: 'ball', t: 'All blank pages', s: 'Every blank page in one PDF' }
+];
+function openPrintSheet() {
+  document.getElementById('printOptions').innerHTML = PRINT_OPTS.map(o => o.h
+    ? `<div class="print-h">${o.h}</div>`
+    : `<button class="print-row" onclick="makePrint('${o.k}')"><span><b>${o.t}</b><small>${o.s}</small></span><span class="go">&rarr;</span></button>`).join('');
+  document.getElementById('printSheetBackdrop').classList.add('open');
+}
+function closePrintSheet() { document.getElementById('printSheetBackdrop').classList.remove('open'); }
+
+const PRINT_ACCENT = '#007A86';
+function runPrint(build, filename) {
+  closePrintSheet();
+  MFSPrint.run(build, filename, { accent: PRINT_ACCENT, footer: 'Home Maintenance Planner · Mobile First Studio' }, (msg) => showToast(msg));
+}
+function homeLine() { return (state.homeName || '').trim(); }
+function subLine(extra) { return [homeLine(), extra, MFSPrint.longDate(todayStr())].filter(Boolean).join('  ·  '); }
+function dueText(t) {
+  const d = daysUntil(computeNextDue(t));
+  return d < 0 ? `${-d} day${d === -1 ? '' : 's'} overdue` : d === 0 ? 'Due today' : `Due in ${d} day${d === 1 ? '' : 's'}`;
+}
+
+function pSchedule(k) {
+  const n = state.tasks.length;
+  k.newPage('Maintenance Schedule', subLine(`${n} task${n === 1 ? '' : 's'}`));
+  const cols = [{ label: 'Done', w: 36, box: true }, { label: 'Task', w: 170, bold: true }, { label: 'Repeats', w: 88 }, { label: 'Season', w: 56, soft: true }, { label: 'Last done', w: 82 }, { label: 'Next due', w: 88 }];
+  CATEGORY_KEYS.forEach(cat => {
+    const list = state.tasks.filter(t => t.category === cat);
+    if (!list.length) return;
+    const rows = list.map(t => ({ t, due: isFinished(t) ? '' : computeNextDue(t) }))
+      .sort((a, b) => (a.due || '9').localeCompare(b.due || '9'))
+      .map(({ t, due }) => [isFinished(t) ? { box: true, on: true } : null, t.name, frequencyLabel(t.frequencyDays), t.season ? t.season[0].toUpperCase() + t.season.slice(1) : '',
+        t.frequencyDays === 0 ? (t.completed ? MFSPrint.shortDate(t.completed) : '') : (t.lastDone ? MFSPrint.shortDate(t.lastDone) : 'Not yet'),
+        isFinished(t) ? 'Done' : MFSPrint.shortDate(due)]);
+    k.section(`${taskCategoryLabel(cat)} (${list.length})`);
+    k.table(cols, rows, 20);
+  });
+}
+function pTodo(k) {
+  const list = activeTasks().map(t => ({ t, d: daysUntil(computeNextDue(t)) })).filter(x => x.d <= 30).sort((a, b) => a.d - b.d);
+  const over = list.filter(x => x.d < 0).length;
+  k.newPage('Maintenance To-Do List', subLine(`${over} overdue, ${list.length - over} due in the next 30 days`));
+  const cols = [{ label: 'Done', w: 36, box: true }, { label: 'Task', w: 196, bold: true }, { label: 'Category', w: 80 }, { label: 'Due', w: 92 }, { label: 'Status', w: 116, soft: true }];
+  const rows = list.map(({ t }) => [null, t.name, taskCategoryLabel(t.category), MFSPrint.shortDate(computeNextDue(t)), dueText(t)]);
+  k.table(cols, rows, 22);
+  k.section('Also to do');
+  k.checks(Math.max(4, Math.min(12, Math.floor((k.y - k.BOTTOM) / 20))));
+}
+function pMonth(k) {
+  const y = calViewYear, m = calViewMonth;
+  const count = activeTasks().filter(t => { const d = computeNextDue(t); return d && d.startsWith(`${y}-${String(m + 1).padStart(2, '0')}`); }).length;
+  k.newPage(`${MFSPrint.MON[m]} ${y} Maintenance`, subLine(`${count} task${count === 1 ? '' : 's'} due this month`), true);
+  k.month(y, m, { cellText: (ds) => tasksDueOn(ds).map(t => '- ' + t.name) });
+}
+function pSeasonal(k) {
+  k.newPage('Seasonal Checklists', subLine(''));
+  SEASONS.forEach(s => {
+    const list = state.tasks.filter(t => t.season === s.key);
+    k.section(`${s.label} (${list.length})`);
+    const items = list.map(t => ({ t: `${t.name}  (${taskCategoryLabel(t.category)}, ${frequencyLabel(t.frequencyDays).toLowerCase()})`, on: isFinished(t) }));
+    if (items.length) k.checks(items, 1);
+    k.checks(3);
+    k.y -= 6;
+  });
+}
+function pHome(k) {
+  k.newPage('Home and Appliance Record', MFSPrint.longDate(todayStr()));
+  k.fieldRow([['Home', homeLine()]]);
+  k.section('Notes');
+  const notes = (state.homeNotes || '').trim();
+  if (notes) {
+    const words = MFSPrint.safe(notes).split(' '); let line = '';
+    words.forEach(w => { const tryL = line ? line + ' ' + w : w; if (k.font.widthOfTextAtSize(tryL, 10) > k.CW) { k.room(16); k.text(line, k.M, k.y, 10, { maxW: k.CW }); k.y -= 15; line = w; } else line = tryL; });
+    if (line) { k.room(16); k.text(line, k.M, k.y, 10, { maxW: k.CW }); k.y -= 15; }
+    k.y -= 8;
+  } else k.lines(3);
+  k.section(`Appliances (${state.appliances.length})`);
+  const cols = [{ label: 'Appliance', w: 150, bold: true }, { label: 'Brand', w: 100 }, { label: 'Model', w: 120 }, { label: 'Purchased', w: 80 }, { label: 'Notes', w: 70 }];
+  const rows = state.appliances.map(a => [a.name, a.brand, a.model, a.purchaseDate ? MFSPrint.shortDate(a.purchaseDate) : '', '']);
+  const blanks = Math.max(0, k.fillRows(24) - rows.length);
+  k.table(cols, rows.concat(Array(Math.min(blanks, 30)).fill(null).map(() => ['', '', '', '', ''])), 24);
+}
+function pBlankLog(k) {
+  k.newPage('Maintenance Log', 'Write down every job as it gets done.');
+  k.fieldRow(['Home', 'Year']);
+  k.table([{ label: 'Date', w: 70 }, { label: 'Task', w: 170 }, { label: 'Done by', w: 90 }, { label: 'Cost', w: 60 }, { label: 'Notes', w: 130 }], k.fillRows(24) - 1, 24);
+}
+function pBlankSeason(k) {
+  k.newPage('Seasonal Maintenance Checklist', 'Write the jobs for each season, then tick them off.');
+  k.fieldRow(['Home', 'Year']);
+  ['Spring', 'Summer', 'Fall', 'Winter'].forEach(sn => { k.section(sn); k.checks(10, 2); k.y -= 4; });
+}
+function pBlankAppl(k) {
+  k.newPage('Appliance Record', 'Keep the details handy for repairs, filters and warranty claims.');
+  k.table([{ label: 'Appliance', w: 110 }, { label: 'Brand', w: 80 }, { label: 'Model / serial', w: 110 }, { label: 'Purchased', w: 70 }, { label: 'Warranty until', w: 76 }, { label: 'Notes', w: 74 }], k.fillRows(30) - 1, 30);
+}
+function pBlankYear(k) {
+  k.newPage('Yearly Maintenance Planner', 'Plan the big jobs month by month.');
+  k.fieldRow(['Home', 'Year']);
+  const cols = 3, rows = 4, gap = 14, bw = (k.CW - gap * (cols - 1)) / cols, top = k.y + 6, bh = (top - k.BOTTOM - gap * (rows - 1)) / rows;
+  for (let i = 0; i < 12; i++) {
+    const c = i % cols, r = Math.floor(i / cols), x = k.M + c * (bw + gap), yT = top - r * (bh + gap);
+    k.rect(x, yT - bh, bw, bh, { border: k.line });
+    k.page.drawRectangle({ x, y: yT - 20, width: bw, height: 20, color: k.fill });
+    k.text(MFSPrint.MON[i], x + 8, yT - 14, 10, { bold: true, color: k.accent, maxW: bw - 16 });
+    for (let ly = yT - 40; ly > yT - bh + 8; ly -= 18) { k.box(x + 8, ly - 1, 8, false); k.hline(x + 22, x + bw - 8, ly - 2, k.faint); }
+  }
+  k.y = k.BOTTOM;
+}
+function makePrint(kind) {
+  const needs = { schedule: 1, todo: 1, seasonal: 1 };
+  if (needs[kind] && !state.tasks.length) { showToast('Add a task first, or try a blank page'); return; }
+  if (kind === 'seasonal' && !state.tasks.some(t => t.season)) { showToast('Give a task a season first, or try the blank seasonal checklist'); return; }
+  const d = todayStr();
+  const map = {
+    schedule: [pSchedule, `maintenance-schedule-${d}.pdf`],
+    todo: [pTodo, `maintenance-to-do-${d}.pdf`],
+    month: [pMonth, `maintenance-${MFSPrint.MON[calViewMonth].toLowerCase()}-${calViewYear}.pdf`],
+    seasonal: [pSeasonal, `seasonal-checklists-${d}.pdf`],
+    home: [pHome, `home-and-appliance-record-${d}.pdf`],
+    blog: [pBlankLog, 'maintenance-log-blank.pdf'],
+    bseason: [pBlankSeason, 'seasonal-checklist-blank.pdf'],
+    bappl: [pBlankAppl, 'appliance-record-blank.pdf'],
+    byear: [pBlankYear, 'yearly-planner-blank.pdf'],
+    ball: [(k) => { pBlankLog(k); pBlankSeason(k); pBlankAppl(k); pBlankYear(k); }, 'home-maintenance-planner-printables.pdf']
+  };
+  const m = map[kind]; if (!m) return;
+  runPrint(m[0], m[1]);
+}
+
+/* ---------- computer layout ---------- */
+const HM_ICONS = {
+  home: '<path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/>',
+  tasks: '<path d="M9 11l2 2 4-4"/><rect x="3" y="4" width="18" height="17" rx="2"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  seasonal: '<path d="M12 2v20M2 12h20"/><path d="M5 5l14 14M19 5L5 19"/>',
+  setup: '<path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M9 21v-6h6v6"/>',
+  print: '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/>',
+  backup: '<path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19 10a4 4 0 0 1 0 8z"/>'
+};
+function hmItem(key, label, n, action) {
+  const on = ['home', 'tasks', 'calendar', 'seasonal', 'setup'].includes(key) && currentTab === key;
+  return `<button class="hm-item ${on ? 'on' : ''}" onclick="${action || `switchTab('${key}')`}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${HM_ICONS[key]}</svg>${label}${n !== undefined ? `<span class="n">${n}</span>` : ''}</button>`;
+}
+function hmRenderSide() {
+  const el = document.getElementById('hmSide'); if (!el) return;
+  const over = activeTasks().filter(t => daysUntil(computeNextDue(t)) < 0).length;
+  el.innerHTML = `<div class="hm-brand"><div class="e">Mobile First Studio</div><div class="t">Home Maintenance <span>Planner</span></div></div>`
+    + hmItem('home', 'Home', over || undefined) + hmItem('tasks', 'Tasks', state.tasks.length) + hmItem('calendar', 'Calendar')
+    + hmItem('seasonal', 'Seasonal') + hmItem('setup', 'Home + appliances', state.appliances.length)
+    + '<div class="hm-sep"></div>' + hmItem('print', 'Printable pages', undefined, 'openPrintSheet()') + hmItem('backup', 'Backup + settings', undefined, 'openSettings()');
+}
+function hmRenderDesk() {
+  const kpi = document.getElementById('hmKpi'), extra = document.getElementById('hmExtra');
+  if (!kpi || !extra) return;
+  const act = activeTasks().map(t => ({ t, d: daysUntil(computeNextDue(t)) }));
+  const over = act.filter(x => x.d < 0).length, soon = act.filter(x => x.d >= 0 && x.d <= 30).length;
+  const ym = todayStr().slice(0, 7);
+  const doneMonth = state.tasks.filter(t => (t.lastDone || '').startsWith(ym) || (t.completed || '').startsWith(ym)).length;
+  const next = act.filter(x => x.d >= 0).sort((a, b) => a.d - b.d)[0];
+  kpi.innerHTML = `<div class="hm-k ${over ? 'over' : 'good'}"><div class="l">Overdue</div><div class="v">${over}</div><div class="s">${over ? 'need doing now' : 'all caught up'}</div></div>
+    <div class="hm-k"><div class="l">Due in 30 days</div><div class="v">${soon}</div><div class="s">${next ? 'next: ' + escapeHtml(next.t.name) : 'nothing coming up'}</div></div>
+    <div class="hm-k"><div class="l">Done this month</div><div class="v">${doneMonth}</div><div class="s">tasks marked done</div></div>
+    <div class="hm-k"><div class="l">Total tasks</div><div class="v">${state.tasks.length}</div><div class="s">${state.appliances.length} appliance${state.appliances.length === 1 ? '' : 's'} on file</div></div>`;
+  const counts = CATEGORY_KEYS.map(c => [c, state.tasks.filter(t => t.category === c).length]).filter(x => x[1]);
+  const mx = Math.max(1, ...counts.map(x => x[1]));
+  const upcoming = act.filter(x => x.d > 30 && x.d <= 120).sort((a, b) => a.d - b.d).slice(0, 6);
+  extra.innerHTML = `<div class="hm-card"><h4>By category</h4><div class="sub">Where your maintenance time goes</div>
+      ${counts.length ? counts.map(([c, n]) => `<div class="hm-bar"><div>${taskCategoryLabel(c)}</div><div class="tr"><span style="width:${Math.round(n / mx * 100)}%"></span></div><div class="c">${n}</div></div>`).join('') : '<div class="sub" style="margin:0;">Add tasks to see them here.</div>'}</div>
+    <div class="hm-card"><h4>Coming up</h4><div class="sub">Due in 1 to 4 months</div>
+      ${upcoming.length ? upcoming.map(({ t }) => `<div class="hm-up" onclick="openTaskSheet('${t.id}')"><span>${escapeHtml(t.name)}</span><span class="d">${prettyDate(computeNextDue(t))}</span></div>`).join('') : '<div class="sub" style="margin:0;">Nothing scheduled in that window.</div>'}</div>`;
+}
+function hmRefresh() { hmRenderSide(); hmRenderDesk(); }
+
+/* ---------- init ---------- */
+
+/* ---------- free trial ---------- */
+const DEMO_SINCE_KEY = 'homemaint_planner_demo_since';
+const DEMO_TRIAL_DAYS = 14;
+function demoDay(off) { const d = new Date(); d.setDate(d.getDate() + off); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+function demoSample() {
+  const T = (name, category, frequencyDays, ago, season, completed) => ({ id: 'demo' + Math.random().toString(36).slice(2, 8), name, category, frequencyDays, lastDone: ago == null ? '' : demoDay(-ago), season: season || '', completed: completed ? demoDay(-completed) : '' });
+  return {
+    tasks: [
+      T('Replace HVAC filter', 'hvac', 90, 100),
+      T('Clean gutters', 'exterior', 182, 190, 'fall'),
+      T('Clean dryer vent', 'appliances', 365, 355),
+      T('Test smoke and CO detectors', 'safety', 182, 160),
+      T('Service the furnace', 'hvac', 365, 340, 'fall'),
+      T('Drain outdoor faucets', 'plumbing', 365, 330, 'fall'),
+      T('Cover or winterize the AC unit', 'hvac', 365, 360, 'fall'),
+      T('Check sump pump', 'plumbing', 90, 30),
+      T('Flush the water heater', 'plumbing', 365, 300),
+      T('Inspect the roof', 'exterior', 365, 180, 'spring'),
+      T('Vacuum refrigerator coils', 'appliances', 182, 60, 'spring'),
+      T('Service the AC', 'hvac', 365, 200, 'summer'),
+      T('Seal the deck', 'exterior', 365, 220, 'summer'),
+      T('Check attic insulation', 'other', 365, 250, 'winter'),
+      T('Test GFCI outlets', 'safety', 90, 45, 'winter'),
+      T('Schedule a chimney inspection', 'safety', 0, null, 'fall'),
+      T('Replace the kitchen faucet washer', 'plumbing', 0, null, '', 5)
+    ],
+    appliances: [
+      { id: 'demoa1', name: 'Refrigerator', brand: 'Whirlpool', model: 'WRF535SWHZ', purchaseDate: '2021-03-14' },
+      { id: 'demoa2', name: 'Washer', brand: 'LG', model: 'WM3600HWA', purchaseDate: '2020-08-02' },
+      { id: 'demoa3', name: 'Water heater', brand: 'Rheem', model: 'XE50M06ST45U1', purchaseDate: '2019-05-20' }
+    ],
+    homeName: 'Maple Street House',
+    homeNotes: 'Furnace filter size 20x25x1. Water shutoff is in the basement by the stairs.'
+  };
+}
+function loadSampleData() {
+  const go = () => {
+    Object.assign(state, sanitizeData(demoSample()));
+    saveState(); render(); demoSampleButton();
+    if (typeof switchTab === 'function') switchTab('home');
+    showToast('Sample data loaded. Explore every feature.');
+  };
+  if (!state.tasks.length && !state.appliances.length) { go(); return; }
+  themedConfirm('Load sample data?', 'This replaces what you have entered in the trial with a sample home.', 'Load it').then(yes => { if (yes) go(); });
+}
+function demoSampleButton() {
+  const panel = document.getElementById('tab-home'); if (!panel) return;
+  const btn = panel.querySelector('.sample-link');
+  if (state.tasks.length || state.appliances.length) { if (btn) btn.remove(); return; }
+  if (!btn) panel.insertAdjacentHTML('afterbegin', '<button type="button" class="sample-link" onclick="loadSampleData()">Just looking? See it with sample data</button>');
+}
+function demoSinceMs(v) { const p = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || ''); if (p) return new Date(+p[1], p[2] - 1, +p[3]).getTime(); const n = parseInt(v, 10); return isNaN(n) ? Date.now() : n; }
+function demoTrialDaysLeft() {
+  let since = null; try { since = localStorage.getItem(DEMO_SINCE_KEY); } catch (e) {}
+  if (!since) { since = String(Date.now()); try { localStorage.setItem(DEMO_SINCE_KEY, since); } catch (e) {} }
+  return DEMO_TRIAL_DAYS - Math.floor((Date.now() - demoSinceMs(since)) / 86400000);
+}
+function enforceDemoTrial() {
+  const left = demoTrialDaysLeft(), banner = document.getElementById('demo-banner'), lock = document.getElementById('trial-lock');
+  if (left <= 0) { if (lock) lock.style.display = 'flex'; if (banner) banner.style.display = 'none'; document.body.style.overflow = 'hidden'; return true; }
+  if (banner) banner.innerHTML = '<span><b>Free trial</b>: ' + left + ' day' + (left === 1 ? '' : 's') + ' left. <a href="https://www.etsy.com/listing/4553593139/home-maintenance-scheduler-for" target="_blank" rel="noopener">Get the full app &rarr;</a></span>';
+  return false;
+}
+(function demoInit() {
+  const _render = render; render = function () { _render(); demoSampleButton(); };
+  document.addEventListener('DOMContentLoaded', () => { enforceDemoTrial(); demoSampleButton(); });
+  enforceDemoTrial(); setInterval(enforceDemoTrial, 60000);
+})();
+
+function init() {
+  loadState();
+  initDriveFromCache();
+  render();
+
+  document.querySelectorAll('.sheet-backdrop').forEach(bd => {
+    bd.addEventListener('click', (e) => {
+      if (e.target === bd) bd.classList.remove('open');
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') document.querySelectorAll('.sheet-backdrop.open').forEach(bd => bd.classList.remove('open'));
+  });
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
