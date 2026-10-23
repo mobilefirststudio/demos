@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Pantry Tracker — Mobile First Studio</title>
+<title>Pantry Tracker | Free Trial</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <link rel="manifest" href="./manifest.json" />
 <meta name="theme-color" content="#f6ede1" id="theme-color-meta" />
@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <style>
   :root, [data-theme="cream"] {
     --bg-a: #f6ede1; --bg-b: #ecdcc7;
@@ -193,6 +194,15 @@
   .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
   .backup-section-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
 
+  .drive-backup-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 0.6rem;
+    padding: 0.65rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.4); margin-top: 0.5rem; cursor: pointer;
+  }
+  .drive-backup-row:hover { border-color: var(--accent-b); }
+  .drive-backup-row-label { font-size: 0.8rem; color: var(--text); font-weight: 600; }
+  .drive-backup-row-sub { font-size: 0.68rem; color: var(--text-faint); margin-top: 0.1rem; }
+
   .modal-overlay { position: fixed; inset: 0; background: rgba(20, 15, 10, 0.45); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
   .modal-overlay.open { display: flex; }
   .modal-card {
@@ -221,48 +231,82 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ── DEMO TRIAL ── */
-  .demo-banner {
-    margin: -1.1rem -1rem 0.85rem -1rem;
-    padding: 0.55rem 1rem;
-    background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
-    color: var(--on-accent);
-    text-align: center;
-    font-size: 0.74rem;
-    font-weight: 600;
-    line-height: 1.4;
+  /* ===== Printable pages + computer layout ===== */
+  .toast-action { color: var(--text); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; pointer-events: auto; }
+  .pt-side, .pt-kpi { display: none; }
+  .print-row { display: flex; justify-content: space-between; align-items: center; gap: .6rem; padding: .65rem .7rem; border-radius: .7rem; border: 1px solid var(--border-soft); background: rgba(255,255,255,.4); margin-bottom: .45rem; cursor: pointer; width: 100%; text-align: left; font-family: inherit; color: var(--text); }
+  .print-row:hover { border-color: var(--accent-b); }
+  .print-row b { display: block; font-size: .82rem; }
+  .print-row small { display: block; font-size: .68rem; color: var(--text-faint); margin-top: .1rem; }
+  .print-h { font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); margin: .8rem 0 .45rem; }
+  @media (min-width: 900px) {
+    body { display: block; }
+    .app { max-width: none; padding: 0; display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+    .pt-side { display: flex; flex-direction: column; gap: 3px; position: sticky; top: 0; height: 100vh; padding: 26px 14px; border-right: 1px solid var(--border-soft); background: var(--card); backdrop-filter: blur(6px); overflow-y: auto; grid-column: 1; grid-row: 1 / span 3; }
+    .pt-brand { padding: 2px 12px 22px; }
+    .pt-brand .e { font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; color: var(--text-faint); }
+    .pt-brand .t { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.6rem; color: var(--text); margin-top: 4px; }
+    .pt-item { display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 14px; border: none; background: none; border-radius: 12px; font-family: inherit; font-size: .9rem; font-weight: 600; color: var(--text-muted); cursor: pointer; text-align: left; }
+    .pt-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+    .pt-item:hover { background: rgba(255,255,255,.35); color: var(--text); }
+    .pt-item.on { background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); }
+    .pt-item .n { margin-left: auto; font-size: .72rem; font-weight: 700; opacity: .85; }
+    .pt-sep { height: 1px; background: var(--border-soft); margin: 12px 10px; }
+    header { grid-column: 2; padding: 28px 40px 6px; max-width: 1320px; width: 100%; margin: 0 auto 6px; align-items: center; }
+    header .eyebrow { display: none; }
+    .app-name { font-size: 2rem; }
+    main { grid-column: 2; padding: 0 40px 48px; max-width: 1320px; width: 100%; margin: 0 auto; }
+    .app > input { grid-column: 2; }
+    .card { margin-bottom: 0; }
+    #screen-home.active-screen { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); grid-template-areas: "kpi kpi" "over list" "attn list"; grid-template-rows: auto auto 1fr; gap: 16px; align-items: start; }
+    #pt-overview .stat-row { display: none; }
+    #pt-overview .progress-container { margin-top: 0.3rem; }
+    .pt-kpi { grid-area: kpi; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .pt-k { background: var(--card); border: 1px solid var(--border-soft); border-radius: 1rem; padding: 14px 16px; backdrop-filter: blur(6px); }
+    .pt-k .l { font-size: .64rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); }
+    .pt-k .v { font-family: "Fraunces", Georgia, serif; font-size: 1.9rem; color: var(--text); margin-top: 2px; }
+    .pt-k.warn .v { color: var(--danger); }
+    .pt-k .s { font-size: .72rem; color: var(--text-muted); }
+    #pt-overview { grid-area: over; } #pt-attn { grid-area: attn; } #pt-list { grid-area: list; }
+    #pt-list .subtab-row { display: none; }
+    #add-pantry-btn { max-width: 300px; }
+    #pantry-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 12px; align-items: start; }
+    #pantry-list .list-item { margin: 0; }
+    #pantry-list .empty-state { grid-column: 1 / -1; }
+    #screen-backup .card { max-width: 760px; }
+    .modal-overlay { align-items: center; }
+    .modal-card { border-radius: 1.4rem; max-width: 560px; }
+    .toast { left: calc(50% + 124px); }
   }
-  .demo-banner a { color: var(--on-accent); text-decoration: underline; }
-  .upsell-card { background: var(--card); border: 1px solid var(--border-soft); border-radius: 1.1rem; padding: 1.1rem 1.05rem; }
-  .upsell-card .upsell-title { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: 1.05rem; color: var(--text); margin-bottom: 6px; }
-  .upsell-card .upsell-text { font-size: 0.78rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 12px; }
-  .upsell-card a.upsell-btn {
-    display: block; text-align: center; padding: 0.65rem; border-radius: 999px; border: none;
-    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
-    font-size: 0.8rem; font-weight: 600; text-decoration: none;
+  @media (min-width: 1300px) { #pantry-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 900px) and (max-width: 1199px) {
+    #screen-home.active-screen { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "kpi kpi" "over attn" "list list"; }
+    .pt-kpi { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
-  #trial-lock {
-    display: none; position: fixed; inset: 0; z-index: 2000;
-    background: rgba(20, 15, 10, 0.55); backdrop-filter: blur(6px);
-    align-items: center; justify-content: center; padding: 1.2rem;
-  }
-  #trial-lock .lock-card {
-    background: var(--card-hi); border: 1px solid var(--border-soft); border-radius: 1.3rem;
-    padding: 1.6rem 1.4rem; max-width: 400px; width: 100%; text-align: center;
-  }
-  #trial-lock .lock-card h3 { font-family: "Fraunces", Georgia, serif; font-style: italic; font-weight: 500; font-size: 1.2rem; color: var(--text); margin-bottom: 10px; }
-  #trial-lock .lock-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 18px; }
-  #trial-lock .lock-card a {
-    display: inline-block; padding: 0.7rem 1.6rem; border-radius: 999px; border: none;
-    background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent);
-    font-size: 0.85rem; font-weight: 600; text-decoration: none;
-  }
+
+/* ===== free trial ===== */
+body{flex-direction:column;align-items:center}
+.demo-banner{width:100%;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-size:13px;line-height:1.4;text-align:center;padding:9px 14px;font-weight:600}
+.demo-banner b{font-weight:800}
+.demo-banner a{color:var(--on-accent);font-weight:800;text-decoration:underline;white-space:nowrap}
+#trial-lock{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(30,20,10,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.lock-card{max-width:380px;width:100%;background:radial-gradient(circle at top,var(--bg-a),var(--bg-b));border:1px solid var(--border-soft);border-radius:20px;padding:28px 24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);color:var(--text)}
+.lock-icon{width:56px;height:56px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent)}
+.lock-title{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:1.45rem;margin-bottom:8px}
+.lock-text{font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:20px}
+.lock-cta{display:block;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-weight:700;font-size:15px;padding:14px;border-radius:12px;text-decoration:none}
+.upsell-card{border:1px solid var(--border-soft);background:rgba(255,255,255,.35);border-radius:1rem;padding:.9rem;margin:.2rem 0 .8rem}
+.upsell-card .t{font-weight:600;font-size:.86rem;color:var(--text);margin-bottom:.3rem}
+.upsell-card p{font-size:.76rem;color:var(--text-muted);line-height:1.55;margin-bottom:.7rem}
+.upsell-card a,.upsell-card button{display:block;width:100%;text-align:center;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-weight:600;font-size:.82rem;padding:.7rem;border-radius:.8rem;text-decoration:none;border:none;cursor:pointer;font-family:inherit}
+.sample-link{display:block;width:100%;margin:0 0 .9rem;padding:.8rem;border-radius:.9rem;border:1.5px dashed var(--accent-b);background:rgba(255,255,255,.3);color:var(--text);font-family:inherit;font-size:.86rem;font-weight:600;cursor:pointer}
+@media(min-width:900px){body{display:block}.demo-banner{font-size:14px}.pt-side{height:auto;min-height:100vh}}
 </style>
 </head>
 <body data-theme="cream">
+<div class="demo-banner" id="demo-banner"><b>Free trial</b>: try every feature for 14 days. <a href="https://www.etsy.com/listing/4563369793/pantry-tracker-app-fridge-freezer-pantry" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
 
 <div class="app">
-  <div class="demo-banner" id="demo-banner"></div>
   <header>
     <div class="header-text">
       <div class="eyebrow">Mobile First Studio</div>
@@ -283,7 +327,7 @@
         <div class="card-header"><div class="card-title">Pantry Overview</div></div>
         <div class="stat-row">
           <div class="stat"><div class="stat-value" id="home-stat-total">0</div><div class="stat-label">Total items</div></div>
-          <div class="stat"><div class="stat-value" id="home-stat-expiring">0</div><div class="stat-label">Expiring ≤3d</div></div>
+          <div class="stat"><div class="stat-value" id="home-stat-expiring">0</div><div class="stat-label">Expiring or expired</div></div>
           <div class="stat"><div class="stat-value" id="home-stat-lowstock">0</div><div class="stat-label">Low stock</div></div>
         </div>
         <div class="progress-container"><div id="freshness-bar" class="progress-fill"></div></div>
@@ -322,11 +366,8 @@
             <div class="card-subtitle">Keep your pantry list safe.</div>
           </div>
         </div>
-        <div class="upsell-card">
-          <div class="upsell-title">Google Drive Backup</div>
-          <div class="upsell-text">The full version backs up your pantry to your own Google Drive automatically, so you never lose it even if you switch phones.</div>
-          <a class="upsell-btn" href="https://www.etsy.com/listing/4563369793/pantry-tracker-app-fridge-freezer-pantry" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
-        </div>
+        <div class="upsell-card"><div class="t">Google Drive backup is in the full app</div><p>The full Pantry Tracker backs up your whole pantry to your own Google Drive, so they follow you to a new phone. This free trial skips it, since trial data is not meant to be permanent.</p><a href="https://www.etsy.com/listing/4563369793/pantry-tracker-app-fridge-freezer-pantry" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+        <div class="upsell-card"><div class="t">Sample data</div><p>Fill the trial with a stocked fridge, freezer, pantry and spice rack, including expiring and low stock items, to see every feature in action.</p><button type="button" onclick="loadSampleData()">Load sample data</button></div>
         <div class="backup-divider">
           <div class="backup-section-label">Local backup file</div>
           <div class="backup-actions">
@@ -359,23 +400,15 @@
 </div>
 
 <div class="toast" id="toast"></div>
-
-<div id="trial-lock">
-  <div class="lock-card">
-    <h3>Thanks for trying Pantry Tracker!</h3>
-    <p>Your 14 day free trial is up. Unlock the full app to keep tracking what's in your fridge, freezer, and pantry.</p>
-    <a href="https://www.etsy.com/listing/4563369793/pantry-tracker-app-fridge-freezer-pantry" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
-  </div>
-</div>
+<div id="trial-lock"><div class="lock-card"><div class="lock-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+<div class="lock-title">Your free trial has ended</div><div class="lock-text">You've had 14 days with Pantry Tracker. Get the full app to keep tracking your pantry, with printable inventory and restock lists and Google Drive backup.</div>
+<a class="lock-cta" href="https://www.etsy.com/listing/4563369793/pantry-tracker-app-fridge-freezer-pantry" target="_blank" rel="noopener">Get the full app</a></div></div>
 
 <script>
   /* =========================================================
      STORAGE
      ========================================================= */
   const STORE_KEY = "pt_data_demo_v1";
-  const DEMO_SINCE_KEY = "pt_demo_since";
-  const TRIAL_DAYS = 14;
-  const ETSY_URL = "https://www.etsy.com/listing/4563369793/pantry-tracker-app-fridge-freezer-pantry";
   function defaultDB() {
     return { theme: "cream", pantry: [] };
   }
@@ -390,33 +423,6 @@
     try { localStorage.setItem(STORE_KEY, JSON.stringify(DB)); }
     catch (e) { showToast("Could not save — storage may be full."); }
     scheduleAutoBackup();
-  }
-
-  /* =========================================================
-     FREE TRIAL
-     ========================================================= */
-  function demoTrialDaysLeft() {
-    let since = localStorage.getItem(DEMO_SINCE_KEY);
-    if (!since) {
-      since = String(Date.now());
-      try { localStorage.setItem(DEMO_SINCE_KEY, since); } catch (e) {}
-    }
-    const elapsedDays = (Date.now() - Number(since)) / 86400000;
-    return Math.max(0, Math.ceil(TRIAL_DAYS - elapsedDays));
-  }
-  function enforceDemoTrial() {
-    const daysLeft = demoTrialDaysLeft();
-    const banner = document.getElementById("demo-banner");
-    const lock = document.getElementById("trial-lock");
-    if (banner) {
-      banner.innerHTML = daysLeft > 0
-        ? `${daysLeft} day${daysLeft === 1 ? "" : "s"} left in your free trial &middot; <a href="${ETSY_URL}" target="_blank" rel="noopener">Unlock the full app &rarr;</a>`
-        : `Your free trial has ended &middot; <a href="${ETSY_URL}" target="_blank" rel="noopener">Unlock the full app &rarr;</a>`;
-    }
-    if (lock) {
-      lock.style.display = daysLeft <= 0 ? "flex" : "none";
-      document.body.style.overflow = daysLeft <= 0 ? "hidden" : "";
-    }
   }
 
   function todayKey(date) {
@@ -496,7 +502,7 @@
     document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
     document.getElementById(targetId).classList.add("active-screen");
     if (targetId === "screen-home") { renderHome(); renderPantry(); }
-    if (targetId === "screen-backup") { renderLocalRestoreUndo(); }
+    if (targetId === "screen-backup") { updateDriveStatusUI(); renderLocalRestoreUndo(); }
   }
 
   /* =========================================================
@@ -529,7 +535,7 @@
     const score = computeFreshnessScore();
     document.getElementById("freshness-bar").style.width = `${score}%`;
     document.getElementById("freshness-text").textContent = DB.pantry.length
-      ? `${score}/100 — fresh and fully stocked`
+      ? freshnessLine(score)
       : "Add items to see your freshness score.";
 
     const attn = attentionItems();
@@ -546,7 +552,7 @@
         if (status === "expired") tag = `<span class="badge badge-expired">Expired</span>`;
         else if (status === "soon") tag = `<span class="badge badge-soon">Expiring soon</span>`;
         if (it.lowStock) tag += `<span class="badge badge-low">Low stock</span>`;
-        return `<div class="attn-row"><div style="color:var(--text);">${it.name} <span style="color:var(--text-faint);font-size:0.68rem;">· ${it.location}</span></div><div>${tag}</div></div>`;
+        return `<div class="attn-row"><div style="color:var(--text);">${esc(it.name)} <span style="color:var(--text-faint);font-size:0.68rem;">· ${esc(it.location)}</span></div><div>${tag}</div></div>`;
       }).join("");
     }
   }
@@ -571,7 +577,7 @@
     }
     listEl.innerHTML = items.map((it) => {
       const status = pantryStatus(it);
-      let badges = `<span class="badge badge-tag">${it.location}</span>`;
+      let badges = `<span class="badge badge-tag">${esc(it.location)}</span>`;
       if (status === "expired") badges += `<span class="badge badge-expired">Expired</span>`;
       else if (status === "soon") badges += `<span class="badge badge-soon">Expiring soon</span>`;
       else if (it.expiresOn) badges += `<span class="badge badge-ok">Fresh</span>`;
@@ -580,8 +586,8 @@
         <div class="list-item">
           <div class="list-item-top">
             <div style="flex:1;min-width:0;">
-              <div class="list-item-title">${it.name}</div>
-              <div class="list-item-sub">${it.qty || ""} ${it.unit || ""}${it.expiresOn ? " · expires " + new Date(it.expiresOn + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""}</div>
+              <div class="list-item-title">${esc(it.name)}</div>
+              <div class="list-item-sub">${esc(it.qty || "")} ${esc(it.unit || "")}${it.expiresOn ? " · expires " + new Date(it.expiresOn + "T00:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""}</div>
               <div>${badges}</div>
             </div>
           </div>
@@ -610,15 +616,15 @@
   function openPantryForm(existingId) {
     const existing = existingId ? DB.pantry.find((p) => p.id === existingId) : null;
     const extraHtml = `
-      <div class="field"><label>Item name</label><input type="text" id="pf-name" value="${existing ? existing.name.replace(/"/g, "&quot;") : ""}" placeholder="Eggs" /></div>
+      <div class="field"><label>Item name</label><input type="text" id="pf-name" value="${existing ? esc(existing.name) : ""}" placeholder="Eggs" /></div>
       <div class="field"><label>Location</label>
         <select id="pf-location">
           ${["Fridge", "Freezer", "Pantry", "Spice Rack"].map((l) => `<option value="${l}" ${existing && existing.location === l ? "selected" : ""}>${l}</option>`).join("")}
         </select>
       </div>
       <div class="field-row">
-        <div class="field"><label>Quantity</label><input type="text" id="pf-qty" value="${existing ? existing.qty || "" : ""}" placeholder="1" /></div>
-        <div class="field"><label>Unit</label><input type="text" id="pf-unit" value="${existing ? existing.unit || "" : ""}" placeholder="dozen" /></div>
+        <div class="field"><label>Quantity</label><input type="text" id="pf-qty" value="${existing ? esc(existing.qty || "") : ""}" placeholder="1" /></div>
+        <div class="field"><label>Unit</label><input type="text" id="pf-unit" value="${existing ? esc(existing.unit || "") : ""}" placeholder="dozen" /></div>
       </div>
       <div class="field"><label>Expiration date (optional)</label><input type="date" id="pf-expires" value="${existing ? existing.expiresOn || "" : ""}" /></div>
       <div class="checkbox-row"><input type="checkbox" id="pf-lowstock" ${existing && existing.lowStock ? "checked" : ""} /><label for="pf-lowstock" style="margin:0;text-transform:none;font-size:0.8rem;">Running low — needs restocking</label></div>
@@ -738,7 +744,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `pantry-tracker-backup-${localDateStr()}.json`;
+      a.download = `pantry-tracker-demo-backup-${localDateStr()}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -765,11 +771,9 @@
     e.target.value = "";
   }
 
-  /* =========================================================
-     GOOGLE DRIVE — removed for the demo (upsell card shown
-     instead); kept as a no-op since sv() calls it unconditionally.
-     ========================================================= */
+  /* Free trial: Google Drive backup is only in the full app. */
   function scheduleAutoBackup() {}
+  function updateDriveStatusUI() {}
 
   /* =========================================================
      INIT
@@ -779,9 +783,8 @@
     applyTheme();
     renderHome();
     renderPantry();
+    updateDriveStatusUI();
     renderLocalRestoreUndo();
-    enforceDemoTrial();
-    setInterval(enforceDemoTrial, 60000);
 
     document.getElementById("theme-btn").addEventListener("click", cycleTheme);
     document.getElementById("backup-btn").addEventListener("click", () => {
@@ -797,6 +800,433 @@
     document.getElementById("import-btn").addEventListener("click", triggerImportPicker);
     document.getElementById("import-file-input").addEventListener("change", handleImportFileSelected);
   });
+
+/* ── PRINTABLE PAGES (PDF made on the device with pdf-lib, same method as Life Admin HQ) ── */
+var MFSPrint=(function(){
+  // The built-in PDF fonts draw basic Latin letters only. Anything else is removed so the PDF never fails.
+  function safe(s){
+    return String(s==null?'':s)
+      .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[\r\n\t]+/g,' ')
+      .replace(/ ?[^\x20-\x7E\xA0-\xFF–—•…]+/g,'')
+      .trim();
+  }
+  function rgbHex(hex){
+    var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex||'');
+    if(!m)return PDFLib.rgb(.30,.40,.35);
+    return PDFLib.rgb(parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255);
+  }
+  var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function pd(ds){if(!ds)return new Date(NaN);var p=String(ds).split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+  function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function longDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+  function shortDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return MON[d.getMonth()].slice(0,3)+' '+d.getDate()+', '+d.getFullYear();}
+  function money(n){var v=parseFloat(n)||0;return(v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  async function create(opts){
+    opts=opts||{};
+    var doc=await PDFLib.PDFDocument.create();
+    var font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var bold=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    var k={doc:doc,font:font,bold:bold,W:612,H:792,M:46,CW:520,BOTTOM:62,page:null,y:0,title:'',landscape:false,
+      ink:PDFLib.rgb(.16,.16,.16),soft:PDFLib.rgb(.42,.42,.42),line:PDFLib.rgb(.66,.66,.66),faint:PDFLib.rgb(.84,.84,.84),
+      fill:PDFLib.rgb(.95,.95,.94),accent:rgbHex(opts.accent),footer:opts.footer||''};
+    // Shrink text a little to fit its space, then shorten it if it still does not fit.
+    k.fit=function(f,text,size,maxW,minSize){
+      var s=safe(text),sz=size,min=minSize||Math.max(6,size-2);
+      while(sz>min&&f.widthOfTextAtSize(s,sz)>maxW)sz-=0.25;
+      if(f.widthOfTextAtSize(s,sz)>maxW){
+        while(s.length>1&&f.widthOfTextAtSize(s+'...',sz)>maxW)s=s.slice(0,-1);
+        s=s.replace(/\s+$/,'')+'...';
+      }
+      return {text:s,size:sz};
+    };
+    k.text=function(text,x,y,size,o){
+      o=o||{};var f=o.bold?bold:font;
+      var r=k.fit(f,text,size,o.maxW||(k.W-k.M-x),o.minSize);
+      if(!r.text)return;
+      var w=f.widthOfTextAtSize(r.text,r.size);
+      var dx=o.align==='right'?(o.maxW-w):o.align==='center'?((o.maxW-w)/2):0;
+      k.page.drawText(r.text,{x:x+dx,y:y,size:r.size,font:f,color:o.color||k.ink});
+    };
+    k.hline=function(x1,x2,y,color,t){k.page.drawLine({start:{x:x1,y:y},end:{x:x2,y:y},thickness:t||.7,color:color||k.line});};
+    k.vline=function(x,y1,y2,color,t){k.page.drawLine({start:{x:x,y:y1},end:{x:x,y:y2},thickness:t||.7,color:color||k.line});};
+    k.rect=function(x,y,w,h,o){o=o||{};var r={x:x,y:y,width:w,height:h};if(o.fill)r.color=o.fill;if(o.border!==false){r.borderColor=o.border||k.line;r.borderWidth=o.bw||.7;}k.page.drawRectangle(r);};
+    k.newPage=function(title,sub,landscape){
+      var ls=landscape===undefined?k.landscape:!!landscape;k.landscape=ls;
+      k.W=ls?792:612;k.H=ls?612:792;k.CW=k.W-2*k.M;
+      k.page=doc.addPage([k.W,k.H]);k.title=title;
+      var y=k.H-k.M;
+      k.text(title,k.M,y-6,19,{bold:true,maxW:k.CW});
+      y-=24;
+      if(sub){k.text(sub,k.M,y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});y-=12;}
+      k.hline(k.M,k.M+k.CW,y,k.accent,1.2);
+      k.y=y-22;
+    };
+    k.contTitle=function(){return k.title.indexOf('(continued)')>-1?k.title:k.title+' (continued)';};
+    k.room=function(h){if(k.y-h<k.BOTTOM){k.newPage(k.contTitle());return true;}return false;};
+    k.section=function(text){k.room(48);k.text(text,k.M,k.y,11.5,{bold:true,color:k.accent,maxW:k.CW});k.y-=20;};
+    k.field=function(label,x,y,w,value){
+      var r=k.fit(font,label,9.5,w*0.6);
+      k.page.drawText(r.text,{x:x,y:y,size:r.size,font:font,color:k.soft});
+      var lx=x+font.widthOfTextAtSize(r.text,r.size)+6;
+      if(value)k.text(value,lx+2,y,10,{maxW:x+w-lx-4,minSize:7.5});
+      k.hline(lx,x+w,y-2);
+    };
+    // fields: array of label strings or [label,value]
+    k.fieldRow=function(fields){
+      var gap=24,w=(k.CW-gap*(fields.length-1))/fields.length;
+      fields.forEach(function(f,i){var l=Array.isArray(f)?f[0]:f,v=Array.isArray(f)?f[1]:'';k.field(l,k.M+i*(w+gap),k.y,w,v);});
+      k.y-=28;
+    };
+    k.box=function(x,y,s,on){
+      k.page.drawRectangle({x:x,y:y,width:s,height:s,borderColor:k.soft,borderWidth:.8});
+      if(on){k.page.drawLine({start:{x:x+2,y:y+s/2},end:{x:x+s*0.42,y:y+2},thickness:1.2,color:k.ink});k.page.drawLine({start:{x:x+s*0.42,y:y+2},end:{x:x+s-1.5,y:y+s-1.5},thickness:1.2,color:k.ink});}
+    };
+    // A tick list. items: a number (blank lines to write on) or an array of text / {t,on}.
+    k.checks=function(items,ncols){
+      ncols=ncols||1;
+      var n=typeof items==='number'?items:items.length,rows=Math.ceil(n/ncols),gap=20,w=(k.CW-gap*(ncols-1))/ncols;
+      for(var r=0;r<rows;r++){
+        if(k.y-20<k.BOTTOM)k.newPage(k.contTitle());
+        for(var c=0;c<ncols;c++){
+          var i=r+c*rows;if(i>=n)continue;
+          var x=k.M+c*(w+gap),it=typeof items==='number'?null:items[i];
+          k.box(x,k.y-3,10,!!(it&&it.on));
+          if(it!==null)k.text(typeof it==='string'?it:it.t,x+16,k.y-1,10,{maxW:w-18,minSize:7.5});
+          else k.hline(x+16,x+w,k.y-3,k.faint);
+        }
+        k.y-=20;
+      }
+    };
+    k.lines=function(n,gap){gap=gap||20;for(var i=0;i<n;i++){if(k.y-gap<k.BOTTOM)k.newPage(k.contTitle());k.hline(k.M,k.M+k.CW,k.y-4,k.faint);k.y-=gap;}};
+    // cols: [{label,w,align,soft,bold,box}] · rows: a number (blank rows) or an array of rows.
+    // A cell can be text or {box:true,on:bool}. A column with box:true draws an empty tick box in blank rows.
+    k.table=function(cols,rows,rowH,o){
+      o=o||{};var x=o.x||k.M;
+      var sum=cols.reduce(function(s,c){return s+c.w;},0);
+      if(o.stretch!==false&&Math.abs(sum-k.CW)>0.5){var f=k.CW/sum;cols=cols.map(function(c){var d={};for(var p in c)d[p]=c[p];d.w=c.w*f;return d;});sum=k.CW;}
+      var headH=19,n=typeof rows==='number'?rows:rows.length;
+      function sides(top,h){var cx=x;for(var i=0;i<=cols.length;i++){k.vline(cx,top,top-h);if(i<cols.length)cx+=cols[i].w;}}
+      function head(){
+        k.page.drawRectangle({x:x,y:k.y-headH,width:sum,height:headH,color:k.fill});
+        var cx=x;
+        cols.forEach(function(c){
+          if(c.label)k.text(c.label,cx+(c.w<34?2:5),k.y-13,8.5,{bold:true,maxW:c.w-(c.w<34?4:10),minSize:6,align:c.align==='center'||c.box?'center':undefined});
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y);k.hline(x,x+sum,k.y-headH);sides(k.y,headH);
+        k.y-=headH;
+      }
+      if(k.y-headH-rowH<k.BOTTOM)k.newPage(k.contTitle());
+      head();
+      for(var r=0;r<n;r++){
+        if(k.y-rowH<k.BOTTOM){k.newPage(k.contTitle());head();}
+        var row=typeof rows==='number'?null:rows[r],cx=x;
+        cols.forEach(function(c,i){
+          var v=row?row[i]:undefined,bs=Math.min(10,rowH-8),by=k.y-rowH+(rowH-bs)/2;
+          if(v&&typeof v==='object'&&v.box){k.box(cx+(c.w-bs)/2,by,bs,!!v.on);}
+          else if(c.box&&(v===undefined||v===null)){k.box(cx+(c.w-bs)/2,by,bs,false);}
+          else if(v!==undefined&&v!==null&&v!==''){
+            k.text(String(v),cx+5,k.y-rowH/2-3,9,{maxW:c.w-10,minSize:6.5,bold:!!c.bold,color:c.soft?k.soft:k.ink,align:c.align==='center'?'center':c.align==='right'?'right':undefined});
+          }
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y-rowH);sides(k.y,rowH);
+        k.y-=rowH;
+      }
+      k.y-=14;
+    };
+    k.fillRows=function(rowH){return Math.max(0,Math.floor((k.y-k.BOTTOM-19)/rowH));};
+    k.finish=async function(){
+      var pages=doc.getPages();
+      pages.forEach(function(pg,i){
+        var sz=pg.getSize();
+        pg.drawText(safe(k.footer),{x:k.M,y:30,size:8,font:font,color:k.soft});
+        var lbl='Page '+(i+1)+' of '+pages.length;
+        pg.drawText(lbl,{x:sz.width-k.M-font.widthOfTextAtSize(lbl,8),y:30,size:8,font:font,color:k.soft});
+      });
+      return await doc.save();
+    };
+    // Month grid, Monday first. cellText(dateStr) returns an array of short lines for that day.
+    // With numbered=false the grid has no dates, for an undated month to fill in by hand.
+    k.month=function(year,month,o){
+      o=o||{};var top=k.y,heads=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],cw=k.CW/7,hh=18;
+      var first=new Date(year,month,1).getDay(),off=(first+6)%7,dim=new Date(year,month+1,0).getDate();
+      var weeks=o.numbered===false?5:Math.ceil((off+dim)/7);
+      var gridH=(o.height||(k.y-k.BOTTOM-8))-hh,ch=gridH/weeks;
+      k.page.drawRectangle({x:k.M,y:top-hh,width:k.CW,height:hh,color:k.fill});
+      heads.forEach(function(h,i){k.text(h,k.M+i*cw,top-12.5,8.5,{bold:true,maxW:cw,align:'center'});});
+      for(var w=0;w<weeks;w++)for(var d=0;d<7;d++){
+        var x=k.M+d*cw,y=top-hh-(w+1)*ch,n=w*7+d-off+1;
+        k.rect(x,y,cw,ch,{border:k.line});
+        if(o.numbered===false||n<1||n>dim)continue;
+        k.text(String(n),x+4,y+ch-11,9,{bold:true,maxW:cw-8});
+        if(o.cellText){
+          var ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+          var lines=o.cellText(ds)||[],ly=y+ch-22;
+          for(var li=0;li<lines.length&&ly>y+3;li++){k.text(lines[li],x+4,ly,7,{maxW:cw-8,minSize:6});ly-=8.5;}
+        }
+      }
+      k.y=top-hh-gridH-14;
+    };
+    // Twelve small month calendars on one page.
+    k.yearGrid=function(year){
+      var cols=3,rows=4,gap=16,bw=(k.CW-gap*(cols-1))/cols,top=k.y,bh=(top-k.BOTTOM-gap*(rows-1))/rows;
+      for(var m=0;m<12;m++){
+        var c=m%cols,r=Math.floor(m/cols),x=k.M+c*(bw+gap),y=top-r*(bh+gap);
+        k.text(MON[m],x,y-10,10.5,{bold:true,color:k.accent,maxW:bw});
+        var cw=bw/7,heads=['M','T','W','T','F','S','S'];
+        heads.forEach(function(h,i){k.text(h,x+i*cw,y-26,7.5,{bold:true,color:k.soft,maxW:cw,align:'center'});});
+        var first=new Date(year,m,1).getDay(),off=(first+6)%7,dim=new Date(year,m+1,0).getDate(),lh=(bh-38)/6;
+        for(var d=1;d<=dim;d++){var p=off+d-1,cc=p%7,rr=Math.floor(p/7);k.text(String(d),x+cc*cw,y-40-rr*lh,8,{maxW:cw,align:'center'});}
+      }
+      k.y=k.BOTTOM;
+    };
+    return k;
+  }
+  // Hand the finished PDF to the person. On iPhone and iPad the share sheet (Print, Save to Files)
+  // is the dependable route from a home screen app, so it is tried first there.
+  function deliver(bytes,filename){
+    var blob=new Blob([bytes],{type:'application/pdf'});
+    var download=function(){
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+    };
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&navigator.canShare&&typeof File!=='undefined'){
+      try{
+        var file=new File([blob],filename,{type:'application/pdf'});
+        if(navigator.canShare({files:[file]})){
+          return navigator.share({files:[file],title:filename}).catch(function(err){
+            if(err&&err.name==='AbortError')return;
+            download();
+          });
+        }
+      }catch(e){}
+    }
+    download();
+  }
+  var busy=false;
+  // Runs a page builder and hands over the PDF. say(msg,isErr) shows the app's own message.
+  async function run(build,filename,opts,say){
+    if(typeof PDFLib==='undefined'){say('The PDF tool is still loading. Check your connection and try again.',true);return;}
+    if(busy)return;busy=true;say('Creating your PDF...');
+    try{var k=await create(opts);await build(k);var bytes=await k.finish();await deliver(bytes,filename);say('Your PDF is ready!');}
+    catch(e){console.error(e);say('Could not create the PDF. Try again.',true);}
+    busy=false;
+  }
+  return {safe:safe,create:create,deliver:deliver,run:run,MON:MON,DOW:DOW,pd:pd,ymd:ymd,longDate:longDate,shortDate:shortDate,money:money};
+})();
+
+  /* =========================================================
+     FIXES
+     ========================================================= */
+  // Item names are shown as text, so a "<" or "&" in a name can't break the page.
+  function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
+  // The freshness line always said "fresh and fully stocked", even at a low score.
+  function freshnessLine(score) {
+    if (score >= 90) return `${score}/100: fresh and fully stocked`;
+    if (score >= 70) return `${score}/100: mostly fresh, a few things to check`;
+    if (score >= 40) return `${score}/100: several items need attention`;
+    return `${score}/100: time to restock and clear out old items`;
+  }
+  function ptDaysLeft(it) { return it.expiresOn ? daysBetween(new Date(todayKey(new Date()) + "T00:00:00"), new Date(it.expiresOn + "T00:00:00")) : null; }
+  const PT_LOCS = ["Fridge", "Freezer", "Pantry", "Spice Rack"];
+
+  /* =========================================================
+     PRINTABLE PAGES (PDF made on the device)
+     ========================================================= */
+  function ptAccent() { const v = getComputedStyle(document.body).getPropertyValue("--accent-b").trim(); return /^#[0-9a-f]{6}$/i.test(v) ? v : "#c9823f"; }
+  function ptDate(ds) { return ds ? new Date(ds + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : ""; }
+  function ptToday() { return new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }); }
+  function ptStatus(it) { const s = pantryStatus(it); return [s === "expired" ? "Expired" : s === "soon" ? "Expiring soon" : "", it.lowStock ? "Low stock" : ""].filter(Boolean).join(", "); }
+  const PT_PRINT_OPTS = [
+    { h: "Filled in from the app" },
+    { k: "inventory", t: "Pantry inventory", s: "Every item by location, with quantity and expiration date" },
+    { k: "restock", t: "Restock shopping list", s: "Low stock and expired items to replace, ready to check off" },
+    { k: "useup", t: "Use it up list", s: "Everything expired or expiring in the next 7 days" },
+    { k: "invrestock", t: "Inventory + restock list", s: "Both on one PDF, ready for the fridge" },
+    { h: "Blank pages to fill in by hand" },
+    { k: "binventory", t: "Blank pantry inventory", s: "Fridge, freezer, pantry and spice rack" },
+    { k: "bfreezer", t: "Blank freezer log", s: "What went in, when, and when to use it by" },
+    { k: "brestock", t: "Blank restock list", s: "Sorted by fridge, freezer, pantry and more" },
+    { k: "ball", t: "All blank pages", s: "Every blank page in one PDF" }
+  ];
+  function openPrintPages() {
+    const html = PT_PRINT_OPTS.map((o) => o.h ? `<div class="print-h">${o.h}</div>` : `<button class="print-row" data-print="${o.k}"><span><b>${o.t}</b><small>${o.s}</small></span><span style="color:var(--accent-b);">→</span></button>`).join("");
+    openModal({ title: "Printable pages", bodyText: "Pick a page. You get a PDF you can print or save. It is made on your device, and nothing is uploaded.", extraHtml: html, secondaryLabel: "Close", onSecondary: closeModal });
+    document.getElementById("modal-extra-body").querySelectorAll("[data-print]").forEach((b) => b.addEventListener("click", () => { closeModal(); makePrint(b.dataset.print); }));
+  }
+  function pInventory(k) {
+    k.newPage("Pantry Inventory", DB.pantry.length + (DB.pantry.length === 1 ? " item" : " items") + "  ·  " + ptToday(), false);
+    if (!DB.pantry.length) { k.text("Nothing in the pantry yet.", k.M, k.y, 10, { color: k.soft }); return; }
+    PT_LOCS.forEach((loc) => {
+      const items = DB.pantry.filter((p) => p.location === loc).sort((a, b) => (a.expiresOn || "9999").localeCompare(b.expiresOn || "9999") || a.name.localeCompare(b.name));
+      if (!items.length) return;
+      k.room(80); k.section(loc + "  (" + items.length + ")");
+      k.table([{ label: "Item", w: 200, bold: true }, { label: "Qty", w: 80 }, { label: "Expires", w: 90 }, { label: "Status", w: 110 }, { label: "Have", w: 40, box: true }],
+        items.map((it) => [it.name, [it.qty, it.unit].filter(Boolean).join(" "), ptDate(it.expiresOn), ptStatus(it), { box: true, on: false }]), 22);
+    });
+  }
+  function pRestock(k) {
+    const items = DB.pantry.filter((it) => it.lowStock || pantryStatus(it) === "expired");
+    k.newPage("Restock Shopping List", items.length + (items.length === 1 ? " item" : " items") + " to replace  ·  " + ptToday(), false);
+    if (!items.length) { k.text("Nothing is low or expired right now.", k.M, k.y, 10, { color: k.soft }); k.y -= 20; }
+    PT_LOCS.forEach((loc) => {
+      const g = items.filter((it) => it.location === loc); if (!g.length) return;
+      k.room(40); k.section(loc);
+      k.checks(g.map((it) => it.name + (pantryStatus(it) === "expired" ? "  (expired)" : "  (low)")), 2); k.y -= 4;
+    });
+    k.y -= 8; k.section("Also need"); k.checks(Math.max(4, Math.min(20, Math.floor((k.y - k.BOTTOM) / 20) * 2)), 2);
+  }
+  function pUseUp(k) {
+    const items = DB.pantry.filter((it) => { const d = ptDaysLeft(it); return d !== null && d <= 7; }).sort((a, b) => a.expiresOn.localeCompare(b.expiresOn));
+    k.newPage("Use It Up", "Expired or expiring in the next 7 days  ·  " + ptToday(), false);
+    if (!items.length) { k.text("Nothing is expiring in the next 7 days.", k.M, k.y, 10, { color: k.soft }); return; }
+    k.table([{ label: "Item", w: 190, bold: true }, { label: "Where", w: 80 }, { label: "Qty", w: 70 }, { label: "Expires", w: 90 }, { label: "Days left", w: 60 }, { label: "Used", w: 40, box: true }],
+      items.map((it) => { const d = ptDaysLeft(it); return [it.name, it.location, [it.qty, it.unit].filter(Boolean).join(" "), ptDate(it.expiresOn), d < 0 ? "Expired" : d === 0 ? "Today" : String(d), { box: true, on: false }]; }), 24);
+    k.section("Meal ideas to use these up"); k.lines(Math.max(3, Math.min(8, Math.floor((k.y - k.BOTTOM) / 22))), 22);
+  }
+  function pBlankInventory(k) {
+    k.newPage("Pantry Inventory", "Date ______________   Check what you have before you shop.", false);
+    PT_LOCS.forEach((loc) => {
+      k.text(loc, k.M, k.y, 11.5, { bold: true, color: k.accent }); k.y -= 18;
+      k.table([{ label: "Item", w: 220 }, { label: "Qty", w: 80 }, { label: "Expires", w: 100 }, { label: "Need more", w: 70, box: true }], 5, 19);
+      k.y += 2;
+    });
+  }
+  function pBlankFreezer(k) {
+    k.newPage("Freezer Log", "Write it down when it goes in. Cross it off when it comes out.", false);
+    k.table([{ label: "Item", w: 200 }, { label: "Qty", w: 60 }, { label: "Date frozen", w: 90 }, { label: "Use by", w: 90 }, { label: "Used", w: 40, box: true }], k.fillRows(22), 22);
+  }
+  function pBlankRestock(k) {
+    k.newPage("Restock List", "Store ____________________   Date ______________", false);
+    const groups = ["Fridge", "Freezer", "Pantry", "Spice Rack", "Household", "Other"];
+    const colW = (k.CW - 24) / 2, top = k.y, perCol = 3, lines = 8, gh = 22 + lines * 20 + 12;
+    groups.forEach((g, i) => {
+      const c = Math.floor(i / perCol), r = i % perCol, x = k.M + c * (colW + 24); let y = top - r * gh;
+      k.text(g, x, y, 11, { bold: true, color: k.accent, maxW: colW }); y -= 20;
+      for (let j = 0; j < lines; j++) { k.box(x, y - 3, 10, false); k.hline(x + 16, x + colW, y - 3, k.faint); y -= 20; }
+    });
+    k.y = top - perCol * gh;
+  }
+  function makePrint(kind) {
+    const day = todayKey(new Date());
+    const map = {
+      inventory: [(k) => pInventory(k), "pantry-inventory-" + day + ".pdf"],
+      restock: [(k) => pRestock(k), "restock-list-" + day + ".pdf"],
+      useup: [(k) => pUseUp(k), "use-it-up-" + day + ".pdf"],
+      invrestock: [(k) => { pInventory(k); pRestock(k); }, "pantry-inventory-and-restock-" + day + ".pdf"],
+      binventory: [(k) => pBlankInventory(k), "pantry-inventory-blank.pdf"],
+      bfreezer: [(k) => pBlankFreezer(k), "freezer-log-blank.pdf"],
+      brestock: [(k) => pBlankRestock(k), "restock-list-blank.pdf"],
+      ball: [(k) => { pBlankInventory(k); pBlankFreezer(k); pBlankRestock(k); }, "pantry-tracker-printables.pdf"]
+    };
+    const m = map[kind]; if (!m) return;
+    MFSPrint.run(m[0], m[1], { accent: ptAccent(), footer: "Pantry Tracker · Mobile First Studio" }, (msg) => showToast(msg));
+  }
+
+  /* =========================================================
+     COMPUTER LAYOUT (900px and wider)
+     ========================================================= */
+  const PT_ICONS = {
+    All: '<path d="M3 11.5L12 4l9 7.5"/><path d="M5 10v10h14V10"/>',
+    Fridge: '<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M6 10h12M9 5v2M9 13v3"/>',
+    Freezer: '<path d="M12 2v20M4.9 6l14.2 12M19.1 6L4.9 18"/>',
+    Pantry: '<path d="M6 3h12v4H6zM5 7h14v14H5z"/><path d="M9 11h6"/>',
+    "Spice Rack": '<path d="M9 3h6v3H9zM8 6h8l1 3v12H7V9z"/>',
+    print: '<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/>',
+    backup: '<path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19 10a4 4 0 0 1 0 8z"/>'
+  };
+  function ptSideItem(key, label, n) {
+    const onBackup = document.getElementById("screen-backup").classList.contains("active-screen");
+    const on = key === "backup" ? onBackup : (!onBackup && key === pantryFilter);
+    return `<button class="pt-item ${on ? "on" : ""}" data-side="${key}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${PT_ICONS[key]}</svg>${label}${n !== undefined && n !== "" ? `<span class="n">${n}</span>` : ""}</button>`;
+  }
+  function ptSide() {
+    const el = document.querySelector(".pt-side"); if (!el) return;
+    const count = (loc) => DB.pantry.filter((p) => p.location === loc).length;
+    el.innerHTML = `<div class="pt-brand"><div class="e">Mobile First Studio</div><div class="t">Pantry Tracker</div></div>`
+      + ptSideItem("All", "Everything", DB.pantry.length) + PT_LOCS.map((l) => ptSideItem(l, l, count(l))).join("")
+      + `<div class="pt-sep"></div>` + ptSideItem("print", "Printable pages") + ptSideItem("backup", "Backup &amp; Sync");
+  }
+  function ptKpi() {
+    const el = document.getElementById("pt-kpi"); if (!el) return;
+    const soon = DB.pantry.filter((it) => pantryStatus(it) === "soon").length, expired = DB.pantry.filter((it) => pantryStatus(it) === "expired").length, low = DB.pantry.filter((it) => it.lowStock).length;
+    el.innerHTML = `<div class="pt-k"><div class="l">Items on hand</div><div class="v">${DB.pantry.length}</div><div class="s">${PT_LOCS.map((l) => DB.pantry.filter((p) => p.location === l).length + " " + l.toLowerCase()).join(" · ")}</div></div>
+      <div class="pt-k"><div class="l">Expiring in 3 days</div><div class="v">${soon}</div><div class="s">use these first</div></div>
+      <div class="pt-k ${expired ? "warn" : ""}"><div class="l">Expired</div><div class="v">${expired}</div><div class="s">${expired ? "time to toss or replace" : "nothing past its date"}</div></div>
+      <div class="pt-k"><div class="l">Low stock</div><div class="v">${low}</div><div class="s">${low ? "on your restock list" : "fully stocked"}</div></div>`;
+  }
+  function ptRefresh() { ptSide(); ptKpi(); }
+  (function ptInit() {
+    const _h = renderHome; renderHome = function () { _h(); ptRefresh(); };
+    const _p = renderPantry; renderPantry = function () { _p(); ptSide(); };
+    const _t = switchToTab; switchToTab = function (id) { _t(id); ptSide(); };
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelector(".app").insertAdjacentHTML("afterbegin", '<aside class="pt-side"></aside>');
+      const home = document.getElementById("screen-home"), cards = home.querySelectorAll(":scope > .card");
+      if (cards[0]) cards[0].id = "pt-overview"; if (cards[1]) cards[1].id = "pt-attn"; if (cards[2]) cards[2].id = "pt-list";
+      home.insertAdjacentHTML("afterbegin", '<div class="pt-kpi" id="pt-kpi"></div>');
+      document.querySelector(".header-actions").insertAdjacentHTML("afterbegin", '<button class="theme-btn" id="print-btn" title="Printable pages" aria-label="Printable pages"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + PT_ICONS.print + '</svg></button>');
+      document.getElementById("print-btn").addEventListener("click", openPrintPages);
+      const bd = document.querySelector("#screen-backup .backup-divider");
+      if (bd) bd.insertAdjacentHTML("afterend", '<div class="backup-divider"><div class="backup-section-label">Printable pages</div><button class="backup-btn primary" style="width:100%;" id="print-btn-2">Open printable pages</button></div>');
+      const p2 = document.getElementById("print-btn-2"); if (p2) p2.addEventListener("click", openPrintPages);
+      document.addEventListener("click", (e) => {
+        const s = e.target.closest("[data-side]"); if (!s) return;
+        const k = s.dataset.side;
+        if (k === "print") { openPrintPages(); return; }
+        if (k === "backup") { switchToTab("screen-backup"); return; }
+        if (!document.getElementById("screen-home").classList.contains("active-screen")) switchToTab("screen-home");
+        const b = document.querySelector(`[data-pantry-filter="${k}"]`); if (b) b.click();
+        ptSide();
+      });
+      ptRefresh();
+    });
+  })();
+
+
+  /* ---------- free trial ---------- */
+function demoSampleDB(){
+ const key=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ const I=[["Eggs", "Fridge", "12", "", 3, false], ["Milk", "Fridge", "1", "gallon", 2, false], ["Greek yogurt", "Fridge", "1", "tub", -1, false], ["Spinach", "Fridge", "1", "bag", 1, false], ["Cheddar", "Fridge", "8", "oz", 20, false], ["Butter", "Fridge", "2", "sticks", 30, false], ["Strawberries", "Fridge", "1", "pint", 4, false], ["Chicken thighs", "Fridge", "2", "lb", 2, false], ["Leftover chili", "Fridge", "1", "container", -2, false], ["Orange juice", "Fridge", "1", "carton", 9, true], ["Chicken breasts", "Freezer", "2", "lb", 90, false], ["Ground beef", "Freezer", "1", "lb", 60, false], ["Frozen peas", "Freezer", "1", "bag", null, false], ["Waffles", "Freezer", "1", "box", 120, true], ["Ice cream", "Freezer", "1", "pint", null, false], ["Rolled oats", "Pantry", "1", "canister", null, false], ["Flour", "Pantry", "5", "lb", null, true], ["Spaghetti", "Pantry", "2", "boxes", null, false], ["Marinara", "Pantry", "1", "jar", 200, false], ["Black beans", "Pantry", "3", "cans", 400, false], ["Peanut butter", "Pantry", "1", "jar", null, true], ["Rice", "Pantry", "2", "lb", null, false], ["Coffee", "Pantry", "1", "bag", null, true], ["Chili powder", "Spice Rack", "1", "jar", null, false], ["Cinnamon", "Spice Rack", "1", "jar", null, false], ["Salt", "Spice Rack", "1", "box", null, false], ["Garlic powder", "Spice Rack", "1", "jar", null, true]];
+ const pantry=I.map((p,i)=>{const d=new Date();if(p[4]!=null)d.setDate(d.getDate()+p[4]);return {id:7000+i,name:p[0],location:p[1],qty:p[2],unit:p[3],expiresOn:p[4]!=null?key(d):'',lowStock:p[5],createdAt:new Date(2026,9,1,0,i).toISOString()};});
+ return {theme:'cream',pantry};
+}
+  function demoHasData() { return DB.pantry.length > 0; }
+  function loadSampleData() {
+    const go = () => {
+      const theme = DB.theme; DB = Object.assign(defaultDB(), demoSampleDB()); DB.theme = theme || "cream";
+      sv(); closeModal(); applyTheme(); renderHome(); renderPantry(); renderLocalRestoreUndo();
+      switchToTab("screen-home"); document.querySelectorAll(".sample-link").forEach((e) => e.remove());
+      showToast("Sample pantry loaded. Try the filters and printable pages.");
+    };
+    if (!demoHasData()) { go(); return; }
+    openModal({ title: "Load sample data?", bodyText: "This replaces what you have entered in the trial with a sample pantry.", ctaLabel: "Load it", onCta: go, secondaryLabel: "Cancel", onSecondary: closeModal });
+  }
+  function demoSampleButton() {
+    const card = document.querySelector("#screen-home > section.card"); if (!card) return;
+    const btn = card.querySelector(".sample-link");
+    if (demoHasData()) { if (btn) btn.remove(); return; }
+    if (!btn) card.insertAdjacentHTML("afterbegin", '<button type="button" class="sample-link" onclick="loadSampleData()">Just looking? See it with sample data</button>');
+  }
+  const DEMO_TRIAL_DAYS = 14;
+  function demoSinceMs(s) { const p = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ""); if (p) return new Date(+p[1], p[2] - 1, +p[3]).getTime(); const n = parseInt(s, 10); return isNaN(n) ? Date.now() : n; }
+  function demoTrialDaysLeft() { const KEY = "pt_demo_since"; let since = null; try { since = localStorage.getItem(KEY); } catch (e) {} if (!since) { since = String(Date.now()); try { localStorage.setItem(KEY, since); } catch (e) {} } return DEMO_TRIAL_DAYS - Math.floor((Date.now() - demoSinceMs(since)) / 86400000); }
+  function enforceDemoTrial() {
+    const left = demoTrialDaysLeft(), banner = document.getElementById("demo-banner"), lock = document.getElementById("trial-lock");
+    if (left <= 0) { if (lock) lock.style.display = "flex"; if (banner) banner.style.display = "none"; document.body.style.overflow = "hidden"; return true; }
+    if (banner) banner.innerHTML = "<b>Free trial</b>: " + left + " day" + (left === 1 ? "" : "s") + ' left. <a href="https://www.etsy.com/listing/4563369793/pantry-tracker-app-fridge-freezer-pantry" target="_blank" rel="noopener">Get the full app &rarr;</a>';
+    return false;
+  }
+  (function demoInit() {
+    const _h = renderHome; renderHome = function () { _h(); demoSampleButton(); };
+    document.addEventListener("DOMContentLoaded", () => { enforceDemoTrial(); demoSampleButton(); });
+    enforceDemoTrial(); setInterval(enforceDemoTrial, 60000);
+  })();
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
