@@ -1,16 +1,26 @@
 {
+  "id": "./",
   "name": "Grocery List (Free Trial)",
   "short_name": "Grocery Demo",
-  "description": "14-day free trial of Grocery List by Mobile First Studio.",
+  "description": "Free 14 day trial. Add it once, check it off, done.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#F6EDE1",
-  "theme_color": "#C9823F",
+  "theme_color": "#F6EDE1",
   "icons": [
-    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "./icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
   ]
 }

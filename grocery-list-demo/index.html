@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>Grocery List — Mobile First Studio</title>
+<title>Grocery List | Free Trial</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <link rel="manifest" href="./manifest.json" />
 <meta name="theme-color" content="#f6ede1" id="theme-color-meta" />
@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" defer></script>
 <style>
   :root, [data-theme="cream"] {
     --bg-a: #f6ede1; --bg-b: #ecdcc7;
@@ -199,12 +200,27 @@
   .attn-row { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border-soft); font-size: 0.78rem; }
   .attn-row:last-child { border-bottom: none; }
 
+  .backup-status-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; padding: 0.6rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: rgba(255, 255, 255, 0.35); }
+  .backup-status-text { font-size: 0.75rem; color: var(--text-muted); }
+  .backup-status-sub { font-size: 0.65rem; color: var(--text-faint); margin-top: 0.1rem; }
+  .backup-badge { font-size: 0.62rem; padding: 0.2rem 0.55rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+  .backup-badge.connected { color: #16210f; background: linear-gradient(135deg, #b7d99a, #8ab86a); }
+  .backup-badge.disconnected { color: var(--text-faint); background: rgba(255, 255, 255, 0.4); }
   .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.65rem; }
   .backup-btn { padding: 0.6rem 0.5rem; border-radius: 0.7rem; border: 1px solid var(--border-soft); background: transparent; color: var(--text); font-size: 0.74rem; font-weight: 500; cursor: pointer; font-family: "Inter", sans-serif; }
   .backup-btn.primary { border-color: transparent; background: linear-gradient(135deg, var(--accent-a), var(--accent-b)); color: var(--on-accent); font-weight: 600; }
   .backup-btn:disabled { opacity: 0.45; cursor: not-allowed; }
   .backup-divider { margin: 0.9rem 0 0.6rem; border-top: 1px solid var(--border-soft); padding-top: 0.7rem; }
   .backup-section-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 0.5rem; }
+
+  .drive-backup-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 0.6rem;
+    padding: 0.65rem 0.7rem; border-radius: 0.7rem; border: 1px solid var(--border-soft);
+    background: rgba(255, 255, 255, 0.4); margin-top: 0.5rem; cursor: pointer;
+  }
+  .drive-backup-row:hover { border-color: var(--accent-b); }
+  .drive-backup-row-label { font-size: 0.8rem; color: var(--text); font-weight: 600; }
+  .drive-backup-row-sub { font-size: 0.68rem; color: var(--text-faint); margin-top: 0.1rem; }
 
   .modal-overlay { position: fixed; inset: 0; background: rgba(20, 15, 10, 0.45); backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; z-index: 999; }
   .modal-overlay.open { display: flex; }
@@ -235,46 +251,91 @@
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast-action { color: var(--text); text-decoration: underline; margin-left: 0.5rem; cursor: pointer; font-weight: 600; }
 
+
+  /* ===== Dark themes: readable fields and placeholders ===== */
+  ::placeholder { color: var(--text-faint); opacity: 1; }
+  [data-theme="hearth"], [data-theme="sage"], [data-theme="berry"], [data-theme="midnight"] { color-scheme: dark; }
+  [data-theme="hearth"] :is(.field input, .field select, .add-item-row input, .add-item-row select, .list-item, .backup-status-row, .drive-backup-row, .print-opt),
+  [data-theme="sage"] :is(.field input, .field select, .add-item-row input, .add-item-row select, .list-item, .backup-status-row, .drive-backup-row, .print-opt),
+  [data-theme="berry"] :is(.field input, .field select, .add-item-row input, .add-item-row select, .list-item, .backup-status-row, .drive-backup-row, .print-opt),
+  [data-theme="midnight"] :is(.field input, .field select, .add-item-row input, .add-item-row select, .list-item, .backup-status-row, .drive-backup-row, .print-opt) { background: rgba(255, 255, 255, 0.07); }
+  [data-theme="hearth"] :is(.badge-tag, .backup-badge.disconnected),
+  [data-theme="sage"] :is(.badge-tag, .backup-badge.disconnected),
+  [data-theme="berry"] :is(.badge-tag, .backup-badge.disconnected),
+  [data-theme="midnight"] :is(.badge-tag, .backup-badge.disconnected) { background: rgba(255, 255, 255, 0.08); }
+  [data-theme="hearth"] option, [data-theme="sage"] option, [data-theme="berry"] option, [data-theme="midnight"] option { background: #1e1712; color: var(--text); }
+  /* ===== Print ===== */
+  .print-opt { display: flex; align-items: center; gap: 0.7rem; padding: 0.75rem 0.8rem; border-radius: 0.8rem; border: 1px solid var(--border-soft); background: rgba(255,255,255,0.35); margin-top: 0.55rem; cursor: pointer; width: 100%; text-align: left; font-family: "Inter", sans-serif; color: var(--text); }
+  .print-opt:hover { border-color: var(--accent-b); }
+  .print-opt-ico { font-size: 1.25rem; flex-shrink: 0; }
+  .print-opt-label { font-size: 0.84rem; font-weight: 600; }
+  .print-opt-sub { font-size: 0.7rem; color: var(--text-faint); margin-top: 0.1rem; }
+
+  /* ===== Computer / full screen layout ===== */
+  @media (min-width: 900px) {
+    html { font-size: 17px; }
+    body { align-items: flex-start; }
+    .app { max-width: 1180px; padding: 2rem 2.5rem 3rem; }
+    header { margin-bottom: 1.7rem; align-items: center; }
+    .app-name { font-size: 2.1rem; }
+    .app-subtitle { font-size: 0.86rem; }
+    .eyebrow { font-size: 0.7rem; }
+    .theme-btn { width: 44px; height: 44px; transition: transform 0.15s ease, box-shadow 0.15s ease; }
+    .theme-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16); }
+    #screen-home.active-screen { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+    #screen-home .card { margin-bottom: 0; padding: 1.6rem 1.6rem; }
+    .card-title { font-size: 1.3rem; }
+    .card-subtitle { font-size: 0.84rem; }
+    .add-item-row { flex-wrap: nowrap; }
+    .add-item-row input[type="text"] { flex: 1 1 0; min-width: 0; }
+    .add-item-row select { flex: 0 0 9.5rem; }
+    #screen-home > section.card:nth-of-type(2) .add-item-row { flex-wrap: wrap; }
+    #screen-home > section.card:nth-of-type(2) .add-item-row input[type="text"] { flex: 1 1 100%; }
+    #screen-home > section.card:nth-of-type(2) .add-item-row select { flex: 1 1 auto; }
+    #shopping-list-body { columns: 2; column-gap: 2rem; }
+    #shopping-list-body .shopping-item { break-inside: avoid; }
+    #shopping-list-body .empty-state { column-span: all; }
+    .shopping-item { padding: 0.65rem 0.4rem; border-radius: 0.6rem; transition: background 0.15s ease; }
+    .shopping-item:hover { background: rgba(255, 255, 255, 0.28); }
+    .shopping-check { width: 24px; height: 24px; transition: border-color 0.15s ease; }
+    .shopping-check:hover { border-color: var(--accent-b); }
+    .shopping-text, .staple-name { font-size: 0.9rem; }
+    .shopping-del:hover { color: var(--danger); }
+    .staple-row { padding: 0.65rem 0.4rem; border-radius: 0.6rem; transition: background 0.15s ease; }
+    .staple-row:hover { background: rgba(255, 255, 255, 0.28); }
+    .btn-secondary, .backup-btn { transition: border-color 0.15s ease; }
+    .btn-secondary:hover, .backup-btn:hover:not(:disabled) { border-color: var(--accent-b); }
+    #screen-backup.active-screen { max-width: 680px; margin: 0 auto; }
+    .modal-overlay { align-items: center; padding: 1.5rem; }
+    .modal-card { max-width: 520px; border-radius: 1.4rem; padding: 1.5rem 1.4rem 1.5rem; }
+    .toast { bottom: 2rem; }
+  }
+  @media (min-width: 1400px) {
+    html { font-size: 18px; }
+    .app { max-width: 1320px; }
+  }
+
   /* ===== FREE TRIAL DEMO ===== */
-  .demo-banner{
-    position:sticky; top:0; z-index:500; display:flex; align-items:center; justify-content:space-between;
-    gap:0.6rem; padding:0.55rem 1rem; margin:-1.1rem -1rem 1rem;
-    background:linear-gradient(135deg, var(--accent-a), var(--accent-b)); color:var(--on-accent);
-    font-size:0.74rem; font-weight:600;
-  }
-  .demo-banner a{ color:var(--on-accent); text-decoration:underline; font-weight:700; flex-shrink:0; }
-  #trial-lock{
-    position:fixed; inset:0; background:rgba(20,15,10,0.55); backdrop-filter:blur(6px);
-    display:none; align-items:center; justify-content:center; z-index:2000; padding:1.5rem;
-  }
-  .trial-lock-card{
-    background:var(--card-hi); border:1px solid var(--border-soft); border-radius:1.2rem;
-    padding:1.8rem 1.5rem; max-width:360px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3);
-  }
-  .trial-lock-title{ font-family:"Fraunces", Georgia, serif; font-style:italic; font-size:1.3rem; color:var(--text); margin-bottom:0.6rem; }
-  .trial-lock-text{ font-size:0.85rem; color:var(--text-muted); line-height:1.6; margin-bottom:1.2rem; }
-  .trial-lock-btn{
-    display:inline-block; padding:0.75rem 1.4rem; border-radius:999px;
-    background:linear-gradient(135deg, var(--accent-a), var(--accent-b)); color:var(--on-accent);
-    font-size:0.85rem; font-weight:700; text-decoration:none;
-  }
-  .upsell-card{ border:1px solid var(--border-soft); border-radius:0.9rem; padding:1rem; background:rgba(255,255,255,0.4); text-align:center; }
-  .upsell-card-title{ font-family:"Fraunces", Georgia, serif; font-style:italic; font-size:1.05rem; color:var(--text); margin-bottom:0.4rem; }
-  .upsell-card-text{ font-size:0.78rem; color:var(--text-muted); line-height:1.55; margin-bottom:0.8rem; }
-  .upsell-link{
-    display:inline-block; padding:0.6rem 1.1rem; border-radius:999px;
-    background:linear-gradient(135deg, var(--accent-a), var(--accent-b)); color:var(--on-accent);
-    font-size:0.78rem; font-weight:700; text-decoration:none;
-  }
+  body{flex-direction:column;align-items:center;justify-content:flex-start;}
+  .demo-banner{position:sticky;top:0;z-index:500;display:flex;align-items:center;justify-content:center;gap:0.6rem;padding:0.55rem 1rem;width:100%;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-size:0.74rem;font-weight:600;text-align:center;}
+  .demo-banner a{color:var(--on-accent);text-decoration:underline;font-weight:700;white-space:nowrap;}
+  #trial-lock{position:fixed;inset:0;background:rgba(20,15,10,0.55);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:2000;padding:1.5rem;}
+  .trial-lock-card{background:var(--card-hi);border:1px solid var(--border-soft);border-radius:1.2rem;padding:1.8rem 1.5rem;max-width:380px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+  .trial-lock-title{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:1.3rem;color:var(--text);margin-bottom:0.6rem;}
+  .trial-lock-text{font-size:0.85rem;color:var(--text-muted);line-height:1.6;margin-bottom:1.2rem;}
+  .trial-lock-btn,.upsell-link{display:inline-block;padding:0.75rem 1.4rem;border-radius:999px;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-size:0.85rem;font-weight:700;text-decoration:none;border:none;cursor:pointer;font-family:"Inter",sans-serif;}
+  .upsell-card{border:1px solid var(--border-soft);border-radius:0.9rem;padding:1rem;background:rgba(255,255,255,0.4);text-align:center;margin-bottom:0.7rem;}
+  .upsell-card-title{font-family:"Fraunces",Georgia,serif;font-style:italic;font-size:1.05rem;color:var(--text);margin-bottom:0.4rem;}
+  .upsell-card-text{font-size:0.78rem;color:var(--text-muted);line-height:1.55;margin-bottom:0.8rem;}
+  .sample-link{grid-column:1/-1;display:block;width:100%;margin:0 0 0.85rem;padding:0.8rem;border-radius:0.9rem;border:1.5px dashed var(--accent-b);background:var(--card);color:var(--text);font-family:"Inter",sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;}
+  [data-theme="hearth"] .upsell-card,[data-theme="sage"] .upsell-card,[data-theme="berry"] .upsell-card,[data-theme="midnight"] .upsell-card{background:rgba(255,255,255,0.07);}
+  @media (min-width:900px){body{align-items:center;}.demo-banner{font-size:0.85rem;padding:0.65rem 1rem;}.app{padding-top:1.6rem;}}
 </style>
 </head>
 <body data-theme="cream">
 
+<div class="demo-banner" id="demoBanner"><span id="demoBannerText">Free trial: 14 days left</span><a href="https://www.etsy.com/listing/4563424720/shopping-list-app-categorized-list-saved" target="_blank" rel="noopener">Unlock full version &rarr;</a></div>
 <div class="app">
-  <div class="demo-banner" id="demoBanner">
-    <span id="demoBannerText">Free trial: 14 days left</span>
-    <a href="https://www.etsy.com/listing/4563424720/shopping-list-app-categorized-list-saved" target="_blank" rel="noopener" class="demo-banner-link">Unlock full version &rarr;</a>
-  </div>
   <header>
     <div class="header-text">
       <div class="eyebrow">Mobile First Studio</div>
@@ -282,6 +343,7 @@
       <div class="app-subtitle">Add it once, check it off, done.</div>
     </div>
     <div class="header-actions">
+      <button class="theme-btn" id="print-btn" title="Print" aria-label="Print">🖨</button>
       <button class="theme-btn" id="theme-btn" title="Change theme">✨</button>
       <button class="theme-btn" id="backup-btn" title="Backup &amp; Sync">☁</button>
     </div>
@@ -348,9 +410,14 @@
           </div>
         </div>
         <div class="upsell-card" id="upsellSection">
-          <div class="upsell-card-title">Unlock the full app</div>
-          <div class="upsell-card-text">This demo saves data on this device only. Get lifetime access plus optional Google Drive backup, in your own account, no subscription.</div>
+          <div class="upsell-card-title">Google Drive backup is in the full app</div>
+          <div class="upsell-card-text">This free trial saves your list on this device only. The full Grocery List backs up to your own Google Drive, with no subscription.</div>
           <a class="upsell-link" href="https://www.etsy.com/listing/4563424720/shopping-list-app-categorized-list-saved" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+        </div>
+        <div class="upsell-card">
+          <div class="upsell-card-title">Sample data</div>
+          <div class="upsell-card-text">Fill the trial with a realistic week of groceries and staples, so you can try the list, the staples and the printable pages.</div>
+          <button type="button" class="upsell-link" id="load-sample-btn">Load sample data</button>
         </div>
         <div class="backup-divider">
           <div class="backup-section-label">Local backup file</div>
@@ -369,14 +436,6 @@
   <input type="file" id="import-file-input" accept="application/json" style="display:none" />
 </div>
 
-<div id="trial-lock">
-  <div class="trial-lock-card">
-    <div class="trial-lock-title">Your free trial has ended</div>
-    <div class="trial-lock-text">Unlock Grocery List to keep building your list and your staples.</div>
-    <a class="trial-lock-btn" href="https://www.etsy.com/listing/4563424720/shopping-list-app-categorized-list-saved" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
-  </div>
-</div>
-
 <!-- SHARED MODAL -->
 <div id="app-modal" class="modal-overlay">
   <div class="modal-card">
@@ -391,14 +450,241 @@
   </div>
 </div>
 
+<div id="trial-lock">
+  <div class="trial-lock-card">
+    <div class="trial-lock-title">Your free trial has ended</div>
+    <div class="trial-lock-text">Unlock Grocery List to keep building your list and your staples, with printable pages and Google Drive backup.</div>
+    <a class="trial-lock-btn" href="https://www.etsy.com/listing/4563424720/shopping-list-app-categorized-list-saved" target="_blank" rel="noopener">Unlock the full app &rarr;</a>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
+<script>
+/* ── PRINTABLE PAGES (PDF made on the device with pdf-lib) ── */
+var MFSPrint=(function(){
+  // The built-in PDF fonts draw basic Latin letters only. Anything else is removed so the PDF never fails.
+  function safe(s){
+    return String(s==null?'':s)
+      .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[\r\n\t]+/g,' ')
+      .replace(/ ?[^\x20-\x7E\xA0-\xFF–—•…]+/g,'')
+      .trim();
+  }
+  function rgbHex(hex){
+    var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex||'');
+    if(!m)return PDFLib.rgb(.30,.40,.35);
+    return PDFLib.rgb(parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255);
+  }
+  var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function pd(ds){if(!ds)return new Date(NaN);var p=String(ds).split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+  function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function longDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+  function shortDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return MON[d.getMonth()].slice(0,3)+' '+d.getDate()+', '+d.getFullYear();}
+  function money(n){var v=parseFloat(n)||0;return(v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  async function create(opts){
+    opts=opts||{};
+    var doc=await PDFLib.PDFDocument.create();
+    var font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var bold=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    var k={doc:doc,font:font,bold:bold,W:612,H:792,M:46,CW:520,BOTTOM:62,page:null,y:0,title:'',landscape:false,
+      ink:PDFLib.rgb(.16,.16,.16),soft:PDFLib.rgb(.42,.42,.42),line:PDFLib.rgb(.66,.66,.66),faint:PDFLib.rgb(.84,.84,.84),
+      fill:PDFLib.rgb(.95,.95,.94),accent:rgbHex(opts.accent),footer:opts.footer||''};
+    // Shrink text a little to fit its space, then shorten it if it still does not fit.
+    k.fit=function(f,text,size,maxW,minSize){
+      var s=safe(text),sz=size,min=minSize||Math.max(6,size-2);
+      while(sz>min&&f.widthOfTextAtSize(s,sz)>maxW)sz-=0.25;
+      if(f.widthOfTextAtSize(s,sz)>maxW){
+        while(s.length>1&&f.widthOfTextAtSize(s+'...',sz)>maxW)s=s.slice(0,-1);
+        s=s.replace(/\s+$/,'')+'...';
+      }
+      return {text:s,size:sz};
+    };
+    k.text=function(text,x,y,size,o){
+      o=o||{};var f=o.bold?bold:font;
+      var r=k.fit(f,text,size,o.maxW||(k.W-k.M-x),o.minSize);
+      if(!r.text)return;
+      var w=f.widthOfTextAtSize(r.text,r.size);
+      var dx=o.align==='right'?(o.maxW-w):o.align==='center'?((o.maxW-w)/2):0;
+      k.page.drawText(r.text,{x:x+dx,y:y,size:r.size,font:f,color:o.color||k.ink});
+    };
+    k.hline=function(x1,x2,y,color,t){k.page.drawLine({start:{x:x1,y:y},end:{x:x2,y:y},thickness:t||.7,color:color||k.line});};
+    k.vline=function(x,y1,y2,color,t){k.page.drawLine({start:{x:x,y:y1},end:{x:x,y:y2},thickness:t||.7,color:color||k.line});};
+    k.rect=function(x,y,w,h,o){o=o||{};var r={x:x,y:y,width:w,height:h};if(o.fill)r.color=o.fill;if(o.border!==false){r.borderColor=o.border||k.line;r.borderWidth=o.bw||.7;}k.page.drawRectangle(r);};
+    k.newPage=function(title,sub,landscape){
+      var ls=landscape===undefined?k.landscape:!!landscape;k.landscape=ls;
+      k.W=ls?792:612;k.H=ls?612:792;k.CW=k.W-2*k.M;
+      k.page=doc.addPage([k.W,k.H]);k.title=title;
+      var y=k.H-k.M;
+      k.text(title,k.M,y-6,19,{bold:true,maxW:k.CW});
+      y-=24;
+      if(sub){k.text(sub,k.M,y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});y-=12;}
+      k.hline(k.M,k.M+k.CW,y,k.accent,1.2);
+      k.y=y-22;
+    };
+    k.contTitle=function(){return k.title.indexOf('(continued)')>-1?k.title:k.title+' (continued)';};
+    k.room=function(h){if(k.y-h<k.BOTTOM){k.newPage(k.contTitle());return true;}return false;};
+    k.section=function(text){k.room(48);k.text(text,k.M,k.y,11.5,{bold:true,color:k.accent,maxW:k.CW});k.y-=20;};
+    k.field=function(label,x,y,w,value){
+      var r=k.fit(font,label,9.5,w*0.6);
+      k.page.drawText(r.text,{x:x,y:y,size:r.size,font:font,color:k.soft});
+      var lx=x+font.widthOfTextAtSize(r.text,r.size)+6;
+      if(value)k.text(value,lx+2,y,10,{maxW:x+w-lx-4,minSize:7.5});
+      k.hline(lx,x+w,y-2);
+    };
+    // fields: array of label strings or [label,value]
+    k.fieldRow=function(fields){
+      var gap=24,w=(k.CW-gap*(fields.length-1))/fields.length;
+      fields.forEach(function(f,i){var l=Array.isArray(f)?f[0]:f,v=Array.isArray(f)?f[1]:'';k.field(l,k.M+i*(w+gap),k.y,w,v);});
+      k.y-=28;
+    };
+    k.box=function(x,y,s,on){
+      k.page.drawRectangle({x:x,y:y,width:s,height:s,borderColor:k.soft,borderWidth:.8});
+      if(on){k.page.drawLine({start:{x:x+2,y:y+s/2},end:{x:x+s*0.42,y:y+2},thickness:1.2,color:k.ink});k.page.drawLine({start:{x:x+s*0.42,y:y+2},end:{x:x+s-1.5,y:y+s-1.5},thickness:1.2,color:k.ink});}
+    };
+    // A tick list. items: a number (blank lines to write on) or an array of text / {t,on}.
+    k.checks=function(items,ncols){
+      ncols=ncols||1;
+      var n=typeof items==='number'?items:items.length,rows=Math.ceil(n/ncols),gap=20,w=(k.CW-gap*(ncols-1))/ncols;
+      for(var r=0;r<rows;r++){
+        if(k.y-20<k.BOTTOM)k.newPage(k.contTitle());
+        for(var c=0;c<ncols;c++){
+          var i=r+c*rows;if(i>=n)continue;
+          var x=k.M+c*(w+gap),it=typeof items==='number'?null:items[i];
+          k.box(x,k.y-3,10,!!(it&&it.on));
+          if(it!==null)k.text(typeof it==='string'?it:it.t,x+16,k.y-1,10,{maxW:w-18,minSize:7.5});
+          else k.hline(x+16,x+w,k.y-3,k.faint);
+        }
+        k.y-=20;
+      }
+    };
+    k.lines=function(n,gap){gap=gap||20;for(var i=0;i<n;i++){if(k.y-gap<k.BOTTOM)k.newPage(k.contTitle());k.hline(k.M,k.M+k.CW,k.y-4,k.faint);k.y-=gap;}};
+    // cols: [{label,w,align,soft,bold,box}] · rows: a number (blank rows) or an array of rows.
+    // A cell can be text or {box:true,on:bool}. A column with box:true draws an empty tick box in blank rows.
+    k.table=function(cols,rows,rowH,o){
+      o=o||{};var x=o.x||k.M;
+      var sum=cols.reduce(function(s,c){return s+c.w;},0);
+      if(o.stretch!==false&&Math.abs(sum-k.CW)>0.5){var f=k.CW/sum;cols=cols.map(function(c){var d={};for(var p in c)d[p]=c[p];d.w=c.w*f;return d;});sum=k.CW;}
+      var headH=19,n=typeof rows==='number'?rows:rows.length;
+      function sides(top,h){var cx=x;for(var i=0;i<=cols.length;i++){k.vline(cx,top,top-h);if(i<cols.length)cx+=cols[i].w;}}
+      function head(){
+        k.page.drawRectangle({x:x,y:k.y-headH,width:sum,height:headH,color:k.fill});
+        var cx=x;
+        cols.forEach(function(c){
+          if(c.label)k.text(c.label,cx+(c.w<34?2:5),k.y-13,8.5,{bold:true,maxW:c.w-(c.w<34?4:10),minSize:6,align:c.align==='center'||c.box?'center':undefined});
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y);k.hline(x,x+sum,k.y-headH);sides(k.y,headH);
+        k.y-=headH;
+      }
+      if(k.y-headH-rowH<k.BOTTOM)k.newPage(k.contTitle());
+      head();
+      for(var r=0;r<n;r++){
+        if(k.y-rowH<k.BOTTOM){k.newPage(k.contTitle());head();}
+        var row=typeof rows==='number'?null:rows[r],cx=x;
+        cols.forEach(function(c,i){
+          var v=row?row[i]:undefined,bs=Math.min(10,rowH-8),by=k.y-rowH+(rowH-bs)/2;
+          if(v&&typeof v==='object'&&v.box){k.box(cx+(c.w-bs)/2,by,bs,!!v.on);}
+          else if(c.box&&(v===undefined||v===null)){k.box(cx+(c.w-bs)/2,by,bs,false);}
+          else if(v!==undefined&&v!==null&&v!==''){
+            k.text(String(v),cx+5,k.y-rowH/2-3,9,{maxW:c.w-10,minSize:6.5,bold:!!c.bold,color:c.soft?k.soft:k.ink,align:c.align==='center'?'center':c.align==='right'?'right':undefined});
+          }
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y-rowH);sides(k.y,rowH);
+        k.y-=rowH;
+      }
+      k.y-=14;
+    };
+    k.fillRows=function(rowH){return Math.max(0,Math.floor((k.y-k.BOTTOM-19)/rowH));};
+    k.finish=async function(){
+      var pages=doc.getPages();
+      pages.forEach(function(pg,i){
+        var sz=pg.getSize();
+        pg.drawText(safe(k.footer),{x:k.M,y:30,size:8,font:font,color:k.soft});
+        var lbl='Page '+(i+1)+' of '+pages.length;
+        pg.drawText(lbl,{x:sz.width-k.M-font.widthOfTextAtSize(lbl,8),y:30,size:8,font:font,color:k.soft});
+      });
+      return await doc.save();
+    };
+    // Month grid, Monday first. cellText(dateStr) returns an array of short lines for that day.
+    // With numbered=false the grid has no dates, for an undated month to fill in by hand.
+    k.month=function(year,month,o){
+      o=o||{};var top=k.y,heads=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],cw=k.CW/7,hh=18;
+      var first=new Date(year,month,1).getDay(),off=(first+6)%7,dim=new Date(year,month+1,0).getDate();
+      var weeks=o.numbered===false?5:Math.ceil((off+dim)/7);
+      var gridH=(o.height||(k.y-k.BOTTOM-8))-hh,ch=gridH/weeks;
+      k.page.drawRectangle({x:k.M,y:top-hh,width:k.CW,height:hh,color:k.fill});
+      heads.forEach(function(h,i){k.text(h,k.M+i*cw,top-12.5,8.5,{bold:true,maxW:cw,align:'center'});});
+      for(var w=0;w<weeks;w++)for(var d=0;d<7;d++){
+        var x=k.M+d*cw,y=top-hh-(w+1)*ch,n=w*7+d-off+1;
+        k.rect(x,y,cw,ch,{border:k.line});
+        if(o.numbered===false||n<1||n>dim)continue;
+        k.text(String(n),x+4,y+ch-11,9,{bold:true,maxW:cw-8});
+        if(o.cellText){
+          var ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+          var lines=o.cellText(ds)||[],ly=y+ch-22;
+          for(var li=0;li<lines.length&&ly>y+3;li++){k.text(lines[li],x+4,ly,7,{maxW:cw-8,minSize:6});ly-=8.5;}
+        }
+      }
+      k.y=top-hh-gridH-14;
+    };
+    // Twelve small month calendars on one page.
+    k.yearGrid=function(year){
+      var cols=3,rows=4,gap=16,bw=(k.CW-gap*(cols-1))/cols,top=k.y,bh=(top-k.BOTTOM-gap*(rows-1))/rows;
+      for(var m=0;m<12;m++){
+        var c=m%cols,r=Math.floor(m/cols),x=k.M+c*(bw+gap),y=top-r*(bh+gap);
+        k.text(MON[m],x,y-10,10.5,{bold:true,color:k.accent,maxW:bw});
+        var cw=bw/7,heads=['M','T','W','T','F','S','S'];
+        heads.forEach(function(h,i){k.text(h,x+i*cw,y-26,7.5,{bold:true,color:k.soft,maxW:cw,align:'center'});});
+        var first=new Date(year,m,1).getDay(),off=(first+6)%7,dim=new Date(year,m+1,0).getDate(),lh=(bh-38)/6;
+        for(var d=1;d<=dim;d++){var p=off+d-1,cc=p%7,rr=Math.floor(p/7);k.text(String(d),x+cc*cw,y-40-rr*lh,8,{maxW:cw,align:'center'});}
+      }
+      k.y=k.BOTTOM;
+    };
+    return k;
+  }
+  // Hand the finished PDF to the person. On iPhone and iPad the share sheet (Print, Save to Files)
+  // is the dependable route from a home screen app, so it is tried first there.
+  function deliver(bytes,filename){
+    var blob=new Blob([bytes],{type:'application/pdf'});
+    var download=function(){
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+    };
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&navigator.canShare&&typeof File!=='undefined'){
+      try{
+        var file=new File([blob],filename,{type:'application/pdf'});
+        if(navigator.canShare({files:[file]})){
+          return navigator.share({files:[file],title:filename}).catch(function(err){
+            if(err&&err.name==='AbortError')return;
+            download();
+          });
+        }
+      }catch(e){}
+    }
+    download();
+  }
+  var busy=false;
+  // Runs a page builder and hands over the PDF. say(msg,isErr) shows the app's own message.
+  async function run(build,filename,opts,say){
+    if(typeof PDFLib==='undefined'){say('The PDF tool is still loading. Check your connection and try again.',true);return;}
+    if(busy)return;busy=true;say('Creating your PDF...');
+    try{var k=await create(opts);await build(k);var bytes=await k.finish();await deliver(bytes,filename);say('Your PDF is ready!');}
+    catch(e){console.error(e);say('Could not create the PDF. Try again.',true);}
+    busy=false;
+  }
+  return {safe:safe,create:create,deliver:deliver,run:run,MON:MON,DOW:DOW,pd:pd,ymd:ymd,longDate:longDate,shortDate:shortDate,money:money};
+})();
+
+</script>
 <script>
   /* =========================================================
      STORAGE
      ========================================================= */
-  const STORE_KEY = "gl_data_demo_v1";
-  const PRE_RESTORE_KEY = "gl_demo_pre_restore_snapshot";
+  const STORE_KEY = "gl_demo_data_v1";
   function defaultDB() {
     return { theme: "cream", items: [], staples: [] };
   }
@@ -406,7 +692,7 @@
   function ld() {
     try {
       const raw = localStorage.getItem(STORE_KEY);
-      if (raw) DB = Object.assign(defaultDB(), JSON.parse(raw));
+      if (raw) DB = sanitizeData(JSON.parse(raw));
     } catch (e) { DB = defaultDB(); }
   }
   function sv() {
@@ -416,6 +702,29 @@
   }
 
   function uid() { return Date.now() + Math.floor(Math.random() * 1000); }
+  // Cleans any data that comes in from storage, a backup file or Google Drive, so one bad entry can never break the app.
+  function sanitizeData(src) {
+    const d = defaultDB();
+    if (!src || typeof src !== "object") return d;
+    if (THEMES.indexOf(src.theme) > -1) d.theme = src.theme;
+    const seen = new Set();
+    const clean = (arr, isItem) => (Array.isArray(arr) ? arr : [])
+      .filter((x) => x && typeof x === "object" && typeof x.text === "string" && x.text.trim())
+      .map((x) => {
+        let id = Number(x.id);
+        if (!isFinite(id) || seen.has(id)) { do { id = uid() + Math.floor(Math.random() * 100000); } while (seen.has(id)); }
+        seen.add(id);
+        const out = { id, text: x.text.trim().slice(0, 200), category: PRINT_CATS.indexOf(x.category) > -1 ? x.category : "" };
+        if (isItem) {
+          out.checked = !!x.checked;
+          out.createdAt = (typeof x.createdAt === "string" && !isNaN(Date.parse(x.createdAt))) ? x.createdAt : new Date().toISOString();
+        }
+        return out;
+      });
+    d.items = clean(src.items, true);
+    d.staples = clean(src.staples, false);
+    return d;
+  }
   function esc(s) {
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -490,7 +799,7 @@
     document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active-screen"));
     document.getElementById(targetId).classList.add("active-screen");
     if (targetId === "screen-home") { renderShoppingList(); renderStaples(); }
-    if (targetId === "screen-backup") { renderLocalRestoreUndo(); }
+    if (targetId === "screen-backup") { updateDriveStatusUI(); renderLocalRestoreUndo(); }
   }
 
   /* =========================================================
@@ -614,8 +923,10 @@
     };
   }
   let _pendingRestoreData = null;
+  let _pendingRestoreFromDrive = false;
   function openRestoreConfirm(data, sourceLabel) {
     _pendingRestoreData = data;
+    _pendingRestoreFromDrive = /^Google Drive/.test(sourceLabel);
     const incoming = dataSummary(data);
     const current = dataSummary(DB);
     let body = `This backup has ${incoming.items} item${incoming.items === 1 ? "" : "s"} and ${incoming.staples} staple${incoming.staples === 1 ? "" : "s"}. Your current data has ${current.items} item${current.items === 1 ? "" : "s"} and ${current.staples} staple${current.staples === 1 ? "" : "s"}. Restoring replaces what you have now — you can undo it right after if needed.`;
@@ -628,14 +939,16 @@
       ctaLabel: "Yes, restore",
       onCta: confirmRestoreNow,
       secondaryLabel: "Cancel",
-      onSecondary: () => { _pendingRestoreData = null; closeModal(); }
+      onSecondary: () => { _pendingRestoreData = null; _pendingRestoreFromDrive = false; closeModal(); }
     });
   }
   function confirmRestoreNow() {
     if (!_pendingRestoreData) { closeModal(); return; }
-    try { localStorage.setItem(PRE_RESTORE_KEY, JSON.stringify({ data: DB, ts: Date.now() })); } catch (e) {}
-    DB = Object.assign(defaultDB(), _pendingRestoreData);
+    try { localStorage.setItem("gl_demo_pre_restore_snapshot", JSON.stringify({ data: DB, ts: Date.now() })); } catch (e) {}
+    DB = sanitizeData(_pendingRestoreData);
     _pendingRestoreData = null;
+    // Once the Drive copy has been loaded, the two match again, so automatic backups can resume.
+    if (_pendingRestoreFromDrive) setDriveHold(false);
     sv(); closeModal(); applyTheme();
     renderShoppingList(); renderStaples();
     renderLocalRestoreUndo();
@@ -643,11 +956,13 @@
   }
   function undoLastRestore() {
     try {
-      const raw = localStorage.getItem(PRE_RESTORE_KEY);
+      const raw = localStorage.getItem("gl_demo_pre_restore_snapshot");
       if (!raw) { showToast("Nothing to undo."); return; }
       const snap = JSON.parse(raw);
-      DB = Object.assign(defaultDB(), snap.data);
-      localStorage.removeItem(PRE_RESTORE_KEY);
+      DB = sanitizeData(snap.data);
+      localStorage.removeItem("gl_demo_pre_restore_snapshot");
+      // The device now holds older data than Drive, so wait for the person to choose before backing up again.
+      if (isDriveConnected()) setDriveHold(true);
       sv(); applyTheme();
       renderShoppingList(); renderStaples();
       renderLocalRestoreUndo();
@@ -657,7 +972,7 @@
   function renderLocalRestoreUndo() {
     const el = document.getElementById("local-restore-undo-slot");
     if (!el) return;
-    const hasUndo = !!localStorage.getItem(PRE_RESTORE_KEY);
+    const hasUndo = !!localStorage.getItem("gl_demo_pre_restore_snapshot");
     el.innerHTML = hasUndo
       ? '<button class="backup-btn" style="width:100%;margin-top:8px;color:var(--danger);border-color:var(--danger);" onclick="undoLastRestore()">Undo Last Restore</button>'
       : '';
@@ -681,7 +996,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `grocery-list-backup-${localDateStr()}.json`;
+      a.download = `grocery-list-demo-backup-${localDateStr()}.json`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -709,20 +1024,319 @@
   }
 
   /* =========================================================
-     FREE TRIAL DEMO LOGIC
+     GOOGLE DRIVE BACKUP (real implementation — 1 live copy +
+     up to 7 daily snapshots)
+     ========================================================= */
+  const GOOGLE_CLIENT_ID = "636576283764-urkn6im4r86n5q4u3iokmska4ejid9o9.apps.googleusercontent.com";
+  const DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
+  const GDRIVE_FILENAME = "grocery-list-backup.json";
+  const GDRIVE_SNAPSHOT_PREFIX = "grocery-list-snapshot-";
+  const GDRIVE_MAX_SNAPSHOTS = 7;
+  const DRIVE_KEYS = { connected: "gl_drive_connected", lastSynced: "gl_drive_last_synced", hold: "gl_drive_hold" };
+  let driveTokenClient = null;
+  let _gdriveToken = null;
+  let _gdriveTokenWaiters = [];
+  let _gdriveLastSilentFail = 0;
+  const GDRIVE_SILENT_COOLDOWN_MS = 5 * 60 * 1000;
+  let _gdriveBackupTimer = null;
+
+  function initGoogleDriveClient() {
+    if (typeof google === "undefined" || !google.accounts || !google.accounts.oauth2) {
+      setTimeout(initGoogleDriveClient, 500);
+      return;
+    }
+    driveTokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: DRIVE_SCOPE,
+      callback: (resp) => {
+        if (resp.access_token) {
+          const wasConnected = isDriveConnected();
+          _gdriveToken = resp.access_token;
+          _gdriveLastSilentFail = 0;
+          localStorage.setItem(DRIVE_KEYS.connected, "true");
+          updateDriveStatusUI();
+          if (!wasConnected) {
+            // Pause automatic backups until we know whether a backup already exists, so a new device never replaces it.
+            setDriveHold(true);
+            gdriveFindFileByName(GDRIVE_FILENAME).then((fileId) => {
+              if (fileId) { showToast("Backup found. Tap Restore to load it. Nothing was replaced."); }
+              else { setDriveHold(false); showToast("Google Drive connected!"); }
+              updateDriveStatusUI();
+            }).catch(() => {
+              showToast("Connected, but we could not check for an existing backup. Backups stay paused until you choose.");
+              updateDriveStatusUI();
+            });
+          }
+        }
+        const waiters = _gdriveTokenWaiters; _gdriveTokenWaiters = [];
+        waiters.forEach((fn) => fn(!!resp.access_token));
+      }
+    });
+  }
+  function isDriveConnected() { return localStorage.getItem(DRIVE_KEYS.connected) === "true"; }
+  function isDriveHold() { return localStorage.getItem(DRIVE_KEYS.hold) === "true"; }
+  function setDriveHold(on) {
+    try { if (on) localStorage.setItem(DRIVE_KEYS.hold, "true"); else localStorage.removeItem(DRIVE_KEYS.hold); } catch (e) {}
+  }
+  function getLastSyncedLabel() {
+    const iso = localStorage.getItem(DRIVE_KEYS.lastSynced);
+    if (!iso) return "Never backed up";
+    const date = new Date(iso);
+    return `Last backed up ${date.toLocaleDateString(undefined, { month: "short", day: "numeric" })} at ${date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}`;
+  }
+  function updateDriveStatusUI() {
+    return;
+    const connected = isDriveConnected();
+    document.getElementById("drive-status-text").textContent = connected ? "Google Drive connected" : "Google Drive not connected";
+    document.getElementById("drive-status-sub").textContent = connected
+      ? (isDriveHold() ? "A backup already exists on Drive. Automatic backups are paused." : getLastSyncedLabel())
+      : "Your data stays on this device until you connect.";
+    const badge = document.getElementById("drive-badge");
+    badge.textContent = connected ? "On" : "Off";
+    badge.classList.toggle("connected", connected);
+    badge.classList.toggle("disconnected", !connected);
+    document.getElementById("drive-connect-btn").style.display = connected ? "none" : "block";
+    document.getElementById("drive-backup-btn").disabled = !connected;
+    document.getElementById("drive-restore-btn").disabled = !connected;
+    document.getElementById("drive-disconnect-btn").disabled = !connected;
+  }
+  function gdriveConnect() {
+    if (driveTokenClient) { driveTokenClient.requestAccessToken(); return; }
+    let attempts = 0;
+    const waitForClient = setInterval(() => {
+      attempts++;
+      if (typeof google !== "undefined" && google.accounts && google.accounts.oauth2) {
+        clearInterval(waitForClient);
+        if (!driveTokenClient) initGoogleDriveClient();
+        setTimeout(() => { if (driveTokenClient) driveTokenClient.requestAccessToken(); }, 100);
+      } else if (attempts > 40) {
+        clearInterval(waitForClient);
+        showToast("Could not load Google Drive. Check your connection.");
+      }
+    }, 500);
+  }
+  function disconnectDrive() {
+    _gdriveToken = null;
+    localStorage.removeItem(DRIVE_KEYS.connected);
+    setDriveHold(false);
+    showToast("Google Drive disconnected. Your local data is unchanged.");
+    updateDriveStatusUI();
+  }
+  function gdriveEnsureToken(allowPrompt) {
+    if (allowPrompt === undefined) allowPrompt = true;
+    return new Promise((resolve) => {
+      if (_gdriveToken) { resolve(true); return; }
+      if (!allowPrompt && _gdriveLastSilentFail && (Date.now() - _gdriveLastSilentFail) < GDRIVE_SILENT_COOLDOWN_MS) { resolve(false); return; }
+      function proceedWithClient() {
+        let settled = false;
+        const waiter = (ok) => {
+          if (settled) return; settled = true;
+          if (!ok && !allowPrompt) _gdriveLastSilentFail = Date.now();
+          resolve(ok);
+        };
+        _gdriveTokenWaiters.push(waiter);
+        driveTokenClient.requestAccessToken({ prompt: "" });
+        setTimeout(() => {
+          if (settled) return;
+          const idx = _gdriveTokenWaiters.indexOf(waiter);
+          if (idx > -1) _gdriveTokenWaiters.splice(idx, 1);
+          if (!allowPrompt) { waiter(false); return; }
+          _gdriveTokenWaiters.push(waiter);
+          driveTokenClient.requestAccessToken();
+        }, 3000);
+      }
+      if (driveTokenClient) { proceedWithClient(); return; }
+      let attempts = 0;
+      const waitForClient = setInterval(() => {
+        attempts++;
+        if (driveTokenClient) { clearInterval(waitForClient); proceedWithClient(); }
+        else if (attempts > 20) { clearInterval(waitForClient); resolve(false); }
+      }, 500);
+    });
+  }
+  async function gdriveApiGet(url) {
+    const res = await fetch(url, { headers: { Authorization: "Bearer " + _gdriveToken } });
+    let data;
+    try { data = await res.json(); } catch (e) { data = null; }
+    if (!res.ok) {
+      const msg = data && data.error && data.error.message;
+      throw new Error("Drive API error " + res.status + (msg ? ": " + msg : ""));
+    }
+    return data || {};
+  }
+  async function gdriveFindFileByName(name) {
+    if (!_gdriveToken) return null;
+    const q = encodeURIComponent(`name='${name}' and trashed=false`);
+    const data = await gdriveApiGet(`https://www.googleapis.com/drive/v3/files?q=${q}&spaces=drive&orderBy=${encodeURIComponent("modifiedTime desc")}&fields=files(id,name)`);
+    return (data.files && data.files[0]) ? data.files[0].id : null;
+  }
+  async function gdriveUploadFile(name, content, existingId) {
+    const metadata = { name, mimeType: "application/json" };
+    const boundary = "-------sl" + Date.now();
+    const body = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${content}\r\n--${boundary}--`;
+    const url = existingId
+      ? `https://www.googleapis.com/upload/drive/v3/files/${existingId}?uploadType=multipart`
+      : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+    const method = existingId ? "PATCH" : "POST";
+    const res = await fetch(url, {
+      method,
+      headers: { Authorization: "Bearer " + _gdriveToken, "Content-Type": "multipart/related; boundary=" + boundary },
+      body
+    });
+    if (!res.ok) throw new Error("Drive upload failed (" + res.status + ")");
+  }
+  async function gdriveListSnapshots() {
+    if (!_gdriveToken) return [];
+    const q = encodeURIComponent(`name contains '${GDRIVE_SNAPSHOT_PREFIX}' and trashed=false`);
+    const data = await gdriveApiGet(`https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=${encodeURIComponent("createdTime desc")}&fields=${encodeURIComponent("files(id,name,createdTime)")}&spaces=drive`);
+    return data.files || [];
+  }
+  async function gdrivePruneSnapshots() {
+    const files = await gdriveListSnapshots();
+    if (files.length <= GDRIVE_MAX_SNAPSHOTS) return;
+    const toDelete = files.slice(GDRIVE_MAX_SNAPSHOTS);
+    for (const f of toDelete) {
+      try { await fetch(`https://www.googleapis.com/drive/v3/files/${f.id}`, { method: "DELETE", headers: { Authorization: "Bearer " + _gdriveToken } }); } catch (e) {}
+    }
+  }
+  async function gdriveBackupNow(interactive) {
+    if (!interactive && isDriveHold()) return { ok: false, error: "Backups are paused" };
+    const ok = await gdriveEnsureToken(!!interactive);
+    if (!ok) return { ok: false, error: "Could not connect to Google Drive" };
+    try { return await gdriveDoBackup(); }
+    catch (e) {
+      // An expired sign-in shows up as a 401. Sign in again once and retry.
+      if (/\b401\b/.test(e.message || "")) {
+        _gdriveToken = null;
+        if (await gdriveEnsureToken(!!interactive)) {
+          try { return await gdriveDoBackup(); } catch (e2) { return { ok: false, error: e2.message || "Unknown error" }; }
+        }
+      }
+      return { ok: false, error: e.message || "Unknown error" };
+    }
+  }
+  async function gdriveDoBackup() {
+    {
+      const content = buildBackupPayload();
+      const liveId = await gdriveFindFileByName(GDRIVE_FILENAME);
+      await gdriveUploadFile(GDRIVE_FILENAME, content, liveId);
+      const snapName = GDRIVE_SNAPSHOT_PREFIX + localDateStr() + ".json";
+      const snapId = await gdriveFindFileByName(snapName);
+      if (!snapId) { await gdriveUploadFile(snapName, content, null); await gdrivePruneSnapshots(); }
+      localStorage.setItem(DRIVE_KEYS.lastSynced, new Date().toISOString());
+      return { ok: true };
+    }
+  }
+  function scheduleAutoBackup() {
+    if (!isDriveConnected() || isDriveHold()) return;
+    clearTimeout(_gdriveBackupTimer);
+    _gdriveBackupTimer = setTimeout(() => { gdriveBackupNow(false); }, 3000);
+  }
+  async function gdriveOpenRestorePicker() {
+    if (!isDriveConnected()) { showToast("Connect Google Drive first."); return; }
+    openModal({ title: "Choose a backup", bodyText: "Loading your backups…" });
+    try {
+      const ok = await gdriveEnsureToken();
+      if (!ok) throw new Error("Could not connect to Google Drive");
+      const liveId = await gdriveFindFileByName(GDRIVE_FILENAME);
+      const snapshots = await gdriveListSnapshots();
+      const items = [];
+      if (liveId) items.push({ id: liveId, label: "Most recent (auto-backup)", sub: "Always up to date" });
+      snapshots.forEach((f) => {
+        const dateStr = f.name.replace(GDRIVE_SNAPSHOT_PREFIX, "").replace(".json", "");
+        items.push({ id: f.id, label: "Daily snapshot", sub: dateStr });
+      });
+      if (!items.length) {
+        openModal({ title: "Choose a backup", bodyText: "No backups found in your Google Drive yet. Try \"Back up now\" first.", ctaLabel: "Close", onCta: closeModal });
+        return;
+      }
+      const rowsHtml = items.map((it) =>
+        `<div class="drive-backup-row" data-fileid="${esc(it.id)}" data-label="${esc(it.label + " · " + it.sub)}">
+          <div><div class="drive-backup-row-label">${esc(it.label)}</div><div class="drive-backup-row-sub">${esc(it.sub)}</div></div>
+          <span style="color:var(--accent-b);">→</span>
+        </div>`
+      ).join("");
+      openModal({ title: "Choose a backup", bodyText: "Pick which version to restore.", extraHtml: rowsHtml, secondaryLabel: "Cancel", onSecondary: closeModal });
+      document.getElementById("modal-extra-body").querySelectorAll(".drive-backup-row").forEach((row) => {
+        row.addEventListener("click", () => gdriveSelectBackup(row.dataset.fileid, row.dataset.label));
+      });
+    } catch (e) {
+      openModal({ title: "Couldn't load your backups", bodyText: e.message || "Please try again.", ctaLabel: "Try again", onCta: gdriveOpenRestorePicker });
+    }
+  }
+  async function gdriveSelectBackup(fileId, label) {
+    try {
+      const res = await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`, { headers: { Authorization: "Bearer " + _gdriveToken } });
+      if (!res.ok) throw new Error("Drive returned an error (" + res.status + ")");
+      const data = await res.json();
+      if (!data || !Array.isArray(data.items)) { showToast("That backup looks invalid."); return; }
+      openRestoreConfirm(data, "Google Drive (" + label + ")");
+    } catch (e) { showToast("Could not load that backup: " + (e.message || "try again")); }
+  }
+
+  /* =========================================================
+     PRINT: a PDF made on the phone (same method as the other apps)
+     ========================================================= */
+  const PRINT_CATS = ["Produce", "Dairy", "Meat", "Pantry", "Frozen", "Household", "Other"];
+  function groupByCategory(list) {
+    const groups = {};
+    list.forEach((it) => { const c = PRINT_CATS.includes(it.category) ? it.category : "Other"; (groups[c] = groups[c] || []).push(it); });
+    return PRINT_CATS.filter((c) => groups[c]).map((c) => ({ cat: c, items: groups[c].slice().sort((a, b) => a.text.localeCompare(b.text)) }));
+  }
+  function glPrintBuild(k, mode) {
+    if (mode === "blank") {
+      k.newPage("Grocery List", "Sorted by aisle, so you walk the store once.");
+      k.fieldRow(["Shopping day", "Store"]);
+      PRINT_CATS.forEach((c) => { k.section(c); k.checks(6, 2); k.y -= 4; });
+      return;
+    }
+    const staples = mode === "staples";
+    const src = staples ? DB.staples : DB.items.filter((it) => !it.checked);
+    k.newPage(staples ? "My Staples" : "Grocery List", staples ? "The things you always buy. Tick what you need this week." : "Sorted by aisle. Tick it as it goes in the cart.");
+    if (!staples) k.fieldRow(["Shopping day", "Store"]);
+    groupByCategory(src).forEach((g) => {
+      k.section(g.cat);
+      k.checks(g.items.map((it) => it.text), 2);
+      k.y -= 4;
+    });
+    k.section(staples ? "Also need" : "Extras");
+    k.checks(6, 2);
+  }
+  function doPrint(mode) {
+    if (mode === "list" && !DB.items.some((it) => !it.checked)) { showToast("Your list is empty. Try a blank list instead."); return; }
+    if (mode === "staples" && !DB.staples.length) { showToast("No staples saved yet."); return; }
+    closeModal();
+    const names = { list: "grocery-list-" + localDateStr() + ".pdf", blank: "grocery-list-printable.pdf", staples: "grocery-staples.pdf" };
+    MFSPrint.run((k) => glPrintBuild(k, mode), names[mode],
+      { accent: "#c9823f", footer: "Grocery List  ·  Mobile First Studio" },
+      (msg) => showToast(msg));
+  }
+  function openPrintMenu() {
+    const open = DB.items.filter((it) => !it.checked).length;
+    const opt = (m, ico, label, sub) => `<button class="print-opt" data-print="${m}"><span class="print-opt-ico">${ico}</span><span><div class="print-opt-label">${label}</div><div class="print-opt-sub">${sub}</div></span></button>`;
+    openModal({
+      title: "Print",
+      bodyText: "Choose what to print. You get a PDF you can print or save. It is made on your device and nothing is uploaded.",
+      extraHtml: opt("list", "🛒", "My grocery list", `${open} item${open === 1 ? "" : "s"} still to buy, sorted by aisle`)
+        + opt("blank", "📝", "Blank grocery list", "Empty lines for every aisle, for the fridge")
+        + opt("staples", "⭐", "My staples", "Your always-buy list, ready to tick"),
+      secondaryLabel: "Cancel", onSecondary: closeModal
+    });
+    document.getElementById("modal-extra-body").querySelectorAll("[data-print]").forEach((b) => b.addEventListener("click", () => doPrint(b.dataset.print)));
+  }
+
+
+  /* =========================================================
+     FREE TRIAL DEMO
      ========================================================= */
   const DEMO_SINCE_KEY = "gl_demo_since";
   const TRIAL_DAYS = 14;
-  const ETSY_URL = "https://www.etsy.com/listing/4563424720/shopping-list-app-categorized-list-saved";
   function demoTrialDaysLeft() {
     let since = null;
     try { since = localStorage.getItem(DEMO_SINCE_KEY); } catch (e) {}
-    if (!since) {
-      since = String(Date.now());
-      try { localStorage.setItem(DEMO_SINCE_KEY, since); } catch (e) {}
-    }
-    const elapsedDays = Math.floor((Date.now() - parseInt(since, 10)) / 86400000);
-    return TRIAL_DAYS - elapsedDays;
+    if (!since) { since = String(Date.now()); try { localStorage.setItem(DEMO_SINCE_KEY, since); } catch (e) {} }
+    const n = parseInt(since, 10);
+    return TRIAL_DAYS - Math.floor((Date.now() - (isNaN(n) ? Date.now() : n)) / 86400000);
   }
   function enforceDemoTrial() {
     const left = demoTrialDaysLeft();
@@ -738,7 +1352,47 @@
       document.body.style.overflow = "";
     }
   }
-  function scheduleAutoBackup() {}
+  function demoSample() {
+    const it = (i, text, category, checked) => ({ id: 1000 + i, text, category, checked: !!checked, createdAt: new Date(Date.now() - (30 - i) * 60000).toISOString() });
+    const st = (i, text, category) => ({ id: 2000 + i, text, category });
+    return {
+      theme: DB.theme,
+      items: [
+        it(1, "Bananas", "Produce"), it(2, "Baby spinach", "Produce"), it(3, "Avocados", "Produce"), it(4, "Lemons", "Produce", true),
+        it(5, "Whole milk", "Dairy"), it(6, "Greek yogurt", "Dairy"), it(7, "Cheddar cheese", "Dairy", true),
+        it(8, "Chicken thighs", "Meat"), it(9, "Ground turkey", "Meat"),
+        it(10, "Olive oil", "Pantry"), it(11, "Pasta", "Pantry"), it(12, "Rice", "Pantry", true),
+        it(13, "Frozen berries", "Frozen"), it(14, "Paper towels", "Household")
+      ],
+      staples: [
+        st(1, "Eggs", "Dairy"), st(2, "Butter", "Dairy"), st(3, "Bread", "Pantry"), st(4, "Coffee", "Pantry"),
+        st(5, "Onions", "Produce"), st(6, "Garlic", "Produce"), st(7, "Dish soap", "Household"), st(8, "Toilet paper", "Household")
+      ]
+    };
+  }
+  function loadSampleData() {
+    const go = () => {
+      DB = sanitizeData(demoSample());
+      sv(); closeModal(); switchToTab("screen-home");
+      showToast("Sample data loaded. Explore every feature.");
+    };
+    if (!DB.items.length && !DB.staples.length) { go(); return; }
+    openModal({ title: "Load sample data?", bodyText: "This replaces what you have entered in the trial with a sample week of groceries.", ctaLabel: "Load it", onCta: go, secondaryLabel: "Cancel", onSecondary: closeModal });
+  }
+  function demoSampleButton() {
+    const home = document.getElementById("screen-home");
+    if (!home) return;
+    const btn = home.querySelector(".sample-link");
+    if (DB.items.length || DB.staples.length) { if (btn) btn.remove(); return; }
+    if (!btn) home.insertAdjacentHTML("afterbegin", '<button type="button" class="sample-link" id="sample-link-btn">Just looking? See it with sample data</button>');
+    const nb = home.querySelector(".sample-link");
+    if (nb) nb.onclick = loadSampleData;
+  }
+  (function demoWrap() {
+    const _a = renderShoppingList, _b = renderStaples;
+    renderShoppingList = function () { _a(); demoSampleButton(); };
+    renderStaples = function () { _b(); demoSampleButton(); };
+  })();
 
   /* =========================================================
      INIT
@@ -751,8 +1405,10 @@
     renderLocalRestoreUndo();
     enforceDemoTrial();
     setInterval(enforceDemoTrial, 60000);
+    document.getElementById("load-sample-btn").addEventListener("click", loadSampleData);
 
     document.getElementById("theme-btn").addEventListener("click", cycleTheme);
+    document.getElementById("print-btn").addEventListener("click", openPrintMenu);
     document.getElementById("backup-btn").addEventListener("click", () => {
       const onBackup = document.getElementById("screen-backup").classList.contains("active-screen");
       switchToTab(onBackup ? "screen-home" : "screen-backup");
