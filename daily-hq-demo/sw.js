@@ -1,59 +1,26 @@
-const CACHE_NAME = 'mfs-dailyhq-demo-etsy-v2';
-const PRECACHE = [
-  './',
-  'index.html',
-  'manifest.json',
-  'icons/icon-192.png',
-  'icons/icon-512.png'
-];
-
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE))
-  );
+// Daily HQ Free Trial — Service Worker
+// Raise the number in CACHE (v1 -> v2) whenever you upload a new index.html.
+const CACHE = 'daily-hq-demo-v1';
+const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+const PDF_LIB_URL = 'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js';
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => Promise.all(ASSETS.concat([PDF_LIB_URL]).map(u => c.add(u).catch(() => {})))));
   self.skipWaiting();
 });
-
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
-  );
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x)))));
   self.clients.claim();
 });
-
-// Network-first for the page itself, so a deployed fix always reaches
-// already-installed users. Cache-first-with-populate for other same-origin
-// assets. Cross-origin requests always go straight to network, never cached.
-self.addEventListener('fetch', (event) => {
-  const req = event.request;
-  if (req.method !== 'GET') return;
-
-  const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return;
-
-  if (req.mode === 'navigate') {
-    event.respondWith(
-      fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-          return res;
-        })
-        .catch(() => caches.match(req).then((cached) => cached || caches.match('index.html')))
-    );
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
+  if (e.request.url === PDF_LIB_URL) {
+    e.respondWith(caches.match(PDF_LIB_URL).then(c => c || fetch(e.request).then(r => { const cl = r.clone(); caches.open(CACHE).then(ca => ca.put(PDF_LIB_URL, cl)); return r; })));
     return;
   }
-
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-      return fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
-        return res;
-      });
-    })
-  );
+  if (url.origin !== self.location.origin) return;
+  e.respondWith(fetch(e.request).then(r => {
+    if (r && r.status === 200 && r.type === 'basic') { const cl = r.clone(); caches.open(CACHE).then(ca => ca.put(e.request, cl)); }
+    return r;
+  }).catch(() => caches.match(e.request).then(c => c || caches.match('./index.html'))));
 });

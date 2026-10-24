@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
-<meta name="apple-mobile-web-app-title" content="Daily HQ Demo"/>
+<meta name="apple-mobile-web-app-title" content="Daily HQ"/>
 <meta name="theme-color" id="meta-theme-color" content="#4a6741"/>
 <link rel="manifest" href="manifest.json"/>
-<link rel="apple-touch-icon" href="icons/icon-192.png"/>
-<link rel="icon" type="image/png" href="icons/icon-192.png"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js" defer></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet"/>
-<title>Daily HQ — Free Demo | Mobile First Studio</title>
+<title>Daily HQ | Free Trial</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -27,7 +27,7 @@
   --fs-xl:24px;--fs-lg:20px;--fs-base:18px;--fs-sm:16px;--fs-xs:14px;
 }
 html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'EB Garamond',serif;}
-body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;height:100vh;height:100svh;}
+body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;height:100dvh;}
 .sbar{background:var(--green);padding:env(safe-area-inset-top,10px) 20px 8px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;}
 .sbar span{color:rgba(255,255,255,.9);font-size:14px;letter-spacing:.12em;font-weight:500;}
 .color-btn{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.85);background:var(--gold);cursor:pointer;padding:0;position:absolute;right:20px;top:18px;box-shadow:0 1px 3px rgba(0,0,0,.25);}
@@ -106,7 +106,7 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;height:100
 .cat-Holiday{background:var(--gold2);color:var(--gold);}
 .cat-Reminder{background:var(--green3);color:var(--green);}
 .cat-Other{background:var(--bg3);color:var(--text2);}
-.mfs-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--green);color:#fff;padding:10px 22px;border-radius:20px;font-size:14px;opacity:0;transition:all .3s;z-index:9999;pointer-events:none;white-space:nowrap;font-family:'EB Garamond',serif;}
+.mfs-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--green);color:#fff;padding:10px 22px;border-radius:18px;font-size:14px;opacity:0;transition:all .3s;z-index:9999;pointer-events:none;white-space:normal;text-align:center;max-width:calc(100% - 48px);width:max-content;font-family:'EB Garamond',serif;}
 .mfs-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 .mfs-toast.err{background:var(--burg);}
 .mfs-confirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9000;align-items:center;justify-content:center;padding:24px;}
@@ -122,10 +122,6 @@ body{display:flex;flex-direction:column;max-width:480px;margin:0 auto;height:100
 .theme-swatch.active{border-color:var(--text);}
 .theme-swatch i{display:none;}
 .theme-swatch.active i{display:flex;align-items:center;justify-content:center;position:absolute;inset:0;color:#fff;font-size:18px;}
-
-.demo-banner{background:#1e1e1e;color:#fff;padding:9px 14px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:12.5px;line-height:1.4;flex-shrink:0;position:relative;z-index:30;}
-.demo-banner b{color:#f2d049;}
-.demo-banner a{color:#8ec9ff;font-weight:600;text-decoration:underline;white-space:nowrap;margin-left:4px;}
 .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:8px;}
 .sec-head .sl{margin:0;}
 .add-mini{display:inline-flex;align-items:center;gap:4px;background:transparent;border:.5px solid var(--green);color:var(--green);border-radius:999px;padding:5px 13px;font-family:'EB Garamond',serif;font-size:var(--fs-xs);cursor:pointer;min-height:30px;}
@@ -164,22 +160,176 @@ html.dark .modal-bg,html.dark .mfs-confirm{background:rgba(0,0,0,.65);}
 .dk-sw span:after{content:'';position:absolute;width:24px;height:24px;border-radius:50%;background:#fff;top:2.5px;left:3px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s;}
 .dk-sw input:checked+span{background:var(--green);border-color:var(--green);}
 .dk-sw input:checked+span:after{transform:translateX(19px);}
+/* ── DESKTOP / FULL SCREEN (phone layout above is untouched) ── */
+@media(min-width:900px){
+html,body{background:var(--bg);}
+body{max-width:none;width:100%;margin:0;display:grid;grid-template-columns:280px minmax(0,1fr);grid-template-rows:auto 1fr;background:var(--bg);}
+/* sidebar */
+.sbar{grid-column:1;grid-row:1;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:4px;background:var(--bg3);padding:32px 28px 18px;border-right:.5px solid var(--border);}
+.sbar span{color:var(--text2);font-size:13px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;}
+.sbar::after{content:"Daily HQ";font-size:30px;line-height:1.15;font-weight:600;color:var(--green);}
+.nav{grid-column:1;grid-row:2;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:6px;padding:14px 16px 24px;border-top:none;border-right:.5px solid var(--border);box-shadow:none;background:var(--bg3);}
+.ni{flex-direction:row;justify-content:flex-start;gap:16px;padding:13px 18px;min-height:52px;border-radius:12px;}
+.ni i{font-size:22px;color:var(--text2);}
+.ni span{font-size:17px;letter-spacing:0;text-transform:none;color:var(--text);font-weight:500;}
+.ni:hover{background:var(--bg4);}
+.ni.active{background:var(--green);}
+.ni.active i,.ni.active span{color:#fff;}
+.screen{grid-column:2;grid-row:1 / span 2;}
+/* page headers: plain, on the page, like a real web app */
+.ph{background:transparent;padding:34px 48px 6px;}
+.ph .ey{color:var(--green);opacity:.85;font-weight:600;font-size:13px;letter-spacing:.16em;margin-bottom:4px;}
+.ph h1{color:var(--text);font-size:38px;font-style:normal;font-weight:600;}
+.ph div[id$="-date"]{color:var(--text2)!important;font-size:16px!important;margin-top:4px;}
+.hdr-btns{top:30px;right:48px;gap:10px;}
+.theme-btn,.calc-btn{width:46px;height:46px;background:var(--bg2);border:.5px solid var(--border);color:var(--text);box-shadow:var(--shadow);}
+.calc-btn svg{stroke:var(--text);}
+.ps{padding:22px 48px 48px;}
+.page:not(#pg-dash) .ps>*{max-width:none;}
+#pg-setup .ps>*{max-width:900px;}
+.fab{right:48px;bottom:40px;width:68px;height:68px;border-radius:18px;box-shadow:0 8px 22px rgba(0,0,0,.2);}
+.fab i{font-size:30px;}
+/* section headings */
+.sl{font-size:21px;letter-spacing:0;text-transform:none;font-weight:600;color:var(--text);margin:14px 0 12px;}
+.tab-row{flex-wrap:wrap;margin-bottom:22px;gap:8px;}
+.tab-btn{padding:10px 20px;font-size:16px;min-height:44px;border-radius:10px;}
+/* cards */
+.card,.person-card,.project-card,.acct-card,.stat-card{background:var(--bg3);border:.5px solid var(--border);border-radius:14px;box-shadow:none;}
+.card,.person-card,.project-card{padding:18px 22px;}
+.card-tinted{border-radius:14px;padding:18px 22px;}
+.acct-grid{grid-template-columns:repeat(3,1fr);gap:16px;}
+.acct-card{padding:20px 22px;}
+/* Home */
+#pg-dash .ps{padding-top:34px;}
+.dash-banner{background:transparent;box-shadow:none;padding:0 0 22px;margin-bottom:0;border-radius:0;}
+.dash-greeting{color:var(--text);font-size:38px;font-style:normal;font-weight:600;padding-right:70px;}
+.dash-date{color:var(--text2);font-size:18px;margin-top:4px;}
+.dash-alert{background:var(--green3);color:var(--green);font-size:15px;padding:6px 16px;font-weight:500;}
+.dash-banner .hdr-btns{top:0;right:0;}
+.dash-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:22px;align-items:stretch;margin-bottom:26px;}
+.dash-top .stat-grid,.dash-top .qa-card{margin-bottom:0;}
+.stat-grid{grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:30px;}
+.qa-card{background:var(--bg2);border:.5px solid var(--border2);border-radius:18px;padding:22px 26px;box-shadow:var(--sh1);}
+.stat-card{padding:20px 24px;}
+.stat-label{font-weight:600;letter-spacing:.12em;}
+.stat-value{font-size:34px;font-weight:600;}
+.dash-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start;}
+.dash-col{background:var(--bg3);border:.5px solid var(--border);border-radius:16px;padding:20px 24px 14px;}
+.dash-col .sl{margin:0 0 6px!important;}
+/* calendar */
+.cal-grid{grid-auto-rows:104px;gap:6px;padding:0 0 10px;}
+.cal-heads{gap:6px;padding:0;}
+.cal-day{padding:9px;border-radius:10px;}
+.cal-num{font-size:16px;}
+.cal-legend{padding:12px 0;}
+/* windows */
+.modal-bg{max-width:none;margin:0;align-items:center;justify-content:center;}
+.modal{max-width:600px;border-radius:24px;border-top:none;max-height:88vh;padding:30px;}
+.mfs-toast{bottom:40px;}
+.page .ps>button{display:block;width:100%;}
+#theme-swatches{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;}
+}
+
+/* ── PREMIUM POLISH ── */
+@media(min-width:900px){
+:root{--sh1:0 1px 2px rgba(30,30,20,.05),0 6px 18px rgba(30,30,20,.06);--sh2:0 2px 4px rgba(30,30,20,.06),0 14px 32px rgba(30,30,20,.10);}
+body{background:var(--bg);}
+/* dark sidebar */
+.sbar{background:var(--green);border-right:none;}
+.nav{background:linear-gradient(180deg,var(--green) 0%,var(--green2) 100%);border-right:none;}
+.sbar{padding:34px 28px 10px;gap:6px;position:relative;}
+.sbar::before{content:"DH";width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.16);border:.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:600;font-size:17px;letter-spacing:.04em;margin-bottom:14px;}
+.sbar span{color:rgba(255,255,255,.62);}
+.sbar::after{color:#fff;font-size:29px;font-style:italic;font-weight:400;}
+.nav{padding:22px 16px 26px;gap:4px;}
+.nav::before{content:"MENU";font-size:11px;letter-spacing:.2em;color:rgba(255,255,255,.5);padding:0 18px 8px;font-weight:600;}
+.nav::after{content:"Your day, week and month,\A in one calm place.";white-space:pre;margin-top:auto;padding:18px;font-size:14px;line-height:1.6;font-style:italic;color:rgba(255,255,255,.55);border-top:.5px solid rgba(255,255,255,.18);}
+.ni{transition:background .2s,transform .2s;border-radius:14px;}
+.ni i{color:rgba(255,255,255,.7);}
+.ni span{color:rgba(255,255,255,.82);}
+.ni:hover{background:rgba(255,255,255,.1);}
+.ni.active{background:rgba(255,255,255,.17);box-shadow:inset 3px 0 0 #fff,0 4px 14px rgba(0,0,0,.14);}
+.ni.active i,.ni.active span{color:#fff;}
+/* headers */
+.ph{padding:38px 56px 20px;border-bottom:.5px solid var(--border2);margin-bottom:6px;}
+.ph .ey{display:flex;align-items:center;gap:12px;color:var(--green);opacity:1;}
+.ph .ey::after{content:"";height:1px;width:36px;background:var(--green);opacity:.4;}
+.ph h1{font-size:42px;letter-spacing:-.01em;font-style:italic;font-weight:400;}
+.hdr-btns{top:36px;right:56px;}
+.theme-btn,.calc-btn{box-shadow:var(--sh1);transition:transform .15s,box-shadow .15s;}
+.theme-btn:hover,.calc-btn:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
+.ps{padding:26px 56px 60px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.fab{right:56px;background:linear-gradient(135deg,var(--green),var(--green2));box-shadow:0 10px 26px rgba(0,0,0,.25);transition:transform .15s,box-shadow .15s;}
+.fab:hover{transform:translateY(-3px) scale(1.04);}
+/* segmented tabs */
+.tab-row{width:fit-content;max-width:100%;background:var(--bg3);padding:5px;border-radius:14px;gap:4px;border:.5px solid var(--border2);}
+.tab-btn{background:transparent;transition:background .2s,color .2s,box-shadow .2s;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{background:var(--green);color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.18);}
+/* cards */
+.card,.person-card,.project-card,.acct-card,.stat-card,.dash-col{background:var(--bg2);border:.5px solid var(--border2);box-shadow:var(--sh1);border-radius:18px;transition:transform .2s,box-shadow .2s;}
+.acct-card:hover,.stat-card:hover,.person-card:hover,.project-card:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
+.card-tinted{border-radius:18px;}
+/* home hero */
+.dash-banner{background:linear-gradient(120deg,var(--green) 0%,var(--green2) 100%);border-radius:24px;padding:40px 48px;margin-bottom:26px;box-shadow:0 18px 40px rgba(0,0,0,.16);position:relative;overflow:hidden;}
+.dash-banner::after{content:"";position:absolute;right:-60px;top:-90px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.18),rgba(255,255,255,0) 70%);pointer-events:none;}
+.dash-greeting{color:#fff;font-size:44px;font-style:italic;font-weight:400;position:relative;z-index:1;}
+.dash-date{color:rgba(255,255,255,.8);font-size:19px;position:relative;z-index:1;margin-top:6px;}
+.dash-alerts{position:relative;z-index:1;margin-top:18px;}
+.dash-alert{background:rgba(255,255,255,.18);color:#fff;border:.5px solid rgba(255,255,255,.3);}
+.dash-banner .hdr-btns{top:24px;right:28px;z-index:2;}
+.dash-banner .theme-btn{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);color:#fff;}
+.stat-card{position:relative;overflow:hidden;padding:24px 26px;}
+.stat-card::before{content:"";position:absolute;left:0;top:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),var(--green2));opacity:.85;}
+.stat-value{font-size:38px;font-variant-numeric:lining-nums tabular-nums;}
+.dash-col{padding:24px 28px 16px;}
+.dash-col .sl{font-size:22px;font-style:italic;font-weight:400;padding-bottom:10px;border-bottom:.5px solid var(--border2);margin-bottom:6px!important;}
+.sl{font-style:italic;font-weight:400;font-size:23px;}
+/* rows */
+.row-item,.bill-row,.ledger-row,.meal-row,.pwd-row,.sub-row,.dtr-row,.paint-row,.gift-row,.task-row{transition:background .15s;border-radius:10px;padding-left:8px;padding-right:8px;}
+.row-item:hover,.bill-row:hover,.ledger-row:hover,.meal-row:hover,.pwd-row:hover,.sub-row:hover,.dtr-row:hover,.paint-row:hover,.gift-row:hover{background:rgba(0,0,0,.03);}
+.cal-day{background:var(--bg2);box-shadow:var(--sh1);transition:transform .15s,box-shadow .15s;}
+.cal-day:hover{transform:translateY(-2px);box-shadow:var(--sh2);}
+.btn-save,.btn-full{box-shadow:0 6px 16px rgba(0,0,0,.16);transition:transform .15s;}
+.btn-save:hover,.btn-full:hover{transform:translateY(-1px);}
+.page.active{animation:lahIn .35s ease;}
+@keyframes lahIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+/* windows */
+.modal-bg{background:rgba(20,28,20,.45);backdrop-filter:blur(6px);}
+.modal{border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.3);padding:34px;}
+.modal h2{font-size:26px;}
+}
+
+@media(min-width:900px){
+.color-btn{width:34px;height:34px;top:26px;right:30px;z-index:2;}
+.ps>.dash-cols,.ps>.dash-top{max-width:none;}
+html.dark .sbar,html.dark .nav{background:var(--bg2);}
+html.dark .ni.active{background:var(--bg3);}
+}
+
+
+/* ===== FREE TRIAL DEMO ===== */
+.demo-banner{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:8px 14px;background:var(--gold);color:#fff;font-size:13px;font-weight:600;text-align:center;flex-shrink:0;letter-spacing:.02em;z-index:30;}
+.demo-banner a{color:#fff;text-decoration:underline;font-weight:700;white-space:nowrap;}
+#trial-lock{position:fixed;inset:0;background:rgba(20,20,15,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:9500;padding:24px;}
+.trial-card{background:var(--bg2);border-radius:20px;padding:28px 24px;max-width:380px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.trial-card h3{font-size:var(--fs-lg);font-weight:400;font-style:italic;color:var(--text);margin-bottom:10px;}
+.trial-card p{font-size:var(--fs-sm);color:var(--text2);line-height:1.6;margin-bottom:18px;}
+.upsell-btn{display:inline-block;padding:12px 22px;border-radius:999px;background:var(--green);color:#fff;font-size:var(--fs-sm);font-weight:600;text-decoration:none;border:none;cursor:pointer;font-family:inherit;}
+.sample-link{display:block;width:100%;margin:0 0 14px;padding:13px;border-radius:12px;border:1.5px dashed var(--green);background:var(--bg2);color:var(--text);font-family:inherit;font-size:var(--fs-sm);cursor:pointer;}
+@media(min-width:900px){
+body{grid-template-rows:auto auto 1fr;}
+.demo-banner{grid-column:1 / -1;grid-row:1;font-size:15px;padding:10px 20px;}
+.sbar{grid-row:2;}
+.nav{grid-row:3;}
+.screen{grid-row:2 / span 2;}
+}
 </style>
 </head>
 <body>
-<div class="demo-banner" id="demo-banner"><b>Free demo</b> — data isn't saved permanently. <a href="https://www.etsy.com/listing/4563049510/daily-planner-app-daily-weekly-monthly" target="_blank" rel="noopener">Get the full app &rarr;</a></div>
+<div class="demo-banner"><span id="demoBannerText">Free trial: 14 days left</span><a href="https://www.etsy.com/shop/mobilefirststudio" target="_blank" rel="noopener">Unlock full version &rarr;</a></div>
 <div class="sbar"><span>Mobile First Studio</span></div>
 <div class="screen">
-
-<div id="trial-lock" style="display:none;position:fixed;inset:0;z-index:999;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;">
-  <div style="width:64px;height:64px;border-radius:50%;background:var(--green3);display:flex;align-items:center;justify-content:center;margin-bottom:22px;">
-    <i class="ti ti-lock" style="font-size:28px;color:var(--green);"></i>
-  </div>
-  <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:26px;color:var(--text);margin-bottom:10px;">Your free trial has ended</div>
-  <div style="font-size:14px;color:var(--text2);line-height:1.6;max-width:320px;margin-bottom:26px;">You've had full access to Daily HQ for 14 days. Your planner data is still safe on this device — get the full app to keep using it and back it up to Google Drive so it's never at risk.</div>
-  <a href="https://www.etsy.com/listing/4563049510/daily-planner-app-daily-weekly-monthly" target="_blank" rel="noopener" style="display:block;width:100%;max-width:280px;background:var(--green);color:#fff;text-decoration:none;padding:14px;border-radius:12px;font-size:15px;font-weight:600;margin-bottom:12px;">Get the Full App</a>
-  <div style="font-size:12px;color:var(--text3);">Your trial started 14 days ago on this device.</div>
-</div>
 
 <div class="page active" id="pg-dash">
 <div class="ps">
@@ -188,13 +338,15 @@ html.dark .modal-bg,html.dark .mfs-confirm{background:rgba(0,0,0,.65);}
 <div class="dash-greeting" id="dash-greeting">Good morning</div>
 <div class="dash-date" id="dash-date"></div>
 </div>
-<div class="stat-grid">
+<div class="dash-top"><div class="stat-grid">
 <div class="stat-card"><div class="stat-label">Tasks Today</div><div class="stat-value" id="d-tasks">0/0</div><div class="stat-sub">complete</div></div>
 <div class="stat-card"><div class="stat-label">Next Event</div><div class="stat-value" id="d-event" style="font-size:16px;line-height:1.3;">—</div><div class="stat-sub" id="d-event-sub"></div></div>
 </div>
-<div class="qa-card" id="quick-add"><div class="sl" style="margin:0 0 8px;">Quick Add</div><div class="qa-row"><input type="text" id="qa-name" placeholder="Add a task or reminder..." maxlength="120" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();quickAdd();}"/><button class="qa-go" onclick="quickAdd()">Add</button></div><div class="qa-chips"><button class="qa-chip on" data-qt="extra" onclick="qaSetType('extra')">Task</button><button class="qa-chip" data-qt="radar" onclick="qaSetType('radar')">On My Radar</button><span class="qa-sep" id="qa-sep"></span><button class="qa-chip on" data-qw="today" onclick="qaSetWhen('today')">Today</button><button class="qa-chip" data-qw="tomorrow" onclick="qaSetWhen('tomorrow')">Tomorrow</button><button class="qa-chip" data-qw="pick" onclick="qaSetWhen('pick')">Pick day</button><input type="date" class="qa-date" id="qa-date" style="display:none;" aria-label="Pick a day"/></div></div>
-<div class="sl">Today's Tasks</div><div id="dash-today"></div>
-<div class="sl" style="margin-top:12px;">This Week</div><div id="dash-week"></div>
+<div class="qa-card" id="quick-add"><div class="sl" style="margin:0 0 8px;">Quick Add</div><div class="qa-row"><input type="text" id="qa-name" placeholder="Add a task or reminder..." maxlength="120" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();quickAdd();}"/><button class="qa-go" onclick="quickAdd()">Add</button></div><div class="qa-chips"><button class="qa-chip on" data-qt="extra" onclick="qaSetType('extra')">Task</button><button class="qa-chip" data-qt="radar" onclick="qaSetType('radar')">On My Radar</button><span class="qa-sep" id="qa-sep"></span><button class="qa-chip on" data-qw="today" onclick="qaSetWhen('today')">Today</button><button class="qa-chip" data-qw="tomorrow" onclick="qaSetWhen('tomorrow')">Tomorrow</button><button class="qa-chip" data-qw="pick" onclick="qaSetWhen('pick')">Pick day</button><input type="date" class="qa-date" id="qa-date" style="display:none;" aria-label="Pick a day"/></div></div></div>
+<div class="dash-cols">
+<div class="dash-col"><div class="sl">Today's Tasks</div><div id="dash-today"></div></div>
+<div class="dash-col"><div class="sl" style="margin-top:12px;">This Week</div><div id="dash-week"></div></div>
+</div>
 <div style="height:20px;"></div>
 </div>
 </div>
@@ -242,11 +394,13 @@ html.dark .modal-bg,html.dark .mfs-confirm{background:rgba(0,0,0,.65);}
 <div class="theme-grid" id="theme-grid"></div>
 <div class="dk-row"><div><div class="dk-l">Dark mode</div><div class="dk-s">Tip: press and hold the color dot on Home</div></div><label class="dk-sw"><input type="checkbox" id="dk-toggle" onchange="setDarkMode(this.checked)" aria-label="Dark mode"/><span></span></label></div>
 <div class="section-div"></div>
+<div class="sl">Printable Pages</div>
+<div class="card" style="margin-bottom:10px" id="print-section"></div>
+<div class="section-div"></div>
 <div class="sl">Cloud Backup</div>
-<div class="card" style="margin-bottom:10px">
-<div style="font-size:var(--fs-xs);color:var(--text2);line-height:1.6;margin-bottom:12px">Google Drive backup is included in the full app, so your data follows you to a new phone automatically. This free demo skips it, since demo data isn't meant to be permanent.</div>
-<a class="btn-full" style="display:block;text-align:center;text-decoration:none;line-height:22px;" href="https://www.etsy.com/listing/4563049510/daily-planner-app-daily-weekly-monthly" target="_blank" rel="noopener">Get the Full App</a>
-</div>
+<div class="card" style="margin-bottom:10px;text-align:center"><div style="font-size:var(--fs-base);font-style:italic;color:var(--text);margin-bottom:6px">Google Drive backup is in the full app</div><div style="font-size:var(--fs-xs);color:var(--text2);line-height:1.6;margin-bottom:14px">This free trial saves your planner on this device only. The full Daily HQ backs up to your own Google Drive, with no subscription.</div><a class="upsell-btn" href="https://www.etsy.com/shop/mobilefirststudio" target="_blank" rel="noopener">Unlock the full app &rarr;</a></div>
+<div class="sl">Sample Data</div>
+<div class="card" style="margin-bottom:10px;text-align:center"><div style="font-size:var(--fs-xs);color:var(--text2);line-height:1.6;margin-bottom:14px">Fill the trial with a realistic week of routines, tasks and events, so you can try every screen and the printable pages.</div><button class="upsell-btn" onclick="loadSampleData()">Load sample data</button></div>
 <div class="sl">Local Backup</div>
 <div class="card" style="margin-bottom:10px">
 <div style="font-size:var(--fs-xs);color:var(--text2);line-height:1.6;margin-bottom:14px">Download a backup of all your data. Import it anytime to restore everything instantly.</div>
@@ -272,6 +426,7 @@ html.dark .modal-bg,html.dark .mfs-confirm{background:rgba(0,0,0,.65);}
 
 <div class="modal-bg" id="event-modal"><div class="modal"><h2 id="ev-modal-title">Add Event</h2><div id="ev-existing" style="margin-bottom:12px;"></div><div class="field"><label>Date</label><input type="date" id="ev-date"/></div><div class="field"><label>Category</label><select id="ev-cat"><option value="Birthday">Birthday</option><option value="Appointment">Appointment</option><option value="Medical">Medical</option><option value="Holiday">Holiday</option><option value="Reminder">Reminder</option><option value="Other">Other</option></select></div><div class="field"><label>Description</label><input id="ev-desc" placeholder="e.g. Laurie's 22nd birthday"/></div><div class="btn-row"><button class="btn-cancel" onclick="closeModal('event-modal')">Cancel</button><button class="btn-save" onclick="saveEvent()">Save</button></div><button class="btn-delete" id="ev-del-btn" style="display:none;" onclick="deleteEvent()">Delete Event</button></div></div>
 
+<div id="trial-lock"><div class="trial-card"><h3>Your free trial has ended</h3><p>Unlock Daily HQ to keep planning your days, weeks and months, with printable pages and Google Drive backup.</p><a class="upsell-btn" href="https://www.etsy.com/shop/mobilefirststudio" target="_blank" rel="noopener">Unlock the full app &rarr;</a></div></div>
 <div class="mfs-toast" id="mfsToast"></div>
 <div class="mfs-confirm" id="mfsConfirm">
   <div class="mfs-confirm-box">
@@ -346,7 +501,7 @@ function mfsConfirmOk(){document.getElementById('mfsConfirm').classList.remove('
 
 function exportData(){
   var d=JSON.stringify(DB,null,2);
-  var filename='daily-hq-backup-'+today()+'.json';
+  var filename='daily-hq-demo-backup-'+today()+'.json';
   try {
     var b=new Blob([d],{type:'application/json'});
     var u=URL.createObjectURL(b);
@@ -408,8 +563,15 @@ function openRestoreConfirm(data, sourceLabel){
   mfsConfirm(title, sub, function(){ doRestore(data); }, 'Yes, Restore');
 }
 function doRestore(data){
-  try{ localStorage.setItem('mfs_dailyhq_demo_prerestore', JSON.stringify({db:DB, ts:Date.now()})); }catch(e){}
-  DB = data;
+  try{ localStorage.setItem('mfs_dhq_demo_prerestore', JSON.stringify({db:DB, ts:Date.now()})); }catch(e){}
+  var clean={profile:{},tasks:[],events:[],theme:'sage'};
+  if(data&&typeof data.profile==='object'&&data.profile)clean.profile={name:typeof data.profile.name==='string'?data.profile.name.slice(0,80):''};
+  if(data&&Array.isArray(data.tasks))clean.tasks=data.tasks.filter(function(t){return t&&typeof t.name==='string';});
+  if(data&&Array.isArray(data.events))clean.events=data.events.filter(function(e){return e&&typeof e.desc==='string';});
+  if(data&&typeof data.theme==='string'&&THEMES[data.theme])clean.theme=data.theme;
+  for(var k in data){if(!(k in clean))clean[k]=data[k];}
+  DB = clean;
+  gdriveSetHold(false);
   sv();
   showToast('Restored!');
   renderLocalBackupExtras();
@@ -417,11 +579,11 @@ function doRestore(data){
 }
 function undoLastRestore(){
   try{
-    var raw = localStorage.getItem('mfs_dailyhq_demo_prerestore');
+    var raw = localStorage.getItem('mfs_dhq_demo_prerestore');
     if (!raw) { showToast('Nothing to undo.', true); return; }
     var snap = JSON.parse(raw);
     DB = snap.db;
-    localStorage.removeItem('mfs_dailyhq_demo_prerestore');
+    localStorage.removeItem('mfs_dhq_demo_prerestore');
     sv();
     showToast('Restore undone!');
     setTimeout(function(){ location.reload(); }, 1200);
@@ -429,52 +591,25 @@ function undoLastRestore(){
 }
 function renderLocalBackupExtras(){
   var el = document.getElementById('local-backup-undo-slot'); if (!el) return;
-  var hasUndo = !!localStorage.getItem('mfs_dailyhq_demo_prerestore');
+  var hasUndo = !!localStorage.getItem('mfs_dhq_demo_prerestore');
   el.innerHTML = hasUndo
     ? '<button class="btn-full" onclick="undoLastRestore()" style="background:none;color:var(--burg);border:.5px solid var(--burg);margin-top:8px">Undo Last Restore</button>'
     : '';
 }
 
+var _gdriveBackupTimer=null;
 function sv(){
-  try{localStorage.setItem('mfs_dailyhq_demo_v1',JSON.stringify(DB));}catch(e){}
+  try{localStorage.setItem('mfs_dhq_demo_v1',JSON.stringify(DB));}catch(e){}
+  return;
+  var connected=localStorage.getItem('mfs_gdrive_connected_basic')==='1';
+  if(connected&&!gdriveOnHold()){clearTimeout(_gdriveBackupTimer);_gdriveBackupTimer=setTimeout(function(){gdriveBackupNow(false);},3000);}
 }
-function ld(){try{var d=localStorage.getItem('mfs_dailyhq_demo_v1');if(d){DB=JSON.parse(d);if(!DB.tasks)DB.tasks=[];if(!DB.events)DB.events=[];if(!DB.profile)DB.profile={};if(!DB.theme)DB.theme='sage';}}catch(e){}}
+function ld(){try{var d=localStorage.getItem('mfs_dhq_demo_v1');if(d){DB=JSON.parse(d);if(!DB.tasks)DB.tasks=[];if(!DB.events)DB.events=[];if(!DB.profile)DB.profile={};if(!DB.theme)DB.theme='sage';}}catch(e){}}
 function resetRoutineIfNewDay(){var tod=today();if(DB.routineResetDate!==tod){DB.tasks.forEach(function(t){if(t.type==='routine')t.done=false;});DB.routineResetDate=tod;sv();}}
-
-/* ── FREE TRIAL WINDOW ── */
-var DEMO_TRIAL_DAYS = 14;
-function demoTrialDaysLeft(){
-  var KEY='mfs_dailyhq_demo_since';
-  var since;
-  try{ since = localStorage.getItem(KEY); }catch(e){ since=null; }
-  if(!since){
-    since = Date.now();
-    try{ localStorage.setItem(KEY, since); }catch(e){}
-  }
-  var elapsedDays = Math.floor((Date.now() - parseInt(since,10)) / 86400000);
-  return DEMO_TRIAL_DAYS - elapsedDays;
-}
-function enforceDemoTrial(){
-  var daysLeft = demoTrialDaysLeft();
-  var banner = document.getElementById('demo-banner');
-  if(daysLeft <= 0){
-    document.getElementById('trial-lock').style.display='flex';
-    document.body.style.overflow='hidden';
-    if(banner) banner.style.display='none';
-    return true;
-  }
-  if(banner){
-    var noun = daysLeft===1 ? 'day' : 'days';
-    banner.innerHTML = '<b>Free demo</b> — '+daysLeft+' '+noun+' left. <a href="https://www.etsy.com/listing/4563049510/daily-planner-app-daily-weekly-monthly" target="_blank" rel="noopener">Get the full app &rarr;</a>';
-  }
-  return false;
-}
-
 ld();
 resetRoutineIfNewDay();
 applyTheme(DB.theme||'sage');
-var demoLocked = enforceDemoTrial();
-if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(reg){reg.update();}).catch(function(){});});}
 
 function todayFull(){
   var d=new Date();
@@ -601,11 +736,155 @@ function openEventEdit(id){var e=DB.events.find(function(x){return x.id===id;});
 function saveEvent(){var desc=document.getElementById('ev-desc').value.trim();if(!desc)return;var entry={id:eId.ev||('ev'+Date.now()),date:document.getElementById('ev-date').value,category:document.getElementById('ev-cat').value,desc:desc};if(eId.ev){var i=DB.events.findIndex(function(x){return x.id===eId.ev;});if(i>-1)DB.events[i]=entry;}else DB.events.push(entry);sv();closeModal('event-modal');renderMonthly();renderDash();}
 function deleteEvent(){mfsConfirm('Delete this entry?','This cannot be undone.',function(){DB.events=DB.events.filter(function(x){return x.id!==eId.ev;});sv();closeModal('event-modal');renderMonthly();renderDash();});}
 
+/* ── GOOGLE DRIVE BACKUP (single copy, always overwrites) ── */
+const GDRIVE_CLIENT_ID = '636576283764-urkn6im4r86n5q4u3iokmska4ejid9o9.apps.googleusercontent.com';
+const GDRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+const GDRIVE_FILENAME = 'daily-hq-backup.json';
+const GDRIVE_HOLD_KEY = 'mfs_dhq_gdrive_hold';
+function gdriveOnHold(){try{return localStorage.getItem(GDRIVE_HOLD_KEY)==='1';}catch(e){return false;}}
+function gdriveSetHold(on){try{if(on)localStorage.setItem(GDRIVE_HOLD_KEY,'1');else localStorage.removeItem(GDRIVE_HOLD_KEY);}catch(e){}}
+// Runs once, right after Google Drive is connected for the first time on this device.
+// If Drive already holds a backup, automatic backup waits so it is never overwritten before it has been restored.
+async function gdriveFirstConnectCheck(){
+  try{
+    var id=await gdriveFindFileByName(GDRIVE_FILENAME);
+    if(!id){gdriveSetHold(false);gdriveBackupNow(false);showToast('Google Drive connected!');return;}
+    var res=await fetch('https://www.googleapis.com/drive/v3/files/'+id+'?alt=media',{headers:{'Authorization':'Bearer '+_gdriveToken}});
+    var data=res.ok?await res.json():null;
+    if(data&&dataSummary(data)>0){gdriveSetHold(true);renderGdriveSection();showToast('Backup found. Tap Restore from Drive to load it.');}
+    else{gdriveSetHold(false);gdriveBackupNow(false);showToast('Google Drive connected!');}
+  }catch(e){gdriveSetHold(true);renderGdriveSection();showToast('Connected. Check your Drive backup before backing up.',true);}
+}
+var _gdriveToken=null,_gdriveTokenClient=null,_gdriveTokenWaiters=[];
+function gdriveInit(){
+  if(typeof google==='undefined'||!google.accounts){setTimeout(gdriveInit,500);return;}
+  _gdriveTokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:GDRIVE_CLIENT_ID,scope:GDRIVE_SCOPE,
+    callback:function(resp){
+      if(resp.access_token){
+        var wasConnected = localStorage.getItem('mfs_gdrive_connected_basic') === '1';
+        _gdriveToken=resp.access_token;_gdriveLastSilentFail=0;localStorage.setItem('mfs_gdrive_connected_basic','1');renderGdriveSection();
+        if(!wasConnected) gdriveFirstConnectCheck();
+      }
+      var waiters=_gdriveTokenWaiters;_gdriveTokenWaiters=[];waiters.forEach(function(fn){fn(!!resp.access_token);});
+    }
+  });
+}
+function gdriveConnect(){
+  if(_gdriveTokenClient){_gdriveTokenClient.requestAccessToken();return;}
+  showToast('Loading Google Drive...');
+  var attempts=0;
+  var waitForClient=setInterval(function(){
+    attempts++;
+    if(typeof google!=='undefined'&&google.accounts&&google.accounts.oauth2){
+      clearInterval(waitForClient);
+      if(!_gdriveTokenClient)gdriveInit();
+      setTimeout(function(){if(_gdriveTokenClient){_gdriveTokenClient.requestAccessToken();}},100);
+    }else if(attempts>40){clearInterval(waitForClient);showToast('Google script did not load. This may be due to browser tracking protection or ad blockers.',true);}
+  },500);
+}
+function gdriveDisconnect(){_gdriveToken=null;gdriveSetHold(false);localStorage.removeItem('mfs_gdrive_connected_basic');showToast('Google Drive disconnected');renderGdriveSection();}
+var _gdriveLastSilentFail=0;var GDRIVE_SILENT_COOLDOWN_MS=5*60*1000;
+function gdriveEnsureToken(allowPrompt){
+  if(allowPrompt===undefined)allowPrompt=true;
+  return new Promise(function(resolve){
+    if(_gdriveToken){resolve(true);return;}
+    if(!allowPrompt&&_gdriveLastSilentFail&&(Date.now()-_gdriveLastSilentFail)<GDRIVE_SILENT_COOLDOWN_MS){resolve(false);return;}
+    function proceedWithClient(){
+      var settled=false;
+      var waiter=function(ok){if(settled)return;settled=true;if(!ok&&!allowPrompt)_gdriveLastSilentFail=Date.now();resolve(ok);};
+      _gdriveTokenWaiters.push(waiter);
+      _gdriveTokenClient.requestAccessToken({prompt:''});
+      setTimeout(function(){
+        if(settled)return;
+        var idx=_gdriveTokenWaiters.indexOf(waiter);if(idx>-1)_gdriveTokenWaiters.splice(idx,1);
+        if(!allowPrompt){waiter(false);return;}
+        _gdriveTokenWaiters.push(waiter);
+        _gdriveTokenClient.requestAccessToken();
+      },3000);
+    }
+    if(_gdriveTokenClient){proceedWithClient();return;}
+    var attempts=0;
+    var waitForClient=setInterval(function(){
+      attempts++;
+      if(_gdriveTokenClient){clearInterval(waitForClient);proceedWithClient();}
+      else if(attempts>20){clearInterval(waitForClient);resolve(false);}
+    },500);
+  });
+}
+async function gdriveApiGet(url){
+  var res=await fetch(url,{headers:{'Authorization':'Bearer '+_gdriveToken}});
+  var data;try{data=await res.json();}catch(e){data=null;}
+  if(res.status===401)_gdriveToken=null;
+  if(!res.ok){var msg=data&&data.error&&data.error.message;throw new Error('Drive API error '+res.status+(msg?(': '+msg):''));}
+  return data||{};
+}
+async function gdriveFindFileByName(name){
+  if(!_gdriveToken)return null;
+  var q=encodeURIComponent("name='"+name+"' and trashed=false");
+  var data=await gdriveApiGet('https://www.googleapis.com/drive/v3/files?q='+q+'&spaces=drive&orderBy=modifiedTime%20desc&fields=files(id,name,modifiedTime)');
+  return(data.files&&data.files[0])?data.files[0].id:null;
+}
+async function gdriveUploadFile(name,content,existingId){
+  var metadata={name:name,mimeType:'application/json'};
+  var boundary='-------mfs'+Date.now();
+  var body='--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(metadata)+'\r\n--'+boundary+'\r\nContent-Type: application/json\r\n\r\n'+content+'\r\n--'+boundary+'--';
+  var url=existingId?'https://www.googleapis.com/upload/drive/v3/files/'+existingId+'?uploadType=multipart':'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+  var method=existingId?'PATCH':'POST';
+  var res=await fetch(url,{method:method,headers:{'Authorization':'Bearer '+_gdriveToken,'Content-Type':'multipart/related; boundary='+boundary},body:body});
+  if(res.status===401)_gdriveToken=null;
+  if(!res.ok)throw new Error('Drive upload failed ('+res.status+')');
+}
+async function gdriveBackupNow(interactive){
+  var ok=interactive?await gdriveEnsureToken(true):!!_gdriveToken;
+  if(!ok){console.error('Drive backup skipped: no token available');return{ok:false,error:'Could not connect to Google Drive'};}
+  try{
+    var content=JSON.stringify(DB);
+    var liveId=await gdriveFindFileByName(GDRIVE_FILENAME);
+    await gdriveUploadFile(GDRIVE_FILENAME,content,liveId);
+    return{ok:true};
+  }catch(e){console.error('Drive backup failed:',e);return{ok:false,error:e.message||'Unknown error'};}
+}
+async function gdriveRestoreNow(){
+  var ok=await gdriveEnsureToken(true);
+  if(!ok){showToast('Could not connect to Google Drive',true);return;}
+  try{
+    var fileId=await gdriveFindFileByName(GDRIVE_FILENAME);
+    if(!fileId){showToast('No backup found in Google Drive yet. Try "Back up now" first.',true);return;}
+    var res=await fetch('https://www.googleapis.com/drive/v3/files/'+fileId+'?alt=media',{headers:{'Authorization':'Bearer '+_gdriveToken}});
+    if(!res.ok)throw new Error('Drive returned an error ('+res.status+')');
+    var data=await res.json();
+    if(!data||(!data.profile&&!data.tasks&&!data.events)){showToast('That backup looks invalid.',true);return;}
+    openRestoreConfirm(data,'Google Drive');
+  }catch(e){showToast('Could not load backup: '+(e.message||'try again'),true);}
+}
+function gdriveManualBackup(){
+  var go=function(){gdriveBackupNow(true).then(function(r){if(r.ok){gdriveSetHold(false);renderGdriveSection();}showToast(r.ok?'Backed up to Google Drive!':('Backup failed: '+r.error),!r.ok);});};
+  if(gdriveOnHold())mfsConfirm('Replace your Drive backup?','Google Drive has a backup that has not been restored here. Backing up now replaces it with what is on this device.',go,'Yes, Replace');
+  else go();
+}
+function renderGdriveSection(){return;
+  var el=document.getElementById('gdrive-section');if(!el)return;
+  var connected=localStorage.getItem('mfs_gdrive_connected_basic')==='1';
+  if(!connected){
+    el.innerHTML='<div style="font-size:var(--fs-xs);color:var(--text2);line-height:1.6;margin-bottom:14px">Back up your data to your own Google Drive. Your data stays in your account, we never see it.</div>'
+      +'<button class="btn-full" onclick="gdriveConnect()">Connect Google Drive</button>';
+    return;
+  }
+  el.innerHTML='<div style="background:var(--green3);border-radius:8px;padding:10px 14px;font-size:var(--fs-xs);color:var(--green2);margin-bottom:12px;">&check; Connected to Google Drive</div>'
+    +(gdriveOnHold()?'<div style="background:var(--gold2);border-radius:8px;padding:10px 14px;font-size:var(--fs-xs);color:var(--text);margin-bottom:12px;line-height:1.5;">Drive already has a backup. Automatic backup is paused until you restore it, or choose Back up now to replace it.</div>':'')
+    +'<button class="btn-full" onclick="gdriveManualBackup()" style="margin-bottom:8px">Back up now</button>'
+    +'<button class="btn-full" onclick="gdriveRestoreNow()" style="background:var(--bg3);color:var(--text);border:.5px solid var(--border);margin-bottom:8px">Restore from Drive</button>'
+    +'<button class="btn-full" onclick="gdriveDisconnect()" style="background:none;color:var(--burg);border:.5px solid var(--burg);">Disconnect</button>';
+}
+
 /* ── SETUP ── */
 function saveProfile(){DB.profile.name=document.getElementById('s-name').value.trim();sv();renderDash();showToast('Saved ✓');}
 function renderSetup(){
   renderLocalBackupExtras();
+  renderGdriveSection();
   renderThemeGrid();
+  renderPrintSection();
   document.getElementById('s-name').value=DB.profile.name||'';
 }
 
@@ -634,6 +913,319 @@ function renderDash(){
     dwHtml+='</div></div>';
   }
   document.getElementById('dash-week').innerHTML=dwHtml;
+}
+
+/* ── PRINTABLE PAGES (PDF made on the device with pdf-lib, same method as Life Admin HQ) ── */
+var MFSPrint=(function(){
+  // The built-in PDF fonts draw basic Latin letters only. Anything else is removed so the PDF never fails.
+  function safe(s){
+    return String(s==null?'':s)
+      .replace(/[‘’]/g,"'").replace(/[“”]/g,'"').replace(/[\r\n\t]+/g,' ')
+      .replace(/ ?[^\x20-\x7E\xA0-\xFF–—•…]+/g,'')
+      .trim();
+  }
+  function rgbHex(hex){
+    var m=/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex||'');
+    if(!m)return PDFLib.rgb(.30,.40,.35);
+    return PDFLib.rgb(parseInt(m[1],16)/255,parseInt(m[2],16)/255,parseInt(m[3],16)/255);
+  }
+  var MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var DOW=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  function pd(ds){if(!ds)return new Date(NaN);var p=String(ds).split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+  function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function longDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return DOW[d.getDay()]+', '+MON[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+  function shortDate(ds){var d=pd(ds);if(isNaN(d))return ds||'';return MON[d.getMonth()].slice(0,3)+' '+d.getDate()+', '+d.getFullYear();}
+  function money(n){var v=parseFloat(n)||0;return(v<0?'-':'')+'$'+Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  async function create(opts){
+    opts=opts||{};
+    var doc=await PDFLib.PDFDocument.create();
+    var font=await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+    var bold=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    var k={doc:doc,font:font,bold:bold,W:612,H:792,M:46,CW:520,BOTTOM:62,page:null,y:0,title:'',landscape:false,
+      ink:PDFLib.rgb(.16,.16,.16),soft:PDFLib.rgb(.42,.42,.42),line:PDFLib.rgb(.66,.66,.66),faint:PDFLib.rgb(.84,.84,.84),
+      fill:PDFLib.rgb(.95,.95,.94),accent:rgbHex(opts.accent),footer:opts.footer||''};
+    // Shrink text a little to fit its space, then shorten it if it still does not fit.
+    k.fit=function(f,text,size,maxW,minSize){
+      var s=safe(text),sz=size,min=minSize||Math.max(6,size-2);
+      while(sz>min&&f.widthOfTextAtSize(s,sz)>maxW)sz-=0.25;
+      if(f.widthOfTextAtSize(s,sz)>maxW){
+        while(s.length>1&&f.widthOfTextAtSize(s+'...',sz)>maxW)s=s.slice(0,-1);
+        s=s.replace(/\s+$/,'')+'...';
+      }
+      return {text:s,size:sz};
+    };
+    k.text=function(text,x,y,size,o){
+      o=o||{};var f=o.bold?bold:font;
+      var r=k.fit(f,text,size,o.maxW||(k.W-k.M-x),o.minSize);
+      if(!r.text)return;
+      var w=f.widthOfTextAtSize(r.text,r.size);
+      var dx=o.align==='right'?(o.maxW-w):o.align==='center'?((o.maxW-w)/2):0;
+      k.page.drawText(r.text,{x:x+dx,y:y,size:r.size,font:f,color:o.color||k.ink});
+    };
+    k.hline=function(x1,x2,y,color,t){k.page.drawLine({start:{x:x1,y:y},end:{x:x2,y:y},thickness:t||.7,color:color||k.line});};
+    k.vline=function(x,y1,y2,color,t){k.page.drawLine({start:{x:x,y:y1},end:{x:x,y:y2},thickness:t||.7,color:color||k.line});};
+    k.rect=function(x,y,w,h,o){o=o||{};var r={x:x,y:y,width:w,height:h};if(o.fill)r.color=o.fill;if(o.border!==false){r.borderColor=o.border||k.line;r.borderWidth=o.bw||.7;}k.page.drawRectangle(r);};
+    k.newPage=function(title,sub,landscape){
+      var ls=landscape===undefined?k.landscape:!!landscape;k.landscape=ls;
+      k.W=ls?792:612;k.H=ls?612:792;k.CW=k.W-2*k.M;
+      k.page=doc.addPage([k.W,k.H]);k.title=title;
+      var y=k.H-k.M;
+      k.text(title,k.M,y-6,19,{bold:true,maxW:k.CW});
+      y-=24;
+      if(sub){k.text(sub,k.M,y,9.5,{color:k.soft,maxW:k.CW,minSize:7.5});y-=12;}
+      k.hline(k.M,k.M+k.CW,y,k.accent,1.2);
+      k.y=y-22;
+    };
+    k.contTitle=function(){return k.title.indexOf('(continued)')>-1?k.title:k.title+' (continued)';};
+    k.room=function(h){if(k.y-h<k.BOTTOM){k.newPage(k.contTitle());return true;}return false;};
+    k.section=function(text){k.room(48);k.text(text,k.M,k.y,11.5,{bold:true,color:k.accent,maxW:k.CW});k.y-=20;};
+    k.field=function(label,x,y,w,value){
+      var r=k.fit(font,label,9.5,w*0.6);
+      k.page.drawText(r.text,{x:x,y:y,size:r.size,font:font,color:k.soft});
+      var lx=x+font.widthOfTextAtSize(r.text,r.size)+6;
+      if(value)k.text(value,lx+2,y,10,{maxW:x+w-lx-4,minSize:7.5});
+      k.hline(lx,x+w,y-2);
+    };
+    // fields: array of label strings or [label,value]
+    k.fieldRow=function(fields){
+      var gap=24,w=(k.CW-gap*(fields.length-1))/fields.length;
+      fields.forEach(function(f,i){var l=Array.isArray(f)?f[0]:f,v=Array.isArray(f)?f[1]:'';k.field(l,k.M+i*(w+gap),k.y,w,v);});
+      k.y-=28;
+    };
+    k.box=function(x,y,s,on){
+      k.page.drawRectangle({x:x,y:y,width:s,height:s,borderColor:k.soft,borderWidth:.8});
+      if(on){k.page.drawLine({start:{x:x+2,y:y+s/2},end:{x:x+s*0.42,y:y+2},thickness:1.2,color:k.ink});k.page.drawLine({start:{x:x+s*0.42,y:y+2},end:{x:x+s-1.5,y:y+s-1.5},thickness:1.2,color:k.ink});}
+    };
+    // A tick list. items: a number (blank lines to write on) or an array of text / {t,on}.
+    k.checks=function(items,ncols){
+      ncols=ncols||1;
+      var n=typeof items==='number'?items:items.length,rows=Math.ceil(n/ncols),gap=20,w=(k.CW-gap*(ncols-1))/ncols;
+      for(var r=0;r<rows;r++){
+        if(k.y-20<k.BOTTOM)k.newPage(k.contTitle());
+        for(var c=0;c<ncols;c++){
+          var i=r+c*rows;if(i>=n)continue;
+          var x=k.M+c*(w+gap),it=typeof items==='number'?null:items[i];
+          k.box(x,k.y-3,10,!!(it&&it.on));
+          if(it!==null)k.text(typeof it==='string'?it:it.t,x+16,k.y-1,10,{maxW:w-18,minSize:7.5});
+          else k.hline(x+16,x+w,k.y-3,k.faint);
+        }
+        k.y-=20;
+      }
+    };
+    k.lines=function(n,gap){gap=gap||20;for(var i=0;i<n;i++){if(k.y-gap<k.BOTTOM)k.newPage(k.contTitle());k.hline(k.M,k.M+k.CW,k.y-4,k.faint);k.y-=gap;}};
+    // cols: [{label,w,align,soft,bold,box}] · rows: a number (blank rows) or an array of rows.
+    // A cell can be text or {box:true,on:bool}. A column with box:true draws an empty tick box in blank rows.
+    k.table=function(cols,rows,rowH,o){
+      o=o||{};var x=o.x||k.M;
+      var sum=cols.reduce(function(s,c){return s+c.w;},0);
+      if(o.stretch!==false&&Math.abs(sum-k.CW)>0.5){var f=k.CW/sum;cols=cols.map(function(c){var d={};for(var p in c)d[p]=c[p];d.w=c.w*f;return d;});sum=k.CW;}
+      var headH=19,n=typeof rows==='number'?rows:rows.length;
+      function sides(top,h){var cx=x;for(var i=0;i<=cols.length;i++){k.vline(cx,top,top-h);if(i<cols.length)cx+=cols[i].w;}}
+      function head(){
+        k.page.drawRectangle({x:x,y:k.y-headH,width:sum,height:headH,color:k.fill});
+        var cx=x;
+        cols.forEach(function(c){
+          if(c.label)k.text(c.label,cx+(c.w<34?2:5),k.y-13,8.5,{bold:true,maxW:c.w-(c.w<34?4:10),minSize:6,align:c.align==='center'||c.box?'center':undefined});
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y);k.hline(x,x+sum,k.y-headH);sides(k.y,headH);
+        k.y-=headH;
+      }
+      if(k.y-headH-rowH<k.BOTTOM)k.newPage(k.contTitle());
+      head();
+      for(var r=0;r<n;r++){
+        if(k.y-rowH<k.BOTTOM){k.newPage(k.contTitle());head();}
+        var row=typeof rows==='number'?null:rows[r],cx=x;
+        cols.forEach(function(c,i){
+          var v=row?row[i]:undefined,bs=Math.min(10,rowH-8),by=k.y-rowH+(rowH-bs)/2;
+          if(v&&typeof v==='object'&&v.box){k.box(cx+(c.w-bs)/2,by,bs,!!v.on);}
+          else if(c.box&&(v===undefined||v===null)){k.box(cx+(c.w-bs)/2,by,bs,false);}
+          else if(v!==undefined&&v!==null&&v!==''){
+            k.text(String(v),cx+5,k.y-rowH/2-3,9,{maxW:c.w-10,minSize:6.5,bold:!!c.bold,color:c.soft?k.soft:k.ink,align:c.align==='center'?'center':c.align==='right'?'right':undefined});
+          }
+          cx+=c.w;
+        });
+        k.hline(x,x+sum,k.y-rowH);sides(k.y,rowH);
+        k.y-=rowH;
+      }
+      k.y-=14;
+    };
+    k.fillRows=function(rowH){return Math.max(0,Math.floor((k.y-k.BOTTOM-19)/rowH));};
+    k.finish=async function(){
+      var pages=doc.getPages();
+      pages.forEach(function(pg,i){
+        var sz=pg.getSize();
+        pg.drawText(safe(k.footer),{x:k.M,y:30,size:8,font:font,color:k.soft});
+        var lbl='Page '+(i+1)+' of '+pages.length;
+        pg.drawText(lbl,{x:sz.width-k.M-font.widthOfTextAtSize(lbl,8),y:30,size:8,font:font,color:k.soft});
+      });
+      return await doc.save();
+    };
+    // Month grid, Monday first. cellText(dateStr) returns an array of short lines for that day.
+    // With numbered=false the grid has no dates, for an undated month to fill in by hand.
+    k.month=function(year,month,o){
+      o=o||{};var top=k.y,heads=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],cw=k.CW/7,hh=18;
+      var first=new Date(year,month,1).getDay(),off=(first+6)%7,dim=new Date(year,month+1,0).getDate();
+      var weeks=o.numbered===false?5:Math.ceil((off+dim)/7);
+      var gridH=(o.height||(k.y-k.BOTTOM-8))-hh,ch=gridH/weeks;
+      k.page.drawRectangle({x:k.M,y:top-hh,width:k.CW,height:hh,color:k.fill});
+      heads.forEach(function(h,i){k.text(h,k.M+i*cw,top-12.5,8.5,{bold:true,maxW:cw,align:'center'});});
+      for(var w=0;w<weeks;w++)for(var d=0;d<7;d++){
+        var x=k.M+d*cw,y=top-hh-(w+1)*ch,n=w*7+d-off+1;
+        k.rect(x,y,cw,ch,{border:k.line});
+        if(o.numbered===false||n<1||n>dim)continue;
+        k.text(String(n),x+4,y+ch-11,9,{bold:true,maxW:cw-8});
+        if(o.cellText){
+          var ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(n).padStart(2,'0');
+          var lines=o.cellText(ds)||[],ly=y+ch-22;
+          for(var li=0;li<lines.length&&ly>y+3;li++){k.text(lines[li],x+4,ly,7,{maxW:cw-8,minSize:6});ly-=8.5;}
+        }
+      }
+      k.y=top-hh-gridH-14;
+    };
+    // Twelve small month calendars on one page.
+    k.yearGrid=function(year){
+      var cols=3,rows=4,gap=16,bw=(k.CW-gap*(cols-1))/cols,top=k.y,bh=(top-k.BOTTOM-gap*(rows-1))/rows;
+      for(var m=0;m<12;m++){
+        var c=m%cols,r=Math.floor(m/cols),x=k.M+c*(bw+gap),y=top-r*(bh+gap);
+        k.text(MON[m],x,y-10,10.5,{bold:true,color:k.accent,maxW:bw});
+        var cw=bw/7,heads=['M','T','W','T','F','S','S'];
+        heads.forEach(function(h,i){k.text(h,x+i*cw,y-26,7.5,{bold:true,color:k.soft,maxW:cw,align:'center'});});
+        var first=new Date(year,m,1).getDay(),off=(first+6)%7,dim=new Date(year,m+1,0).getDate(),lh=(bh-38)/6;
+        for(var d=1;d<=dim;d++){var p=off+d-1,cc=p%7,rr=Math.floor(p/7);k.text(String(d),x+cc*cw,y-40-rr*lh,8,{maxW:cw,align:'center'});}
+      }
+      k.y=k.BOTTOM;
+    };
+    return k;
+  }
+  // Hand the finished PDF to the person. On iPhone and iPad the share sheet (Print, Save to Files)
+  // is the dependable route from a home screen app, so it is tried first there.
+  function deliver(bytes,filename){
+    var blob=new Blob([bytes],{type:'application/pdf'});
+    var download=function(){
+      var url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+    };
+    var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(isIOS&&navigator.canShare&&typeof File!=='undefined'){
+      try{
+        var file=new File([blob],filename,{type:'application/pdf'});
+        if(navigator.canShare({files:[file]})){
+          return navigator.share({files:[file],title:filename}).catch(function(err){
+            if(err&&err.name==='AbortError')return;
+            download();
+          });
+        }
+      }catch(e){}
+    }
+    download();
+  }
+  var busy=false;
+  // Runs a page builder and hands over the PDF. say(msg,isErr) shows the app's own message.
+  async function run(build,filename,opts,say){
+    if(typeof PDFLib==='undefined'){say('The PDF tool is still loading. Check your connection and try again.',true);return;}
+    if(busy)return;busy=true;say('Creating your PDF...');
+    try{var k=await create(opts);await build(k);var bytes=await k.finish();await deliver(bytes,filename);say('Your PDF is ready!');}
+    catch(e){console.error(e);say('Could not create the PDF. Try again.',true);}
+    busy=false;
+  }
+  return {safe:safe,create:create,deliver:deliver,run:run,MON:MON,DOW:DOW,pd:pd,ymd:ymd,longDate:longDate,shortDate:shortDate,money:money};
+})();
+
+/* ── Daily HQ printable pages ── */
+function dhqMonday(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());var off=(x.getDay()+6)%7;x.setDate(x.getDate()-off);return x;}
+function dhqDaily(k,blank,ds){
+  var P=MFSPrint;
+  k.newPage('Daily Planner',blank?'One page a day. Tick each box as you go.':P.longDate(ds),false);
+  if(blank)k.fieldRow(['Date','Day of the week']);
+  var isToday=ds===today();
+  k.section('Daily Routine');
+  var routine=blank?[]:DB.tasks.filter(function(t){return t.type==='routine';});
+  k.checks(routine.length?routine.map(function(t){return {t:t.name,on:isToday&&t.done};}):8,2);
+  k.y-=6;
+  k.section('Tasks for Today');
+  var tasks=blank?[]:DB.tasks.filter(function(t){return t.type!=='radar'&&t.type!=='routine'&&t.date===ds;});
+  if(tasks.length){k.checks(tasks.map(function(t){return {t:t.name,on:t.done};}),1);k.checks(2,1);}else k.checks(8,1);
+  k.y-=6;
+  k.section('On My Radar');
+  var radar=blank?[]:DB.tasks.filter(function(t){return t.type==='radar';});
+  k.checks(radar.length?radar.map(function(t){return {t:t.name,on:t.done};}):4,2);
+  k.y-=6;
+  if(k.y-60>k.BOTTOM){k.section('Notes');k.lines(Math.max(1,Math.floor((k.y-k.BOTTOM)/20)));}
+}
+function dhqWeekly(k,blank,monday){
+  var P=MFSPrint,D=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  var sun=blank?null:new Date(monday.getFullYear(),monday.getMonth(),monday.getDate()+6);
+  k.newPage('Weekly Planner',blank?'Write the dates in, then plan each day.':'Week of '+P.shortDate(P.ymd(monday)).replace(/, \d+$/,'')+' to '+P.shortDate(P.ymd(sun)),false);
+  if(blank)k.fieldRow(['Week of']);
+  var top=k.y,gap=12,colW=(k.CW-gap)/2,bh=(top-k.BOTTOM-3*gap)/4,hd=18,lh=15.5;
+  for(var i=0;i<8;i++){
+    var col=i<4?0:1,row=i<4?i:i-4,x=k.M+col*(colW+gap),yTop=top-row*(bh+gap);
+    k.rect(x,yTop-bh,colW,bh,{border:k.line});
+    k.page.drawRectangle({x:x,y:yTop-hd,width:colW,height:hd,color:k.fill});
+    var label=i<7?D[i]:'Notes',items=[];
+    if(i<7&&!blank){
+      var dd=new Date(monday.getFullYear(),monday.getMonth(),monday.getDate()+i),dstr=P.ymd(dd);
+      label+='  '+P.MON[dd.getMonth()].slice(0,3)+' '+dd.getDate();
+      items=DB.tasks.filter(function(t){return t.date===dstr&&(t.type==='weekly'||t.type==='extra');});
+    }
+    k.text(label,x+6,yTop-12.5,9.5,{bold:true,maxW:colW-12});
+    var n=Math.floor((bh-hd-6)/lh);
+    for(var j=0;j<n;j++){
+      var ly=yTop-hd-6-(j+1)*lh+4;
+      if(i===7){k.hline(x+6,x+colW-6,ly,k.faint);continue;}
+      var it=items[j];
+      k.box(x+6,ly,8.5,!!(it&&it.done));
+      if(it)k.text(it.name,x+19,ly+1,8.5,{maxW:colW-25,minSize:6.5});else k.hline(x+19,x+colW-6,ly,k.faint);
+    }
+  }
+  k.y=k.BOTTOM;
+}
+function dhqMonthly(k,blank,year,month,dated){
+  var P=MFSPrint;
+  if(!dated){k.newPage('Monthly Planner','Write in the month and the dates.',false);k.fieldRow(['Month','Year']);k.month(2026,0,{numbered:false});return;}
+  k.newPage(P.MON[month]+' '+year,blank?'Monthly Planner':'Monthly Planner · your events',false);
+  var ab={Birthday:'Bday',Appointment:'Appt',Medical:'Med',Holiday:'Hol',Reminder:'',Other:''};
+  k.month(year,month,{cellText:blank?null:function(ds){
+    return DB.events.filter(function(e){return e.date===ds;}).map(function(e){var a=ab[e.category];return (a?a+': ':'')+e.desc;});
+  }});
+}
+function dhqBlankSet(k,year){
+  k.newPage(year+' at a Glance','Daily HQ · year planner',false);
+  k.yearGrid(year);
+  for(var m=0;m<12;m++)dhqMonthly(k,true,year,m,true);
+  dhqMonthly(k,true,0,0,false);
+  dhqWeekly(k,true,null);
+  dhqDaily(k,true,'');
+}
+function dhqFilledSet(k){
+  var now=new Date(),tod=today();
+  dhqDaily(k,false,tod);
+  dhqWeekly(k,false,dhqMonday(now));
+  dhqMonthly(k,false,now.getFullYear(),now.getMonth(),true);
+  var nx=new Date(now.getFullYear(),now.getMonth()+1,1);
+  dhqMonthly(k,false,nx.getFullYear(),nx.getMonth(),true);
+}
+function dhqAccent(){var t=THEMES[DB.theme]||THEMES.sage;return t.green;}
+function dhqPrint(mode){
+  var blank=mode==='blank';
+  var yr=parseInt((document.getElementById('dhq-print-year')||{}).value)||new Date().getFullYear();
+  MFSPrint.run(function(k){if(blank)dhqBlankSet(k,yr);else dhqFilledSet(k);},
+    blank?'daily-hq-printable-planner-'+yr+'.pdf':'daily-hq-my-planner-'+today()+'.pdf',
+    {accent:blank?'#4a6741':dhqAccent(),footer:'Daily HQ  ·  Mobile First Studio'},showToast);
+}
+window.dhqPrint=dhqPrint;
+function renderPrintSection(){
+  var el=document.getElementById('print-section');if(!el)return;
+  var y=new Date().getFullYear(),def=new Date().getMonth()>=8?y+1:y;
+  el.innerHTML='<div style="font-size:var(--fs-xs);color:var(--text2);line-height:1.6;margin-bottom:14px">Print your planner as it is now, or get blank daily, weekly and monthly pages to fill in by hand.</div>'
+    +'<button class="btn-full" onclick="dhqPrint(\'filled\')" style="margin-bottom:8px">Print My Planner (PDF)</button>'
+    +'<div class="field" style="margin:6px 0 8px"><label>Year for blank calendar pages</label><select id="dhq-print-year">'
+    +[0,1,2,3,4].map(function(i){return y+i;}).map(function(v){return '<option value="'+v+'"'+(v===def?' selected':'')+'>'+v+'</option>';}).join('')+'</select></div>'
+    +'<button class="btn-full" onclick="dhqPrint(\'blank\')" style="background:var(--bg3);color:var(--text);border:.5px solid var(--border);margin-bottom:0">Get Blank Pages (PDF)</button>'
+    +'<div style="font-size:12px;color:var(--text3);line-height:1.5;margin-top:10px">The PDF is made on your phone. Nothing is uploaded.</div>';
 }
 
 /* ===== Dark mode (long press the color dot, or Setup toggle) ===== */
@@ -691,7 +1283,35 @@ window.toggleDarkMode=toggleDarkMode;
 })();
 dkApply();
 
+/* ===== FREE TRIAL DEMO ===== */
+var DEMO_SINCE_KEY='mfs_dhq_demo_since',TRIAL_DAYS=14;
+function demoDaysLeft(){var s=null;try{s=localStorage.getItem(DEMO_SINCE_KEY);}catch(e){}if(!s){s=String(Date.now());try{localStorage.setItem(DEMO_SINCE_KEY,s);}catch(e){}}var n=parseInt(s,10);if(isNaN(n))n=Date.now();return TRIAL_DAYS-Math.floor((Date.now()-n)/86400000);}
+function enforceDemoTrial(){var left=demoDaysLeft(),lock=document.getElementById('trial-lock'),t=document.getElementById('demoBannerText');
+  if(left<=0){lock.style.display='flex';t.textContent='Free trial ended';}else{lock.style.display='none';t.textContent='Free trial: '+left+' day'+(left===1?'':'s')+' left';}}
+function demoSample(){
+  function d(n){var x=new Date();x.setDate(x.getDate()+n);return localDateStr(x);}
+  var tasks=[],i=0;
+  ['Take vitamins','Make the bed','10 minute tidy','Drink 8 glasses of water','Check the calendar'].forEach(function(n,k){tasks.push({id:'st'+(i++),name:n,date:d(0),type:'routine',done:k<2});});
+  [['Call the dentist',0],['Return library books',0],['Order birthday gift for Sam',1],['Pick up dry cleaning',2],['Renew car registration',4]].forEach(function(a){tasks.push({id:'st'+(i++),name:a[0],date:d(a[1]),type:'extra',done:false});});
+  [['Meal plan for the week',0],['Laundry day',1],['Grocery run',2],['Clean out the fridge',3]].forEach(function(a){tasks.push({id:'st'+(i++),name:a[0],date:d(a[1]),type:'weekly',done:false});});
+  ['Plan the garage clean-out','Book a family photo session'].forEach(function(n){tasks.push({id:'st'+(i++),name:n,date:d(0),type:'radar',done:false});});
+  var events=[['Dentist, 2:30','Medical',1],["Mom's birthday",'Birthday',3],['Parent-teacher night','Appointment',5],['Trash day','Reminder',2],['Book club','Other',7],['Soccer practice','Appointment',9],["Dad's birthday",'Birthday',20]].map(function(a,k){return {id:'se'+k,date:d(a[2]),category:a[1],desc:a[0]};});
+  return {profile:{name:(DB.profile&&DB.profile.name)||'Jessica'},tasks:tasks,events:events,theme:DB.theme||'sage',dark:!!DB.dark,routineResetDate:today()};
+}
+function loadSampleData(){
+  var go=function(){DB=demoSample();sv();showToast('Sample data loaded. Explore every screen.');setTimeout(function(){location.reload();},900);};
+  if(!DB.tasks.length&&!DB.events.length){go();return;}
+  mfsConfirm('Load sample data?','This replaces what you have entered in the trial with a sample week.',go,'Load it');
+}
+function demoSampleButton(){
+  var ps=document.querySelector('#pg-dash .ps');if(!ps)return;
+  var b=ps.querySelector('.sample-link');
+  if(DB.tasks.length||DB.events.length){if(b)b.remove();return;}
+  if(!b){ps.insertAdjacentHTML('afterbegin','<button type="button" class="sample-link" onclick="loadSampleData()">Just looking? See it with sample data</button>');}
+}
+(function(){var _r=renderDash;renderDash=function(){_r();demoSampleButton();};})();
 renderDash();renderSetup();
+enforceDemoTrial();setInterval(enforceDemoTrial,60000);
 var dkT=document.getElementById('dk-toggle');if(dkT)dkT.checked=!!DB.dark;
 </script>
 
