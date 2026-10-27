@@ -349,6 +349,14 @@
 @media (max-width:420px){.slot-row{gap:.3rem}.slot-chip{padding:.4rem .3rem}.slot-chip-label{font-size:.52rem}.slot-chip-text{font-size:.66rem}}
 @media (min-width:900px){#panel-shopping .shopping-item{max-width:100%}.week-tools{flex-wrap:wrap}}
 
+  /* Dark themes: the light see-through boxes turned grey with pale text, so they are dark glass instead. */
+  [data-theme="hearth"] :is(.stat, .list-item, .backup-status-row, .heatmap-cell:not(.active), .progress-container, .empty-state, .print-row, .drive-backup-row, .field input, .field textarea, .field select, .badge-tag, .day-row, .slot-chip:not(.cooked), .picker-row, .tool-chip, .dinner-idea, .mp-bar .tr, .mp-item:hover, .mp-k, .upsell-card, .sample-link),
+  [data-theme="sage"] :is(.stat, .list-item, .backup-status-row, .heatmap-cell:not(.active), .progress-container, .empty-state, .print-row, .drive-backup-row, .field input, .field textarea, .field select, .badge-tag, .day-row, .slot-chip:not(.cooked), .picker-row, .tool-chip, .dinner-idea, .mp-bar .tr, .mp-item:hover, .mp-k, .upsell-card, .sample-link),
+  [data-theme="berry"] :is(.stat, .list-item, .backup-status-row, .heatmap-cell:not(.active), .progress-container, .empty-state, .print-row, .drive-backup-row, .field input, .field textarea, .field select, .badge-tag, .day-row, .slot-chip:not(.cooked), .picker-row, .tool-chip, .dinner-idea, .mp-bar .tr, .mp-item:hover, .mp-k, .upsell-card, .sample-link),
+  [data-theme="midnight"] :is(.stat, .list-item, .backup-status-row, .heatmap-cell:not(.active), .progress-container, .empty-state, .print-row, .drive-backup-row, .field input, .field textarea, .field select, .badge-tag, .day-row, .slot-chip:not(.cooked), .picker-row, .tool-chip, .dinner-idea, .mp-bar .tr, .mp-item:hover, .mp-k, .upsell-card, .sample-link) { background: rgba(255, 255, 255, 0.06); }
+  :is([data-theme="hearth"], [data-theme="sage"], [data-theme="berry"], [data-theme="midnight"]) .field :is(input, select) { color-scheme: dark; }
+  :is([data-theme="hearth"], [data-theme="sage"], [data-theme="berry"], [data-theme="midnight"]) .field select option { background: var(--bg-b); color: var(--text); }
+
 /* ===== free trial ===== */
 body{flex-direction:column;align-items:center}
 .demo-banner{width:100%;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));color:var(--on-accent);font-size:13px;line-height:1.4;text-align:center;padding:9px 14px;font-weight:600}
